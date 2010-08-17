@@ -1,0 +1,4 @@
+include *.txt *.py
+recursive-include pyxnat *.py *.txt *.csv
+graft doc
+prune pyxnat/examples

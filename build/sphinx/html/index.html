@@ -1,0 +1,214 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>pyxnat: Xnat in Python &mdash; pyxnat v0.6.0 documentation</title>
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '#',
+        VERSION:     '0.6.0',
+        COLLAPSE_MODINDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="pyxnat v0.6.0 documentation" href="#" />
+    <link rel="next" title="Installing pyxnat" href="installing.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="modindex.html" title="Global Module Index"
+             accesskey="M">modules</a> |</li>
+        <li class="right" >
+          <a href="installing.html" title="Installing pyxnat"
+             accesskey="N">next</a> |</li>
+        <li><a href="#">pyxnat v0.6.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="pyxnat-xnat-in-python">
+<h1>pyxnat: Xnat in Python<a class="headerlink" href="#pyxnat-xnat-in-python" title="Permalink to this headline">¶</a></h1>
+<div class="topic">
+<p class="topic-title first"><strong>User guide contents:</strong></p>
+<ul>
+<li class="toctree-l1"><a class="reference external" href="installing.html">Installing pyxnat</a></li>
+<li class="toctree-l1"><a class="reference external" href="under_the_hood.html">Under the Hood</a></li>
+<li class="toctree-l1"><a class="reference external" href="starters_tutorial.html">Starters Tutorial</a></li>
+<li class="toctree-l1"><a class="reference external" href="advanced_tutorial.html">Advanced Tutorial</a></li>
+<li class="toctree-l1"><a class="reference external" href="reference_documentation.html">Reference documentation</a></li>
+</ul>
+</div>
+<div class="section" id="module-pyxnat">
+<h2>Introduction<a class="headerlink" href="#module-pyxnat" title="Permalink to this headline">¶</a></h2>
+<p>pyxnat is a simple python library that relies on the REST API provided
+by the XNAT platform since its 1.4 version. XNAT is an extensible database for neuroimaging data. The main objective is to ease communications with an XNAT
+server to plug-in external tools or python scripts to process the data. It
+features:</p>
+<blockquote>
+<ol class="arabic simple">
+<li>resources browsing capabilities</li>
+<li>read and write access to resources</li>
+<li>complex searches</li>
+<li>disk-caching of requested files and resources</li>
+</ol>
+</blockquote>
+<table class="docutils footnote" frame="void" id="id1" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label">[1]</td><td><a class="reference external" href="http://www.xnat.org/">http://www.xnat.org/</a></td></tr>
+</tbody>
+</table>
+<table class="docutils footnote" frame="void" id="id2" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label">[2]</td><td><a class="reference external" href="http://packages.python.org/pyxnat/">http://packages.python.org/pyxnat/</a></td></tr>
+</tbody>
+</table>
+<hr class="docutils" />
+<blockquote>
+<p><strong>A short overview</strong></p>
+<dl class="docutils">
+<dt><em>Setup the connection</em></dt>
+<dd><div class="first last highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pyxnat</span> <span class="kn">import</span> <span class="n">Interface</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">interface</span> <span class="o">=</span> <span class="n">Interface</span><span class="p">(</span><span class="n">server</span><span class="o">=</span><span class="s">&#39;http://central.xnat.org:8080&#39;</span><span class="p">,</span>
+<span class="go">                          user=&#39;login&#39;,</span>
+<span class="go">                          password=&#39;pass&#39;,</span>
+<span class="go">                          cachedir=os.path.join(os.path.expanduser(&#39;~&#39;),</span>
+<span class="go">                                                &#39;.store&#39;)</span>
+<span class="go">                          )</span>
+</pre></div>
+</div>
+</dd>
+<dt><em>Browse the resources</em></dt>
+<dd><div class="first last highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">interface</span><span class="o">.</span><span class="n">select</span><span class="o">.</span><span class="n">projects</span><span class="p">()</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
+<span class="go">[u&#39;CENTRAL_OASIS_CS&#39;, u&#39;CENTRAL_OASIS_LONG&#39;, ...]</span>
+</pre></div>
+</div>
+</dd>
+<dt><em>Create new resources</em></dt>
+<dd><div class="first last highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">interface</span><span class="o">.</span><span class="n">select</span><span class="o">.</span><span class="n">project</span><span class="p">(</span><span class="s">&#39;my_project&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">create</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">interface</span><span class="o">.</span><span class="n">select</span><span class="o">.</span><span class="n">project</span><span class="p">(</span><span class="s">&#39;my_project&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">resource</span><span class="p">(</span><span class="s">&#39;images&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">file</span><span class="p">(</span><span class="s">&#39;image.nii&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="s">&#39;/tmp/image.nii&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd>
+<dt><em>Make complex searches</em></dt>
+<dd><div class="first last highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">table</span> <span class="o">=</span> <span class="n">interface</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="s">&#39;xnat:subjectData&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s">&#39;xnat:subjectData/PROJECT&#39;</span><span class="p">,</span> <span class="s">&#39;xnat:subjectData/SUBJECT_ID&#39;</span><span class="p">]</span>
+<span class="go">                    ).where([(&#39;xnat:subjectData/SUBJECT_ID&#39;,&#39;LIKE&#39;,&#39;%&#39;),</span>
+<span class="go">                             (&#39;xnat:subjectData/PROJECT&#39;, &#39;=&#39;, &#39;my_project&#39;),</span>
+<span class="go">                             &#39;AND&#39;</span>
+<span class="go">                             ])</span>
+</pre></div>
+</div>
+</dd>
+</dl>
+</blockquote>
+</div>
+<div class="section" id="module-contents">
+<h2>Module contents<a class="headerlink" href="#module-contents" title="Permalink to this headline">¶</a></h2>
+<table border="1" class="docutils">
+<colgroup>
+<col width="30%" />
+<col width="70%" />
+</colgroup>
+<tbody valign="top">
+<tr><td><a title="pyxnat.Interface" class="reference external" href="generated/pyxnat.Interface.html#pyxnat.Interface"><tt class="xref docutils literal"><span class="pre">Interface</span></tt></a></td>
+<td>Main entry point to access a XNAT server.</td>
+</tr>
+<tr><td><a title="pyxnat.Inspector" class="reference external" href="generated/pyxnat.Inspector.html#pyxnat.Inspector"><tt class="xref docutils literal"><span class="pre">Inspector</span></tt></a></td>
+<td>Database introspection interface.</td>
+</tr>
+<tr><td><a title="pyxnat.Select" class="reference external" href="generated/pyxnat.Select.html#pyxnat.Select"><tt class="xref docutils literal"><span class="pre">Select</span></tt></a></td>
+<td>Data selection interface.  Callable object that indicates the data to be returned to the user.</td>
+</tr>
+<tr><td><a title="pyxnat.SearchManager" class="reference external" href="generated/pyxnat.SearchManager.html#pyxnat.SearchManager"><tt class="xref docutils literal"><span class="pre">SearchManager</span></tt></a></td>
+<td>Search interface.  Handles operations to save and get back searches on the server.</td>
+</tr>
+<tr><td><a title="pyxnat.Users" class="reference external" href="generated/pyxnat.Users.html#pyxnat.Users"><tt class="xref docutils literal"><span class="pre">Users</span></tt></a></td>
+<td>Database user management interface. It is used to retrieve information on users registered on a server.</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+            <h3><a href="#">Table Of Contents</a></h3>
+            <ul>
+<li><a class="reference external" href="#">pyxnat: Xnat in Python</a><ul>
+<li><a class="reference external" href="#module-pyxnat">Introduction</a></li>
+<li><a class="reference external" href="#module-contents">Module contents</a><ul>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+            <h4>Next topic</h4>
+            <p class="topless"><a href="installing.html"
+                                  title="next chapter">Installing pyxnat</a></p>
+            <h3>This Page</h3>
+            <ul class="this-page-menu">
+              <li><a href="_sources/index.txt"
+                     rel="nofollow">Show Source</a></li>
+            </ul>
+          <div id="searchbox" style="display: none">
+            <h3>Quick search</h3>
+              <form class="search" action="search.html" method="get">
+                <input type="text" name="q" size="18" />
+                <input type="submit" value="Go" />
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+              </form>
+              <p class="searchtip" style="font-size: 90%">
+              Enter search terms or a module, class or function name.
+              </p>
+          </div>
+          <script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="modindex.html" title="Global Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="installing.html" title="Installing pyxnat"
+             >next</a> |</li>
+        <li><a href="#">pyxnat v0.6.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+      &copy; Copyright 2010, Yannick Schwartz.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 0.6.4.
+    </div>
+  </body>
+</html>

@@ -1,0 +1,116 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>pyxnat.Search &mdash; pyxnat v0.6.0 documentation</title>
+    <link rel="stylesheet" href="../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0.6.0',
+        COLLAPSE_MODINDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="top" title="pyxnat v0.6.0 documentation" href="../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../modindex.html" title="Global Module Index"
+             accesskey="M">modules</a> |</li>
+        <li><a href="../index.html">pyxnat v0.6.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="pyxnat-search">
+<h1>pyxnat.Search<a class="headerlink" href="#pyxnat-search" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="pyxnat.Search">
+<em class="property">class </em><tt class="descclassname">pyxnat.</tt><tt class="descname">Search</tt><big>(</big><em>row</em>, <em>columns</em>, <em>interface</em><big>)</big><a class="headerlink" href="#pyxnat.Search" title="Permalink to this definition">¶</a></dt>
+<dd><p>Define constraints to make a complex search on the database.</p>
+<dl class="docutils">
+<dt>This <a title="pyxnat.Search" class="reference internal" href="#pyxnat.Search"><tt class="xref docutils literal"><span class="pre">Search</span></tt></a> is available at different places throughout the API:</dt>
+<dd><div class="first last highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">interface</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="n">DATA_SELECTION</span><span class="p">)</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">QUERY</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">interface</span><span class="o">.</span><span class="n">search</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="s">&#39;name&#39;</span><span class="p">,</span> <span class="n">TABLE_DEFINITION</span><span class="p">,</span> <span class="n">QUERY</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">query</span> <span class="o">=</span> <span class="p">[(</span><span class="s">&#39;xnat:subjectData/SUBJECT_ID&#39;</span><span class="p">,</span> <span class="s">&#39;LIKE&#39;</span><span class="p">,</span> <span class="s">&#39;%&#39;</span><span class="p">),</span> 
+<span class="go">             (&#39;xnat:projectData/ID&#39;, &#39;=&#39;, &#39;my_project&#39;),</span>
+<span class="go">             [(&#39;xnat:subjectData/AGE&#39;, &#39;&gt;&#39;, &#39;14&#39;),</span>
+<span class="go">               &#39;AND&#39;</span>
+<span class="go">              ],</span>
+<span class="go">             &#39;OR&#39;</span>
+<span class="go">            ]</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+            <h3>This Page</h3>
+            <ul class="this-page-menu">
+              <li><a href="../_sources/generated/pyxnat.Search.txt"
+                     rel="nofollow">Show Source</a></li>
+            </ul>
+          <div id="searchbox" style="display: none">
+            <h3>Quick search</h3>
+              <form class="search" action="../search.html" method="get">
+                <input type="text" name="q" size="18" />
+                <input type="submit" value="Go" />
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+              </form>
+              <p class="searchtip" style="font-size: 90%">
+              Enter search terms or a module, class or function name.
+              </p>
+          </div>
+          <script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../modindex.html" title="Global Module Index"
+             >modules</a> |</li>
+        <li><a href="../index.html">pyxnat v0.6.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+      &copy; Copyright 2010, Yannick Schwartz.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 0.6.4.
+    </div>
+  </body>
+</html>

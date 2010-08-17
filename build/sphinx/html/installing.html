@@ -1,0 +1,262 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Installing pyxnat &mdash; pyxnat v0.6.0 documentation</title>
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '#',
+        VERSION:     '0.6.0',
+        COLLAPSE_MODINDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="pyxnat v0.6.0 documentation" href="index.html" />
+    <link rel="next" title="Under the Hood" href="under_the_hood.html" />
+    <link rel="prev" title="pyxnat: Xnat in Python" href="index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="modindex.html" title="Global Module Index"
+             accesskey="M">modules</a> |</li>
+        <li class="right" >
+          <a href="under_the_hood.html" title="Under the Hood"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="pyxnat: Xnat in Python"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">pyxnat v0.6.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="installing-pyxnat">
+<h1>Installing pyxnat<a class="headerlink" href="#installing-pyxnat" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="platforms">
+<h2>Platforms<a class="headerlink" href="#platforms" title="Permalink to this headline">¶</a></h2>
+<p>OS Independent.</p>
+<dl class="docutils">
+<dt>It was tested under:</dt>
+<dd><ul class="first last simple">
+<li>Ubuntu 10.04 with python 2.6</li>
+<li>Ubuntu 8.04  with python 2.5</li>
+<li>Mandriva 2008 with python 2.5</li>
+<li>Windows XP with python 2.6</li>
+<li>Mac OS X 10.5 Leopard with python 2.5</li>
+</ul>
+</dd>
+</dl>
+</div>
+<div class="section" id="prerequisites">
+<h2>Prerequisites<a class="headerlink" href="#prerequisites" title="Permalink to this headline">¶</a></h2>
+<ul>
+<li><p class="first"><em>python</em> v2.5+</p>
+</li>
+<li><dl class="first docutils">
+<dt><em>python-lxml</em> v1.3.6+ recommanded, earlier versions may work:</dt>
+<dd><p class="first">All Python dependencies but lxml are shipped with this package. Lxml may be
+installed using standard Python distribution tools, here are the recommanded
+ones. For more details on installing procedures please see the sections
+following this one.</p>
+<blockquote class="last">
+<ol class="arabic">
+<li><p class="first">easy_install: lxml may be installed via easy_install under
+Unix and Windows</p>
+</li>
+<li><p class="first">Windows only: a .exe installer is provided</p>
+</li>
+<li><dl class="first docutils">
+<dt>Mac OS X: a macport of lxml is available, see lxml site for further information.</dt>
+<dd><p class="first">Alternatively, you can compile the package from sources by following
+the instructions. If the recommanded command on the site fails:</p>
+<div class="highlight-python"><pre>python setup.py build --static-deps</pre>
+</div>
+<p>Try forcing an older version of libxml2:</p>
+<div class="highlight-python"><pre>python setup.py build --static-deps --libxml2-version=2.7.3</pre>
+</div>
+<p class="last">Do not forget to add lxml to your PYTHONPATH afterwards.</p>
+</dd>
+</dl>
+</li>
+</ol>
+</blockquote>
+</dd>
+</dl>
+</li>
+<li><p class="first"><em>python-nose</em> v0.10+ to run the unit tests</p>
+</li>
+<li><dl class="first docutils">
+<dt><em>networkx</em> and <em>matplotlib</em> are not mandatory:</dt>
+<dd><p class="first last">These libraries are used to make some graphical representations.</p>
+</dd>
+</dl>
+</li>
+</ul>
+</div>
+<div class="section" id="the-easy-install-way">
+<h2>The <cite>easy_install</cite> way<a class="headerlink" href="#the-easy-install-way" title="Permalink to this headline">¶</a></h2>
+<p>The easiest way to install pyxnat is (provided that you have <cite>setuptools</cite>
+installed) to run:</p>
+<div class="highlight-python"><pre>easy_install pyxnat</pre>
+</div>
+<p>You may need to run the above command as administrator</p>
+<p>On a unix environment, it is better to install outside of the hierarchy
+managed by the system:</p>
+<blockquote>
+easy_install &#8211;prefix /usr/local pyxnat</blockquote>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">Packages installed via <cite>easy_install</cite> override the Python module look
+up mechanism and thus can confused people not familiar with
+setuptools. Although it may seem harder, we suggest that you use the
+manual way, as described in the following paragraph.</p>
+</div>
+</div>
+<div class="section" id="the-manual-way">
+<h2>The manual way<a class="headerlink" href="#the-manual-way" title="Permalink to this headline">¶</a></h2>
+<p>To install pyxnat first download the latest tarball (follow the link on
+the bottom of <a class="reference external" href="http://pypi.python.org/pypi/pyxnat">http://pypi.python.org/pypi/pyxnat</a>) and expand it.</p>
+<div class="section" id="installing-in-a-local-environment">
+<h3>Installing in a local environment<a class="headerlink" href="#installing-in-a-local-environment" title="Permalink to this headline">¶</a></h3>
+<p>If you don&#8217;t need to install for all users, we strongly suggest that you
+create a local environment and install <cite>pyxnat</cite> in it. One of the pros of
+this method is that you never have to become administrator, and thus all
+the changes are local to your account and easy to clean up.</p>
+<blockquote>
+<ol class="arabic">
+<li><p class="first">First, create the following directory (where <cite>~</cite> is your home
+directory, or any directory that you want to use as a base for
+your local Python environment, and <cite>X</cite> is your Python version
+number, e.g. <cite>2.6</cite>):</p>
+<div class="highlight-python"><pre>~/usr/lib/pythonX/site-packages</pre>
+</div>
+</li>
+<li><p class="first">Second, make sure that you add this directory in your environment
+variable <cite>PYTHONPATH</cite>. Under window you can do this by editing
+your environment variables in the system parameters dialog. Under
+Unix you can add the following line to your <cite>.bashrc</cite> or any file
+source at login:</p>
+<div class="highlight-python"><pre>export PYTHONPATH=$HOME/usr/lib/python2.6/site-packages:$PYTHONPATH</pre>
+</div>
+</li>
+<li><p class="first">In the directory created by expanding the <cite>pyxnat</cite> tarball, run the
+following command:</p>
+<div class="highlight-python"><pre>python setup.py install --prefix ~/usr</pre>
+</div>
+<p>You should not be required to become administrator, if you have
+write access to the directory you are installing to.</p>
+</li>
+</ol>
+</blockquote>
+</div>
+<div class="section" id="installing-for-all-users">
+<h3>Installing for all users<a class="headerlink" href="#installing-for-all-users" title="Permalink to this headline">¶</a></h3>
+<p>If you have administrator rights and want to install for all users, all
+you need to do is to go in directory created by expanding the <cite>pyxnat</cite>
+tarball and run the following line:</p>
+<div class="highlight-python"><pre>python setup.py install</pre>
+</div>
+<p>If you are under Unix, we suggest that you install in &#8216;/usr/local&#8217; in
+order not to interfere with your system:</p>
+<div class="highlight-python"><pre>python setup.py install --prefix /usr/local</pre>
+</div>
+</div>
+<div class="section" id="testing">
+<h3>Testing<a class="headerlink" href="#testing" title="Permalink to this headline">¶</a></h3>
+<p>Go in the directory &#8216;pyxnat/tests&#8217; and run the <cite>nosetests</cite> command.</p>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+            <h3><a href="index.html">Table Of Contents</a></h3>
+            <ul>
+<li><a class="reference external" href="#">Installing pyxnat</a><ul>
+<li><a class="reference external" href="#platforms">Platforms</a></li>
+<li><a class="reference external" href="#prerequisites">Prerequisites</a></li>
+<li><a class="reference external" href="#the-easy-install-way">The <cite>easy_install</cite> way</a></li>
+<li><a class="reference external" href="#the-manual-way">The manual way</a><ul>
+<li><a class="reference external" href="#installing-in-a-local-environment">Installing in a local environment</a></li>
+<li><a class="reference external" href="#installing-for-all-users">Installing for all users</a></li>
+<li><a class="reference external" href="#testing">Testing</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+            <h4>Previous topic</h4>
+            <p class="topless"><a href="index.html"
+                                  title="previous chapter">pyxnat: Xnat in Python</a></p>
+            <h4>Next topic</h4>
+            <p class="topless"><a href="under_the_hood.html"
+                                  title="next chapter">Under the Hood</a></p>
+            <h3>This Page</h3>
+            <ul class="this-page-menu">
+              <li><a href="_sources/installing.txt"
+                     rel="nofollow">Show Source</a></li>
+            </ul>
+          <div id="searchbox" style="display: none">
+            <h3>Quick search</h3>
+              <form class="search" action="search.html" method="get">
+                <input type="text" name="q" size="18" />
+                <input type="submit" value="Go" />
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+              </form>
+              <p class="searchtip" style="font-size: 90%">
+              Enter search terms or a module, class or function name.
+              </p>
+          </div>
+          <script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="modindex.html" title="Global Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="under_the_hood.html" title="Under the Hood"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="pyxnat: Xnat in Python"
+             >previous</a> |</li>
+        <li><a href="index.html">pyxnat v0.6.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+      &copy; Copyright 2010, Yannick Schwartz.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 0.6.4.
+    </div>
+  </body>
+</html>

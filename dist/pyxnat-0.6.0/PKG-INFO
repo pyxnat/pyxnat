@@ -1,0 +1,62 @@
+Metadata-Version: 1.0
+Name: pyxnat
+Version: 0.6.0
+Summary: Xnat in Python
+Home-page: http://packages.python.org/pyxnat/
+Author: Yannick Schwartz
+Author-email: yannick.schwartz@cea.fr
+License: BSD
+Description:  pyxnat is a simple python library that relies on the REST API provided
+        by the XNAT platform since its 1.4 version. XNAT is an extensible database for neuroimaging data. The main objective is to ease communications with an XNAT
+        server to plug-in external tools or python scripts to process the data. It
+        features:
+        
+            #. resources browsing capabilities
+            #. read and write access to resources
+            #. complex searches
+            #. disk-caching of requested files and resources
+        
+        .. [#] http://www.xnat.org/
+        .. [#] http://packages.python.org/pyxnat/
+        
+        ____
+        
+            **A short overview**    
+        
+            *Setup the connection*
+                >>> from pyxnat import Interface
+                >>> interface = Interface(server='http://central.xnat.org:8080',
+                                          user='login',
+                                          password='pass',
+                                          cachedir=os.path.join(os.path.expanduser('~'),
+                                                                '.store')
+                                          )
+        
+            *Browse the resources*
+                >>> interface.select.projects().get()
+                [u'CENTRAL_OASIS_CS', u'CENTRAL_OASIS_LONG', ...]
+        
+            *Create new resources*
+                >>> interface.select.project('my_project').create()
+                >>> interface.select.project('my_project').resource('images').file('image.nii').put('/tmp/image.nii')
+        
+            *Make complex searches*
+                >>> table = interface.select('xnat:subjectData', ['xnat:subjectData/PROJECT', 'xnat:subjectData/SUBJECT_ID']
+                                    ).where([('xnat:subjectData/SUBJECT_ID','LIKE','%'),
+                                             ('xnat:subjectData/PROJECT', '=', 'my_project'),
+                                             'AND'
+                                             ])
+        
+        
+Platform: any
+Classifier: Development Status :: 4 - Beta
+Classifier: Environment :: Console
+Classifier: Intended Audience :: Developers
+Classifier: Intended Audience :: Science/Research
+Classifier: Intended Audience :: Education
+Classifier: License :: OSI Approved :: BSD License
+Classifier: Operating System :: OS Independent
+Classifier: Programming Language :: Python
+Classifier: Topic :: Scientific/Engineering
+Classifier: Topic :: Utilities
+Classifier: Topic :: Internet :: WWW/HTTP

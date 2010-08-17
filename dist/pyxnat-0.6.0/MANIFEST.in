@@ -1,0 +1,7 @@
+include *.txt *.py
+recursive-include pyxnat *.rst *.py *.cfg *.txt *.csv
+graft doc
+graft doc/_static
+graft doc/_templates
+global-exclude *~ *.swp
+prune pyxnat/examples

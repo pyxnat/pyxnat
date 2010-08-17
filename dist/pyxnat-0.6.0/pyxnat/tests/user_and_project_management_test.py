@@ -1,0 +1,56 @@
+from ..pyxnat import Interface
+
+central = Interface('http://central.xnat.org', 'nosetests', 'nosetests')
+
+def test_users():
+    assert isinstance(central.users(), list)
+
+def test_user_firstname():
+    assert central.users.firstname('nosetests') == 'Yannick'
+
+def test_user_lastname():
+    assert central.users.lastname('nosetests') == 'Schwartz'
+
+def test_user_email():
+    assert central.users.email('nosetests') == 'yannick.schwartz@gmail.com'
+
+def test_user_id():
+    assert central.users.id('nosetests') == '204'
+
+def test_project_users():
+    assert isinstance(central.select.project('nosetests').users(), list)
+
+def test_project_owners():
+    assert isinstance(central.select.project('nosetests').owners(), list)
+
+def test_project_members():
+    assert isinstance(central.select.project('nosetests').members(), list)
+
+def test_project_collaborators():
+    assert isinstance(central.select.project('nosetests').collaborators(), list)
+
+def test_project_user_role():
+    assert central.select.project('nosetests').user_role('nosetests') == 'owner'
+
+def test_add_remove_user():
+    central.select.project('nosetests').add_user('schwarty', 'collaborator')
+    assert 'schwarty' in central.select.project('nosetests').collaborators()
+    central.select.project('nosetests').remove_user('schwarty')
+    assert 'schwarty' not in central.select.project('nosetests').collaborators()
+
+def test_project_accessibility():
+    assert central.select.project('nosetests').accessibility() in \
+                                        ['public', 'protected', 'private']
+    central.select.project('nosetests').set_accessibility('private')
+    assert central.select.project('nosetests').accessibility() == 'private'
+    central.select.project('nosetests').set_accessibility('protected')
+    assert central.select.project('nosetests').accessibility() == 'protected'
+
+def test_project_prearchive_code():
+    pass
+
+def test_project_quarantine_code():
+    pass
+
+def test_current_arc():
+    pass

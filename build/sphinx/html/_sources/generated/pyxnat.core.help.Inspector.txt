@@ -1,0 +1,6 @@
+pyxnat.core.help.Inspector
+==========================
+
+.. currentmodule:: pyxnat.core.help
+
+.. autoclass:: Inspector
