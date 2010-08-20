@@ -246,6 +246,9 @@ class EObject(object):
 
         return self._intf._exec(delete_uri, 'DELETE')
 
+    def get(self):
+        return self._intf._exec(self._uri+'?format=xml', 'GET')
+
     def children(self):
         """ Returns the children levels of this element.
 
@@ -355,7 +358,7 @@ class CObject(object):
             return self._intf._get_json(translate_uri(self._cbase) + query_string)
         except Exception, e:
             if DEBUG:
-                print e
+                raise e
             return []
 
     def __iter__(self):

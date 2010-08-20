@@ -3,6 +3,7 @@ import re
 from . import schema
 from .search import Search
 from .resources import CObject, Projects, Project
+from .uriutil import inv_translate_uri
 
 DEBUG = False
 
@@ -163,6 +164,8 @@ def compute(path):
     if not re.match('/project(s)?|//.+', path):
         path = '/' + path
  
+    path = inv_translate_uri(path)
+
     try:
         groups = group_paths(mtransform([path]))
     except:

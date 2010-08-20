@@ -1,4 +1,5 @@
 import os
+import re
 import time
 import tempfile
 import email
@@ -7,7 +8,7 @@ import getpass
 from ..externals import httplib2
 
 from .select import Select
-from .cache import CacheManager, MultiCache
+from .cache import CacheManager, MultiCache, SQLCache, NewCacheManager
 from .search import SearchManager
 from .help import Inspector
 from .users import Users
@@ -84,7 +85,8 @@ class Interface(object):
         self.inspect = Inspector(self)
         self.select = Select(self)
         self.users = Users(self)
-        self.cache = CacheManager(self)
+#        self.cache = CacheManager(self)
+        self.cache = NewCacheManager(self)
 
         if self._interactive:
             try:
@@ -116,7 +118,9 @@ class Interface(object):
 
         if DEBUG:   
             httplib2.debuglevel = 2
-        self._conn = httplib2.Http(MultiCache(self._cachedir, self))
+#        self._conn = httplib2.Http()
+#        self._conn = httplib2.Http(MultiCache(self._cachedir, self))
+        self._conn = httplib2.Http(SQLCache(self._cachedir, self))
         self._conn.add_credentials(self._user, self._pwd)
 
     def _exec(self, uri, method='GET', body=None, headers=None):
@@ -148,16 +152,18 @@ class Interface(object):
         # reset the memcache when something is changed on the server
         if method in ['PUT', 'DELETE']:
             self._memcache = {}
-
+        
         if self._mode == 'online' and method == 'GET':
             if time.time() - self._memcache.get(uri, 0) < self._memlifespan:
                 if DEBUG:
                     print 'send: GET CACHE %s'%uri
-                info, content = self._conn.cache.get(uri).split('\r\n\r\n')
+                info, content = self._conn.cache.get(uri).split('\r\n\r\n', 1)
                 self._memcache[uri] = time.time()
                 response = None
             else:
+                start = time.time()
                 response, content = self._conn.request(uri, method, body, headers)
+                self._conn.cache.durations[uri] = time.time() - start
                 self._memcache[uri] = time.time()
 
         elif self._mode == 'offline' and method == 'GET':
@@ -165,13 +171,15 @@ class Interface(object):
             if cached_value is not None:
                 if DEBUG:
                     print 'send: GET CACHE %s'%uri
-                info, content = cached_value.split('\r\n\r\n')
+                info, content = cached_value.split('\r\n\r\n', 1)
                 response = None
             else:
                 try:
                     self._conn.timeout = 10
+                    start = time.time()
                     response, content = self._conn.request(uri, method, 
                                                            body, headers)
+                    self._conn.cache.durations[uri] = time.time() - start
                     self._conn.timeout = None
                     self._memcache[uri] = time.time()
                 except Exception, e:
@@ -189,9 +197,6 @@ class Interface(object):
 
         if response is not None and response.has_key('set-cookie'):
             self._jsession = response.get('set-cookie')[:44]
-
-        if content.startswith('<html>'):
-            raise Exception(content.split('<h3>')[1].split('</h3>')[0])
 
         return content
 
@@ -217,6 +222,11 @@ class Interface(object):
             else:
                 uri += '?format=csv'
 
-        return csv_to_json(self._exec(uri, 'GET'))
+        content = self._exec(uri, 'GET')
+
+        if content.startswith('<html>'):
+            raise Exception(content.split('<h3>')[1].split('</h3>')[0])
+
+        return csv_to_json(content)
 
 
