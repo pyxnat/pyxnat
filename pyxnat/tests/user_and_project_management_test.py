@@ -3,19 +3,19 @@ from ..pyxnat import Interface
 central = Interface('http://central.xnat.org', 'nosetests', 'nosetests')
 
 def test_users():
-    assert isinstance(central.users(), list)
+    assert isinstance(central.manage.users(), list)
 
 def test_user_firstname():
-    assert central.users.firstname('nosetests') == 'Yannick'
+    assert central.manage.users.firstname('nosetests') == 'Yannick'
 
 def test_user_lastname():
-    assert central.users.lastname('nosetests') == 'Schwartz'
+    assert central.manage.users.lastname('nosetests') == 'Schwartz'
 
 def test_user_email():
-    assert central.users.email('nosetests') == 'yannick.schwartz@gmail.com'
+    assert central.manage.users.email('nosetests') == 'yannick.schwartz@gmail.com'
 
 def test_user_id():
-    assert central.users.id('nosetests') == '204'
+    assert central.manage.users.id('nosetests') == '204'
 
 def test_project_users():
     assert isinstance(central.select.project('nosetests').users(), list)

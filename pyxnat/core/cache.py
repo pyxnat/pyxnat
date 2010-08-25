@@ -12,6 +12,9 @@ from StringIO import StringIO
 from ..externals import simplejson as json
 from ..externals import httplib2
 
+from .jsonutil import JsonTable, csv_to_json
+from .uriutil import join_uri
+
 _platform = platform.system()
 
 DEBUG = False
@@ -94,7 +97,9 @@ class SQLCache(object):
         if not os.path.exists(cache): 
             os.makedirs(self.cache)
 
-        self._db = sqlite3.connect(os.path.join(self.cache, 'cache.db'))
+        self._db = sqlite3.connect(os.path.join(self.cache, 'cache.db'), 
+                                   timeout=30.0,
+                                   isolation_level='EXCLUSIVE')
         self._db.text_factory = str
         self._db.execute('CREATE TABLE IF NOT EXISTS http '
                          '('
@@ -106,10 +111,16 @@ class SQLCache(object):
                          ')'
                          )
 
+        self._db.execute('CREATE TABLE IF NOT EXISTS subjects '
+                         '(subject_id TEXT PRIMARY KEY,'
+                         ' last_modified TEXT NOT NULL)'
+                         )
+
         self._db.execute('PRAGMA temp_store=MEMORY')
         self._db.execute('PRAGMA synchronous=OFF')
         self._db.execute('PRAGMA cache_size=1048576')
         self._db.execute('PRAGMA count_changes=OFF')
+#        self._db.execute('PRAGMA journal_mode=WAL')
 
         self._db.commit()
 
@@ -158,7 +169,7 @@ class SQLCache(object):
             access_nb = 1
             last_access = self._intf._memcache.get(key, time.time())
             last_duration = self.durations.get(key, 1)
-            cost = (last_duration*content_size*access_nb*last_access)/(time.time())
+            cost = (last_duration*content_size*time.time())/(access_nb*last_access)
 
             self._db.execute("INSERT INTO http VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
                              (key, content_size, content_type, content_location,
@@ -169,7 +180,7 @@ class SQLCache(object):
             last_access = self._intf._memcache.get(key, entry[6])
             last_duration = self.durations.get(key, entry[5])
 
-            cost = (last_duration*content_size*entry[5]*entry[6])/(time.time())
+            cost = (last_duration*content_size*time.time())/(entry[5]*entry[6])
 
             self._db.execute("UPDATE http "
                              "SET content_size=?, content_type=?, content_location=?, "
@@ -430,21 +441,29 @@ class NewCacheManager(object):
         self.size_limit = size_limit or self.size_limit
         self.prioritize = prioritize or self.prioritize
 
+    def diff(self):
+        url = join_uri(self._intf._server, '/REST/subjects?format=csv&columns=ID,last_modified')
+
+        content = self._intf._exec('/REST/subjects?format=csv&columns=ID,last_modified')
+        server_version = JsonTable(csv_to_json(content)).select(['ID', 'last_modified'])
+        server_version.order_by = ['ID', 'last_modified']
+#        self._intf._conn.cache.delete(url)
+
+        return [diff[0] \
+                for diff in set(self._db.execute("SELECT subject_id, last_modified from subjects").fetchall()
+                               ).symmetric_difference(server_version.items())
+                ]
+        
     def sync(self, data='all'):
+        url = join_uri(self._intf._server, '/REST/subjects?format=csv&columns=ID,last_modified')
 
-#            find_subj = re.findall('(?<=/subjects/).*?(?=/|$)', uri)
-#            if find_subj != []:
-#                print 'find subj %s'%find_subj[0]
-#                subj_uri = join_uri(self._server, 
-#                                    '/REST/subjects?format=csv'
-#                                    '&columns=ID,last_modified'
-#                                    '&ID=%s'%find_subj[0]
-#                                    )
+        content = self._intf._exec('/REST/subjects?format=csv&columns=ID,last_modified')
+        server_version = JsonTable(csv_to_json(content)).select(['ID', 'last_modified'])
+        server_version.order_by = ['ID', 'last_modified']
+#        self._intf._conn.cache.delete(url)
 
-#                r, c = self._conn.request(subj_uri, method, body, headers)
-#                csv_to_json(c)[last_modified]
-#                self.cache.
-
+        not_diff = set(self._db.execute("SELECT subject_id, last_modified from subjects").fetchall()
+                      ).intersection(server_version.items())
 
         if 'files' in data:
             to_sync = ("SELECT uri FROM http "
@@ -458,15 +477,83 @@ class NewCacheManager(object):
             to_sync = "SELECT uri FROM http"
 
         for entry in self._db.execute(to_sync):
-            self._intf._exec(re.findall('/REST/.*', entry[0])[0])
+            if not any(subject[0] in entry[0] for subject in not_diff):    
+                self._intf._exec(re.findall('/REST/.*', entry[0])[0])
+
+        for subject in server_version:
+            subject_id = subject['ID']
+            last_modified = subject['last_modified']
+
+            entry = self._db.execute("SELECT 1 FROM subjects WHERE subject_id=?", (subject_id, )).fetchone()
+
+            if entry is None:
+                self._db.execute("INSERT INTO subjects VALUES (?, ?)", (subject_id, last_modified))
+            else:
+                self._db.execute("UPDATE subjects SET last_modified=? WHERE subject_id=?",
+                                 (last_modified, subject_id))
+
+        self._db.commit()
 
     def get(self, uri, column):
-        return self._db.execute("SELECT %s FROM http WHERE uri='uri'").fetchone()
+        return self._db.execute("SELECT %s FROM http WHERE uri=?"%column, (uri, )).fetchone()
 
     def entries(self):
         return [uri[0] for uri in self._db.execute("SELECT uri FROM http")]
 
-    def reload(self):
-        pass
+    def recover(self):
+        if os.path.exists(os.path.join(self._intf._cachedir, 'cache.db')):
+            os.remove(os.path.join(self._intf._cachedir, 'cache.db'))
+        if os.path.exists(os.path.join(self._intf._cachedir, 'cache.db-journal')):
+            os.remove(os.path.join(self._intf._cachedir, 'cache.db-journal'))
+        self._intf.cache = NewCacheManager(self._intf)
+
+        for header_path in glob.iglob(os.path.join(self._intf._cachedir, '*.headers')):
+            fd = open(header_path, 'rb')
+            header = fd.read()
+            fd.close()
+
+            content_size = os.path.getsize(header_path.split('.header')[0])
+            last_modified = re.findall('(?<=last-modified:\s).*?(?=\r\n|$)', header)
+            last_modified = '' if last_modified == [] else last_modified[0]
+            content_type = re.findall('(?<=content-type:\s).*?(?=\r\n|$)', header)[0]
+            content_location = re.findall('content-location:\shttp.?://.*?(?=\r\n.*?|$)', header)
+            content_location = '' if content_location == [] \
+                                  else content_location[0].split('/REST')[1].split('?')[0]
+
+            key = re.findall('(?<=content-location:\s).*\s*.*', header
+                            )[0].replace('\r', '').replace('\n', ''
+                               ).replace('\t', '')
+
+            access_nb = 1
+            last_access = time.time()
+            last_duration = 1
+            cost = (last_duration*content_size*access_nb*last_access)/(time.time())
+
+            self._db.execute("INSERT INTO http VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                             (key, content_size, content_type, content_location,
+                              last_modified, last_duration, last_access, access_nb, cost)
+                             )
+
+        url = join_uri(self._intf._server, '/REST/subjects?format=csv&columns=ID,last_modified')
+        content = self._intf._exec('/REST/subjects?format=csv&columns=ID,last_modified')
+        server_version = JsonTable(csv_to_json(content)).select(['ID', 'last_modified'])    
+
+        for subject in server_version:
+            subject_id = subject['ID']
+            last_modified = subject['last_modified']
+
+            entry = self._db.execute("SELECT 1 FROM subjects WHERE subject_id=?", (subject_id, )).fetchone()
+
+            if entry is None:
+                self._db.execute("INSERT INTO subjects VALUES (?, ?)", (subject_id, last_modified))
+            else:
+                self._db.execute("UPDATE subjects SET last_modified=? WHERE subject_id=?",
+                                 (last_modified, subject_id))
+
+        self._db.commit()
+
+
+#def savedb()
+
 
 

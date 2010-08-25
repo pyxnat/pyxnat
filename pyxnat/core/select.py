@@ -229,6 +229,12 @@ class Select(object):
         """
         return globals()['Projects']('/REST/projects', self._intf, id_filter)
 
+    def tag(self, name):
+        return self._intf.manage.tags.get(name).references()
+
+    def tags(self):
+        return self._intf.manage.tags()
+
     def __repr__(self):
         return '<Root Object>'
 
@@ -249,6 +255,12 @@ class Select(object):
                 has to be returned. Use the method `where` on the `Search` object
                 to trigger a search on the database.
         """
+        if datatype_or_path.startswith('/tag'):
+            if len(datatype_or_path.split('/')) == 3:
+                return self.tag(datatype_or_path.split('/')[-1])
+            else:
+                return self.tags()
+
         if datatype_or_path  in ['/', '//', '/REST']:
             return self
 

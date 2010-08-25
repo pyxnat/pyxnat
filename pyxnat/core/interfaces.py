@@ -9,9 +9,11 @@ from ..externals import httplib2
 
 from .select import Select
 from .cache import CacheManager, MultiCache, SQLCache, NewCacheManager
-from .search import SearchManager
+#from .search import SearchManager
+#from .tags import TagManager
 from .help import Inspector
-from .users import Users
+#from .users import Users
+from .manage import GlobalManager
 
 from .uriutil import join_uri
 from .jsonutil import csv_to_json
@@ -81,12 +83,15 @@ class Interface(object):
         self._jsession = 'authentication_by_credentials'
         self._connect()
 
-        self.search = SearchManager(self)
+
         self.inspect = Inspector(self)
         self.select = Select(self)
-        self.users = Users(self)
+#        self.users = Users(self)
+#        self.search = SearchManager(self)
 #        self.cache = CacheManager(self)
+        self.manage = GlobalManager(self)
         self.cache = NewCacheManager(self)
+
 
         if self._interactive:
             try:
@@ -111,6 +116,23 @@ class Interface(object):
             >>> interface.global_callback(notify)
         """
         self._callback = func
+
+    def set_default_mode(self):
+        self._mode = 'online'
+        self._memlifespan = 1.0
+
+    def set_strict_mode(self):
+        self._mode = 'online'
+        self._memlifespan = 0.0
+
+    def set_fast_mode(self):
+        self.cache.sync()
+        self._mode = 'offline'
+        self._memlifespan = 1.0
+
+    def set_offline_mode(self):
+        self._mode = 'offline'
+        self._memlifespan = 1.0
 
     def _connect(self):
         """ Sets up the connection with the XNAT server.
@@ -161,6 +183,20 @@ class Interface(object):
                 self._memcache[uri] = time.time()
                 response = None
             else:
+#                cached_value = self._conn.cache.get(uri)
+#                make_request = False
+#                if cached_value is not None:
+#                    subject_id = re.findall('(?<=subjects/).*?(?=/.*)', uri)
+#                    if subject_id != [] and subject_id[0] not in self.cache.diff():
+#                        info, content = cached_value.split('\r\n\r\n', 1)
+#                        self._memcache[uri] = time.time()
+#                        response = None
+#                    else:
+#                        make_request = True
+#                else:
+#                    make_request = True
+
+#                if make_request:
                 start = time.time()
                 response, content = self._conn.request(uri, method, body, headers)
                 self._conn.cache.durations[uri] = time.time() - start

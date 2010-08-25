@@ -52,6 +52,21 @@ def get_where(jdata, *args, **kwargs):
 
     return match
 
+def get_where_not(jdata, *args, **kwargs):
+    if isinstance(jdata, dict):
+        jdata = [jdata]
+
+    match = []
+
+    for entry in jdata:
+        match_args = all([arg in entry.keys() or arg in entry.values() for arg in args])
+        match_kwargs = all([entry[key] == kwargs[key] for key in kwargs.keys()])
+
+        if not match_args and not match_kwargs:
+            match.append(entry)
+
+    return match
+
 def get_headers(jdata):
     if isinstance(jdata, dict):
         jdata = [jdata]
@@ -140,6 +155,9 @@ class JsonTable(object):
     def where(self, *args, **kwargs):
         return self.__class__(get_where(self.data, *args, **kwargs), self.order_by)
 
+    def where_not(self, *args, **kwargs):
+        return self.__class__(get_where_not(self.data, *args, **kwargs), self.order_by)
+
     def select(self, columns):
         return self.__class__(get_selection(self.data, columns), self.order_by)
 
@@ -187,4 +205,22 @@ class JsonTable(object):
             table.append(row)
         
         return table
+
+    def items(self):
+        table = []
+    
+        for entry in self.data:
+            row = ()
+            for header in self.order_by:
+                if entry.has_key(header):
+                    row += (entry.get(header), )
+            for header in self.headers():
+                if header not in self.order_by:
+                    row += (entry.get(header), )
+            table.append(row)
+        
+        return table
+
+
+
 

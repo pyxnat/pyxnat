@@ -1,3 +1,5 @@
+import difflib
+
 from .jsonutil import JsonTable
 from .uriutil import uri_parent
 
@@ -45,28 +47,27 @@ class EAttrs(object):
         self._intf._exec(self._eobj._uri + query_str, 'PUT')
 
     def get(self, path):
-        query_str = '?columns=%s'%path
-
-#        if self._get_datatype() != None:
-#            query_str += '&%s/ID=%s'%(self._get_datatype(), self._get_id())
+        query_str = '?columns=ID,%s'%path
 
         get_uri = uri_parent(self._eobj._uri) + query_str
         jdata = JsonTable(self._intf._get_json(get_uri)).where(ID=self._get_id())
 
-        for header in jdata.headers():
-            if header not in ['ID', 'URI']:
-                return jdata.get(header).replace('\s', ' ')
+        # unfortunately the return headers do not always have the expected name
+        header = difflib.get_close_matches(path, jdata.headers())[0]
+        return jdata.get(header).replace('\s', ' ')
 
     def mget(self, paths):
-        query_str = '?columns='+','.join(paths)
-
-#        if self._get_datatype() != None:
-#            query_str += '&%s/ID=%s'%(self._get_datatype(), self._get_id())
+        query_str = '?columns=ID,'+','.join(paths)
 
         get_uri = uri_parent(self._eobj._uri) + query_str
         jdata = JsonTable(self._intf._get_json(get_uri)).where(ID=self._get_id())
 
-        return [jdata.get(header).replace('\s', ' ')
-                for header in jdata.headers()
-                if header not in ['ID', 'URI']
-                ]
+        results = []
+
+        # unfortunately the return headers do not always have the expected name
+        for path in paths:
+            header = difflib.get_close_matches(path, jdata.headers())[0]
+            results.append(jdata.get(header).replace('\s', ' '))
+                
+        return results
+

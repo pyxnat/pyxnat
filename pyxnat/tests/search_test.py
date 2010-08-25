@@ -26,16 +26,16 @@ def test_search():
     assert isinstance(results, jsonutil.JsonTable)
 
 def test_save_search():
-    central.search.save(search_name, 'xnat:mrSessionData', 
+    central.manage.search.save(search_name, 'xnat:mrSessionData', 
                         central.inspect.datatypes('xnat:mrSessionData'),
                         [('xnat:mrSessionData/SCANNER', 'LIKE', '*GE*'), 'AND'])
 
-    assert search_name in central.search.saved()
+    assert search_name in central.manage.search.saved()
 
 def test_get_search():
-    results = central.search.get(search_name)
+    results = central.manage.search.get(search_name)
     assert isinstance(results, jsonutil.JsonTable)
 
 def test_delete_search():
-    central.search.delete(search_name)
-    assert search_name not in central.search.saved()
+    central.manage.search.delete(search_name)
+    assert search_name not in central.manage.search.saved()

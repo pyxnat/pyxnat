@@ -17,10 +17,7 @@ from ..externals import simplejson as json
 from .uriutil import join_uri, translate_uri, uri_last, uri_nextlast, uri_parent, uri_grandparent
 from .jsonutil import JsonTable, get_selection
 from .attributes import EAttrs
-from .cache import MultiCache, CacheManager
 from .search import SearchManager, Search, build_search_document, rpn_contraints
-from .help import Inspector
-from .users import Users
 from . import schema
 
 DEBUG = False
@@ -249,7 +246,7 @@ class EObject(object):
     def get(self):
         return self._intf._exec(self._uri+'?format=xml', 'GET')
 
-    def children(self):
+    def children(self, show_names=True):
         """ Returns the children levels of this element.
 
             Examples
@@ -257,8 +254,12 @@ class EObject(object):
             >>> subject_object.children()
             ['experiments', 'resources']
         """
-        return schema.resources_tree.get(uri_nextlast(self._uri))
+        if show_names:
+            return schema.resources_tree.get(uri_nextlast(self._uri))
 
+        return CObject([getattr(self, child)()
+                        for child in schema.resources_tree.get(uri_nextlast(self._uri))], self._intf)
+             
     def absurl(self):
         """ Returns an absolute URL of the element resource, including the
             server address and the user login and password.
@@ -274,6 +275,20 @@ class EObject(object):
                                  self._intf._server.split('//')[1],
                                  self._uri
                                  )
+
+    def tag(self, name):
+        tag = self._intf.manage.tags.get(name)
+        if not tag.exists():
+            tag.create()
+
+        tag.reference(self._uri)
+        return tag
+
+    def untag(self, name):
+        tag = self._intf.manage.tags.get(name)
+        tag.dereference(self._uri)
+        if tag.references().get() == []:
+            tag.delete()
 
 
 class CObject(object):
@@ -533,6 +548,20 @@ class CObject(object):
             else:
                 return ret[0]
 
+    def tag(self, name):
+        tag = self._intf.manage.tags.get(name)
+        if not tag.exists():
+            tag.create()
+
+        tag.reference_many([eobj._uri for eobj in self])
+        return tag
+
+    def untag(self, name):
+        tag = self._intf.manage.tags.get(name)
+        tag.dereference_many([eobj._uri for eobj in self])
+        if tag.references().get() == []:
+            tag.delete()
+
     def where(self, constraints):
         """ Only the element objects whose subject that are matching the 
             constraints will be returned. It means that it is not possible to
@@ -611,7 +640,7 @@ class CObject(object):
 
 class Project(EObject):
     __metaclass__ = ElementType
-
+    
     def prearchive_code(self):
         """ Gets project prearchive code.
         """
@@ -743,7 +772,7 @@ class Project(EObject):
         self._intf._exec(join_uri(self._uri, 'users',
                                   self.user_role(login).title()+'s', login),
                          'DELETE')
-    
+
     def datatype(self):
         return 'xnat:ProjectData'
 
@@ -941,8 +970,8 @@ class File(EObject):
         """
         return self._getcell('Size')
 
-    def tags(self):
-        """ Gets the file tags.
+    def labels(self):
+        """ Gets the file labels.
         """
         return self._getcell('file_tags')
 
