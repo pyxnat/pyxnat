@@ -8,11 +8,8 @@ import getpass
 from ..externals import httplib2
 
 from .select import Select
-from .cache import CacheManager, MultiCache, SQLCache, NewCacheManager
-#from .search import SearchManager
-#from .tags import TagManager
+from .cache import CacheManager, SQLCache
 from .help import Inspector
-#from .users import Users
 from .manage import GlobalManager
 
 from .uriutil import join_uri
@@ -86,11 +83,8 @@ class Interface(object):
 
         self.inspect = Inspector(self)
         self.select = Select(self)
-#        self.users = Users(self)
-#        self.search = SearchManager(self)
-#        self.cache = CacheManager(self)
         self.manage = GlobalManager(self)
-        self.cache = NewCacheManager(self)
+        self.cache = CacheManager(self)
 
 
         if self._interactive:
@@ -140,8 +134,6 @@ class Interface(object):
 
         if DEBUG:   
             httplib2.debuglevel = 2
-#        self._conn = httplib2.Http()
-#        self._conn = httplib2.Http(MultiCache(self._cachedir, self))
         self._conn = httplib2.Http(SQLCache(self._cachedir, self))
         self._conn.add_credentials(self._user, self._pwd)
 
@@ -199,7 +191,7 @@ class Interface(object):
 #                if make_request:
                 start = time.time()
                 response, content = self._conn.request(uri, method, body, headers)
-                self._conn.cache.durations[uri] = time.time() - start
+                self._conn.cache.computation_times[uri] = time.time() - start
                 self._memcache[uri] = time.time()
 
         elif self._mode == 'offline' and method == 'GET':
@@ -215,7 +207,7 @@ class Interface(object):
                     start = time.time()
                     response, content = self._conn.request(uri, method, 
                                                            body, headers)
-                    self._conn.cache.durations[uri] = time.time() - start
+                    self._conn.cache.computation_times[uri] = time.time() - start
                     self._conn.timeout = None
                     self._memcache[uri] = time.time()
                 except Exception, e:
