@@ -98,7 +98,7 @@ class SQLCache(object):
             os.makedirs(self.cache)
 
         self._db = sqlite3.connect(os.path.join(self.cache, 'cache.db'), 
-                                   timeout=30.0,
+                                   timeout=10.0,
                                    isolation_level='EXCLUSIVE')
         self._db.text_factory = str
         self._db.execute('CREATE TABLE IF NOT EXISTS http '
@@ -476,7 +476,7 @@ class NewCacheManager(object):
         else:
             to_sync = "SELECT uri FROM http"
 
-        for entry in self._db.execute(to_sync):
+        for entry in self._db.execute(to_sync).fetchall():
             if not any(subject[0] in entry[0] for subject in not_diff):    
                 self._intf._exec(re.findall('/REST/.*', entry[0])[0])
 

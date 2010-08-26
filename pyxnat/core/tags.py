@@ -22,8 +22,12 @@ class Tags(object):
     def _init(self):
         if self._meta_project is None:
             self._meta_project = self._intf.select.project('metabase_%s'%self._intf._user)
+            if self._meta_project.accessibility() != 'private':
+                self._meta_project.set_accessibility('private')
         if not self._meta_project.exists():
             self._meta_project.create()
+            self._meta_project.set_accessibility('private')
+
 
     def new(self, name):
         return self.get(name).create()
