@@ -226,6 +226,16 @@ class Interface(object):
         if response is not None and response.has_key('set-cookie'):
             self._jsession = response.get('set-cookie')[:44]
 
+        if response is not None and response.get('status') == '404':
+            r,_ = self._conn.request(self._server)
+
+            if self._server.rstrip('/') != r.get('content-location').rstrip('/'):
+                old_server = self._server
+                self._server = r.get('content-location').rstrip('/')
+                return self._exec(uri.replace(old_server, ''), method, body)
+            else:
+                raise Exception('HTTP Error: %s'%response.get('status'))
+
         return content
 
     def _get_json(self, uri):

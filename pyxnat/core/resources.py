@@ -50,6 +50,72 @@ def get_collection_from_collection(rsc_name):
         return Collection(self, self._intf, id_filter, rsc_name, self._id_header, self._columns)
     return getter
 
+def get_extra_collection_from_element(level, parent_level):
+    def getter(self, id_filter='*'):
+
+        base_uri = '/REST/experiments'
+
+        if level == 'experiments':
+            listing_opts = []
+        elif level in ['scans', 'assessors', 'reconstructions']:
+            listing_opts = ['xnat:imagesessiondata/%s/%s/id'%(level, level.rstrip('s'))]
+
+        if parent_level == 'projects':
+            filtering_opts = ['project=%s'%self.id()]
+        elif parent_level == 'subjects':
+            filtering_opts = ['xnat:subjectData/ID=%s'%self.id()]
+
+        query = base_uri + '?format=csv'
+        if listing_opts != []:
+            query += '&columns=' + ','.join(listing_opts)
+        if filtering_opts != []:
+            query += '&' + '&'.join(filtering_opts)
+
+        jtable = JsonTable(self._intf._get_json(query), ['URI'] + listing_opts)
+
+        Collection = globals()[level.title()]
+
+        return Collection([join_uri(uri, '%s'%level, eid)
+                           for uri, eid in jtable.select(['URI'] + listing_opts).items()
+                           if eid != ''
+                           ], 
+                          self._intf, id_filter
+                          )
+    return getter
+
+def get_extra_collection_from_collection(level):
+    def getter(self, id_filter='*'):
+
+        base_uri = '/REST/experiments'
+
+        if level == 'experiments':
+            listing_opts = []
+        elif level in ['scans', 'assessors', 'reconstructions']:
+            listing_opts = ['xnat:imagesessiondata/%s/%s/id'%(level, level.rstrip('s'))]
+
+        if parent_level == 'projects':
+            filtering_opts = ['project=%s'%self.id()]
+        elif parent_level == 'subjects':
+            filtering_opts = ['xnat:subjectData/ID=%s'%self.id()]
+
+        query = base_uri + '?format=csv'
+        if listing_opts != []:
+            query += '&columns=' + ','.join(listing_opts)
+        if filtering_opts != []:
+            query += '&' + '&'.join(filtering_opts)
+
+        jtable = JsonTable(self._intf._get_json(query), ['URI'] + listing_opts)
+
+        Collection = globals()[level.title()]
+
+        return Collection([join_uri(uri, '%s'%level, eid)
+                           for uri, eid in jtable.select(['URI'] + listing_opts).items()
+                           if eid != ''
+                           ], 
+                          self._intf, id_filter
+                          )
+    return getter
+
 
 class ElementType(type):
     def __new__(cls, name, bases, dct):
@@ -60,6 +126,9 @@ class ElementType(type):
         for child_rsc in schema.resources_tree[rsc_name]:
             dct[child_rsc] = get_collection_from_element(child_rsc)
             dct[child_rsc.rstrip('s')] = get_element_from_element(child_rsc.rstrip('s'))
+
+        for child_rsc in schema.extra_resources_tree.get(rsc_name, []):
+            dct[child_rsc] = get_extra_collection_from_element(child_rsc, rsc_name)
 
         return type.__new__(cls, name, bases, dct)
 
@@ -775,6 +844,72 @@ class Project(EObject):
 
     def datatype(self):
         return 'xnat:ProjectData'
+
+#    def experiments(self, id_filter='*'):
+#        query = '/REST/experiments?project=%s'
+#        jtable = JsonTable(self._intf._get_json(query%self.id()))
+#        return Experiments(jtable.get('URI'), self._intf, id_filter)
+
+#    def scans(self, id_filter='*'):
+#        level = 'scan'
+
+#        uri = '/REST/experiments'
+#        listing_opts = ['xnat:imagesessiondata/%ss/%s/id'%(level, level)]
+#        filtering_opts = ['project=%s'%self.id()]
+
+#        query = uri + '?columns=' + ','.join(listing_opts) + '&' + '&'.join(filtering_opts)
+
+#        jtable = JsonTable(self._intf._get_json(query), ['URI'] + listing_opts)
+
+#        Collection = globals()[level.title()+'s']
+
+#        return Collection([join_uri(uri, '%ss'%level, eid)
+#                           for uri, eid in jtable.select(['URI'] + listing_opts).items()
+#                           if eid != ''
+#                           ], 
+#                          self._intf, id_filter
+#                          )
+#            
+#    def assessors(self, id_filter='*'):
+#        level = 'assessor'
+
+#        uri = '/REST/experiments'
+#        listing_opts = ['xnat:imagesessiondata/%ss/%s/id'%(level, level)]
+#        filtering_opts = ['project=%s'%self.id()]
+
+#        query = uri + '?columns=' + ','.join(listing_opts) + '&' + '&'.join(filtering_opts)
+
+#        jtable = JsonTable(self._intf._get_json(query), ['URI'] + listing_opts)
+
+#        Collection = globals()[level.title()+'s']
+
+#        return Collection([join_uri(uri, '%ss'%level, eid)
+#                           for uri, eid in jtable.select(['URI'] + listing_opts).items()
+#                           if eid != ''
+#                           ], 
+#                          self._intf, id_filter
+#                          )
+#            
+#    def reconstructions(self, id_filter='*'):
+#        level = 'reconstruction'
+
+#        uri = '/REST/experiments'
+#        listing_opts = ['xnat:imagesessiondata/%ss/%s/id'%(level, level)]
+#        filtering_opts = ['project=%s'%self.id()]
+
+#        query = uri + '?columns=' + ','.join(listing_opts) + '&' + '&'.join(filtering_opts)
+
+#        jtable = JsonTable(self._intf._get_json(query), ['URI'] + listing_opts)
+
+#        Collection = globals()[level.title()+'s']
+
+#        return Collection([join_uri(uri, '%ss'%level, eid)
+#                           for uri, eid in jtable.select(['URI'] + listing_opts).items()
+#                           if eid != ''
+#                           ], 
+#                          self._intf, id_filter
+#                          )
+            
 
 class Subject(EObject):
     __metaclass__ = ElementType
