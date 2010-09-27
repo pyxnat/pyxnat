@@ -16,7 +16,7 @@ def test_datafields():
                     central.inspect.datatypes('xnat:subjectData', '*')
 
 def test_fieldvalues():
-    assert len(central.inspect.fieldvalues('xnat:subjectData/SUBJECT_ID')) != 0
+    assert len(central.inspect.values.field('xnat:subjectData/SUBJECT_ID')) != 0
 
 def test_search():
     results = central.select('xnat:mrSessionData', 

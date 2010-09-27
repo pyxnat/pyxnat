@@ -14,11 +14,14 @@ from StringIO import StringIO
 from ..externals import httplib2
 from ..externals import simplejson as json
 
-from .uriutil import join_uri, translate_uri, uri_last, uri_nextlast, uri_parent, uri_grandparent
+from .uriutil import join_uri, translate_uri, uri_last, \
+                     uri_nextlast, uri_parent, uri_grandparent, uri_segment
 from .jsonutil import JsonTable, get_selection
 from .attributes import EAttrs
 from .search import SearchManager, Search, build_search_document, rpn_contraints
+from .errors import BaseXnatError
 from . import schema
+from . import sqlutil
 
 DEBUG = False
 
@@ -266,7 +269,6 @@ class EObject(object):
             EObject.id
             EObject.label
             EObject.datatype
-            Interface.inspect.naming_conventions
         """
         datatype = datatypes.get(uri_nextlast(self._uri))
 
@@ -391,7 +393,7 @@ class CObject(object):
             >>>     print subject
     """
     def __init__(self, cbase, interface, pattern='*', nested=None, 
-                                                    id_header='ID', columns=[]):
+                            id_header='ID', columns=[], filters={}):
 
         """ 
             Parameters
@@ -415,6 +417,7 @@ class CObject(object):
         self._id_header = id_header
         self._pattern = pattern
         self._columns = columns
+        self._filters = filters
         self._nested = nested
 
         if isinstance(cbase, (str, unicode)):
@@ -438,10 +441,29 @@ class CObject(object):
 
     def _call(self, columns):
         try:
+            uri = translate_uri(self._cbase)
             query_string = '?format=json&columns=%s'%','.join(columns)
-            return self._intf._get_json(translate_uri(self._cbase) + query_string)
+
+            for pattern in self._intf.inspect._nomenclature.keys():
+                if fnmatch(pattern, uri_segment(
+                    join_uri(uri,self._pattern).split('/REST')[1], -2)):
+                        self._filters.setdefault('xsiType', set()
+                           ).add(self._intf.inspect._nomenclature[pattern])
+
+            if self._filters != {}:
+                query_string += '&' + \
+                                '&'.join('%s=%s'%(item[0], item[1]) 
+                                         if isinstance(item[1], str) 
+                                         else '%s=%s'%(item[0], 
+                                                       ','.join([val for val in item[1]]))
+                                         for item in self._filters.items()
+                                         )
+
+            return self._intf._get_json(uri + query_string)
         except Exception, e:
-            if DEBUG:
+            if isinstance(e, BaseXnatError):
+                raise e
+            elif DEBUG:
                 raise e
             return []
 
@@ -843,12 +865,15 @@ class Project(EObject):
                          'DELETE')
 
     def datatype(self):
-        return 'xnat:ProjectData'
+        return 'xnat:projectData'
 
-#    def experiments(self, id_filter='*'):
-#        query = '/REST/experiments?project=%s'
-#        jtable = JsonTable(self._intf._get_json(query%self.id()))
-#        return Experiments(jtable.get('URI'), self._intf, id_filter)
+    def experiments(self, id_filter='*'):
+        return Experiments('/REST/experiments', 
+                           self._intf, id_filter, 
+                           filters={'project':self.id()})
+
+    def experiment(self, ID):
+        return Experiment('/REST/experiments/%s'%ID, self._intf)
 
 #    def scans(self, id_filter='*'):
 #        level = 'scan'
@@ -1013,11 +1038,12 @@ class File(EObject):
         if not self._absuri:
             self._absuri = self._getcell('URI')
 
-        content = self._intf._exec(self._absuri, 'GET')
-        return os.path.join(self._intf._conn.cache.cache, 
-                            self._intf._conn.cache.safe(self._intf._server + self._absuri))
+        self._intf._exec(self._absuri, 'GET')
+#        return os.path.join(self._intf._conn.cache.cache, 
+#                            self._intf._conn.cache.safe(self._intf._server + self._absuri))
+        return self._intf._conn.cache.basepath(self._intf._server + self._absuri)
 
-    def get_copy(self, dest=None):
+    def get_copy(self, dest=None, manage_it=False):
         """ Downloads the file to the cache directory but creates a copy at
             the specified location.
 
@@ -1040,9 +1066,13 @@ class File(EObject):
             
         if not os.path.exists(os.path.dirname(dest)):
             os.makedirs(os.path.dirname(dest))
-        
-        shutil.copy2(src, dest)
 
+        if manage_it:
+            self._intf._conn.cache.put_in_catalog(self._intf._server + self._absuri, dest, True)
+        else:
+            if src != dest:
+                shutil.copy2(src, dest)
+            
         return dest
 
     def put(self, src, format='U', content='U', tags='U', **datatypes):

@@ -4,6 +4,7 @@ from . import schema
 from .search import Search
 from .resources import CObject, Projects, Project
 from .uriutil import inv_translate_uri
+from .errors import PathSyntaxError
 
 DEBUG = False
 
@@ -129,7 +130,7 @@ def mtransform(paths):
                 tels.append(curr_el)
 
             else:
-                raise Exception('Invalid syntax: %s'%path)
+                raise PathSyntaxError(path)
 
         if not ignore_path:
             tpaths.append(''.join(tels))
@@ -156,7 +157,12 @@ def group_paths(paths):
                            for el in re.findall('/{1,2}.*?(?=/{1,2}|$)', alt_path) 
                            if el.strip('/') in schema.resources_types \
                            and el.strip('/') not in ['files', 'file']]
-                groups.setdefault(alt_rsc[-2]+alt_rsc[-1], set()).add(alt_path)
+
+                if alt_rsc[-1].strip('/') in ['files', 'file', 'resources', 'resource'] + \
+                                            schema.rest_translation.keys():
+                    groups.setdefault(alt_rsc[-2]+alt_rsc[-1], set()).add(alt_path)
+                else:
+                    groups.setdefault(alt_rsc[-1], set()).add(alt_path)
 
     return groups
 
@@ -169,12 +175,12 @@ def compute(path):
     try:
         groups = group_paths(mtransform([path]))
     except:
-        raise Exception('Invalid syntax: %s'%path)
-
+        raise PathSyntaxError(path)
     best = []
 
     for name in groups:
         lightest = (0, None)
+
         for path in groups[name]:
             score = len(path.split('/'))
 
@@ -295,7 +301,7 @@ class Select(object):
             except Exception, e:
                 if DEBUG:
                     print e
-                raise Exception('Invalid Syntax: %s'%datatype_or_path)            
+                raise PathSyntaxError(datatype_or_path)
 
         else:
             return Search(datatype_or_path, columns, self._intf)

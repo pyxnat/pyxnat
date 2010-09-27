@@ -7,12 +7,14 @@ import re
 import sqlite3
 import time
 import email
+import shutil
 from fnmatch import fnmatch
 from StringIO import StringIO
 
 from ..externals import simplejson as json
 from ..externals import httplib2
 
+from . import sqlutil
 from .jsonutil import JsonTable, csv_to_json
 from .uriutil import join_uri
 
@@ -41,28 +43,49 @@ class SQLCache(object):
         if not os.path.exists(cache): 
             os.makedirs(self.cache)
 
-        self._db = sqlite3.connect(os.path.join(self.cache, 'cache.db'), 
-                                   timeout=10.0)
+        self._db = sqlutil.init_db(os.path.join(self.cache, 'cache.db'), timeout=10.0)
+
+#        self._db = sqlite3.connect(os.path.join(self.cache, 'cache.db'), 
+#                                   timeout=10.0)
 #                                   isolation_level='EXCLUSIVE')
         self._db.text_factory = str
 
-        self._db.execute('CREATE TABLE IF NOT EXISTS Http '
-                         '('
-                         'uri TEXT PRIMARY KEY, type TEXT NOT NULL, '
-                         'size INTEGER NOT NULL, computation_time REAL NOT NULL, '
-                         'access_time REAL NOT NULL, cost REAL NOT NULL'
-                         ')'
-                         )
+        sqlutil.create_table(self._db, 'Http', 
+                             [('uri', 'TEXT PRIMARY KEY'),
+                              ('type', 'TEXT NOT NULL'),
+                              ('size', 'INTEGER NOT NULL'),
+                              ('computation_time', 'REAL NOT NULL'),
+                              ('access_time', 'REAL NOT NULL'),
+                              ('cost', 'REAL NOT NULL'),]
+                             )
 
-        self._db.execute('CREATE TABLE IF NOT EXISTS Subjects '
-                         '(subject_id TEXT PRIMARY KEY,'
-                         ' last_modified TEXT NOT NULL)'
-                         )
+#        self._db.execute('CREATE TABLE IF NOT EXISTS Http '
+#                         '('
+#                         'uri TEXT PRIMARY KEY, type TEXT NOT NULL, '
+#                         'size INTEGER NOT NULL, computation_time REAL NOT NULL, '
+#                         'access_time REAL NOT NULL, cost REAL NOT NULL'
+#                         ')'
+#                         )
 
-        self._db.execute('PRAGMA temp_store=MEMORY')
-        self._db.execute('PRAGMA synchronous=OFF')
-        self._db.execute('PRAGMA cache_size=1048576')
-        self._db.execute('PRAGMA count_changes=OFF')
+        sqlutil.create_table(self._db, 'Subjects',
+                             [('subject_id', 'TEXT PRIMARY KEY'),
+                              ('last_modified', 'TEXT NOT NULL'),]
+                             )
+
+#        self._db.execute('CREATE TABLE IF NOT EXISTS Subjects '
+#                         '(subject_id TEXT PRIMARY KEY,'
+#                         ' last_modified TEXT NOT NULL)'
+#                         )
+
+        sqlutil.create_table(self._db, 'Catalog',
+                             [('location', 'TEXT PRIMARY KEY'),
+                              ('uri', 'TEXT NOT NULL'),]
+                             )
+
+#        self._db.execute('PRAGMA temp_store=MEMORY')
+#        self._db.execute('PRAGMA synchronous=OFF')
+#        self._db.execute('PRAGMA cache_size=1048576')
+#        self._db.execute('PRAGMA count_changes=OFF')
 
         self._db.commit()
 
@@ -77,14 +100,6 @@ class SQLCache(object):
 
         content = value.read()
 
-        f = file(cachepath+'.headers', "wb")
-        f.write(header)
-        f.close()
-
-        f = file(cachepath, "wb")
-        f.write(content)
-        f.close()
-
         # headers extraction
         content_type = re.findall('(?<=content-type:\s).*?(?=\r\n|$)', header)[0]
 
@@ -96,7 +111,9 @@ class SQLCache(object):
             self._intf.cache.free_space(str(size - space_left)+'K')
 
         # get cache entry if it exists
-        entry = self._db.execute("SELECT * FROM Http WHERE uri=?", (key, )).fetchone()
+
+#        entry = self._db.execute("SELECT * FROM Http WHERE uri=?", (key, )).fetchone()
+        entry = sqlutil.get_one(self._db, 'Http', 'uri', key)
 
         if entry is None:
             access_time = self._intf._memcache.get(key, time.time())
@@ -104,10 +121,14 @@ class SQLCache(object):
             delta_t = time.time() - access_time
             alpha = 1 - computation_time
             cost = alpha*size + size
+            sqlutil.insert(self._db, 'Http', [key, content_type,
+                                              size, computation_time, 
+                                              access_time, cost]
+                           )
 
-            self._db.execute("INSERT INTO Http VALUES (?, ?, ?, ?, ?, ?)",
-                             (key, content_type, size, computation_time, access_time, cost)
-                             )
+#            self._db.execute("INSERT INTO Http VALUES (?, ?, ?, ?, ?, ?)",
+#                             (key, content_type, size, computation_time, access_time, cost)
+#                             )
         else:
             access_time = self._intf._memcache.get(key, entry[4])
             computation_time = self.computation_times.get(key, entry[3])
@@ -118,13 +139,31 @@ class SQLCache(object):
             cost = alpha*last_cost + size
 
             # larger is better
+            sqlutil.update(self._db, 'Http', 
+                           where_key='uri', 
+                           dict_items={'type':content_type,
+                                      'size':size,
+                                      'computation_time':computation_time,
+                                      'access_time':access_time,
+                                      'cost':cost,
+                                      'uri':key,
+                                      }
+                           )
 
-            self._db.execute("UPDATE Http "
-                             "SET type=?, size=?, computation_time=?, "
-                             "access_time=?, cost=? "
-                             "WHERE uri=?",
-                             (content_type, size, computation_time, access_time, cost, key)
-                             )
+#            self._db.execute("UPDATE Http "
+#                             "SET type=?, size=?, computation_time=?, "
+#                             "access_time=?, cost=? "
+#                             "WHERE uri=?",
+#                             (content_type, size, computation_time, access_time, cost, key)
+#                             )
+
+        f = file(cachepath+'.headers', "wb")
+        f.write(header)
+        f.close()
+
+        f = file(cachepath, "wb")
+        f.write(content)
+        f.close()
     
         self._db.commit()
 
@@ -135,6 +174,24 @@ class SQLCache(object):
             print 'size: %s'%size
             print 'cost: %s'%cost
 
+    def put_in_catalog(self, key, alternative_cachepath, delete_original=False):
+        sqlutil.insert_or_update(self._db, 'Catalog', 'location', 
+                                 [('location', alternative_cachepath),
+                                  ('uri', key)
+                                  ], 
+                                 commit=True
+                                )
+
+        original_path = os.path.join(self.cache, self.safe(key))
+
+        if self.basepath(key) != alternative_cachepath:
+            shutil.copy2(self.basepath(key), alternative_cachepath)
+
+        if delete_original and os.path.exists(original_path):
+            os.remove(original_path)
+            # update size to 0 or header size in Http Table
+            # add a size column to the catalog?
+
     def get(self, key):
         retval = None
         cachepath = os.path.join(self.cache, self.safe(key))
@@ -143,18 +200,50 @@ class SQLCache(object):
             f = file(cachepath+'.headers', "rb")
             retval = f.read()
             f.close()
+        except IOError:
+            return retval
 
+        try:
             f = file(cachepath, "rb")
             retval += f.read()
             f.close()
         except IOError:
-            pass
+            cachepath = self.basepath(key)
+
+            if cachepath != '':
+                f = file(cachepath, "rb")
+                retval += f.read()
+                f.close()
+            else:
+                retval = None
+
         return retval
+
+    def basepath(self, key):
+        cachepath = os.path.join(self.cache, self.safe(key))
+        if os.path.exists(cachepath):
+            return cachepath
+        else:
+            for path, in \
+                self._db.execute('SELECT location FROM Catalog WHERE uri=?', 
+                                                       (key, ) ).fetchall():
+                if os.path.exists(path):
+                    return path
+
+        return ''
 
     def delete(self, key):
         cachepath = os.path.join(self.cache, self.safe(key))
         
-        self._db.execute("DELETE FROM Http WHERE uri=?", (key, ))
+        try:
+            sqlutil.delete(self._db, 'Http', 'uri', key)
+#            self._db.execute("DELETE FROM Http WHERE uri=?", (key, ))
+        except Exception,e :
+#            print e
+#            self._db = sqlite3.connect(os.path.join(self.cache, 'cache.db'), 
+#                                       timeout=10.0)
+            self._db = sqlutil.init_db(os.path.join(self.cache, 'cache.db'), timeout=10.0)
+            return self.delete(key)
 
         if os.path.exists(cachepath+'.headers'):
             os.remove(cachepath+'.headers')
@@ -225,7 +314,7 @@ class CacheManager(object):
     def space_used(self):
         used = 0
 
-        for size in self._db.execute("SELECT size FROM Http"):
+        for size in self._db.execute("SELECT size FROM Http").fetchall():
             used += size[0]
 
         used += os.path.getsize(os.path.join(self._intf._cachedir, 'cache.db'))
@@ -305,7 +394,7 @@ class CacheManager(object):
         self._db.commit()
 
     def get(self, uri, column):
-        return self._db.execute("SELECT %s FROM Http WHERE uri=?"%column, (uri, )).fetchone()
+        return self._db.execute("SELECT %s FROM Http WHERE uri=?"%column, (uri, )).fetchone()[0]
 
     def entries(self):
         return [uri[0] for uri in self._db.execute("SELECT uri FROM Http")]
@@ -326,7 +415,6 @@ class CacheManager(object):
             fd.close()
 
             # extract headers info
-
             message = email.message_from_string(header)
             content_type = message.get('content-type')
             key = message.get('content-location')

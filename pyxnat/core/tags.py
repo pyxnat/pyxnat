@@ -28,7 +28,6 @@ class Tags(object):
             self._meta_project.create()
             self._meta_project.set_accessibility('private')
 
-
     def new(self, name):
         return self.get(name).create()
 
@@ -41,6 +40,7 @@ class Tags(object):
     def share(self, other_user):
         if self._intf.select.project('metabase_%s'%other_user).exists():
             self._meta_project.subject(self._intf._user).share('metabase_%s'%other_user)
+
 
 class Tag(object):
     def __init__(self, name, interface):
@@ -119,22 +119,5 @@ class Tag(object):
         if not show_uris:
             return CObject(uris, self._intf)
         return uris
-    
-"""
-
-interface.select('/projects/pouet/pouet...').tag('name')
-interface.select('/projects/pouet/pouet...').where(machin = truc).tag('name')
-
-interface.select.tag('name')
-interface.select.tags()
-interface.select('/tag/name')
-interface.select('/tags')
-
-interface.tags.add(name)
-interface.tags.add(name1/name2)
-interface.tags.remove(name)
-interface.tags()
-
-"""
 
 

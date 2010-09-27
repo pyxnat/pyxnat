@@ -4,17 +4,21 @@ import time
 import tempfile
 import email
 import getpass
+import hashlib
+import sqlite3
 
 from ..externals import httplib2
+from ..externals import simplejson as json
 
 from .select import Select
 from .cache import CacheManager, SQLCache
 from .help import Inspector
 from .manage import GlobalManager
-
+from .connection import ConnectionManager
 from .uriutil import join_uri
 from .jsonutil import csv_to_json
-
+from .errors import is_xnat_error, raise_exception, ResourceConcurrentAccessError
+from . import sqlutil
 
 DEBUG = False
 
@@ -32,18 +36,21 @@ class Interface(object):
         ----------
         _mode: online | offline
             Online or offline mode
-        _memlifespan: float
+        _memtimeout: float
             Lifespan of in-memory cache
     """
 
-    def __init__(self, server, user=None, password=None, 
-                                          cachedir=tempfile.gettempdir()):
+    def __init__(self, server_or_config=None, user=None, password=None, 
+                                              cachedir=tempfile.gettempdir()):
         """ 
             Parameters
             ----------
-            server: string
+            server_or_config: string | None
                 The server full URL (including port and XNAT instance name if necessary)
                 e.g. http://central.xnat.org, http://localhost:8080/xnat_db
+                Or a path to an existing config file. In that case the other
+                parameters (user etc..) are ignored if given.
+                If None the user will be prompted for it.
             user: string | None
                 A valid login registered through the XNAT web interface.
                 If None the user will be prompted for it.
@@ -55,11 +62,24 @@ class Interface(object):
                 If no path is provided, a platform dependent temp dir is used.
         """
 
+        if server_or_config is not None:
+            server = server_or_config
+            if os.path.exists(server_or_config):
+                fp = open(server_or_config, 'rb')
+                config = json.load(fp)
+                fp.close()
+                server = config['server']
+                user = config['user']
+                password = config['password']
+                cachedir = config['cachedir']
+        else:
+            server = raw_input('Server: ')
+
         self._server = server
         self._interactive = user is None or password is None
 
         if user is None:
-            user = raw_input('User:')
+            user = raw_input('User: ')
 
         if password is None:
             password = getpass.getpass()
@@ -71,27 +91,35 @@ class Interface(object):
                                       '%s@%s'%(self._user,
                                                self._server.split('//')[1].replace('/', '.')
                                                ))
+        
         self._callback = None
 
         self._memcache = {}
-        self._memlifespan = 1.0
+        self._memtimeout = 1.0
         self._mode = 'online'
+
+        self._last_memtimeout = 1.0
+        self._last_mode = 'online'
 
         self._jsession = 'authentication_by_credentials'
         self._connect()
-
+        self._setup_sqlites()
 
         self.inspect = Inspector(self)
         self.select = Select(self)
-        self.manage = GlobalManager(self)
         self.cache = CacheManager(self)
+        self.connection = ConnectionManager(self)
+        self.manage = GlobalManager(self)
 
 
         if self._interactive:
-            try:
-                self._jsession = self._exec('/REST/JSESSION')
-            except:
-                raise Exception('Wrong login or password.')
+            self._jsession = self._exec('/REST/JSESSION')
+            if is_xnat_error(self._jsession):
+                raise_exception(self._jsession)
+
+    def learn(self, project=None):
+        self.cache.sync()
+        self.inspect.datatypes.experiments(project)
 
     def global_callback(self, func=None):
         """ Defines a callback to execute when collections of resources are 
@@ -111,22 +139,48 @@ class Interface(object):
         """
         self._callback = func
 
-    def set_default_mode(self):
-        self._mode = 'online'
-        self._memlifespan = 1.0
+#    def set_default_mode(self):
+#        self._last_memtimeout = self._memtimeout
+#        self._last_mode = self._mode
+#        self._mode = 'online'
+#        self._memtimeout = 1.0
 
-    def set_strict_mode(self):
-        self._mode = 'online'
-        self._memlifespan = 0.0
+#    def set_strict_mode(self):
+#        self._last_memtimeout = self._memtimeout
+#        self._last_mode = self._mode
+#        self._mode = 'online'
+#        self._memtimeout = 0.0
 
-    def set_fast_mode(self):
-        self.cache.sync()
-        self._mode = 'offline'
-        self._memlifespan = 1.0
+#    def set_fast_mode(self):
+#        self.cache.sync()
+#        self._last_memtimeout = self._memtimeout
+#        self._last_mode = self._mode
+#        self._mode = 'offline'
+#        self._memtimeout = 1.0
 
-    def set_offline_mode(self):
-        self._mode = 'offline'
-        self._memlifespan = 1.0
+#    def set_offline_mode(self):
+#        self._last_memtimeout = self._memtimeout
+#        self._last_mode = self._mode
+#        self._mode = 'offline'
+#        self._memtimeout = 1.0
+
+#    def set_last_mode(self):
+#        _ = self._memtimeout
+#        __ = self._mode
+#        self._memtimeout = self._last_memtimeout
+#        self._mode = self._last_mode
+#        self._last_memtimeout = _
+#        self._last_mode = __
+
+    def _setup_sqlites(self):
+        self._lock = sqlutil.init_db(os.path.join(self._cachedir, 'lock.db'))
+
+        sqlutil.create_table(self._lock, 'Lock', 
+                             [('uri', 'TEXT PRIMARY KEY'), 
+                              ('pid', 'INTEGER NOT NULL'),
+                              ('date', 'REAL NOT NULL')],
+                             commit=True
+                            )
 
     def _connect(self):
         """ Sets up the connection with the XNAT server.
@@ -159,7 +213,17 @@ class Interface(object):
             headers = {}
 
         uri = join_uri(self._server, uri)
- 
+        try:
+            sqlutil.insert(self._lock, 'Lock', (uri, os.getpid(), time.time()), commit=True)
+        except Exception, e:
+            opid, date = self._lock.execute('SELECT pid, date FROM Lock '
+                                      'WHERE uri=?', (uri, )).fetchone()
+
+            if opid == os.getpid() or time.time() - date > 10:
+                sqlutil.delete(self._lock, 'Lock', 'uri', uri, commit=True)
+            else:
+                raise ResourceConcurrentAccessError(os.getpid(), opid, uri)
+
         # using session authentication
         headers['cookie'] = self._jsession
 
@@ -168,7 +232,7 @@ class Interface(object):
             self._memcache = {}
         
         if self._mode == 'online' and method == 'GET':
-            if time.time() - self._memcache.get(uri, 0) < self._memlifespan:
+            if time.time() - self._memcache.get(uri, 0) < self._memtimeout:
                 if DEBUG:
                     print 'send: GET CACHE %s'%uri
                 info, content = self._conn.cache.get(uri).split('\r\n\r\n', 1)
@@ -211,8 +275,7 @@ class Interface(object):
                     self._conn.timeout = None
                     self._memcache[uri] = time.time()
                 except Exception, e:
-                    raise Exception('Resource not available (it is not '
-                                    'in cache and the server is unresponsive)')
+                    raise_exception(e)
         else:
             response, content = self._conn.request(uri, method, body, headers)
 
@@ -234,9 +297,13 @@ class Interface(object):
                 self._server = r.get('content-location').rstrip('/')
                 return self._exec(uri.replace(old_server, ''), method, body)
             else:
-                raise Exception('HTTP Error: %s'%response.get('status'))
+#                raise_exception(response.get('status'))
+                raise httplib2.HttpLib2Error(response.get('status'))
+
+        sqlutil.delete(self._lock, 'Lock', 'uri', uri, commit=True)
 
         return content
+
 
     def _get_json(self, uri):
         """ Specific Interface._exec method to retrieve data.
@@ -262,9 +329,19 @@ class Interface(object):
 
         content = self._exec(uri, 'GET')
 
-        if content.startswith('<html>'):
-            raise Exception(content.split('<h3>')[1].split('</h3>')[0])
+        if is_xnat_error(content):
+            raise_exception(content)
 
         return csv_to_json(content)
 
+    def save_config(self, location):
+        fp = open(location, 'w')
+        config = {'server':self._server, 
+                  'user':self._user, 
+                  'password':self._conn.credentials.credentials[0][2],
+                  'cachedir':self._cachedir,
+                  }
+
+        json.dump(config, fp)
+        fp.close()
 

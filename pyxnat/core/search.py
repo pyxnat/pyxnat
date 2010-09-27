@@ -7,6 +7,8 @@ from StringIO import StringIO
 from lxml import etree
 from ..externals import simplejson as json
 from .jsonutil import JsonTable, get_column, get_where
+from .errors import is_xnat_error, raise_exception, RpnSyntaxError, \
+                    XnatSearchNotFoundError, SearchShareModeError
 
 search_nsmap = { 'xdat':'http://nrg.wustl.edu/security',
                  'xsi':'http://www.w3.org/2001/XMLSchema-instance' }
@@ -200,7 +202,7 @@ def rpn_contraints(rpn_exp):
                 right = left[:]
                 left = []
             else:
-                raise Exception('Invalid syntax: %s'%rpn_exp)
+                raise RpnSyntaxError(rpn_exp)
 
         else:
             triple.append(t)
@@ -261,7 +263,7 @@ class SearchManager(object):
         elif isinstance(sharing, list):
             users = sharing
         else:
-            raise Exception('Invalid search sharing mode: %s'%sharing)
+            raise SearchShareModeError(sharing)
 
         self._intf._exec('/REST/search/saved/%s?inbody=true'%name, 'PUT', 
                          build_search_document(row, columns, constraints, name, users))
@@ -280,8 +282,8 @@ class SearchManager(object):
         
         try:
             search_id = get_where(jdata, brief_description=name)[0]['id']
-        except:
-            raise Exception('No search saved under this name.')
+        except IndexError:
+            raise XnatSearchNotFoundError(name)
 
         content = self._intf._exec(
                   '/REST/search/saved/%s/results?format=csv'%search_id, 'GET')
@@ -298,8 +300,8 @@ class SearchManager(object):
         
         try:
             search_id = get_where(jdata, brief_description=name)[0]['id']
-        except:
-            raise Exception('No search saved under this name.')
+        except IndexError:
+            raise XnatSearchNotFoundError(name)
 
         self._intf._exec('/REST/search/saved/%s'%search_id, 'DELETE')
 
@@ -367,8 +369,8 @@ class Search(object):
         bundle = build_search_document(self._row, self._columns, constraints)        
         content = self._intf._exec("/REST/search?format=csv", 'POST', bundle)
 
-        if content.startswith('<html>'):
-            raise Exception(content.split('<h3>')[1].split('</h3>')[0])
+        if is_xnat_error(content):
+            raise_xnat_error(content)
 
         results = csv.reader(StringIO(content), delimiter=',', quotechar='"')
         headers = results.next()
@@ -385,12 +387,15 @@ class Search(object):
         # some headers of interest that are returned do not follow any 
         # conventions so we have to pick the most similar
         for missing_header in set(headers_of_interest).difference(headers):
-            headers_of_interest[headers_of_interest.index(missing_header)] = \
-                difflib.get_close_matches(missing_header, headers)[0]
+            try:
+                headers_of_interest[headers_of_interest.index(missing_header)] = \
+                    difflib.get_close_matches(missing_header, headers)[0]
+            except:
+                print ('Warning: returning results without %s because '
+                       'header was not found within:\n%s'%(missing_header, headers))
+                continue
 
         return JsonTable([dict(zip(headers, res)) for res in results], 
                          headers_of_interest).select(headers_of_interest)
-
-
 
 
