@@ -44,10 +44,6 @@ class SQLCache(object):
             os.makedirs(self.cache)
 
         self._db = sqlutil.init_db(os.path.join(self.cache, 'cache.db'), timeout=10.0)
-
-#        self._db = sqlite3.connect(os.path.join(self.cache, 'cache.db'), 
-#                                   timeout=10.0)
-#                                   isolation_level='EXCLUSIVE')
         self._db.text_factory = str
 
         sqlutil.create_table(self._db, 'Http', 
@@ -59,33 +55,15 @@ class SQLCache(object):
                               ('cost', 'REAL NOT NULL'),]
                              )
 
-#        self._db.execute('CREATE TABLE IF NOT EXISTS Http '
-#                         '('
-#                         'uri TEXT PRIMARY KEY, type TEXT NOT NULL, '
-#                         'size INTEGER NOT NULL, computation_time REAL NOT NULL, '
-#                         'access_time REAL NOT NULL, cost REAL NOT NULL'
-#                         ')'
-#                         )
-
         sqlutil.create_table(self._db, 'Subjects',
                              [('subject_id', 'TEXT PRIMARY KEY'),
                               ('last_modified', 'TEXT NOT NULL'),]
                              )
 
-#        self._db.execute('CREATE TABLE IF NOT EXISTS Subjects '
-#                         '(subject_id TEXT PRIMARY KEY,'
-#                         ' last_modified TEXT NOT NULL)'
-#                         )
-
         sqlutil.create_table(self._db, 'Catalog',
                              [('location', 'TEXT PRIMARY KEY'),
                               ('uri', 'TEXT NOT NULL'),]
                              )
-
-#        self._db.execute('PRAGMA temp_store=MEMORY')
-#        self._db.execute('PRAGMA synchronous=OFF')
-#        self._db.execute('PRAGMA cache_size=1048576')
-#        self._db.execute('PRAGMA count_changes=OFF')
 
         self._db.commit()
 
@@ -111,8 +89,6 @@ class SQLCache(object):
             self._intf.cache.free_space(str(size - space_left)+'K')
 
         # get cache entry if it exists
-
-#        entry = self._db.execute("SELECT * FROM Http WHERE uri=?", (key, )).fetchone()
         entry = sqlutil.get_one(self._db, 'Http', 'uri', key)
 
         if entry is None:
@@ -126,9 +102,6 @@ class SQLCache(object):
                                               access_time, cost]
                            )
 
-#            self._db.execute("INSERT INTO Http VALUES (?, ?, ?, ?, ?, ?)",
-#                             (key, content_type, size, computation_time, access_time, cost)
-#                             )
         else:
             access_time = self._intf._memcache.get(key, entry[4])
             computation_time = self.computation_times.get(key, entry[3])
@@ -149,13 +122,6 @@ class SQLCache(object):
                                       'uri':key,
                                       }
                            )
-
-#            self._db.execute("UPDATE Http "
-#                             "SET type=?, size=?, computation_time=?, "
-#                             "access_time=?, cost=? "
-#                             "WHERE uri=?",
-#                             (content_type, size, computation_time, access_time, cost, key)
-#                             )
 
         f = file(cachepath+'.headers', "wb")
         f.write(header)

@@ -111,7 +111,6 @@ class Interface(object):
         self.connection = ConnectionManager(self)
         self.manage = GlobalManager(self)
 
-
         if self._interactive:
             self._jsession = self._exec('/REST/JSESSION')
             if is_xnat_error(self._jsession):
@@ -138,39 +137,6 @@ class Interface(object):
             >>> interface.global_callback(notify)
         """
         self._callback = func
-
-#    def set_default_mode(self):
-#        self._last_memtimeout = self._memtimeout
-#        self._last_mode = self._mode
-#        self._mode = 'online'
-#        self._memtimeout = 1.0
-
-#    def set_strict_mode(self):
-#        self._last_memtimeout = self._memtimeout
-#        self._last_mode = self._mode
-#        self._mode = 'online'
-#        self._memtimeout = 0.0
-
-#    def set_fast_mode(self):
-#        self.cache.sync()
-#        self._last_memtimeout = self._memtimeout
-#        self._last_mode = self._mode
-#        self._mode = 'offline'
-#        self._memtimeout = 1.0
-
-#    def set_offline_mode(self):
-#        self._last_memtimeout = self._memtimeout
-#        self._last_mode = self._mode
-#        self._mode = 'offline'
-#        self._memtimeout = 1.0
-
-#    def set_last_mode(self):
-#        _ = self._memtimeout
-#        __ = self._mode
-#        self._memtimeout = self._last_memtimeout
-#        self._mode = self._last_mode
-#        self._last_memtimeout = _
-#        self._last_mode = __
 
     def _setup_sqlites(self):
         self._lock = sqlutil.init_db(os.path.join(self._cachedir, 'lock.db'))
@@ -292,13 +258,12 @@ class Interface(object):
         if response is not None and response.get('status') == '404':
             r,_ = self._conn.request(self._server)
 
-            if self._server.rstrip('/') != r.get('content-location').rstrip('/'):
+            if self._server.rstrip('/') != r.get('content-location', self._server).rstrip('/'):
                 old_server = self._server
                 self._server = r.get('content-location').rstrip('/')
                 return self._exec(uri.replace(old_server, ''), method, body)
             else:
-#                raise_exception(response.get('status'))
-                raise httplib2.HttpLib2Error(response.get('status'))
+                raise httplib2.HttpLib2Error('%s %s'%(response.status, response.reason))
 
         sqlutil.delete(self._lock, 'Lock', 'uri', uri, commit=True)
 

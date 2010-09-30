@@ -1,3 +1,5 @@
+import re
+
 from ..externals import httplib2
 
 def is_xnat_error(message):
@@ -15,6 +17,23 @@ def parse_error_message(message):
         error = message
 
     return error
+
+def parse_put_error_message(message):
+    if message.startswith('<html>'):
+        error = message.split('<h3>')[1].split('</h3>')[0]
+
+    required_fields = []
+
+    for line in error.split('\n'):
+        try:
+            datatype_name = re.findall("\'.*?\'",line)[0].strip('\'')
+            element_name = re.findall("\'.*?\'",line)[1].rsplit(':', 1)[1].strip('}\'')
+
+            required_fields.append((datatype_name, element_name))
+        except:
+            continue
+
+    return required_fields
 
 def raise_exception(message_or_exception):
     # handle errors returned by the xnat server

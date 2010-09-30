@@ -19,7 +19,7 @@ from .uriutil import join_uri, translate_uri, uri_last, \
 from .jsonutil import JsonTable, get_selection
 from .attributes import EAttrs
 from .search import SearchManager, Search, build_search_document, rpn_contraints
-from .errors import BaseXnatError
+from .errors import BaseXnatError, is_xnat_error, parse_put_error_message
 from . import schema
 from . import sqlutil
 
@@ -130,8 +130,8 @@ class ElementType(type):
             dct[child_rsc] = get_collection_from_element(child_rsc)
             dct[child_rsc.rstrip('s')] = get_element_from_element(child_rsc.rstrip('s'))
 
-        for child_rsc in schema.extra_resources_tree.get(rsc_name, []):
-            dct[child_rsc] = get_extra_collection_from_element(child_rsc, rsc_name)
+#        for child_rsc in schema.extra_resources_tree.get(rsc_name, []):
+#            dct[child_rsc] = get_extra_collection_from_element(child_rsc, rsc_name)
 
         return type.__new__(cls, name, bases, dct)
 
@@ -188,12 +188,28 @@ class EObject(object):
         p_uri = uri_parent(self._uri)
         id_head = schema.json[self._urt][0]
         lbl_head = schema.json[self._urt][1]
+        filters = {}
 
         columns = [col for col in cols
                    if col not in schema.json[self._urt] or col != 'URI'] \
                   + schema.json[self._urt]
 
         get_id = p_uri + '?format=json&columns=%s'%','.join(columns)
+
+        for pattern in self._intf.inspect._nomenclature.keys():
+            print uri_segment(self._uri.split('/REST')[1], -2), pattern
+            if fnmatch(uri_segment(self._uri.split('/REST')[1], -2), pattern):
+                filters.setdefault('xsiType', set()
+                    ).add(self._intf.inspect._nomenclature[pattern])
+
+        if filters != {}:
+            get_id += '&' + \
+                      '&'.join('%s=%s'%(item[0], item[1]) 
+                               if isinstance(item[1], str) 
+                               else '%s=%s'%(item[0], 
+                                             ','.join([val for val in item[1]]))
+                               for item in filters.items()
+                               )
 
         for res in self._intf._get_json(get_id):
             if self._urn in [res.get(id_head), res.get(lbl_head)]:
@@ -207,7 +223,7 @@ class EObject(object):
         """
         try:
             return self.id() != None
-        except:
+        except Exception, e:
             return False
 
     def id(self):
@@ -283,7 +299,8 @@ class EObject(object):
         if datatype is None:
             create_uri = self._uri
         else:
-            create_uri = self._uri + '?xsiType=%s' % datatype
+            create_uri = '%s?xsiType=%s&%s/ID=%s' % \
+                            (self._uri, datatype, datatype, uri_last(self._uri))
 
         parent_element = self._intf.select(uri_grandparent(self._uri))
 
@@ -296,7 +313,18 @@ class EObject(object):
 
         if DEBUG:
             print 'PUT', create_uri
-        self._intf._exec(create_uri, 'PUT')
+        output = self._intf._exec(create_uri, 'PUT')
+
+        if is_xnat_error(output):
+            paths = []
+            print output
+            for datatype_name, element_name in parse_put_error_message(output):
+                path = self._intf.inspect.schemas.look_for(element_name, datatype_name)
+                paths.extend(path)
+                if DEBUG:
+                    print path, 'is required'
+
+            return paths
 
         return self
 
@@ -445,6 +473,9 @@ class CObject(object):
             query_string = '?format=json&columns=%s'%','.join(columns)
 
             for pattern in self._intf.inspect._nomenclature.keys():
+                print pattern, uri_segment(join_uri(uri,self._pattern).split('/REST')[1], -2), \
+                      fnmatch(pattern, uri_segment(join_uri(uri,self._pattern).split('/REST')[1], -2))
+
                 if fnmatch(pattern, uri_segment(
                     join_uri(uri,self._pattern).split('/REST')[1], -2)):
                         self._filters.setdefault('xsiType', set()
@@ -458,6 +489,8 @@ class CObject(object):
                                                        ','.join([val for val in item[1]]))
                                          for item in self._filters.items()
                                          )
+
+            print self._filters
 
             return self._intf._get_json(uri + query_string)
         except Exception, e:
@@ -1039,8 +1072,7 @@ class File(EObject):
             self._absuri = self._getcell('URI')
 
         self._intf._exec(self._absuri, 'GET')
-#        return os.path.join(self._intf._conn.cache.cache, 
-#                            self._intf._conn.cache.safe(self._intf._server + self._absuri))
+
         return self._intf._conn.cache.basepath(self._intf._server + self._absuri)
 
     def get_copy(self, dest=None, manage_it=False):

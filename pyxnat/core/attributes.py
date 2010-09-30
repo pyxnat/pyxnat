@@ -36,7 +36,6 @@ class EAttrs(object):
         value = value.replace(' ', '\s')
         put_uri = self._eobj._uri+'?%s=%s'%(path, value)
 
-        print 'PUT', put_uri
         self._intf._exec(put_uri, 'PUT')
 
     def mset(self, dict_attrs):
@@ -46,7 +45,6 @@ class EAttrs(object):
         query_str = '?'+'&'.join(['%s=%s'%items for items in dict_attrs.items()])
         put_uri = self._eobj._uri + query_str
 
-        print 'PUT', put_uri
         self._intf._exec(self._eobj._uri + query_str, 'PUT')
 
     def get(self, path):

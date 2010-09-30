@@ -1,7 +1,7 @@
 from lxml import etree
 
 # REST collection resources tree
-resources_tree = {'projects':['experiments', 'subjects', 'resources'],
+resources_tree = {'projects':['subjects', 'experiments', 'resources'],
             'subjects':['experiments', 'resources'],
             'experiments':['assessors', 'reconstructions', 'scans', 
                            'resources'],
@@ -51,10 +51,10 @@ resources_types    = resources_singular + resources_plural
 
 default_datatypes = {'projects':'xnat:projectData',
                      'subjects':'xnat:subjectData',
-                     'experiments':'xnat:mrSessionData',
+                     'experiments':'xnat:imageSessionData',
                      'assessors':'xnat:imageAssessorData',
-                     'reconstructions':None,
-                     'scans':'xnat:mrScanData',
+                     'reconstructions':'xnat:reconstructedImageData',
+                     'scans':'xnat:imageScanData',
                      'resources':None,
                      'in_resources':None,
                      'out_resources':None,
