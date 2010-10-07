@@ -11,7 +11,7 @@ from ..externals import httplib2
 from ..externals import simplejson as json
 
 from .select import Select
-from .cache import CacheManager, SQLCache
+from .cache import CacheManager, SQLCache, Vault, CacheManager2
 from .help import Inspector
 from .manage import GlobalManager
 from .connection import ConnectionManager
@@ -103,11 +103,11 @@ class Interface(object):
 
         self._jsession = 'authentication_by_credentials'
         self._connect()
-        self._setup_sqlites()
+#        self._setup_sqlites()
 
         self.inspect = Inspector(self)
         self.select = Select(self)
-        self.cache = CacheManager(self)
+        self.cache = CacheManager2(self)
         self.connection = ConnectionManager(self)
         self.manage = GlobalManager(self)
 
@@ -138,15 +138,15 @@ class Interface(object):
         """
         self._callback = func
 
-    def _setup_sqlites(self):
-        self._lock = sqlutil.init_db(os.path.join(self._cachedir, 'lock.db'))
+#    def _setup_sqlites(self):
+#        self._lock = sqlutil.init_db(os.path.join(self._cachedir, 'lock.db'))
 
-        sqlutil.create_table(self._lock, 'Lock', 
-                             [('uri', 'TEXT PRIMARY KEY'), 
-                              ('pid', 'INTEGER NOT NULL'),
-                              ('date', 'REAL NOT NULL')],
-                             commit=True
-                            )
+#        sqlutil.create_table(self._lock, 'Lock', 
+#                             [('uri', 'TEXT PRIMARY KEY'), 
+#                              ('pid', 'INTEGER NOT NULL'),
+#                              ('date', 'REAL NOT NULL')],
+#                             commit=True
+#                            )
 
     def _connect(self):
         """ Sets up the connection with the XNAT server.
@@ -154,7 +154,7 @@ class Interface(object):
 
         if DEBUG:   
             httplib2.debuglevel = 2
-        self._conn = httplib2.Http(SQLCache(self._cachedir, self))
+        self._conn = httplib2.Http(Vault(self._cachedir, self))
         self._conn.add_credentials(self._user, self._pwd)
 
     def _exec(self, uri, method='GET', body=None, headers=None):
@@ -179,16 +179,16 @@ class Interface(object):
             headers = {}
 
         uri = join_uri(self._server, uri)
-        try:
-            sqlutil.insert(self._lock, 'Lock', (uri, os.getpid(), time.time()), commit=True)
-        except Exception, e:
-            opid, date = self._lock.execute('SELECT pid, date FROM Lock '
-                                      'WHERE uri=?', (uri, )).fetchone()
+#        try:
+#            sqlutil.insert(self._lock, 'Lock', (uri, os.getpid(), time.time()), commit=True)
+#        except Exception, e:
+#            opid, date = self._lock.execute('SELECT pid, date FROM Lock '
+#                                      'WHERE uri=?', (uri, )).fetchone()
 
-            if opid == os.getpid() or time.time() - date > 10:
-                sqlutil.delete(self._lock, 'Lock', 'uri', uri, commit=True)
-            else:
-                raise ResourceConcurrentAccessError(os.getpid(), opid, uri)
+#            if opid == os.getpid() or time.time() - date > 10:
+#                sqlutil.delete(self._lock, 'Lock', 'uri', uri, commit=True)
+#            else:
+#                raise ResourceConcurrentAccessError(os.getpid(), opid, uri)
 
         # using session authentication
         headers['cookie'] = self._jsession
@@ -221,7 +221,7 @@ class Interface(object):
 #                if make_request:
                 start = time.time()
                 response, content = self._conn.request(uri, method, body, headers)
-                self._conn.cache.computation_times[uri] = time.time() - start
+#                self._conn.cache.computation_times[uri] = time.time() - start
                 self._memcache[uri] = time.time()
 
         elif self._mode == 'offline' and method == 'GET':
@@ -237,7 +237,7 @@ class Interface(object):
                     start = time.time()
                     response, content = self._conn.request(uri, method, 
                                                            body, headers)
-                    self._conn.cache.computation_times[uri] = time.time() - start
+#                    self._conn.cache.computation_times[uri] = time.time() - start
                     self._conn.timeout = None
                     self._memcache[uri] = time.time()
                 except Exception, e:
@@ -265,7 +265,7 @@ class Interface(object):
             else:
                 raise httplib2.HttpLib2Error('%s %s'%(response.status, response.reason))
 
-        sqlutil.delete(self._lock, 'Lock', 'uri', uri, commit=True)
+#        sqlutil.delete(self._lock, 'Lock', 'uri', uri, commit=True)
 
         return content
 

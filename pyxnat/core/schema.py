@@ -1,7 +1,7 @@
 from lxml import etree
 
 # REST collection resources tree
-resources_tree = {'projects':['subjects', 'experiments', 'resources'],
+resources_tree = {'projects':['subjects', 'resources'],
             'subjects':['experiments', 'resources'],
             'experiments':['assessors', 'reconstructions', 'scans', 
                            'resources'],

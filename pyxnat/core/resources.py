@@ -13,6 +13,7 @@ from StringIO import StringIO
 
 from ..externals import httplib2
 from ..externals import simplejson as json
+from ..externals import lockfile
 
 from .uriutil import join_uri, translate_uri, uri_last, \
                      uri_nextlast, uri_parent, uri_grandparent, uri_segment
@@ -20,10 +21,11 @@ from .jsonutil import JsonTable, get_selection
 from .attributes import EAttrs
 from .search import SearchManager, Search, build_search_document, rpn_contraints
 from .errors import BaseXnatError, is_xnat_error, parse_put_error_message
+from . import cache
 from . import schema
 from . import sqlutil
 
-DEBUG = False
+DEBUG = True
 
 # metaclasses
 
@@ -489,8 +491,6 @@ class CObject(object):
                                                        ','.join([val for val in item[1]]))
                                          for item in self._filters.items()
                                          )
-
-            print self._filters
 
             return self._intf._get_json(uri + query_string)
         except Exception, e:
@@ -1040,6 +1040,27 @@ class File(EObject):
         EObject.__init__(self,  uri, interface)
         self._absuri = None        
 
+
+#    def __enter__(self):
+#        self.lock()
+#        return self
+
+#    def __exit__(self, errtype, value, traceback):
+#        self.unlock()
+
+    def lock(self):
+        if not self._absuri:
+            self._absuri = self._getcell('URI')
+
+        _headerpath = self._intf._conn.cache.get_default_diskpath(
+                        self._intf._server + self._absuri)+'.headers'
+
+        self.lock  = lockfile.FileLock(_headerpath)
+        self.lock.acquire()
+
+    def unlock(self):
+        self.lock.release()
+
     def attributes(self):
         """ Files attributes include:
                 - URI
@@ -1057,7 +1078,7 @@ class File(EObject):
         return self._getcells(['URI', 'Name', 'Size', 
                                'file_tags', 'file_format', 'file_content'])
 
-    def get(self):
+    def get(self, dest=None):
         """ Downloads the file to the cache directory.
 
             .. note::
@@ -1071,11 +1092,15 @@ class File(EObject):
         if not self._absuri:
             self._absuri = self._getcell('URI')
 
+
+        if dest is not None:
+            self._intf._conn.cache.preset(dest)
+
         self._intf._exec(self._absuri, 'GET')
 
-        return self._intf._conn.cache.basepath(self._intf._server + self._absuri)
+        return self._intf._conn.cache.get_diskpath(self._intf._server + self._absuri)
 
-    def get_copy(self, dest=None, manage_it=False):
+    def get_copy(self, dest=None):
         """ Downloads the file to the cache directory but creates a copy at
             the specified location.
 
@@ -1090,8 +1115,6 @@ class File(EObject):
             The location of the copy.
         """
 
-        src = self.get()
-
         if not dest:
             dest = os.path.join(self._intf._conn.cache.cache, 'workspace',
                                 *self._absuri.strip('/').split('/')[1:])
@@ -1100,10 +1123,12 @@ class File(EObject):
             os.makedirs(os.path.dirname(dest))
 
         if manage_it:
-            self._intf._conn.cache.put_in_catalog(self._intf._server + self._absuri, dest, True)
-        else:
-            if src != dest:
-                shutil.copy2(src, dest)
+            self._intf._conn.cache.preset(dest)
+
+        src = self.get()
+
+        if src != dest:
+            shutil.copy2(src, dest)
             
         return dest
 

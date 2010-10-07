@@ -10,8 +10,8 @@ from .jsonutil import JsonTable, get_column, get_where
 from .errors import is_xnat_error, raise_exception, RpnSyntaxError, \
                     XnatSearchNotFoundError, SearchShareModeError
 
-search_nsmap = { 'xdat':'http://nrg.wustl.edu/security',
-                 'xsi':'http://www.w3.org/2001/XMLSchema-instance' }
+search_nsmap = {'xdat':'http://nrg.wustl.edu/security',
+                'xsi':'http://www.w3.org/2001/XMLSchema-instance'}
 
 special_ops = {'*':'%',}
 
