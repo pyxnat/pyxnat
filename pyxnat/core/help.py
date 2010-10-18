@@ -280,6 +280,8 @@ class SchemasInspector(object):
         self._intf = interface
 
     def __call__(self):
+        self._intf.manage.schemas._init()
+
         for xsd in self._intf.manage.schemas.names():
             print '-'*40
             print xsd.upper()
@@ -298,6 +300,13 @@ class SchemasInspector(object):
 
     def look_for(self, element_name, datatype_name=None):
         paths = []
+        self._intf.manage.schemas._init()
+
+        if ':' in element_name:
+            for root in self._intf.manage.schemas._trees.values():
+                paths.extend(schema.datatype_attributes(root, element_name))
+            return paths
+
 
         for xsd in self._intf.manage.schemas.names(): 
             nsmap = self._intf.manage.schemas._trees[xsd].nsmap
@@ -308,19 +317,24 @@ class SchemasInspector(object):
                 datatypes = schema.datatypes(self._intf.manage.schemas._trees[xsd])
 
             for datatype in datatypes:
-                elements = self._intf.manage.schemas._trees[xsd].xpath(
-                    "/xs:schema/xs:complexType[@name='%s']//xs:element[@name='%s']"% \
-                        (datatype.split(':')[1], element_name), namespaces=nsmap )
+                for path in schema.datatype_attributes(self._intf.manage.schemas._trees[xsd], datatype):
+                    if element_name in path:
+                        paths.append(path)
 
-                attributes = self._intf.manage.schemas._trees[xsd].xpath(
-                    "/xs:schema/xs:complexType[@name='%s']//xs:attribute[@name='%s']"% \
-                        (datatype.split(':')[1], element_name), namespaces=nsmap )
+#                print datatype
+#                elements = self._intf.manage.schemas._trees[xsd].xpath(
+#                    "/xs:schema/xs:complexType[@name='%s']//xs:element[@name='%s']"% \
+#                        (datatype.split(':')[1], element_name), namespaces=nsmap )
 
-                for path in schema.datatype_attributes(
-                    self._intf.manage.schemas._trees[xsd], datatype):
-                        for m in elements + attributes:
-                            if path.endswith(m.get('name')):
-                                paths.append(path)
+#                attributes = self._intf.manage.schemas._trees[xsd].xpath(
+#                    "/xs:schema/xs:complexType[@name='%s']//xs:attribute[@name='%s']"% \
+#                        (datatype.split(':')[1], element_name), namespaces=nsmap )
+
+#                for path in schema.datatype_attributes(
+#                    self._intf.manage.schemas._trees[xsd], datatype):
+#                        for m in elements + attributes:
+#                            if path.endswith(m.get('name')):
+#                                paths.append(path)
 
         return paths
 

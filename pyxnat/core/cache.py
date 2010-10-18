@@ -692,6 +692,9 @@ class CacheManager2(object):
                     print entry
                     self._intf._exec(re.findall('/REST/.*', key)[0])
 
+    def entries(self):
+        return self._cache.index['index'].keys()
+
 
 def memstr_to_bytes(text):
     """ Convert a memory text to it's value in kilobytes.
