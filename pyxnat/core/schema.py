@@ -51,10 +51,10 @@ resources_types    = resources_singular + resources_plural
 
 default_datatypes = {'projects':'xnat:projectData',
                      'subjects':'xnat:subjectData',
-                     'experiments':'xnat:imageSessionData',
-                     'assessors':'xnat:imageAssessorData',
+                     'experiments':'xnat:mrSessionData',
+                     'assessors':'xnat:mrAssessorData',
                      'reconstructions':'xnat:reconstructedImageData',
-                     'scans':'xnat:imageScanData',
+                     'scans':'xnat:mrScanData',
                      'resources':None,
                      'in_resources':None,
                      'out_resources':None,

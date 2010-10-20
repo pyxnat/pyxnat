@@ -507,6 +507,7 @@ class Vault(object):
             _cachepath = os.path.join(self.cache, self.safe(key))
             if self.index['catalog'].has_key(key):
                 self.delete(key)
+#                del self.index['catalog'][key]
         else:
             _cachepath = self.cachepath
 
@@ -535,7 +536,8 @@ class Vault(object):
         space_left = self._intf.cache.space_left()
         space_used = self._intf.cache.space_used()
         if space_left / float(space_used + space_left)* 100 < 10:
-            print 'Warning: hard disk is %.2f%% full'%(space_used / float(space_used + space_left) *100)
+            print 'Warning: hard disk is %.2f%% full' % \
+                (space_used / float(space_used + space_left) *100)
 
 #        if space_left < size:
 #            self._intf.cache.free_space(str(size - space_left)+'K')

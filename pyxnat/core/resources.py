@@ -25,7 +25,7 @@ from . import cache
 from . import schema
 from . import sqlutil
 
-DEBUG = True
+DEBUG = False
 
 # metaclasses
 
@@ -494,9 +494,9 @@ class CObject(object):
 
             return self._intf._get_json(uri + query_string)
         except Exception, e:
-            if isinstance(e, BaseXnatError):
-                raise e
-            elif DEBUG:
+#            if isinstance(e, BaseXnatError):
+#                raise e
+            if DEBUG:
                 raise e
             return []
 
@@ -1121,9 +1121,6 @@ class File(EObject):
             
         if not os.path.exists(os.path.dirname(dest)):
             os.makedirs(os.path.dirname(dest))
-
-        if manage_it:
-            self._intf._conn.cache.preset(dest)
 
         src = self.get()
 

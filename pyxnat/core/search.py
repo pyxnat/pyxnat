@@ -375,27 +375,15 @@ class Search(object):
         results = csv.reader(StringIO(content), delimiter=',', quotechar='"')
         headers = results.next()
 
-        headers_of_interest = \
-            [column.split('/')[1].lower()
-             if column.split('/')[1].lower() in headers
-             else column.replace(':', '_').replace('/', '_').lower()
-             for column in self._columns
-            ]
+        headers_of_interest = []
 
-        fuzzy_headers = headers_of_interest[:]
-
-        # some headers of interest that are returned do not follow any 
-        # conventions so we have to pick the most similar
-        for missing_header in set(headers_of_interest).difference(headers):
-            try:
-                headers_of_interest[headers_of_interest.index(missing_header)] = \
-                    difflib.get_close_matches(missing_header, headers)[0]
-            except:
-                print ('Warning: returning results without %s because '
-                       'header was not found within:\n%s'%(missing_header, headers))
-                continue
+        for column in self._columns:
+            headers_of_interest.append(
+                difflib.get_close_matches(column.split(self._row+'/')[0].lower() or \
+                                          column.split(self._row+'/')[1].lower(), 
+                                          headers
+                                          )[0])
 
         return JsonTable([dict(zip(headers, res)) for res in results], 
                          headers_of_interest).select(headers_of_interest)
-
 
