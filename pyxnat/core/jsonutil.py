@@ -126,7 +126,7 @@ class JsonTable(object):
         return iter(self.data)
 
     def __getitem__(self, name):
-        if isinstance(name, (str, unicode)):
+        if isinstance(name, basestring):
             return self.get(name)
         elif isinstance(name, int):
             return self.__class__([self.data[name]], self.order_by)

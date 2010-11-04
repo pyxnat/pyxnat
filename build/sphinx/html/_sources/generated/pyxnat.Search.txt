@@ -1,6 +1,0 @@
-pyxnat.Search
-=============
-
-.. currentmodule:: pyxnat
-
-.. autoclass:: Search

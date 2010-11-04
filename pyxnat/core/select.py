@@ -304,5 +304,8 @@ class Select(object):
                 raise PathSyntaxError(datatype_or_path)
 
         else:
+            if columns == []:
+                columns = self._intf.inspect.datatypes(datatype_or_path)
+
             return Search(datatype_or_path, columns, self._intf)
 

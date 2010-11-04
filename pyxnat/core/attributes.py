@@ -1,5 +1,6 @@
 import re
 import difflib
+import urllib
 
 from .jsonutil import JsonTable
 from .uriutil import uri_parent
@@ -25,7 +26,7 @@ class EAttrs(object):
             self._datatype = self._eobj.datatype()
 
         return self._datatype
-
+    
     def _get_id(self):
         if self._id is None:
             self._id = self._eobj.id()
@@ -33,16 +34,15 @@ class EAttrs(object):
         return self._id
 
     def set(self, path, value):
-        value = value.replace(' ', '\s')
-        put_uri = self._eobj._uri+'?%s=%s'%(path, value)
+        put_uri = self._eobj._uri+'?%s=%s'%(urllib.quote(path), urllib.quote(value))
 
         self._intf._exec(put_uri, 'PUT')
 
     def mset(self, dict_attrs):
-        for path in dict_attrs:
-            dict_attrs[path] = dict_attrs[path].replace(' ', '\s')
+        query_str = '?'+'&'.join(['%s=%s'%(urllib.quote(path), urllib.quote(val)) 
+                                  for path, val in dict_attrs.items()]
+                                 )
 
-        query_str = '?'+'&'.join(['%s=%s'%items for items in dict_attrs.items()])
         put_uri = self._eobj._uri + query_str
 
         self._intf._exec(self._eobj._uri + query_str, 'PUT')

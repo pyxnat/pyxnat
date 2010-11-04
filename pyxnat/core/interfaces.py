@@ -6,12 +6,15 @@ import email
 import getpass
 import hashlib
 import sqlite3
+import urllib
+import difflib
 
 from ..externals import httplib2
 from ..externals import simplejson as json
 
 from .select import Select
-from .cache import CacheManager, SQLCache, Vault, CacheManager2
+from .resources import CObject
+from .cache import CacheManager, Vault
 from .help import Inspector
 from .manage import GlobalManager
 from .connection import ConnectionManager
@@ -19,6 +22,7 @@ from .uriutil import join_uri
 from .jsonutil import csv_to_json
 from .errors import is_xnat_error, raise_exception, ResourceConcurrentAccessError
 from . import sqlutil
+
 
 DEBUG = False
 
@@ -40,12 +44,12 @@ class Interface(object):
             Lifespan of in-memory cache
     """
 
-    def __init__(self, server_or_config=None, user=None, password=None, 
+    def __init__(self, server=None, user=None, password=None, 
                                               cachedir=tempfile.gettempdir()):
         """ 
             Parameters
             ----------
-            server_or_config: string | None
+            server: string | None
                 The server full URL (including port and XNAT instance name if necessary)
                 e.g. http://central.xnat.org, http://localhost:8080/xnat_db
                 Or a path to an existing config file. In that case the other
@@ -62,21 +66,12 @@ class Interface(object):
                 If no path is provided, a platform dependent temp dir is used.
         """
 
-        if server_or_config is not None:
-            server = server_or_config
-            if os.path.exists(server_or_config):
-                fp = open(server_or_config, 'rb')
-                config = json.load(fp)
-                fp.close()
-                server = config['server']
-                user = config['user']
-                password = config['password']
-                cachedir = config['cachedir']
-        else:
-            server = raw_input('Server: ')
+        self._interactive = not all([server, user, password])
 
-        self._server = server
-        self._interactive = user is None or password is None
+        if server is None:
+            self._server = raw_input('Server: ')
+        else:
+            self._server = server
 
         if user is None:
             user = raw_input('User: ')
@@ -103,11 +98,10 @@ class Interface(object):
 
         self._jsession = 'authentication_by_credentials'
         self._connect()
-#        self._setup_sqlites()
 
         self.inspect = Inspector(self)
         self.select = Select(self)
-        self.cache = CacheManager2(self)
+        self.cache = CacheManager(self)
         self.connection = ConnectionManager(self)
         self.manage = GlobalManager(self)
 
@@ -115,38 +109,6 @@ class Interface(object):
             self._jsession = self._exec('/REST/JSESSION')
             if is_xnat_error(self._jsession):
                 raise_exception(self._jsession)
-
-    def learn(self, project=None):
-        self.cache.sync()
-        self.inspect.datatypes.experiments(project)
-
-    def global_callback(self, func=None):
-        """ Defines a callback to execute when collections of resources are 
-            accessed.
-
-            Parameters
-            ----------
-            func: callable
-                A callable that takes the current collection object as first 
-                argument and the current element object as second argument.
-
-            Examples
-            --------
-            >>> def notify(cobj, eobj):
-            >>>    print eobj._uri
-            >>> interface.global_callback(notify)
-        """
-        self._callback = func
-
-#    def _setup_sqlites(self):
-#        self._lock = sqlutil.init_db(os.path.join(self._cachedir, 'lock.db'))
-
-#        sqlutil.create_table(self._lock, 'Lock', 
-#                             [('uri', 'TEXT PRIMARY KEY'), 
-#                              ('pid', 'INTEGER NOT NULL'),
-#                              ('date', 'REAL NOT NULL')],
-#                             commit=True
-#                            )
 
     def _connect(self):
         """ Sets up the connection with the XNAT server.
@@ -179,16 +141,6 @@ class Interface(object):
             headers = {}
 
         uri = join_uri(self._server, uri)
-#        try:
-#            sqlutil.insert(self._lock, 'Lock', (uri, os.getpid(), time.time()), commit=True)
-#        except Exception, e:
-#            opid, date = self._lock.execute('SELECT pid, date FROM Lock '
-#                                      'WHERE uri=?', (uri, )).fetchone()
-
-#            if opid == os.getpid() or time.time() - date > 10:
-#                sqlutil.delete(self._lock, 'Lock', 'uri', uri, commit=True)
-#            else:
-#                raise ResourceConcurrentAccessError(os.getpid(), opid, uri)
 
         # using session authentication
         headers['cookie'] = self._jsession
@@ -263,9 +215,7 @@ class Interface(object):
                 self._server = r.get('content-location').rstrip('/')
                 return self._exec(uri.replace(old_server, ''), method, body)
             else:
-                raise httplib2.HttpLib2Error('%s %s'%(response.status, response.reason))
-
-#        sqlutil.delete(self._lock, 'Lock', 'uri', uri, commit=True)
+                raise httplib2.HttpLib2Error('%s %s %s'%(uri, response.status, response.reason))
 
         return content
 
@@ -299,14 +249,87 @@ class Interface(object):
 
         return csv_to_json(content)
 
-    def save_config(self, location):
+    def save(self, location):
+        if not os.path.exists(os.path.dirname(location)):
+            os.makedirs(os.path.dirname(location))
+
         fp = open(location, 'w')
         config = {'server':self._server, 
                   'user':self._user, 
                   'password':self._conn.credentials.credentials[0][2],
-                  'cachedir':self._cachedir,
+                  'cachedir':re.findall('.*(?=/.*@.*?)', self._cachedir)[0],
                   }
 
         json.dump(config, fp)
         fp.close()
+
+    def load(location):
+
+        if os.path.exists(location):
+            fp = open(location, 'rb')
+            config = json.load(fp)
+            fp.close()
+            server = config['server']
+            user = config['user']
+            password = config['password']
+            cachedir = config['cachedir']
+
+            return Interface(server, user, password, cachedir or tempfile.gettempdir())
+
+    load = staticmethod(load) 
+
+    def learn(self, project=None):
+        self.cache.sync()
+        self.inspect.datatypes.experiments(project)
+
+
+    def grab(self, datatype, seq_type=None):
+        columns = []
+        if datatype.endswith('ScanData'):
+            columns = ['%s/%s'%(datatype, field) for field in ['type', 'ID', 'image_session_ID']]
+#        else:
+#            columns = ['%s/%s'%(datatype, field) for field in ['type', 'ID', 'session_id']]
+        try:
+            data = self.select(datatype, columns).all()
+        except:
+            data = self.select(datatype).all()
+
+        print data.headers()
+
+        uris = []
+
+
+        type_header = difflib.get_close_matches('type', data.headers())
+
+        if difflib.get_close_matches('id', data.headers()) == []:
+            session_header = difflib.get_close_matches('session_id', data.headers())[0]
+            subject_header = difflib.get_close_matches('subject_id', data.headers())[0]
+            project_header = difflib.get_close_matches('project', data.headers())[0]
+
+
+            print project_header, subject_header, session_header
+
+            for entry in data:
+                if seq_type is None or type_header == [] or entry[type_header[0]] == seq_type:
+
+                    uris.append('/REST/projects/%s'
+                                '/subjects/%s'
+                                '/experiments/%s' % \
+                                        (entry[project_header],
+                                         entry[subject_header],
+                                         entry[session_header])
+                                )
+
+        else:
+            id_header = difflib.get_close_matches('id', data.headers())[0]
+            session_header = difflib.get_close_matches('session_id', data.headers())[0]
+
+            for entry in data:
+                if seq_type is None or type_header == [] or entry[type_header[0]] == seq_type:
+                    uris.append('/REST/experiments/%s/scans/%s'%(entry[session_header], entry[id_header]))
+
+
+        return CObject(uris, self)
+
+
 

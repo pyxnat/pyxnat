@@ -37,7 +37,7 @@ def parse_put_error_message(message):
 
 def raise_exception(message_or_exception):
     # handle errors returned by the xnat server
-    if isinstance(message_or_exception, (str, unicode)):
+    if isinstance(message_or_exception, basestring):
         error = parse_error_message(message_or_exception)
     
         if error == 'The request requires user authentication':
@@ -50,9 +50,9 @@ def raise_exception(message_or_exception):
     # handle other errors, raised for instance by the http layer
     else:
         if isinstance(message_or_exception, httplib2.ServerNotFoundError):
-            raise XnatServerNotFoundError(message_or_exception.message)
+            raise XnatServerNotFoundError(str(message_or_exception))
         else:
-            raise BaseXnatError(message_or_exception.message)
+            raise BaseXnatError(str(message_or_exception))
 
 class BaseXnatError(Exception):
     def __init__(self, message):

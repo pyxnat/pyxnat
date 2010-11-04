@@ -116,7 +116,7 @@ def build_search_document(root_element_name, columns, criteria_set,
 def build_criteria_set(container_node, criteria_set):
 
     for criteria in criteria_set:
-        if isinstance(criteria, (str, unicode)):
+        if isinstance(criteria, basestring):
             container_node.set('method', criteria)
 
         if isinstance(criteria, (list)):
@@ -363,14 +363,14 @@ class Search(object):
                 An table-like object containing the results. It is basically a 
                 list of dictionaries that has additional helper methods.
         """
-        if isinstance(constraints, (str, unicode)):
+        if isinstance(constraints, basestring):
             constraints = rpn_contraints(constraints)
 
         bundle = build_search_document(self._row, self._columns, constraints)        
         content = self._intf._exec("/REST/search?format=csv", 'POST', bundle)
 
         if is_xnat_error(content):
-            raise_xnat_error(content)
+            raise_exception(content)
 
         results = csv.reader(StringIO(content), delimiter=',', quotechar='"')
         headers = results.next()
@@ -386,4 +386,8 @@ class Search(object):
 
         return JsonTable([dict(zip(headers, res)) for res in results], 
                          headers_of_interest).select(headers_of_interest)
+
+
+    def all(self):
+        return self.where([(self._row+'/ID', 'LIKE', '%'), 'AND'])
 

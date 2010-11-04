@@ -109,8 +109,29 @@ class DatatypesInspector(object):
         if project is not None:
             exps += '&project=%s'%project
 
-        return list(set(get_column(self._intf._get_json(exps), 'xsiType')))
+#        try:
+#            return list(set(get_column(self._intf._get_json(exps), 'xsiType')))
+#        except:
+        types = []
 
+        for exp_type in self._intf.inspect.datatypes():
+            print exp_type,
+
+            try:
+                out = self._intf._get_json('/REST/experiments?columns=ID,xsiType&xsiType=%s'%exp_type)
+            except:
+                print 'whut?'
+                continue
+            print 'alright'
+            types.append(exp_type)
+
+#            if not out.startswith('<html>'):
+#                types.append(exp_type)
+#                print 'ok'
+#            else:
+#                print 'nope'
+
+        return types
 
 class NamesInspector(object):
     """ Database introspection interface.
@@ -123,9 +144,9 @@ class NamesInspector(object):
             interface: Interface Object
         """
         self._intf = interface
+        self._type_groups = {}
 
     def __call__(self, project, datatype=None):
-        type_groups = {}
 
         if datatype is not None:
             datatypes = [datatype]
@@ -135,9 +156,12 @@ class NamesInspector(object):
         for exp_type in datatypes:
             for exp_name in self.experiments(exp_type, project):    
                 main_template = '/projects/%s/experiments/%s'%(project, exp_name)
-                type_groups[main_template] = exp_type
+                self._type_groups[main_template] = exp_type
 
-        for key in type_groups:
+#        for entry in set(glob.glob('*xsiType*')).difference(glob.glob('*xsiType*.headers')
+
+
+        for key in self._type_groups:
             ID = key.split('/')[-1]
             seps = ID
 
@@ -159,7 +183,7 @@ class NamesInspector(object):
             # write template
             template = '/'.join(key.split('/')[:-1] + ['?'.join(chunks)])
 
-            self._intf.inspect._nomenclature[template] = type_groups[key]
+            self._intf.inspect._nomenclature[template] = self._type_groups[key]
 
 #            self._intf.inspect._nomenclature.setdefault(
 #                                type_groups[key], set()).add(template)
@@ -169,7 +193,7 @@ class NamesInspector(object):
             [val
              for entry in \
              Search(datafield.split('/')[0], [datafield], self._intf
-                   ).where([('xnat:subjectData/SUBJECT_ID', 'LIKE', '%'), 'AND']
+                   ).where([(datafield.split('/')[0]+'/ID', 'LIKE', '%'), 'AND']
                    ).data
              for val in entry.values()
              ]))
@@ -275,6 +299,7 @@ class GraphDrawer(object):
 
         self._intf.connection.revert_strategy()
 
+
 class SchemasInspector(object):
     def __init__(self, interface):
         self._intf = interface
@@ -320,21 +345,6 @@ class SchemasInspector(object):
                 for path in schema.datatype_attributes(self._intf.manage.schemas._trees[xsd], datatype):
                     if element_name in path:
                         paths.append(path)
-
-#                print datatype
-#                elements = self._intf.manage.schemas._trees[xsd].xpath(
-#                    "/xs:schema/xs:complexType[@name='%s']//xs:element[@name='%s']"% \
-#                        (datatype.split(':')[1], element_name), namespaces=nsmap )
-
-#                attributes = self._intf.manage.schemas._trees[xsd].xpath(
-#                    "/xs:schema/xs:complexType[@name='%s']//xs:attribute[@name='%s']"% \
-#                        (datatype.split(':')[1], element_name), namespaces=nsmap )
-
-#                for path in schema.datatype_attributes(
-#                    self._intf.manage.schemas._trees[xsd], datatype):
-#                        for m in elements + attributes:
-#                            if path.endswith(m.get('name')):
-#                                paths.append(path)
 
         return paths
 

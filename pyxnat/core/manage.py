@@ -6,8 +6,8 @@ from .search import SearchManager
 from .users import Users
 from .resources import Project
 from .tags import Tags
-from .schema import datatypes, datatype_attributes
-
+from .schema import datatypes, datatype_attributes, resources_singular
+from .uriutil import join_uri
 
 class GlobalManager(object):
     def __init__(self, interface):
@@ -17,6 +17,24 @@ class GlobalManager(object):
         self.users = Users(self._intf)
         self.tags = Tags(self._intf)
         self.schemas = SchemaManager(self._intf)
+
+    def set_callback(self, func=None):
+        """ Defines a callback to execute when collections of resources are 
+            accessed.
+
+            Parameters
+            ----------
+            func: callable
+                A callable that takes the current collection object as first 
+                argument and the current element object as second argument.
+
+            Examples
+            --------
+            >>> def notify(cobj, eobj):
+            >>>    print eobj._uri
+            >>> interface.manage.set_callback(notify)
+        """
+        self._intf.callback = func
 
     def project(self, project_id):
         return ProjectManager(project_id, self._intf)
@@ -57,7 +75,11 @@ class SchemaManager(object):
                     self._trees[url.split('/')[-1]] = \
                         etree.fromstring(self._intf._exec(url))
 
-    def load(self, url):
+    def __call__(self):
+        self._init()
+        return self._trees.keys()
+
+    def add(self, url):
         """ Loads an additional schema.
 
             Parameters
@@ -68,14 +90,58 @@ class SchemaManager(object):
                      give schemas/xnat/xnat.xsd
         """
         self._init()
+        
+        if not re.match('/?schemas/.*/.*\.xsd', url):
+            if not 'schemas' in url and re.match('/?\w+/\w+[.]xsd', url):
+                url = join_uri('/schemas', url)
+
+            elif not re.match('^[^/].xsd', url):
+                url = '/schemas/%s/%s'%(url.split('.xsd')[0], url)
+            else:
+                raise NotImplementedError
+                
         self._trees[url.split('/')[-1]] = etree.fromstring(self._intf._exec(url))
 
-    def names(self):
-        self._init()
-        return self._trees.keys()
+    def remove(self, name):
+        if self._trees.has_key(name):
+            del self._trees[name]
 
-    def docs(self):
-        self._init()
-        return self._trees.values()
+#    def docs(self):
+#        self._init()
+#        return self._trees.values()
+
+
+#class LocalLayout(object):
+#    def __init__(self, interface):
+#        self._intf = interface
+
+#        self.root_dir = None
+#        self.templates = 
+
+#            ('/projects/%(project)s/subjects/%(subject)s'
+#             '/experiments/%(experiment)s/projects/%(project)s/'
+#        self._attrs = {}
+
+
+#    def set_root(self, root_dir):
+#        self.root_dir = root_dir
+
+#    def set_attr(self, key, method):
+#        if key not in resources_singular:
+#            raise Exception("Key error '%s': must be one of %s"%key, resources_singular)
+
+#        self._attrs[key] = method
+
+#    def transform(self, uri):
+#        obj = self._intf.select(uri)
+#        attrs = {}
+
+#        for key in self._attrs.keys()
+#            attrs[key] = getattr(obj, self._attrs[key])
+
+
+
+
+
 
 

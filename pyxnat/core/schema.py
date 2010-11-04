@@ -65,18 +65,18 @@ def datatype_attributes(root, datatype):
         elements = []
 
         for child in node.iterchildren():
-            if isinstance(child.tag, (str, unicode)) \
+            if isinstance(child.tag, basestring) \
                 and child.tag.split('}')[1] == 'element':
                     elements.append('%s/%s'%(pathsofar, child.get('name')))
                     elements.extend(_iterchildren(child, '%s/%s'%
                                         (pathsofar, child.get('name')))
                                     )
 
-            elif isinstance(child.tag, (str, unicode)) \
+            elif isinstance(child.tag, basestring) \
                 and child.tag.split('}')[1] == 'attribute':
                     elements.append('%s/%s'%(pathsofar, child.get('name')))
 
-            elif isinstance(child.tag, (str, unicode)) \
+            elif isinstance(child.tag, basestring) \
                 and child.tag.split('}')[1] == 'extension':
                     ct_xpath = "/xs:schema/xs:complexType[@name='%s']"% \
                                                 child.get('base').split(':')[1]

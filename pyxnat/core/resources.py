@@ -1,3 +1,5 @@
+from __future__ import with_statement
+
 import os
 import sys
 import shutil
@@ -8,6 +10,8 @@ import hashlib
 import email
 import csv
 import re
+import zipfile
+import time
 from fnmatch import fnmatch
 from StringIO import StringIO
 
@@ -207,7 +211,7 @@ class EObject(object):
         if filters != {}:
             get_id += '&' + \
                       '&'.join('%s=%s'%(item[0], item[1]) 
-                               if isinstance(item[1], str) 
+                               if isinstance(item[1], basestring) 
                                else '%s=%s'%(item[0], 
                                              ','.join([val for val in item[1]]))
                                for item in filters.items()
@@ -450,12 +454,12 @@ class CObject(object):
         self._filters = filters
         self._nested = nested
 
-        if isinstance(cbase, (str, unicode)):
+        if isinstance(cbase, basestring):
             self._ctype = 'cobjectcuri'
         elif isinstance(cbase, CObject):
             self._ctype = 'cobjectcobject'
         elif isinstance(cbase, list) and cbase != []:
-            if isinstance(cbase[0], (str, unicode)):
+            if isinstance(cbase[0], basestring):
                 self._ctype = 'cobjecteuris'
             if isinstance(cbase[0], EObject):
                 self._ctype = 'cobjecteobjects'
@@ -486,7 +490,7 @@ class CObject(object):
             if self._filters != {}:
                 query_string += '&' + \
                                 '&'.join('%s=%s'%(item[0], item[1]) 
-                                         if isinstance(item[1], str) 
+                                         if isinstance(item[1], basestring) 
                                          else '%s=%s'%(item[0], 
                                                        ','.join([val for val in item[1]]))
                                          for item in self._filters.items()
@@ -714,7 +718,7 @@ class CObject(object):
             --------
             search.Search()
         """
-        if isinstance(constraints, (str, unicode)):
+        if isinstance(constraints, basestring):
             constraints = rpn_contraints(constraints)
 
         bundle = build_search_document('xnat:subjectData', 
@@ -1017,6 +1021,43 @@ class Scan(EObject):
 class Resource(EObject):
     __metaclass__ = ElementType
 
+    def get(self, dest_dir, extract=False):
+        start = time.time()
+
+        zip_location = os.path.join(dest_dir, uri_last(self._uri)+'.zip')
+        if dest_dir is not None:
+            self._intf._conn.cache.preset(zip_location)
+
+        self._intf._exec(join_uri(self._uri, 'files')+'?format=zip')
+
+        if extract:
+            fzip = zipfile.ZipFile(zip_location, 'r')
+            members = [os.path.join(dest_dir, p) for p in fzip.namelist()]
+            fzip.extractall(path=dest_dir)
+            fzip.close()
+            # TODO: cache.delete(...)
+            os.remove(zip_location)
+
+        print time.time() - start
+
+        return zip_location if os.path.exists(zip_location) else members
+
+    def put(self, sources, **datatypes):
+        if not self.exists():
+            self.create(**datatypes)
+        
+        zip_location = tempfile.mkstemp(suffix='.zip')[1]
+
+        fzip = zipfile.ZipFile(zip_location, 'w')
+        for src in sources:
+            fzip.write(src)
+
+        fzip.close()
+
+        self.file(os.path.split(zip_location)[1]+'?extract=true').put(zip_location)
+        os.remove(zip_location)
+
+
 class In_Resource(Resource):
     __metaclass__ = ElementType
 
@@ -1089,6 +1130,8 @@ class File(EObject):
             The location of the file in the cache directory .
         """
 
+        start = time.time()
+
         if not self._absuri:
             self._absuri = self._getcell('URI')
 
@@ -1097,6 +1140,8 @@ class File(EObject):
             self._intf._conn.cache.preset(dest)
 
         self._intf._exec(self._absuri, 'GET')
+
+        print time.time() - start
 
         return self._intf._conn.cache.get_diskpath(self._intf._server + self._absuri)
 
