@@ -61,9 +61,12 @@ class Vault(object):
             start = time.time()
 
 #            print 'sync', 
-            lock  = lockfile.FileLock(self._index_path)
-            with lock:
-                try:
+
+            #FIXME: will raise an error an fail when timout, put a timer for every lock
+#            lock  = lockfile.FileLock(self._index_path, timeout=self.timer)
+#            with lock:
+            try:
+                if os.path.exists(self._index_path):
                     info = json.load(open(self._index_path, 'rb'))
 
                     for key in info['index'].keys():
@@ -76,8 +79,8 @@ class Vault(object):
                             or info['catalog'][key]['time'] > self.index['catalog'][key]['time']):
                                 self.index['catalog'][key] = info['catalog'][key]
 
-                except Exception,e:
-                    print e
+            except Exception,e:
+                print e
 
                 json.dump(self.index, open(self._index_path, 'w'))
 
@@ -94,16 +97,16 @@ class Vault(object):
         _headerpath = os.path.join(self.cache, self.safe(key))+'.headers'
 
         try:
-            lock  = lockfile.FileLock(_headerpath)
+#            lock  = lockfile.FileLock(_headerpath)
 
-            with lock:
-                f = file(_headerpath, "rb")
-                retval = f.read()
-                f.close()
+#            with lock:
+            f = file(_headerpath, "rb")
+            retval = f.read()
+            f.close()
 
-                f = file(_cachepath, "rb")
-                retval += f.read()
-                f.close()
+            f = file(_cachepath, "rb")
+            retval += f.read()
+            f.close()
         except IOError, e:
 #            print 'get cache', e
             if not self.check(key):
@@ -155,20 +158,20 @@ class Vault(object):
 #            self._intf.cache.free_space(str(size - space_left)+'K')
 
         # write actual data from the server
-        lock  = lockfile.FileLock(_headerpath)
+#        lock  = lockfile.FileLock(_headerpath)
 
-        with lock:
-            f = file(_headerpath, "wb")
-            f.write(header)
-            f.close()
+#        with lock:
+        f = file(_headerpath, "wb")
+        f.write(header)
+        f.close()
 
-            f = file(_cachepath, "wb")
-            f.write(content)
-            f.close()
+        f = file(_cachepath, "wb")
+        f.write(content)
+        f.close()
 
-            if _cachepath != os.path.join(self.cache, self.safe(key)) and \
-                os.path.exists(os.path.join(self.cache, self.safe(key))):
-                    os.remove(os.path.join(self.cache, self.safe(key)))
+        if _cachepath != os.path.join(self.cache, self.safe(key)) and \
+            os.path.exists(os.path.join(self.cache, self.safe(key))):
+                os.remove(os.path.join(self.cache, self.safe(key)))
 
         self.sync()
 
@@ -183,13 +186,13 @@ class Vault(object):
         if self.index['index'].has_key(key):
             del self.index['index'][key]
 
-        lock  = lockfile.FileLock(_headerpath)
+#        lock  = lockfile.FileLock(_headerpath)
 
-        with lock:
-            if os.path.exists(_headerpath):
-                os.remove(_headerpath)
-            if os.path.exists(_cachepath):
-                os.remove(_cachepath)
+#        with lock:
+        if os.path.exists(_headerpath):
+            os.remove(_headerpath)
+        if os.path.exists(_cachepath):
+            os.remove(_cachepath)
 
         self.sync(True)
 

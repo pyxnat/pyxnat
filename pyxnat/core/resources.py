@@ -44,7 +44,9 @@ def get_element_from_collection(rsc_name):
         Element = globals()[rsc_name.title()]
         Collection = globals()[rsc_name.title()+'s']
         return Collection([Element(join_uri(eobj._uri, rsc_name+'s', ID), self._intf)
-                           for eobj in self], self._intf)
+                           for eobj in self
+#                           if Element(join_uri(eobj._uri, rsc_name+'s', ID), self._intf).exists()
+                           ], self._intf)
     return getter
 
 def get_collection_from_element(rsc_name):
@@ -1089,18 +1091,18 @@ class File(EObject):
 #    def __exit__(self, errtype, value, traceback):
 #        self.unlock()
 
-    def lock(self):
-        if not self._absuri:
-            self._absuri = self._getcell('URI')
+#    def lock(self):
+#        if not self._absuri:
+#            self._absuri = self._getcell('URI')
 
-        _headerpath = self._intf._conn.cache.get_default_diskpath(
-                        self._intf._server + self._absuri)+'.headers'
+#        _headerpath = self._intf._conn.cache.get_default_diskpath(
+#                        self._intf._server + self._absuri)+'.headers'
 
-        self.lock  = lockfile.FileLock(_headerpath)
-        self.lock.acquire()
+#        self.lock  = lockfile.FileLock(_headerpath)
+#        self.lock.acquire()
 
-    def unlock(self):
-        self.lock.release()
+#    def unlock(self):
+#        self.lock.release()
 
     def attributes(self):
         """ Files attributes include:

@@ -2,7 +2,7 @@ import re
 
 from . import schema
 from .search import Search
-from .resources import CObject, Projects, Project
+from .resources import CObject, EObject, Projects, Project
 from .uriutil import inv_translate_uri
 from .errors import PathSyntaxError
 
@@ -275,7 +275,7 @@ class Select(object):
 
         if datatype_or_path.startswith('/'):
             return_list = []
-
+            import time
             try:
                 for path in compute(datatype_or_path):
                     if DEBUG:
@@ -285,11 +285,28 @@ class Select(object):
 
                     obj = self
                     for resource, identifier in pairs:
+                        start = time.time()
+
                         if isinstance(obj, list):
                             obj = [getattr(sobj, resource)(identifier) 
                                    for sobj in obj]
                         else:
                             obj = getattr(obj, resource)(identifier)
+
+#                        if isinstance(obj, (list, CObject)):
+#                            print 'list', obj
+#                            obj = CObject(
+#                                [getattr(sobj, resource)(identifier) 
+#                                 for sobj in obj 
+#                                 if isinstance(getattr(sobj, resource)(identifier), CObject) \
+#                                 or getattr(sobj, resource)(identifier).exists()
+#                                ], self._intf)
+
+#                            print 'list', obj.get()
+#                        else:
+#                            print 'elmt', obj
+#                            obj = getattr(obj, resource)(identifier)
+#                            print 'elmt', obj
 
                     return_list.append(obj)
 

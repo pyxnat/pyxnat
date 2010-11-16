@@ -307,7 +307,7 @@ class SchemasInspector(object):
     def __call__(self):
         self._intf.manage.schemas._init()
 
-        for xsd in self._intf.manage.schemas.names():
+        for xsd in self._intf.manage.schemas():
             print '-'*40
             print xsd.upper()
             print '-'*40
@@ -333,7 +333,7 @@ class SchemasInspector(object):
             return paths
 
 
-        for xsd in self._intf.manage.schemas.names(): 
+        for xsd in self._intf.manage.schemas(): 
             nsmap = self._intf.manage.schemas._trees[xsd].nsmap
 
             if datatype_name is not None:

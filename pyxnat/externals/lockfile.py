@@ -153,7 +153,7 @@ class NotMyLock(UnlockError):
 
 class LockBase:
     """Base class for platform-specific lock classes."""
-    def __init__(self, path, threaded=True):
+    def __init__(self, path, threaded=True, timeout=None):
         """
         >>> lock = LockBase('somefile')
         >>> lock = LockBase('somefile', threaded=False)
@@ -162,6 +162,7 @@ class LockBase:
         self.lock_file = os.path.abspath(path) + ".lock"
         self.hostname = socket.gethostname()
         self.pid = os.getpid()
+        self.timeout = timeout
         if threaded:
             self.tname = "%x-" % (threading.current_thread().ident &
                                   0xffffffff)
@@ -232,6 +233,9 @@ class LinkFileLock(LockBase):
     """Lock access to a file using atomic property of link(2)."""
 
     def acquire(self, timeout=None):
+        if timeout is None and self.timeout is not None:
+            timeout = self.timeout
+
         try:
             open(self.unique_name, "wb").close()
         except IOError:
@@ -301,6 +305,9 @@ class MkdirFileLock(LockBase):
                                                       self.pid))
 
     def acquire(self, timeout=None):
+        if timeout is None and self.timeout is not None:
+            timeout = self.timeout
+
         end_time = time.time()
         if timeout is not None and timeout > 0:
             end_time += timeout
@@ -391,6 +398,9 @@ class SQLiteFileLock(LockBase):
             atexit.register(os.unlink, SQLiteFileLock.testdb)
 
     def acquire(self, timeout=None):
+        if timeout is None and self.timeout is not None:
+            timeout = self.timeout
+
         end_time = time.time()
         if timeout is not None and timeout > 0:
             end_time += timeout
