@@ -22,12 +22,14 @@ from ..externals import lockfile
 from .uriutil import join_uri, translate_uri, uri_last, \
                      uri_nextlast, uri_parent, uri_grandparent, uri_segment
 from .jsonutil import JsonTable, get_selection
+from .pathutil import find_files
 from .attributes import EAttrs
 from .search import SearchManager, Search, build_search_document, rpn_contraints
 from .errors import BaseXnatError, is_xnat_error, parse_put_error_message
 from . import cache
 from . import schema
 from . import sqlutil
+
 
 DEBUG = False
 
@@ -1024,41 +1026,73 @@ class Resource(EObject):
     __metaclass__ = ElementType
 
     def get(self, dest_dir, extract=False):
-        start = time.time()
-
         zip_location = os.path.join(dest_dir, uri_last(self._uri)+'.zip')
         if dest_dir is not None:
             self._intf._conn.cache.preset(zip_location)
 
         self._intf._exec(join_uri(self._uri, 'files')+'?format=zip')
 
-        if extract:
-            fzip = zipfile.ZipFile(zip_location, 'r')
-            members = [os.path.join(dest_dir, p) for p in fzip.namelist()]
-            fzip.extractall(path=dest_dir)
-            fzip.close()
-            # TODO: cache.delete(...)
-            os.remove(zip_location)
+        fzip = zipfile.ZipFile(zip_location, 'r')
+        fzip.extractall(path=dest_dir)
+        fzip.close()
+        members = []            
 
-        print time.time() - start
+        for member in fzip.namelist():
+            old_path = os.path.join(dest_dir, member)
+            new_path = os.path.join(
+                            dest_dir, 
+                            uri_last(self._uri), 
+                            member.split('files', 1)[1].split(os.sep, 2)[2])
+
+            if not os.path.exists(os.path.dirname(new_path)):
+                os.makedirs(os.path.dirname(new_path))
+            shutil.move(old_path, new_path)
+
+            members.append(new_path)
+
+        # TODO: cache.delete(...)
+        for extracted in fzip.namelist():
+            if os.path.exists(os.path.join(dest_dir, extracted.split(os.sep, 1)[0])):
+                shutil.rmtree(os.path.join(dest_dir, extracted.split(os.sep, 1)[0]))
+
+        os.remove(zip_location)
+
+        if not extract:
+            fzip = zipfile.ZipFile(zip_location, 'w')
+            arcprefix = os.path.commonprefix(members)
+            arcroot = os.path.join('/', os.path.split(arcprefix.rstrip('/'))[1])
+
+            for member in members:
+                fzip.write(member, os.path.join(arcroot, member.split(arcprefix)[1]))
+            fzip.close()
+
+            shutil.rmtree(os.path.join(dest_dir, uri_last(self._uri)))
 
         return zip_location if os.path.exists(zip_location) else members
 
     def put(self, sources, **datatypes):
-        if not self.exists():
-            self.create(**datatypes)
-        
         zip_location = tempfile.mkstemp(suffix='.zip')[1]
+        
+        arcprefix = os.path.commonprefix(sources)
+        arcroot = os.path.join('/', os.path.split(arcprefix.rstrip('/'))[1])
 
         fzip = zipfile.ZipFile(zip_location, 'w')
         for src in sources:
-            fzip.write(src)
+            fzip.write(src, os.path.join(arcroot, src.split(arcprefix)[1]))
 
         fzip.close()
 
-        self.file(os.path.split(zip_location)[1]+'?extract=true').put(zip_location)
+        self.put_zip(zip_location, **datatypes)
         os.remove(zip_location)
 
+    def put_zip(self, zip_location, **datatypes):
+        if not self.exists():
+            self.create(**datatypes)
+
+        self.file(os.path.split(zip_location)[1] + '?extract=true').put(zip_location)
+        
+    def put_dir(self, src_dir, **datatypes):
+        self.put(find_files(src_dir), **datatypes)
 
 class In_Resource(Resource):
     __metaclass__ = ElementType

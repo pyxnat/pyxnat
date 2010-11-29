@@ -33,7 +33,6 @@ import email.FeedParser
 import StringIO
 import gzip
 import zlib
-import httplib
 import urlparse
 import base64
 import os
@@ -41,6 +40,10 @@ import copy
 import calendar
 import time
 import random
+
+import httplib
+#from .. import httplib
+
 # remove depracated warning in python2.6
 try:
     from hashlib import sha1 as _sha, md5 as _md5
