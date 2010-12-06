@@ -1004,6 +1004,48 @@ class Experiment(EObject):
     def unshare(self, project):
         self._intf._exec(join_uri(self._uri, 'projects', project), 'DELETE')
 
+    def trigger_pipelines(self):
+        """ Triggers the AutoRun pipeline.
+        """
+        self._intf._exec(self._uri+'?triggerPipelines=true', 'PUT')
+
+    def fix_scan_types(self):
+        """ Populate empty scan TYPE attributes based on how similar 
+            scans were populated.
+        """
+        self._intf._exec(self._uri+'?fixScanTypes=true', 'PUT')
+
+    def pull_data_from_headers(self):
+        """ Pull DICOM header values into the session.
+        """
+        self._intf._exec(self._uri+'?pullDataFromHeaders=true', 'PUT')
+
+    def trigger(self, pipelines=True, fix_types=True, scan_headers=True):
+        """ Run several triggers in a single call.
+            
+            Parameters
+            ----------
+            pipelines: True | False
+                Same as trigger_pipelines.
+            fix_types: True | False
+                Same as fix_scan_types.
+            scan_headers: True | False
+                Same as pull_data_from headers.
+        """
+        if not all([not pipelines, not fix_types, not scan_headers]):
+            options = []
+            if pipelines:
+                options.append('triggerPipelines=true')
+            if fix_types:
+                options.append('fixScanTypes=true')
+            if scan_headers:
+                options.append('pullDataFromHeaders=true')
+
+            options = '?' + '&'.join(options)
+    
+            self._intf._exec(self._uri + options, 'PUT')
+
+
 class Assessor(EObject):
     __metaclass__ = ElementType
 

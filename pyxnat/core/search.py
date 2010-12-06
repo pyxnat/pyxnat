@@ -372,6 +372,8 @@ class Search(object):
         if is_xnat_error(content):
             raise_exception(content)
 
+        print content
+
         results = csv.reader(StringIO(content), delimiter=',', quotechar='"')
         headers = results.next()
 
