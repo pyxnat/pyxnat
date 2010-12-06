@@ -87,6 +87,10 @@ class SearchShareModeError(BasePyxnatError):
     def __init__(self, share_mode):
         raise Exception("Unknown mode '%s'"%share_mode)
 
+class SearchSyntaxError(BasePyxnatError):
+    def __init__(self, expression):
+        raise Exception("Invalid search syntax '%s'"%expression)
+
 class RpnSyntaxError(BasePyxnatError):
     def __init__(self, expression):
         BasePyxnatError.__init__(self, "Invalid syntax in '%s'"%expression)

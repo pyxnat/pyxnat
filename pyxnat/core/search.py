@@ -8,7 +8,8 @@ from lxml import etree
 from ..externals import simplejson as json
 from .jsonutil import JsonTable, get_column, get_where
 from .errors import is_xnat_error, raise_exception, RpnSyntaxError, \
-                    XnatSearchNotFoundError, SearchShareModeError
+                    XnatSearchNotFoundError, SearchShareModeError, \
+                    SearchSyntaxError
 
 search_nsmap = {'xdat':'http://nrg.wustl.edu/security',
                 'xsi':'http://www.w3.org/2001/XMLSchema-instance'}
@@ -129,6 +130,10 @@ def build_criteria_set(container_node, criteria_set):
                 build_criteria_set(sub_container_node, criteria))
 
         if isinstance(criteria, (tuple)):
+            if len(criteria) != 3:
+                raise SearchSyntaxError(
+                    '%s should be a 3-element tuple'%str(criteria))
+
             constraint_node = \
                 etree.Element( etree.QName(search_nsmap['xdat'], 'criteria'), 
                                nsmap=search_nsmap
@@ -371,8 +376,6 @@ class Search(object):
 
         if is_xnat_error(content):
             raise_exception(content)
-
-        print content
 
         results = csv.reader(StringIO(content), delimiter=',', quotechar='"')
         headers = results.next()
