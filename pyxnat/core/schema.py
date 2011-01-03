@@ -107,8 +107,20 @@ def datatype_attributes(root, datatype):
     return attributes
 
 def datatypes(root):
+    nsmap = get_nsmap(root)
+
     return [element.get('type')
                 for element in \
-                    root.xpath('/xs:schema/xs:element', namespaces=root.nsmap)
+                    root.xpath('/xs:schema/xs:element', namespaces=nsmap)
             ]
+
+def get_nsmap(node):
+    nsmap = node.nsmap
+    none_ns = node.nsmap.get(None)
+
+    if none_ns != None:
+        nsmap[none_ns.rsplit('/', 1)[1]] = none_ns
+        del nsmap[None]
+
+    return nsmap
 

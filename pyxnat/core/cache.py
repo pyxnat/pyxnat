@@ -36,7 +36,7 @@ def md5name(key):
     return '%s_%s'%(hashlib.md5(key).hexdigest(), key.split('/')[-1].replace('=', '.').replace('&', '_'))
 
 
-class Vault(object):
+class HCache(object):
     def __init__(self, cachedir, interface, safe=md5name, timer=30.0):
         self._intf = interface
 

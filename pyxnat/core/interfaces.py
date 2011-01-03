@@ -14,7 +14,7 @@ from ..externals import simplejson as json
 
 from .select import Select
 from .resources import CObject
-from .cache import CacheManager, Vault
+from .cache import CacheManager, HCache
 from .help import Inspector
 from .manage import GlobalManager
 from .connection import ConnectionManager
@@ -116,7 +116,7 @@ class Interface(object):
 
         if DEBUG:   
             httplib2.debuglevel = 2
-        self._conn = httplib2.Http(Vault(self._cachedir, self))
+        self._conn = httplib2.Http(HCache(self._cachedir, self))
         self._conn.add_credentials(self._user, self._pwd)
 
     def _exec(self, uri, method='GET', body=None, headers=None):

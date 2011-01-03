@@ -262,7 +262,7 @@ class EObject(object):
         """
         return self._getcell('xsiType')
 
-    def create(self, **datatypes):
+    def create(self, **params):
         """ Creates the element if it does not exists.
             Any non-existing ancestor will be created as well.
 
@@ -276,7 +276,7 @@ class EObject(object):
 
             Parameters
             ----------
-            datatypes: keywords or dict
+            params: keywords or dict
                 Specify the datatype of the element resource and of any ancestor
                 that may need to be created. The keywords correspond to the levels
                 in the REST hierarchy, i.e. Interface.inspect.rest_hierarchy()
@@ -296,7 +296,7 @@ class EObject(object):
             EObject.label
             EObject.datatype
         """
-        datatype = datatypes.get(uri_nextlast(self._uri))
+        datatype = params.get(uri_nextlast(self._uri))
 
         if datatype is None:
             for uri_pattern in self._intf.inspect._nomenclature.keys():
@@ -309,17 +309,32 @@ class EObject(object):
         if datatype is None:
             create_uri = self._uri
         else:
-            create_uri = '%s?xsiType=%s&%s/ID=%s' % \
-                            (self._uri, datatype, datatype, uri_last(self._uri))
+            local_params = \
+                [param for param in params
+                 if param not in schema.resources_types \
+                 and (param.startswith(datatype) or '/' not in param)]
+
+            create_uri = '%s?xsiType=%s'%(self._uri, datatype)
+
+            if 'ID' not in local_params and '%s/ID'%datatype not in local_params:
+                create_uri += '&%s/ID=%s'%(datatype, uri_last(self._uri))
+
+            if local_params != []:
+                create_uri += '&'+'&'.join('%s=%s'%(key, params.get(key)) 
+                                            for key in local_params)
+
+            # avoid to reuse relative parameters
+            for key in local_params:
+                del params[key]
 
         parent_element = self._intf.select(uri_grandparent(self._uri))
 
         if not uri_nextlast(self._uri) == 'projects' \
         and not parent_element.exists():
-            parent_datatype = datatypes.get(uri_nextlast(parent_element._uri))
+            parent_datatype = params.get(uri_nextlast(parent_element._uri))
             if DEBUG:
                 print 'CREATE', parent_element, parent_datatype
-            parent_element.create(**datatypes)
+            parent_element.create(**params)
 
         if DEBUG:
             print 'PUT', create_uri
@@ -1158,27 +1173,6 @@ class File(EObject):
 
         EObject.__init__(self,  uri, interface)
         self._absuri = None        
-
-
-#    def __enter__(self):
-#        self.lock()
-#        return self
-
-#    def __exit__(self, errtype, value, traceback):
-#        self.unlock()
-
-#    def lock(self):
-#        if not self._absuri:
-#            self._absuri = self._getcell('URI')
-
-#        _headerpath = self._intf._conn.cache.get_default_diskpath(
-#                        self._intf._server + self._absuri)+'.headers'
-
-#        self.lock  = lockfile.FileLock(_headerpath)
-#        self.lock.acquire()
-
-#    def unlock(self):
-#        self.lock.release()
 
     def attributes(self):
         """ Files attributes include:
