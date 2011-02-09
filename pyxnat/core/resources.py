@@ -200,9 +200,9 @@ class EObject(object):
         lbl_head = schema.json[self._urt][1]
         filters = {}
 
-        columns = [col for col in cols
-                   if col not in schema.json[self._urt] or col != 'URI'] \
-                  + schema.json[self._urt]
+        columns = set([col for col in cols
+                        if col not in schema.json[self._urt] or col != 'URI'] \
+                        + schema.json[self._urt])
 
         get_id = p_uri + '?format=json&columns=%s'%','.join(columns)
 
@@ -228,7 +228,7 @@ class EObject(object):
                 else:
                     return get_selection(res, cols)[0]
 
-    def exists(self):
+    def exists(self, consistent=False):
         """ Test whether an element resource exists.
         """
         try:
@@ -930,6 +930,12 @@ class Project(EObject):
 
     def experiment(self, ID):
         return Experiment('/REST/experiments/%s'%ID, self._intf)
+
+    def timestamps(self):
+        uri = self._uri + '/subjects' + '?columns=last_modified'
+        return dict(JsonTable(self._intf._get_json(uri), 
+                              order_by=['ID', 'last_modified']
+                              ).select(['ID', 'last_modified']).items())
 
 #    def scans(self, id_filter='*'):
 #        level = 'scan'
