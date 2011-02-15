@@ -15,12 +15,14 @@ from ..externals import simplejson as json
 from .select import Select
 from .resources import CObject
 from .cache import CacheManager, HCache
-from .help import Inspector
+from .help import Inspector, GraphData, PaintGraph
 from .manage import GlobalManager
 from .connection import ConnectionManager
 from .uriutil import join_uri
 from .jsonutil import csv_to_json
-from .errors import is_xnat_error, raise_exception, ResourceConcurrentAccessError
+from .errors import is_xnat_error
+from .errors import raise_exception
+from .errors import ResourceConcurrentAccessError
 from . import sqlutil
 
 
@@ -44,14 +46,15 @@ class Interface(object):
             Lifespan of in-memory cache
     """
 
-    def __init__(self, server=None, user=None, password=None, 
-                                              cachedir=tempfile.gettempdir()):
+    def __init__(self, server=None, user=None, 
+                 password=None, cachedir=tempfile.gettempdir()):
         """ 
             Parameters
             ----------
             server: string | None
-                The server full URL (including port and XNAT instance name if necessary)
-                e.g. http://central.xnat.org, http://localhost:8080/xnat_db
+                The server full URL (including port and XNAT instance name
+                if necessary) e.g. http://central.xnat.org, 
+                http://localhost:8080/xnat_db
                 Or a path to an existing config file. In that case the other
                 parameters (user etc..) are ignored if given.
                 If None the user will be prompted for it.
@@ -62,8 +65,10 @@ class Interface(object):
                 The user's password.
                 If None the user will be prompted for it.
             cachedir: string
-                Path of the cache directory (for all queries and downloaded files)
-                If no path is provided, a platform dependent temp dir is used.
+                Path of the cache directory (for all queries and 
+                downloaded files)
+                If no path is provided, a platform dependent temp dir is 
+                used.
         """
 
         self._interactive = not all([server, user, password])
@@ -82,10 +87,12 @@ class Interface(object):
         self._user = user
         self._pwd = password
 
-        self._cachedir = os.path.join(cachedir, 
-                                      '%s@%s'%(self._user,
-                                               self._server.split('//')[1].replace('/', '.')
-                                               ))
+        self._cachedir = os.path.join(
+            cachedir, 
+            '%s@%s' % (self._user, 
+                       self._server.split('//')[1].replace('/', '.')
+                       )
+            )
         
         self._callback = None
 
@@ -104,6 +111,9 @@ class Interface(object):
         self.cache = CacheManager(self)
         self.connection = ConnectionManager(self)
         self.manage = GlobalManager(self)
+
+        self._get_graph = GraphData(self)
+        self.draw = PaintGraph(self)
 
         if self._interactive:
             self._jsession = self._exec('/REST/JSESSION')
@@ -144,15 +154,16 @@ class Interface(object):
 
         # using session authentication
         headers['cookie'] = self._jsession
+        headers['connection'] = 'keep-alive'
 
-        # reset the memcache when something is changed on the server
+        # reset the memcache when client changes something on the server
         if method in ['PUT', 'DELETE']:
             self._memcache = {}
         
         if self._mode == 'online' and method == 'GET':
             if time.time() - self._memcache.get(uri, 0) < self._memtimeout:
                 if DEBUG:
-                    print 'send: GET CACHE %s'%uri
+                    print 'send: GET CACHE %s' % uri
                 info, content = self._conn.cache.get(uri).split('\r\n\r\n', 1)
                 self._memcache[uri] = time.time()
                 response = None
@@ -172,7 +183,8 @@ class Interface(object):
 
 #                if make_request:
                 start = time.time()
-                response, content = self._conn.request(uri, method, body, headers)
+                response, content = self._conn.request(uri, method, 
+                                                       body, headers)
 #                self._conn.cache.computation_times[uri] = time.time() - start
                 self._memcache[uri] = time.time()
 
@@ -180,7 +192,7 @@ class Interface(object):
             cached_value = self._conn.cache.get(uri)
             if cached_value is not None:
                 if DEBUG:
-                    print 'send: GET CACHE %s'%uri
+                    print 'send: GET CACHE %s' % uri
                 info, content = cached_value.split('\r\n\r\n', 1)
                 response = None
             else:
@@ -195,14 +207,17 @@ class Interface(object):
                 except Exception, e:
                     raise_exception(e)
         else:
-            response, content = self._conn.request(uri, method, body, headers)
+            response, content = self._conn.request(uri, method, 
+                                                   body, headers)
 
         if DEBUG:
             if response is None:
                 response = httplib2.Response(email.message_from_string(info))
-                print 'reply: %s %s from cache'%(response.status, response.reason)
+                print 'reply: %s %s from cache' % (response.status, 
+                                                   response.reason
+                                                   )
                 for key in response.keys():
-                    print 'header: %s: %s'%(key.title(), response.get(key))
+                    print 'header: %s: %s' % (key.title(), response.get(key))
 
         if response is not None and response.has_key('set-cookie'):
             self._jsession = response.get('set-cookie')[:44]
@@ -210,20 +225,26 @@ class Interface(object):
         if response is not None and response.get('status') == '404':
             r,_ = self._conn.request(self._server)
 
-            if self._server.rstrip('/') != r.get('content-location', self._server).rstrip('/'):
+            if self._server.rstrip('/') != r.get('content-location', 
+                                                 self._server).rstrip('/'):
+                
                 old_server = self._server
                 self._server = r.get('content-location').rstrip('/')
                 return self._exec(uri.replace(old_server, ''), method, body)
             else:
-                raise httplib2.HttpLib2Error('%s %s %s'%(uri, response.status, response.reason))
+                raise httplib2.HttpLib2Error('%s %s %s' % (uri, 
+                                                           response.status,
+                                                           response.reason
+                                                           )
+                                             )
 
         return content
 
 
     def _get_json(self, uri):
         """ Specific Interface._exec method to retrieve data.
-            It forces the data format to csv and then puts it back to a json-like
-            format.
+            It forces the data format to csv and then puts it back to a 
+            json-like format.
             
             Parameters
             ----------
@@ -274,7 +295,8 @@ class Interface(object):
             password = config['password']
             cachedir = config['cachedir']
 
-            return Interface(server, user, password, cachedir or tempfile.gettempdir())
+            return Interface(server, user, password, \
+                                 cachedir or tempfile.gettempdir())
 
     load = staticmethod(load) 
 
@@ -286,7 +308,9 @@ class Interface(object):
     def grab(self, datatype, seq_type=None):
         columns = []
         if datatype.endswith('ScanData'):
-            columns = ['%s/%s'%(datatype, field) for field in ['type', 'ID', 'image_session_ID']]
+            columns = ['%s/%s' % (datatype, field)
+                       for field in ['type', 'ID', 'image_session_ID']
+                       ]
 #        else:
 #            columns = ['%s/%s'%(datatype, field) for field in ['type', 'ID', 'session_id']]
         try:
@@ -298,38 +322,51 @@ class Interface(object):
 
         uris = []
 
-
         type_header = difflib.get_close_matches('type', data.headers())
 
         if difflib.get_close_matches('id', data.headers()) == []:
-            session_header = difflib.get_close_matches('session_id', data.headers())[0]
-            subject_header = difflib.get_close_matches('subject_id', data.headers())[0]
-            project_header = difflib.get_close_matches('project', data.headers())[0]
+            session_header = difflib.get_close_matches('session_id', 
+                                                       data.headers())[0]
+
+            subject_header = difflib.get_close_matches('subject_id', 
+                                                       data.headers())[0]
+
+            project_header = difflib.get_close_matches('project', 
+                                                       data.headers())[0]
 
 
             print project_header, subject_header, session_header
 
             for entry in data:
-                if seq_type is None or type_header == [] or entry[type_header[0]] == seq_type:
+                if seq_type is None \
+                        or type_header == [] \
+                        or entry[type_header[0]] == seq_type:
 
                     uris.append('/REST/projects/%s'
                                 '/subjects/%s'
                                 '/experiments/%s' % \
-                                        (entry[project_header],
-                                         entry[subject_header],
-                                         entry[session_header])
+                                    (entry[project_header],
+                                     entry[subject_header],
+                                     entry[session_header]
+                                     )
                                 )
 
         else:
             id_header = difflib.get_close_matches('id', data.headers())[0]
-            session_header = difflib.get_close_matches('session_id', data.headers())[0]
+            session_header = difflib.get_close_matches('session_id', \
+                                                           data.headers())[0]
 
             for entry in data:
-                if seq_type is None or type_header == [] or entry[type_header[0]] == seq_type:
-                    uris.append('/REST/experiments/%s/scans/%s'%(entry[session_header], entry[id_header]))
-
+                if (seq_type is None 
+                    or type_header == []
+                    or entry[type_header[0]] == seq_type
+                    ):
+                    
+                    uris.append('/REST/experiments/%s/scans/%s' % \
+                                    (entry[session_header], 
+                                     entry[id_header]
+                                     )
+                                )
 
         return CObject(uris, self)
-
-
 

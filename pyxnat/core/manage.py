@@ -50,7 +50,8 @@ class ProjectManager(object):
         self.quarantine_code = project.quarantine_code
         self.set_quarantine_code = project.set_quarantine_code
         self.current_arc = project.current_arc
-        self.set_subfolder_in_current_arc = project.set_subfolder_in_current_arc
+        self.set_subfolder_in_current_arc = \
+            project.set_subfolder_in_current_arc
         self.accessibility = project.accessibility
         self.users = project.users
         self.owners = project.owners
@@ -100,7 +101,8 @@ class SchemaManager(object):
             else:
                 raise NotImplementedError
                 
-        self._trees[url.split('/')[-1]] = etree.fromstring(self._intf._exec(url))
+        self._trees[url.split('/')[-1]] = \
+            etree.fromstring(self._intf._exec(url))
 
     def remove(self, name):
         if self._trees.has_key(name):

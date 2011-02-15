@@ -18,7 +18,6 @@ from ..externals import simplejson as json
 from ..externals import httplib2
 from ..externals import lockfile
 
-from . import sqlutil
 from .jsonutil import JsonTable, csv_to_json
 from .uriutil import join_uri
 
@@ -34,6 +33,7 @@ def md5name(key):
         key += format[0].split('format')[1]
 
     return '%s_%s'%(hashlib.md5(key).hexdigest(), key.split('/')[-1].replace('=', '.').replace('&', '_'))
+
 
 
 class HCache(object):
