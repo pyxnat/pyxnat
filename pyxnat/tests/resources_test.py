@@ -57,12 +57,13 @@ def test_reconstruction_create():
 
 def test_multi_create():
     asse_2 = central.select('/projects/nosetests/subjects/%(sid)s'
-                              '/experiments/%(eid)s/assessors/%(aid)s'%_id_set2
-                              )
+                            '/experiments/%(eid)s'
+                            '/assessors/%(aid)s' % _id_set2
+                            )
 
     expe_2 = central.select('/projects/nosetests/subjects/%(sid)s'
-                              '/experiments/%(eid)s'%_id_set2
-                              )
+                            '/experiments/%(eid)s'%_id_set2
+                            )
 
     assert not asse_2.exists()
     asse_2.create(experiments='xnat:petSessionData',                
@@ -73,13 +74,14 @@ def test_multi_create():
     assert expe_2.datatype() == 'xnat:petSessionData'
 
     scan_2 = central.select('/projects/nosetests/subjects/%(sid)s'
-                              '/experiments/%(eid)s/scans/%(cid)s'%_id_set2
-                              ).create()
+                            '/experiments/%(eid)s/scans/%(cid)s' % _id_set2
+                            ).create()
 
     assert scan_2.datatype() == 'xnat:mrScanData'
 
 #def test_share_subject():
-#    assert not central.select('/projects/nosetests2/subjects/%(sid)s'%_id_set1
+#    assert not central.select('/projects/nosetests2'
+#                              '/subjects/%(sid)s' % _id_set1
 #                              ).exists()
 #    subj_1.share('nosetests2')
 #    assert central.select('/projects/nosetests2/subjects/%(sid)s'%_id_set1
@@ -138,13 +140,34 @@ def test_get_file():
     assert os.path.exists(fpath)
     assert open(fpath, 'rb').read() == 'Hello XNAT!\n'
 
-def test_get_copy_file():   
-    fpath = subj_1.resource('test').file('hello.txt').get_copy(os.path.join(tempfile.gettempdir(), uuid1().hex))
+    custom = os.path.join(tempfile.gettempdir(), uuid1().hex)
+    
+    subj_1.resource('test').file('hello.txt').get(custom)
+
+    assert os.path.exists(custom)
+    assert not os.path.exists(fpath)
+    subj_1.resource('test').file('hello.txt').get()
+    assert not os.path.exists(custom)
+    os.remove(fpath)
+
+def test_get_copy_file():
+    fpath = os.path.join(tempfile.gettempdir(), uuid1().hex)
+    fpath = subj_1.resource('test').file('hello.txt').get_copy(fpath)
     assert os.path.exists(fpath)
     fd = open(fpath, 'rb')
     assert fd.read() == 'Hello XNAT!\n'
     fd.close()
     os.remove(fpath)
+
+def test_timestamps():
+    sid = subj_1.id()
+
+    t1 = central.select('/project/nosetests').timestamps()[sid]
+    subj_1.attrs.set('age', '26')
+    assert subj_1.attrs.get('age') == '26'
+    t2 = central.select('/project/nosetests').timestamps()[sid]
+
+    assert t1 != t2
 
 def test_subject1_delete():
     assert subj_1.exists()
@@ -156,4 +179,14 @@ def test_subject2_delete():
     assert subj_2.exists()
     subj_2.delete()
     assert not subj_2.exists()
+
+def test_project_configuration():
+    project = central.select('/project/nosetests')
+    assert project.quarantine_code() == 0
+    assert project.prearchive_code() == 0
+    assert project.current_arc() == 'arc001'
+    assert 'nosetests' in project.users()
+    assert 'nosetests' in project.owners()
+    assert project.user_role('nosetests') == 'owner'
+    
 

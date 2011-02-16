@@ -45,4 +45,4 @@ __version__ = '0.7.0'
 
 from .core import Interface, SearchManager, Select, Inspector, Users
 from .core import attributes, cache, help, interfaces, jsonutil, resources, \
-                  schema, search, select, uriutil, users, sqlutil
+                  schema, search, select, uriutil, users

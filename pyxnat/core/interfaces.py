@@ -4,9 +4,6 @@ import time
 import tempfile
 import email
 import getpass
-import hashlib
-import sqlite3
-import urllib
 import difflib
 
 from ..externals import httplib2
@@ -22,9 +19,6 @@ from .uriutil import join_uri
 from .jsonutil import csv_to_json
 from .errors import is_xnat_error
 from .errors import raise_exception
-from .errors import ResourceConcurrentAccessError
-from . import sqlutil
-
 
 DEBUG = False
 
@@ -164,7 +158,10 @@ class Interface(object):
             if time.time() - self._memcache.get(uri, 0) < self._memtimeout:
                 if DEBUG:
                     print 'send: GET CACHE %s' % uri
-                info, content = self._conn.cache.get(uri).split('\r\n\r\n', 1)
+
+                info, content = self._conn.cache.get(uri
+                                                     ).split('\r\n\r\n', 1)
+
                 self._memcache[uri] = time.time()
                 response = None
             else:
@@ -198,7 +195,7 @@ class Interface(object):
             else:
                 try:
                     self._conn.timeout = 10
-                    start = time.time()
+
                     response, content = self._conn.request(uri, method, 
                                                            body, headers)
 #                    self._conn.cache.computation_times[uri] = time.time() - start
