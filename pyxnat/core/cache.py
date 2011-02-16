@@ -38,6 +38,28 @@ def md5name(key):
                       key.split('/')[-1].replace('=', '.').replace('&', '_')
                       )
 
+def bytes_to_human(size, unit):
+    if unit == 'mega':
+        return float(size) / 1024 ** 2
+    elif unit == 'giga':
+        return float(size) / 1024 ** 3
+    else:
+        return size
+
+def memstr_to_bytes(text):
+    """ Convert a memory text to it's value in kilobytes.
+    """
+    kilo = 1024**2
+    units = dict(K=1, M=kilo, G=kilo**2)
+    try:
+        size = int(units[text[-1]]*float(text[:-1]))
+    except (KeyError, ValueError):
+        raise ValueError(
+                "Invalid literal for size give: %s (type %s) should be "
+                "alike '10G', '500M', '50K'." % (text, type(text))
+                )
+    return size
+
 
 class HTCache(object):
     def __init__(self, cachedir, interface, safe=md5name):
@@ -119,12 +141,13 @@ class HTCache(object):
         header = ''
         value = StringIO(value)
 
-        # maybe include some kind of timer to avoid checking all the time
-        disk_status = self._intf.cache.disk_ready(_cachepath)
+        # avoid checking disk status each time
+        if time.gmtime(time.time())[5] % 10 == 0:
+            disk_status = self._intf.cache.disk_ready(_cachepath)
 
-        if not disk_status[0]:
-            print 'Warning: %s is %.2f%% full' % \
-                (os.path.dirname(_cachepath), disk_status[1])
+            if not disk_status[0]:
+                print 'Warning: %s is %.2f%% full' % \
+                    (os.path.dirname(_cachepath), disk_status[1])
 
         while len(header) < 4 or header[-4:] != '\r\n\r\n':
             header += value.read(1)
@@ -220,7 +243,10 @@ class CacheManager(object):
 
         return bytes_to_human(size, unit)
 
-    def available_disk(self, path, unit='bytes'):
+    def available_disk(self, path=None, unit='bytes'):
+        if path is None:
+            path = self._cache.cache
+
         if not os.path.isdir(path):
             path = os.path.dirname(path.rstrip('/'))
 
@@ -243,6 +269,9 @@ class CacheManager(object):
         return self.total_disk(path, unit) - self.available_disk(path, unit)
 
     def total_disk(self, path, unit='bytes'):
+        if path is None:
+            path = self._cache.cache
+
         if not os.path.isdir(path):
             path = os.path.dirname(path.rstrip('/'))
 
@@ -268,29 +297,4 @@ class CacheManager(object):
                        )
 
         return disk_ratio < ready_ratio, disk_ratio
-
-
-def bytes_to_human(size, unit):
-    if unit == 'mega':
-        return float(size) / 1024 ** 2
-    elif unit == 'giga':
-        return float(size) / 1024 ** 3
-    else:
-        return size
-
-def memstr_to_bytes(text):
-    """ Convert a memory text to it's value in kilobytes.
-    """
-    kilo = 1024**2
-    units = dict(K=1, M=kilo, G=kilo**2)
-    try:
-        size = int(units[text[-1]]*float(text[:-1]))
-    except (KeyError, ValueError):
-        raise ValueError(
-                "Invalid literal for size give: %s (type %s) should be "
-                "alike '10G', '500M', '50K'." % (text, type(text))
-                )
-    return size
-
-
 
