@@ -1,4 +1,3 @@
-from lxml import etree
 
 # REST collection resources tree
 resources_tree = {'projects':['subjects', 'resources'],
@@ -18,8 +17,8 @@ resources_tree = {'projects':['subjects', 'resources'],
 
 # REST resources that are not natively supported
 extra_resources_tree = {'projects':['assessors', 'scans', 'reconstructions'],
-            'subjects':['assessors', 'scans', 'reconstructions'],
-            }
+                        'subjects':['assessors', 'scans', 'reconstructions'],
+                        }
 
 # REST <Python to URI> translation table 
 rest_translation = {'in_resources':'in/resources',

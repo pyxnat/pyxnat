@@ -8,9 +8,6 @@ from ..externals import simplejson as json
 # jdata is a list of dicts
 
 def join_tables(join_column, jdata, *jtables):
-    index1 = {}
-    index2 = {}
-
     indexes = []
 
     for jtable in [jdata]+list(jtables):
@@ -35,7 +32,9 @@ def get_column(jdata, col, val_pattern='*'):
     if val_pattern == '*':
         return [entry[col] for entry in jdata if entry.has_key(col)]
     else:
-        return [entry[col] for entry in jdata if fnmatch(entry.get(col), val_pattern)]
+        return [entry[col] for entry in jdata 
+                if fnmatch(entry.get(col), val_pattern)
+                ]
 
 def get_where(jdata, *args, **kwargs):
     if isinstance(jdata, dict):
@@ -44,8 +43,13 @@ def get_where(jdata, *args, **kwargs):
     match = []
 
     for entry in jdata:
-        match_args = all([arg in entry.keys() or arg in entry.values() for arg in args])
-        match_kwargs = all([entry[key] == kwargs[key] for key in kwargs.keys()])
+        match_args = all([arg in entry.keys() or arg in entry.values() 
+                          for arg in args
+                          ])
+
+        match_kwargs = all([entry[key] == kwargs[key] 
+                            for key in kwargs.keys()
+                            ])
 
         if match_args and match_kwargs:
             match.append(entry)
@@ -59,8 +63,13 @@ def get_where_not(jdata, *args, **kwargs):
     match = []
 
     for entry in jdata:
-        match_args = all([arg in entry.keys() or arg in entry.values() for arg in args])
-        match_kwargs = all([entry[key] == kwargs[key] for key in kwargs.keys()])
+        match_args = all([arg in entry.keys() or arg in entry.values() 
+                          for arg in args
+                          ])
+
+        match_kwargs = all([entry[key] == kwargs[key] 
+                            for key in kwargs.keys()
+                            ])
 
         if not match_args and not match_kwargs:
             match.append(entry)
@@ -109,12 +118,12 @@ class JsonTable(object):
                 '------------\n'
                 '%s rows\n'
                 '%s columns\n'
-                '%s characters') %(str(self.data[0]), 
-                                   str(self.data[-1]),
-                                   len(self), 
-                                   len(self.headers()),
-                                   len(self.dumps_csv()) 
-                                   )
+                '%s characters') % (str(self.data[0]), 
+                                    str(self.data[-1]),
+                                    len(self), 
+                                    len(self.headers()),
+                                    len(self.dumps_csv()) 
+                                    )
 
     def __str__(self):
         return self.dumps_csv()
@@ -126,7 +135,7 @@ class JsonTable(object):
         return iter(self.data)
 
     def __getitem__(self, name):
-        if isinstance(name, basestring):
+        if isinstance(name, (str, unicode)):
             return self.get(name)
         elif isinstance(name, int):
             return self.__class__([self.data[name]], self.order_by)
@@ -137,9 +146,11 @@ class JsonTable(object):
         return self.__class__(self.data[i:j], self.order_by)
 
     def join(self, join_column, *jtables):
-        return self.__class__(join_tables(join_column, self.data, 
-                                          *[jtable.data for jtable in jtables]),
-                              self.order_by)
+        return self.__class__(
+            join_tables(join_column, self.data, 
+                        *[jtable.data for jtable in jtables]),
+            self.order_by
+            )
 
     def headers(self):
         return get_headers(self.data)
@@ -153,13 +164,19 @@ class JsonTable(object):
         return res
 
     def where(self, *args, **kwargs):
-        return self.__class__(get_where(self.data, *args, **kwargs), self.order_by)
+        return self.__class__(get_where(self.data, *args, **kwargs), 
+                              self.order_by
+                              )
 
     def where_not(self, *args, **kwargs):
-        return self.__class__(get_where_not(self.data, *args, **kwargs), self.order_by)
+        return self.__class__(get_where_not(self.data, *args, **kwargs), 
+                              self.order_by
+                              )
 
     def select(self, columns):
-        return self.__class__(get_selection(self.data, columns), self.order_by)
+        return self.__class__(get_selection(self.data, columns), 
+                              self.order_by
+                              )
 
     def dump_csv(self, dest, delimiter=','):
         fd = open(dest, 'w')
@@ -220,7 +237,4 @@ class JsonTable(object):
             table.append(row)
         
         return table
-
-
-
 

@@ -6,10 +6,13 @@ class ConnectionManager(object):
         """ Set the connection strategy.
 
             Possible values for the stategy are:
-                - default: always query the resources online and uses a 1 second memcache
-                - strict: always query the resources online without any memcache
-                - fast: only query the resources that are not in cache but performs a sync
-                        at the first connection to be up to date with the server
+                - default: always query the resources online and uses a 
+                1 second memcache
+                - strict: always query the resources online without 
+                any memcache
+                - fast: only query the resources that are not in cache 
+                but performs a sync at the first connection to be up to 
+                date with the server
                 - offline: only query the resources that are not in cache
         """
         if name == 'strict':
@@ -18,7 +21,6 @@ class ConnectionManager(object):
             self._intf._mode = 'online'
             self._intf._memtimeout = 0.0
         elif name == 'fast':
-            self._intf.cache.sync()
             self._intf._last_memtimeout = self._intf._memtimeout
             self._intf._last_mode = self._intf._mode
             self._intf._mode = 'offline'

@@ -6,20 +6,10 @@ import ctypes
 import glob
 import hashlib
 import re
-import sqlite3
 import time
-import email
 import shutil
-import atexit
-from fnmatch import fnmatch
 from StringIO import StringIO
 
-from ..externals import simplejson as json
-from ..externals import httplib2
-from ..externals import lockfile
-
-from .jsonutil import JsonTable, csv_to_json
-from .uriutil import join_uri
 
 _platform = platform.system()
 
@@ -77,7 +67,6 @@ class HTCache(object):
         retval = None
 
         _cachepath = os.path.join(self.cache, self.safe(key))
-        _headerpath = '%s.headers' % _cachepath
         
         try:
             f = file('%s.headers' % _cachepath, "rb")
@@ -87,7 +76,7 @@ class HTCache(object):
             f = file(_cachepath, "rb")
             retval += f.read()
             f.close()
-        except IOError, e:
+        except IOError:
             try:
                 f = file('%s.alt' % _cachepath, "rb")
                 _altpath = f.read()
@@ -96,7 +85,7 @@ class HTCache(object):
                 f = file(_altpath, "rb")
                 retval += f.read()
                 f.close()
-            except IOError, e:
+            except IOError:
                 return
 
         return retval

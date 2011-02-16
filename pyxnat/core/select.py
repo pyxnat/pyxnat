@@ -2,7 +2,7 @@ import re
 
 from . import schema
 from .search import Search
-from .resources import CObject, EObject, Projects, Project
+from .resources import CObject
 from .uriutil import inv_translate_uri
 from .errors import PathSyntaxError
 
@@ -17,23 +17,22 @@ def is_singular_type_level(element):
            not is_expand_level(element)
 
 def is_expand_level(element):
-    return element.startswith('//') and element.strip('/') in schema.resources_types
+    return element.startswith('//') and \
+        element.strip('/') in schema.resources_types
 
 def is_id_level(element):
     return element is not None and \
-           element.strip('/') not in schema.resources_types
+        element.strip('/') not in schema.resources_types
 
 def is_wildid_level(element):
     return element is not None and \
-           element.strip('/') not in schema.resources_types and \
-           ('?' in element or '*' in element)
+        element.strip('/') not in schema.resources_types and \
+        ('?' in element or '*' in element)
 
 def expand_level(element, fullpath):
 
     def find_paths(element, path=[]):
         resources_dict = schema.resources_tree
-#        for rsc in schema.extra_resources_tree:
-#            resources_dict[rsc].extend(schema.extra_resources_tree[rsc])
 
         element = element.strip('/')
         paths = []
@@ -89,8 +88,6 @@ def mtransform(paths):
 
         for i, curr_el in enumerate(els):
 
-            prev_el = None
-
             if i+1 < len(els):
                 next_el = els[i+1]
             else:
@@ -120,7 +117,8 @@ def mtransform(paths):
             elif is_expand_level(curr_el):
 
                 exp_paths = [''.join(els[:i] + [rel_path] + els[i+1:])
-                             for rel_path in expand_level(curr_el, path)]
+                             for rel_path in expand_level(curr_el, path)
+                             ]
 
                 tpaths.extend(mtransform(exp_paths))
                 ignore_path = True
@@ -144,8 +142,8 @@ def group_paths(paths):
         resources = [el
                      for el in re.findall('/{1,2}.*?(?=/{1,2}|$)', path) 
                      if el.strip('/') in schema.resources_types \
-                     and el.strip('/') not in ['files', 'file']]
-
+                         and el.strip('/') not in ['files', 'file']
+                     ]
 
         if len(resources) == 1:
             groups.setdefault(resources[0], set()).add(path)
@@ -153,14 +151,22 @@ def group_paths(paths):
 
         for alt_path in paths:
             if alt_path.endswith(path):
-                alt_rsc = [el
-                           for el in re.findall('/{1,2}.*?(?=/{1,2}|$)', alt_path) 
-                           if el.strip('/') in schema.resources_types \
-                           and el.strip('/') not in ['files', 'file']]
 
-                if alt_rsc[-1].strip('/') in ['files', 'file', 'resources', 'resource'] + \
-                                            schema.rest_translation.keys():
-                    groups.setdefault(alt_rsc[-2]+alt_rsc[-1], set()).add(alt_path)
+                alt_rsc = \
+                    [el for el in re.findall('/{1,2}.*?(?=/{1,2}|$)', 
+                                             alt_path
+                                             ) 
+                     if el.strip('/') in schema.resources_types \
+                         and el.strip('/') not in ['files', 'file']
+                     ]
+
+                if alt_rsc[-1].strip('/') in \
+                        ['files', 'file', 'resources', 'resource'] + \
+                        schema.rest_translation.keys():
+
+                    groups.setdefault(alt_rsc[-2] + alt_rsc[-1], set()
+                                      ).add(alt_path)
+
                 else:
                     groups.setdefault(alt_rsc[-1], set()).add(alt_path)
 
@@ -176,6 +182,7 @@ def compute(path):
         groups = group_paths(mtransform([path]))
     except:
         raise PathSyntaxError(path)
+
     best = []
 
     for name in groups:
@@ -202,7 +209,8 @@ class Select(object):
                 >>> interface.select('/projects/myproj/subjects').get()
 
             Select with a datatype:
-                >>> interface.select('xnat:subjectData', ['xnat:subjectData/PROJECT', 'xnat:subjectData/SUBJECT_ID']
+                >>> interface.select('xnat:subjectData', 
+                ['xnat:subjectData/PROJECT', 'xnat:subjectData/SUBJECT_ID']
                             ).where([('xnat:subjectData/SUBJECT_ID', 'LIKE', '*'), 'AND'])
     """
     def __init__(self, interface):
@@ -223,7 +231,7 @@ class Select(object):
             ID: string
                 ID of the project.
         """
-        return globals()['Project']('/REST/projects/%s'%ID, self._intf)
+        return globals()['Project']('/REST/projects/%s' % ID, self._intf)
 
     def projects(self, id_filter='*'):
         """ Returns the list of all visible projects for the server.
@@ -253,13 +261,13 @@ class Select(object):
                 Can either be a resource path or a datatype:
                  - when a path, REST resources are returned, the `columns` 
                    argument is useless.
-                 - when a datatype, a search Object is returned, the `columns`
-                   argument has to be specified.
+                 - when a datatype, a search Object is returned, the 
+                 `columns` argument has to be specified.
             columns: list
                 List of fieldtypes e.g. xnat:subjectData/SUBJECT_ID
-                Datatype and columns are used to specify the search table that
-                has to be returned. Use the method `where` on the `Search` object
-                to trigger a search on the database.
+                Datatype and columns are used to specify the search table 
+                that has to be returned. Use the method `where` on the 
+                `Search` object to trigger a search on the database.
         """
         if datatype_or_path.startswith('/tag'):
             if len(datatype_or_path.split('/')) == 3:
@@ -275,38 +283,22 @@ class Select(object):
 
         if datatype_or_path.startswith('/'):
             return_list = []
-            import time
+
             try:
                 for path in compute(datatype_or_path):
                     if DEBUG:
-                        print 'path: %s'%path
+                        print 'path: %s' % path
 
                     pairs = zip(path.split('/')[1::2], path.split('/')[2::2])
 
                     obj = self
                     for resource, identifier in pairs:
-                        start = time.time()
 
                         if isinstance(obj, list):
                             obj = [getattr(sobj, resource)(identifier) 
                                    for sobj in obj]
                         else:
                             obj = getattr(obj, resource)(identifier)
-
-#                        if isinstance(obj, (list, CObject)):
-#                            print 'list', obj
-#                            obj = CObject(
-#                                [getattr(sobj, resource)(identifier) 
-#                                 for sobj in obj 
-#                                 if isinstance(getattr(sobj, resource)(identifier), CObject) \
-#                                 or getattr(sobj, resource)(identifier).exists()
-#                                ], self._intf)
-
-#                            print 'list', obj.get()
-#                        else:
-#                            print 'elmt', obj
-#                            obj = getattr(obj, resource)(identifier)
-#                            print 'elmt', obj
 
                     return_list.append(obj)
 

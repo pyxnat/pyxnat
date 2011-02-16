@@ -2,7 +2,6 @@ import os
 import tempfile
 
 from .jsonutil import JsonTable, csv_to_json
-from .select import compute
 from .resources import CObject
 
 
@@ -17,13 +16,16 @@ class Tags(object):
 
     def __call__(self):
         self._init()
-        return self._meta_project.subject(self._intf._user).resource('tags').files().get()
+        return self._meta_project.subject(self._intf._user
+                                          ).resource('tags').files().get()
 
     def _init(self):
         if self._meta_project is None:
-            self._meta_project = self._intf.select.project('metabase_%s'%self._intf._user)
+            self._meta_project = \
+                self._intf.select.project('metabase_%s' % self._intf._user)
             if self._meta_project.accessibility() != 'private':
                 self._meta_project.set_accessibility('private')
+
         if not self._meta_project.exists():
             self._meta_project.create()
             self._meta_project.set_accessibility('private')
@@ -38,8 +40,9 @@ class Tags(object):
         return Tag(name, self._intf)
 
     def share(self, other_user):
-        if self._intf.select.project('metabase_%s'%other_user).exists():
-            self._meta_project.subject(self._intf._user).share('metabase_%s'%other_user)
+        if self._intf.select.project('metabase_%s' % other_user).exists():
+            self._meta_project.subject(self._intf._user
+                                       ).share('metabase_%s' % other_user)
 
 
 class Tag(object):
@@ -47,8 +50,8 @@ class Tag(object):
         self._name = name
         self._intf = interface
         self._intf.manage.tags._init()
-        self._file = self._intf.manage.tags._meta_project.subject(self._intf._user
-                                                        ).resource('tags').file(name)
+        self._file = self._intf.manage.tags._meta_project.subject(
+            self._intf._user).resource('tags').file(name)
         
     def __repr__(self):
         return '<Tag> %s'%self._name
@@ -119,5 +122,3 @@ class Tag(object):
         if not show_uris:
             return CObject(uris, self._intf)
         return uris
-
-

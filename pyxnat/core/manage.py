@@ -6,8 +6,8 @@ from .search import SearchManager
 from .users import Users
 from .resources import Project
 from .tags import Tags
-from .schema import datatypes, datatype_attributes, resources_singular
 from .uriutil import join_uri
+
 
 class GlobalManager(object):
     def __init__(self, interface):
@@ -43,7 +43,7 @@ class GlobalManager(object):
 class ProjectManager(object):
     def __init__(self, project_id, interface):
         self._intf = interface
-        project = Project('/REST/projects/%s'%project_id, self._intf)
+        project = Project('/REST/projects/%s' % project_id, self._intf)
 
         self.prearchive_code = project.prearchive_code
         self.set_prearchive_code = project.set_prearchive_code
@@ -107,43 +107,4 @@ class SchemaManager(object):
     def remove(self, name):
         if self._trees.has_key(name):
             del self._trees[name]
-
-#    def docs(self):
-#        self._init()
-#        return self._trees.values()
-
-
-#class LocalLayout(object):
-#    def __init__(self, interface):
-#        self._intf = interface
-
-#        self.root_dir = None
-#        self.templates = 
-
-#            ('/projects/%(project)s/subjects/%(subject)s'
-#             '/experiments/%(experiment)s/projects/%(project)s/'
-#        self._attrs = {}
-
-
-#    def set_root(self, root_dir):
-#        self.root_dir = root_dir
-
-#    def set_attr(self, key, method):
-#        if key not in resources_singular:
-#            raise Exception("Key error '%s': must be one of %s"%key, resources_singular)
-
-#        self._attrs[key] = method
-
-#    def transform(self, uri):
-#        obj = self._intf.select(uri)
-#        attrs = {}
-
-#        for key in self._attrs.keys()
-#            attrs[key] = getattr(obj, self._attrs[key])
-
-
-
-
-
-
 

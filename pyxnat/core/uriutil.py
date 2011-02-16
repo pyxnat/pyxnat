@@ -17,7 +17,8 @@ def inv_translate_uri(uri):
     return uri
 
 def join_uri(uri, *segments):
-    return '/'.join(uri.split('/') + [seg.lstrip('/') for seg in segments]).rstrip('/')
+    return '/'.join(uri.split('/') + \
+                        [seg.lstrip('/') for seg in segments]).rstrip('/')
 
 def uri_last(uri):
     return uri.split('/')[-1]

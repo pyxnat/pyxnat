@@ -11,7 +11,8 @@ def find_files(src):
         try:
             if os.path.islink(srcname):
                 linkto = os.readlink(srcname)
-                os.symlink(linkto, dstname)
+                files.extend(find_files(linkto))
+                # os.symlink(linkto, dstname)
             elif os.path.isdir(srcname):
                 files.extend(find_files(srcname))
             else:

@@ -1,5 +1,3 @@
-import os
-
 from .jsonutil import JsonTable
 
 class Users(object):
@@ -37,25 +35,30 @@ class Users(object):
     def __call__(self):
         """ Returns the list of all registered users on the server.
         """
-        return JsonTable(self._intf._get_json('/REST/users')).get('login', always_list=True)
+        return JsonTable(self._intf._get_json('/REST/users')
+                         ).get('login', always_list=True)
 
     def firstname(self, login):
         """ Returns the firstname of the user.
         """
-        return JsonTable(self._intf._get_json('/REST/users')).where(login=login)['firstname']
+        return JsonTable(self._intf._get_json('/REST/users')
+                         ).where(login=login)['firstname']
 
     def lastname(self, login):
         """ Returns the lastname of the user.
         """
-        return JsonTable(self._intf._get_json('/REST/users')).where(login=login)['lastname']
+        return JsonTable(self._intf._get_json('/REST/users')
+                         ).where(login=login)['lastname']
 
     def id(self, login):
         """ Returns the id of the user.
         """
-        return JsonTable(self._intf._get_json('/REST/users')).where(login=login)['xdat_user_id']
+        return JsonTable(self._intf._get_json('/REST/users')
+                         ).where(login=login)['xdat_user_id']
 
     def email(self, login):
         """ Returns the email of the user.
         """
-        return JsonTable(self._intf._get_json('/REST/users')).where(login=login)['email']
+        return JsonTable(self._intf._get_json('/REST/users')
+                         ).where(login=login)['email']
 
