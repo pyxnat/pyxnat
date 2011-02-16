@@ -154,7 +154,7 @@ class HTCache(object):
     def preset(self, path):
         self._cachepath = path
 
-    def delete(self, key, value):
+    def delete(self, key):
         _cachepath = os.path.join(self.cache, self.safe(key))
         _fakepath = '%s.alt' % _cachepath
         _headerpath = '%s.headers' % _cachepath

@@ -16,19 +16,23 @@ def test_datafields():
                     central.inspect.datatypes('xnat:subjectData', '*')
 
 def test_fieldvalues():
-    assert len(central.inspect.values.field('xnat:subjectData/SUBJECT_ID')) != 0
+    assert len(central.inspect.field_values('xnat:subjectData/SUBJECT_ID')
+               ) != 0
 
 def test_search():
-    results = central.select('xnat:mrSessionData', 
-                             central.inspect.datatypes('xnat:mrSessionData')
-                    ).where([('xnat:mrSessionData/SCANNER', 'LIKE', '*GE*'), 'AND'])
+    results = central.select(
+        'xnat:mrSessionData', 
+        central.inspect.datatypes('xnat:mrSessionData')
+        ).where([('xnat:mrSessionData/SCANNER', 'LIKE', '*GE*'), 'AND'])
 
     assert isinstance(results, jsonutil.JsonTable)
 
 def test_save_search():
-    central.manage.search.save(search_name, 'xnat:mrSessionData', 
-                        central.inspect.datatypes('xnat:mrSessionData'),
-                        [('xnat:mrSessionData/SCANNER', 'LIKE', '*GE*'), 'AND'])
+    central.manage.search.save(
+        search_name, 'xnat:mrSessionData', 
+        central.inspect.datatypes('xnat:mrSessionData'),
+        [('xnat:mrSessionData/SCANNER', 'LIKE', '*GE*'), 'AND']
+        )
 
     assert search_name in central.manage.search.saved()
 

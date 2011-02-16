@@ -2,7 +2,7 @@ import re
 
 from . import schema
 from .search import Search
-from .resources import CObject
+from .resources import CObject, Project, Projects
 from .uriutil import inv_translate_uri
 from .errors import PathSyntaxError
 
