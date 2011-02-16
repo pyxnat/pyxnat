@@ -1221,7 +1221,8 @@ class File(EObject):
 
         print time.time() - start
 
-        return self._intf._conn.cache.get_diskpath(self._intf._server + self._absuri)
+        return self._intf._conn.cache.get_diskpath(self._intf._server + \
+                                                       self._absuri)
 
     def get_copy(self, dest=None):
         """ Downloads the file to the cache directory but creates a copy at

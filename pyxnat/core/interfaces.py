@@ -14,7 +14,7 @@ from ..externals import simplejson as json
 
 from .select import Select
 from .resources import CObject
-from .cache import CacheManager, HCache
+from .cache import CacheManager, HTCache
 from .help import Inspector, GraphData, PaintGraph
 from .manage import GlobalManager
 from .connection import ConnectionManager
@@ -126,7 +126,7 @@ class Interface(object):
 
         if DEBUG:   
             httplib2.debuglevel = 2
-        self._conn = httplib2.Http(HCache(self._cachedir, self))
+        self._conn = httplib2.Http(HTCache(self._cachedir, self))
         self._conn.add_credentials(self._user, self._pwd)
 
     def _exec(self, uri, method='GET', body=None, headers=None):
