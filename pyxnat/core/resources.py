@@ -324,6 +324,8 @@ class EObject(object):
 
         return self
 
+    insert = create
+
     def delete(self, delete_files=True):
         """ Deletes an element resource.
 
@@ -712,6 +714,8 @@ class CObject(object):
         for eobj in self:
             return eobj
 
+    fetchone = first
+
     def get(self, *args):
         """ Returns every element.
 
@@ -749,6 +753,8 @@ class CObject(object):
                 return ret
             else:
                 return ret[0]
+
+    fetchall = get
 
     def tag(self, name):
         tag = self._intf.manage.tags.get(name)
@@ -1337,10 +1343,8 @@ class File(EObject):
         self._intf._exec(self._uri, 'PUT', body, 
                          headers={'content-type':content_type})
 
-    def create(self, src, format='U', content='U', tags='U'):
-        """ Same as put.
-        """
-        return self.put(src, format, content, tags)
+    insert = put
+    create = put
 
     def delete(self):
         """ Deletes the file on the server.
