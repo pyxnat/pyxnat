@@ -40,8 +40,8 @@ class Interface(object):
             Lifespan of in-memory cache
     """
 
-    def __init__(self, server=None, user=None, 
-                 password=None, cachedir=tempfile.gettempdir()):
+    def __init__(self, server=None, user=None, password=None, 
+                 cachedir=tempfile.gettempdir(), config=None):
         """ 
             Parameters
             ----------
@@ -63,30 +63,37 @@ class Interface(object):
                 downloaded files)
                 If no path is provided, a platform dependent temp dir is 
                 used.
+           config: string
+               Reads a config file in json to get the connection parameters.
+               If a config file is specified, it will be used regardless of
+               other parameters that might have been given.
         """
 
-        self._interactive = not all([server, user, password])
+        self._interactive = not all([server, user, password]) and not config
 
-        if server is None:
-            self._server = raw_input('Server: ')
+        if config is not None:
+            self.load_config(config)
         else:
-            self._server = server
+            if server is None:
+                self._server = raw_input('Server: ')
+            else:
+                self._server = server
 
-        if user is None:
-            user = raw_input('User: ')
+            if user is None:
+                user = raw_input('User: ')
 
-        if password is None:
-            password = getpass.getpass()
+            if password is None:
+                password = getpass.getpass()
 
-        self._user = user
-        self._pwd = password
+            self._user = user
+            self._pwd = password
 
-        self._cachedir = os.path.join(
-            cachedir, 
-            '%s@%s' % (self._user, 
-                       self._server.split('//')[1].replace('/', '.')
-                       )
-            )
+            self._cachedir = os.path.join(
+                cachedir, 
+                '%s@%s' % (self._user, 
+                           self._server.split('//')[1].replace('/', '.')
+                           )
+                )
         
         self._callback = None
 
@@ -258,103 +265,94 @@ class Interface(object):
 
         return csv_to_json(content)
 
-    def save(self, location):
+    def save_config(self, location):
         if not os.path.exists(os.path.dirname(location)):
             os.makedirs(os.path.dirname(location))
 
         fp = open(location, 'w')
         config = {'server':self._server, 
                   'user':self._user, 
-                  'password':self._conn.credentials.credentials[0][2],
-                  'cachedir':re.findall('.*(?=/.*@.*?)', self._cachedir)[0],
+                  'password':self._pwd,
+                  'cachedir':self._cachedir,
                   }
 
         json.dump(config, fp)
         fp.close()
 
-    def load(location):
+    def load_config(self, location):
 
         if os.path.exists(location):
             fp = open(location, 'rb')
             config = json.load(fp)
             fp.close()
-            server = config['server']
-            user = config['user']
-            password = config['password']
-            cachedir = config['cachedir']
 
-            return Interface(server, user, password, \
-                                 cachedir or tempfile.gettempdir())
+            self._server = config['server']
+            self._user = config['user']
+            self._pwd = config['password']
+            self._cachedir = config['cachedir']
 
-    load = staticmethod(load) 
+#     def grab(self, datatype, seq_type=None):
+#         columns = []
+#         if datatype.endswith('ScanData'):
+#             columns = ['%s/%s' % (datatype, field)
+#                        for field in ['type', 'ID', 'image_session_ID']
+#                        ]
+# #        else:
+# #            columns = ['%s/%s'%(datatype, field) for field in ['type', 'ID', 'session_id']]
+#         try:
+#             data = self.select(datatype, columns).all()
+#         except:
+#             data = self.select(datatype).all()
 
-    def learn(self, project=None):
-        self.cache.sync()
-        self.inspect.datatypes.experiments(project)
+#         print data.headers()
 
+#         uris = []
 
-    def grab(self, datatype, seq_type=None):
-        columns = []
-        if datatype.endswith('ScanData'):
-            columns = ['%s/%s' % (datatype, field)
-                       for field in ['type', 'ID', 'image_session_ID']
-                       ]
-#        else:
-#            columns = ['%s/%s'%(datatype, field) for field in ['type', 'ID', 'session_id']]
-        try:
-            data = self.select(datatype, columns).all()
-        except:
-            data = self.select(datatype).all()
+#         type_header = difflib.get_close_matches('type', data.headers())
 
-        print data.headers()
+#         if difflib.get_close_matches('id', data.headers()) == []:
+#             session_header = difflib.get_close_matches('session_id', 
+#                                                        data.headers())[0]
 
-        uris = []
+#             subject_header = difflib.get_close_matches('subject_id', 
+#                                                        data.headers())[0]
 
-        type_header = difflib.get_close_matches('type', data.headers())
-
-        if difflib.get_close_matches('id', data.headers()) == []:
-            session_header = difflib.get_close_matches('session_id', 
-                                                       data.headers())[0]
-
-            subject_header = difflib.get_close_matches('subject_id', 
-                                                       data.headers())[0]
-
-            project_header = difflib.get_close_matches('project', 
-                                                       data.headers())[0]
+#             project_header = difflib.get_close_matches('project', 
+#                                                        data.headers())[0]
 
 
-            print project_header, subject_header, session_header
+#             print project_header, subject_header, session_header
 
-            for entry in data:
-                if seq_type is None \
-                        or type_header == [] \
-                        or entry[type_header[0]] == seq_type:
+#             for entry in data:
+#                 if seq_type is None \
+#                         or type_header == [] \
+#                         or entry[type_header[0]] == seq_type:
 
-                    uris.append('/REST/projects/%s'
-                                '/subjects/%s'
-                                '/experiments/%s' % \
-                                    (entry[project_header],
-                                     entry[subject_header],
-                                     entry[session_header]
-                                     )
-                                )
+#                     uris.append('/REST/projects/%s'
+#                                 '/subjects/%s'
+#                                 '/experiments/%s' % \
+#                                     (entry[project_header],
+#                                      entry[subject_header],
+#                                      entry[session_header]
+#                                      )
+#                                 )
 
-        else:
-            id_header = difflib.get_close_matches('id', data.headers())[0]
-            session_header = difflib.get_close_matches('session_id', \
-                                                           data.headers())[0]
+#         else:
+#             id_header = difflib.get_close_matches('id', data.headers())[0]
+#             session_header = difflib.get_close_matches('session_id', \
+#                                                            data.headers())[0]
 
-            for entry in data:
-                if (seq_type is None 
-                    or type_header == []
-                    or entry[type_header[0]] == seq_type
-                    ):
+#             for entry in data:
+#                 if (seq_type is None 
+#                     or type_header == []
+#                     or entry[type_header[0]] == seq_type
+#                     ):
                     
-                    uris.append('/REST/experiments/%s/scans/%s' % \
-                                    (entry[session_header], 
-                                     entry[id_header]
-                                     )
-                                )
+#                     uris.append('/REST/experiments/%s/scans/%s' % \
+#                                     (entry[session_header], 
+#                                      entry[id_header]
+#                                      )
+#                                 )
 
-        return CObject(uris, self)
+#         return CObject(uris, self)
 

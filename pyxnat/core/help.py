@@ -61,24 +61,6 @@ class Inspector(object):
                 if '=' not in field and 'SHARINGSHAREPROJECT' not in field
                 ]
 
-    def experiment_types(self, project=None):
-        types = []
-
-        uri_template = self._intf._server
-        uri_template += '/REST/experiments?columns=ID,xsiType&xsiType=%s'
-
-        if project is not None:
-            uri_template += '&project=%s' % project
-
-        for exp_type in self.datatypes():
-            print exp_type
-            head = self._intf._conn.request(uri_template % exp_type, 
-                                                'HEAD')[0]
-            if head.get('status') == '200':
-                types.append(exp_type)
-
-        return types
-
     def field_values(self, field_name):
 
         search_tbl = Search(field_name.split('/')[0], 
@@ -149,34 +131,15 @@ class Inspector(object):
     def _sub_experiment(self, sub_exp, project, experiment_type):
         values = []
 
-        if experiment_type is None:
-            for exp_type in self.experiment_types():
-                try:
-                    column = '%s/%ss/%s/id' % \
-                        (exp_type.lower(), sub_exp, sub_exp)
+        column = '%s/%ss/%s/id' % \
+            (experiment_type.lower(), sub_exp, sub_exp)
+        
+        sub_exps = '/REST/experiments?columns=ID,%s' % column
 
-                    sub_exps = '/REST/experiments?columns=ID,%s' % column
-                    
-                    if project is not None:
-                        sub_exps += '&project=%s' % project
+        if project is not None:
+            sub_exps += '&project=%s' % project
 
-                    values.extend(get_column(
-                            self._get_json(sub_exps), column))
-
-                except Exception, e:
-                    print e
-                    continue
-
-        else:
-            column = '%s/%ss/%s/id' % \
-                (experiment_type.lower(), sub_exp, sub_exp)
-
-            sub_exps = '/REST/experiments?columns=ID,%s' % column
-
-            if project is not None:
-                sub_exps += '&project=%s' % project
-
-            values = get_column(self._get_json(sub_exps), column)
+        values = get_column(self._get_json(sub_exps), column)
 
         return list(set(values))
 
