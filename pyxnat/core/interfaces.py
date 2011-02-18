@@ -1,20 +1,16 @@
 import os
-import re
 import time
 import tempfile
 import email
 import getpass
-import difflib
 
 from ..externals import httplib2
 from ..externals import simplejson as json
 
 from .select import Select
-from .resources import CObject
 from .cache import CacheManager, HTCache
-from .help import Inspector, GraphData, PaintGraph
+from .help import Inspector, GraphData, PaintGraph, _DRAW_GRAPHS
 from .manage import GlobalManager
-from .connection import ConnectionManager
 from .uriutil import join_uri
 from .jsonutil import csv_to_json
 from .errors import is_xnat_error
@@ -111,11 +107,11 @@ class Interface(object):
         self.inspect = Inspector(self)
         self.select = Select(self)
         self.cache = CacheManager(self)
-        self.connection = ConnectionManager(self)
         self.manage = GlobalManager(self)
-
-        self._get_graph = GraphData(self)
-        self.draw = PaintGraph(self)
+        
+        if _DRAW_GRAPHS:
+            self._get_graph = GraphData(self)
+            self.draw = PaintGraph(self)
 
         if self._interactive:
             self._jsession = self._exec('/REST/JSESSION')

@@ -17,15 +17,15 @@ DEBUG = False
 
 
 def md5name(key):
-    format = re.findall('.*?(?=(\?format=.+?(?=\?|&|$)|'
-                        '\&format=.+?(?=\?|&|$)))', key)
+    ext = re.findall('.*?(?=(\?format=.+?(?=\?|&|$)|'
+                     '\&format=.+?(?=\?|&|$)))', key)
     
-    if format != []:
+    if ext != []:
         last = key.split('?')[0].split('/')[-1]
-        key = key.replace(format[0], '')
-        format = format[0].split('format')[1]
-        key += format
-        last += format
+        key = key.replace(ext[0], '')
+        ext = ext[0].split('format')[1]
+        key += ext
+        last += ext
     else:
         last = key.split('/')[-1]
 
@@ -257,10 +257,13 @@ class CacheManager(object):
 
             return bytes_to_human(cache_st.f_bavail * cache_st.f_bsize, unit)
 
-    def used_disk(self, path, unit='bytes'):
+    def used_disk(self, path=None, unit='bytes'):
+        if path is None:
+            path = self._cache.cache
+
         return self.total_disk(path, unit) - self.available_disk(path, unit)
 
-    def total_disk(self, path, unit='bytes'):
+    def total_disk(self, path=None, unit='bytes'):
         if path is None:
             path = self._cache.cache
 
@@ -283,10 +286,38 @@ class CacheManager(object):
 
             return bytes_to_human(cache_st.f_blocks * cache_st.f_bsize, unit)
 
-    def disk_ready(self, path, ready_ratio=90.0):
+    def disk_ready(self, path=None, ready_ratio=90.0):
+        if path is None:
+            path = self._cache.cache
+
         disk_ratio = ( float(self.used_disk(path)) / \
                            float(self.total_disk(path)) * 100
                        )
 
         return disk_ratio < ready_ratio, disk_ratio
+
+    def set_usage(self, mode=None, expiration=1.0):
+        """ Customize cache usage.
+
+            Parameters
+            ----------
+            mode: string
+                'online' or 'offline'
+                online will always query the server to have up to date data
+                offline will only try to query the server if the data is not
+                cached
+            expiration: float
+                Relevant only to online mode. The cache has an expiration 
+                mechanism. If two queries on the same resource are issued 
+                under the specified value, the cache will be used and the 
+                server will not be requested.
+        """
+        if mode == 'online':
+            self._intf._mode = 'online'
+            self._intf._memtimeout = expiration
+        elif mode == 'offline':
+            self._intf._mode = 'offline'
+            self._intf._memtimeout = expiration
+        else:
+            self._intf._memtimeout = expiration
 

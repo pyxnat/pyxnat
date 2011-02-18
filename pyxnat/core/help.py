@@ -28,9 +28,15 @@ class Inspector(object):
 
         self._intf = interface
         self._get_json = interface._get_json
+        self._auto = True
+        self._tick = 30
 
         self.schemas = SchemasInspector(interface)
 
+    def set_autolearn(self, auto=True, tick=30):
+        self._auto = auto
+        self._tick = tick
+        
     def datatypes(self, pattern='*', fields_pattern=None):
 
         search_els = self._get_json('/REST/search/elements?format=json')
@@ -61,6 +67,18 @@ class Inspector(object):
                 if '=' not in field and 'SHARINGSHAREPROJECT' not in field
                 ]
 
+    def experiment_types(self):
+        return self._resource_types('experiment')
+
+    def assessor_types(self):
+        return self._resource_types('assessor')
+
+    def reconstruction_types(self):
+        return self._resource_types('reconstruction')
+
+    def scan_types(self):
+        return self._resource_types('scan')
+
     def field_values(self, field_name):
 
         search_tbl = Search(field_name.split('/')[0], 
@@ -86,7 +104,7 @@ class Inspector(object):
 
         return get_column(self._get_json(uri), 'ID')
 
-    def experiment_values(self, datatype=None, project=None):
+    def experiment_values(self, datatype, project=None):
         uri = '/REST/experiments?columns=ID'
         if datatype is not None:
             uri += '&xsiType=%s' % datatype
@@ -95,15 +113,16 @@ class Inspector(object):
 
         return get_column(self._get_json(uri), 'ID')
 
-    def assessor_values(self, experiment_type=None, project=None):
-        return self._sub_experiment('assessor', project, experiment_type)
+    def assessor_values(self, experiment_type, project=None):
+        return self._sub_experiment_values('assessor', 
+                                           project, experiment_type)
 
-    def scan_values(self, experiment_type=None, project=None):
-        return self._sub_experiment('scan', project, experiment_type)
+    def scan_values(self, experiment_type, project=None):
+        return self._sub_experiment_values('scan', project, experiment_type)
 
-    def reconstruction_values(self, experiment_type=None, project=None):
-        return self._sub_experiment('reconstruction', 
-                                    project, experiment_type)
+    def reconstruction_values(self, experiment_type, project=None):
+        return self._sub_experiment_values('reconstruction', 
+                                           project, experiment_type)
 
     def architecture(self):
         def traverse(coll, lvl):
@@ -128,7 +147,7 @@ class Inspector(object):
         print '- %s' % 'PROJECTS'
         traverse('projects', 4)
 
-    def _sub_experiment(self, sub_exp, project, experiment_type):
+    def _sub_experiment_values(self, sub_exp, project, experiment_type):
         values = []
 
         column = '%s/%ss/%s/id' % \
@@ -142,6 +161,18 @@ class Inspector(object):
         values = get_column(self._get_json(sub_exps), column)
 
         return list(set(values))
+    
+    def _resource_types(self, name):
+        kbase = {}
+
+        for kfile in glob.iglob('%s/*.struct' % self._intf._cachedir):
+            kdata = json.load(open(kfile, 'rb'))
+            if kdata == {}:
+                continue
+            if name in kdata.keys()[0]:
+                kbase.update(kdata)
+
+        return set(kbase.values())
 
 
 class GraphData(object):
@@ -198,27 +229,20 @@ class GraphData(object):
         return graph
 
     def rest_resource(self, name):
-        kbase = {}
-
-        for kfile in glob.iglob('%s/*.struct' % self._intf._cachedir):
-            kdata = json.load(open(kfile, 'rb'))
-            if name in kdata.keys()[0]:
-                kbase.update(kdata)
-
-        experiment_types = set(kbase.values())
+        resource_types = self._intf.inspect._resource_types(name)
 
         graph = nx.DiGraph()
         graph.add_node(name)
         graph.labels = {name:name}
         graph.weights = {name:100.0}
         
-        namespaces = set([exp.split(':')[0] for exp in experiment_types])
+        namespaces = set([exp.split(':')[0] for exp in resource_types])
         
         for ns in namespaces:
             graph.add_edge(name, ns)
             graph.weights[ns] = 70.0
 
-            for exp in experiment_types:
+            for exp in resource_types:
                 if exp.startswith(ns):
                     graph.add_edge(ns, exp)
                     graph.weights[exp] = 40.0
@@ -385,54 +409,53 @@ def norm_costs(costs, norm=1000):
     return [ (cost / max_cost) * norm for cost in costs]
 
     
-class GraphDrawer(object):
-    def __init__(self, interface):
-        self._intf = interface
+# class GraphDrawer(object):
+#     def __init__(self, interface):
+#         self._intf = interface
 
-    def datatypes(self, project):
-        self._intf.connection.set_strategy('offline')
+#     def datatypes(self, project):
+#         self._intf.connection.set_strategy('offline')
 
-        experiments_types = self._intf.inspect.datatypes.experiments(project)
+#         experiments_types = self._intf.inspect.datatypes.experiments(project)
 
-        labels = {project:project, 'Experiments':'Experiments'}
+#         labels = {project:project, 'Experiments':'Experiments'}
 
-        g = nx.Graph()
+#         g = nx.Graph()
 
-        g.add_edge(project, 'Experiments', {'weight':1})
+#         g.add_edge(project, 'Experiments', {'weight':1})
 
-        for exp_type in experiments_types:
-            g.add_edge('Experiments', exp_type, {'weight':8})
-            labels[exp_type] = exp_type
+#         for exp_type in experiments_types:
+#             g.add_edge('Experiments', exp_type, {'weight':8})
+#             labels[exp_type] = exp_type
 
-        pos = nx.graphviz_layout(g, prog='twopi', args='')
+#         pos = nx.graphviz_layout(g, prog='twopi', args='')
 
-        nx.draw_networkx_nodes(g, pos, 
-                               nodelist=[project], 
-                               node_color='green', alpha=0.7, 
-                               node_size=2500, node_shape='s')
+#         nx.draw_networkx_nodes(g, pos, 
+#                                nodelist=[project], 
+#                                node_color='green', alpha=0.7, 
+#                                node_size=2500, node_shape='s')
 
-        nx.draw_networkx_nodes(g, pos, 
-                               nodelist=['Experiments'], 
-                               node_color='blue', alpha=0.7, 
-                               node_size=2000, node_shape='p')
+#         nx.draw_networkx_nodes(g, pos, 
+#                                nodelist=['Experiments'], 
+#                                node_color='blue', alpha=0.7, 
+#                                node_size=2000, node_shape='p')
 
-        nx.draw_networkx_nodes(g, pos, 
-                               nodelist=experiments_types, 
-                               node_color='red', alpha=0.7, 
-                               node_size=1500, node_shape='o')
+#         nx.draw_networkx_nodes(g, pos, 
+#                                nodelist=experiments_types, 
+#                                node_color='red', alpha=0.7, 
+#                                node_size=1500, node_shape='o')
 
-        nx.draw_networkx_edges(g, pos, width=2, alpha=0.5, 
-                               edge_color='black')
+#         nx.draw_networkx_edges(g, pos, width=2, alpha=0.5, 
+#                                edge_color='black')
 
-        nx.draw_networkx_labels(g, pos, labels,
-                                alpha=0.9, font_size=8, 
-                                font_color='black', font_weight='bold')
+#         nx.draw_networkx_labels(g, pos, labels,
+#                                 alpha=0.9, font_size=8, 
+#                                 font_color='black', font_weight='bold')
 
-        plt.axis('off')
-        plt.show()
+#         plt.axis('off')
+#         plt.show()
 
-        self._intf.connection.revert_strategy()
-
+#         self._intf.connection.revert_strategy()
 
 class SchemasInspector(object):
     def __init__(self, interface):

@@ -484,7 +484,9 @@ class CObject(object):
             gather = uri.split('/')[-1] in ['experiments', 'assessors', 
                                             'scans', 'reconstructions']
 
-            tick = time.gmtime(time.time())[5] % 30 == 0
+            tick = time.gmtime(time.time())[5] % \
+                self._intf.inspect._tick == 0 and\
+                self._intf.inspect._auto
 
             if (not os.path.exists(reqcache) and gather) \
                     or (gather and tick):

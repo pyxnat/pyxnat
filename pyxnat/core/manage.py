@@ -1,4 +1,5 @@
 import re
+import glob
 
 from lxml import etree
 
@@ -69,12 +70,12 @@ class SchemaManager(object):
 
     def _init(self):
         if self._trees == {}:
+            cache_template = '%s/*.xsd' % self._intf._cachedir
 
-            for entry in self._intf.cache.entries():
-                if entry.endswith('.xsd'):
-                    url  = re.findall('schemas/.*', entry)[0]
-                    self._trees[url.split('/')[-1]] = \
-                        etree.fromstring(self._intf._exec(url))
+            for entry in glob.iglob(cache_template):
+                url  = re.findall('schemas/.*', entry)[0]
+                self._trees[url.split('/')[-1]] = \
+                    etree.fromstring(self._intf._exec(url))
 
     def __call__(self):
         self._init()
