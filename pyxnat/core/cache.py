@@ -21,12 +21,15 @@ def md5name(key):
                         '\&format=.+?(?=\?|&|$)))', key)
     
     if format != []:
+        last = key.split('?')[0].split('/')[-1]
         key = key.replace(format[0], '')
-        key += format[0].split('format')[1]
+        format = format[0].split('format')[1]
+        key += format
+        last += format
+    else:
+        last = key.split('/')[-1]
 
-    return '%s_%s' % (hashlib.md5(key).hexdigest(), 
-                      key.split('/')[-1].replace('=', '.').replace('&', '_')
-                      )
+    return '%s_%s' % (hashlib.md5(key).hexdigest(), last.replace('=', '.'))
 
 def bytes_to_human(size, unit):
     if unit == 'mega':

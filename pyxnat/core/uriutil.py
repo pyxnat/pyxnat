@@ -1,3 +1,5 @@
+import re
+
 from .schema import rest_translation
 
 def translate_uri(uri):
@@ -44,3 +46,41 @@ def uri_segment(uri, start=None, end=None):
         return '/'+'/'.join(uri.split('/')[start:])
     else:
         return '/'+'/'.join(uri.split('/')[start:end])
+
+def uri_shape(uri):
+    
+    kwid_map = dict(zip(uri.split('/')[1::2], uri.split('/')[2::2]))
+    shapes = {}
+
+    for kw in kwid_map:
+        seps = kwid_map[kw]
+
+        for char in re.findall('[a-zA-Z0-9]', seps):
+            seps = seps.replace(char, '')
+
+            chunks = []
+            for chunk in re.split('|'.join(seps), kwid_map[kw]):
+                try:
+                    float(chunk)
+                    chunk = '*'
+                except:
+                    pass
+        
+                chunks.append(chunk)
+
+            shapes[kw] = '?'.join(chunks) 
+    
+    return make_uri(shapes)
+
+def make_uri(_dict):
+    uri = ''
+
+    kws = ['projects', 'subjects', 'experiments', 'assessors', 
+            'reconstructions', 'scans', 'resources', 'in_resources', 
+                'out_resources', 'files', 'in_files', 'out_files']
+
+    for kw in kws:
+        if _dict.has_key(kw):
+            uri += '/%s/%s' % (kw, _dict.get(kw))
+
+    return uri

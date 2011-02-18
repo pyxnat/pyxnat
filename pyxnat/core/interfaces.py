@@ -93,6 +93,7 @@ class Interface(object):
         self._memcache = {}
         self._memtimeout = 1.0
         self._mode = 'online'
+        self._struct = {}
 
         self._last_memtimeout = 1.0
         self._last_mode = 'online'
@@ -141,6 +142,8 @@ class Interface(object):
             headers: dict
                 Additional headers for the HTTP request.
         """
+        start = time.time()
+
         if headers is None:
             headers = {}
 
@@ -155,6 +158,7 @@ class Interface(object):
             self._memcache = {}
         
         if self._mode == 'online' and method == 'GET':
+
             if time.time() - self._memcache.get(uri, 0) < self._memtimeout:
                 if DEBUG:
                     print 'send: GET CACHE %s' % uri
@@ -165,28 +169,14 @@ class Interface(object):
                 self._memcache[uri] = time.time()
                 response = None
             else:
-#                cached_value = self._conn.cache.get(uri)
-#                make_request = False
-#                if cached_value is not None:
-#                    subject_id = re.findall('(?<=subjects/).*?(?=/.*)', uri)
-#                    if subject_id != [] and subject_id[0] not in self.cache.diff():
-#                        info, content = cached_value.split('\r\n\r\n', 1)
-#                        self._memcache[uri] = time.time()
-#                        response = None
-#                    else:
-#                        make_request = True
-#                else:
-#                    make_request = True
-
-#                if make_request:
-                start = time.time()
                 response, content = self._conn.request(uri, method, 
                                                        body, headers)
-#                self._conn.cache.computation_times[uri] = time.time() - start
                 self._memcache[uri] = time.time()
 
         elif self._mode == 'offline' and method == 'GET':
+
             cached_value = self._conn.cache.get(uri)
+
             if cached_value is not None:
                 if DEBUG:
                     print 'send: GET CACHE %s' % uri
@@ -198,7 +188,7 @@ class Interface(object):
 
                     response, content = self._conn.request(uri, method, 
                                                            body, headers)
-#                    self._conn.cache.computation_times[uri] = time.time() - start
+
                     self._conn.timeout = None
                     self._memcache[uri] = time.time()
                 except Exception, e:
@@ -235,6 +225,7 @@ class Interface(object):
                                                            )
                                              )
 
+        print '_exec request in %s seconds' % (time.time() - start)
         return content
 
 

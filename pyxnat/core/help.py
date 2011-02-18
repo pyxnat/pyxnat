@@ -1,3 +1,5 @@
+import glob
+
 try:
     import networkx as nx
     import matplotlib.pyplot as plt
@@ -5,9 +7,12 @@ try:
 except:
     _DRAW_GRAPHS = False
 
+from ..externals import simplejson as json
+
 from . import schema
 from .jsonutil import get_column
 from .search import Search
+
 
 class Inspector(object):
     """ Database introspection interface.
@@ -181,6 +186,34 @@ class GraphData(object):
         self._intf = interface
         self._nomenclature = interface.inspect._nomenclature
 
+    def link(self, subjects, fields):
+        
+        criteria = [('xnat:subjectData/SUBJECT_ID', '=', _id) 
+                    for _id in subjects
+                    ]
+        criteria += ['OR']
+        # variables = ['xnat:subjectData/SUBJECT_ID'] + fields
+
+        subject_id = 'xnat:subjectData/SUBJECT_ID'
+
+        for field in fields:
+
+            field_tbl = self._intf.select('xnat:subjectData', 
+                                          [subject_id, field]
+                                          ).where(criteria)
+            head = field_tbl.headers()
+            head.remove('subject_id')
+            head = head[0]
+            possible = set(field_tbl.get(head))
+
+            groups = {}
+            
+            for val in possible:
+                groups[val] = field_tbl.where(**{head:val}
+                                                ).select('subject_id')
+
+        return groups
+
     def datatypes(self):
         graph = nx.DiGraph()
         graph.add_node('datatypes')
@@ -201,28 +234,31 @@ class GraphData(object):
 
         return graph
 
-    def experiments(self, project=None):
-        self._intf.connection.set_strategy('offline')
+    def rest_resource(self, name):
+        kbase = {}
 
-        experiment_types = self._intf.inspect.experiment_types(project)
+        for kfile in glob.iglob('%s/*.struct' % self._intf._cachedir):
+            kdata = json.load(open(kfile, 'rb'))
+            if name in kdata.keys()[0]:
+                kbase.update(kdata)
+
+        experiment_types = set(kbase.values())
 
         graph = nx.DiGraph()
-        graph.add_node('experiments')
-        graph.labels = {'experiments':'experiments'}
-        graph.weights = {'experiments':100.0}
+        graph.add_node(name)
+        graph.labels = {name:name}
+        graph.weights = {name:100.0}
         
         namespaces = set([exp.split(':')[0] for exp in experiment_types])
         
         for ns in namespaces:
-            graph.add_edge('experiments', ns)
+            graph.add_edge(name, ns)
             graph.weights[ns] = 70.0
 
             for exp in experiment_types:
                 if exp.startswith(ns):
                     graph.add_edge(ns, exp)
                     graph.weights[exp] = 40.0
-
-        self._intf.connection.set_strategy('online')
 
         return graph
 
@@ -301,9 +337,23 @@ class PaintGraph(object):
         plt.axis('off')
         plt.show()
 
-    def experiments(self, project=None):
-        graph = self.get_graph.experiments(project)
+    def experiments(self):
+        graph = self.get_graph.rest_resource('experiments')
+        self._draw_rest_resource(graph)
 
+    def assessors(self):
+        graph = self.get_graph.rest_resource('assessors')
+        self._draw_rest_resource(graph)
+
+    def reconstructions(self):
+        graph = self.get_graph.rest_resource('reconstructions')
+        self._draw_rest_resource(graph)
+
+    def scans(self):
+        graph = self.get_graph.rest_resource('scans')
+        self._draw_rest_resource(graph)
+
+    def _draw_rest_resource(self, graph):
         plt.figure(figsize=(8,8))
         pos = nx.graphviz_layout(graph, prog='twopi', args='')
 
@@ -471,7 +521,4 @@ class SchemasInspector(object):
                         paths.append(path)
 
         return paths
-
-
-        
 

@@ -6,6 +6,7 @@ import tempfile
 import mimetypes
 import zipfile
 import time
+import urllib
 from fnmatch import fnmatch
 
 from ..externals import simplejson as json
@@ -13,12 +14,14 @@ from ..externals import simplejson as json
 from .uriutil import join_uri, translate_uri, uri_segment
 from .uriutil import uri_last, uri_nextlast
 from .uriutil import uri_parent, uri_grandparent
+from .uriutil import uri_shape
 
 from .jsonutil import JsonTable, get_selection
 from .pathutil import find_files
 from .attributes import EAttrs
 from .search import build_search_document, rpn_contraints
 from .errors import is_xnat_error, parse_put_error_message
+from .cache import md5name
 from . import schema
 
 DEBUG = False
@@ -118,15 +121,15 @@ class EObject(object):
             interface: :class:`Interface`
                 Main interface reference.
         """
-        self._uri = translate_uri(uri)
-        self._urn = uri_last(self._uri)
+        self._uri = urllib.quote(translate_uri(uri))
+        self._urn = urllib.unquote(uri_last(self._uri))
         self._urt = uri_nextlast(self._uri)
         self._intf = interface
         self.attrs = EAttrs(self)
 
     def __repr__(self):
         return '<%s Object> %s' % (self.__class__.__name__, 
-                                   uri_last(self._uri)
+                                   urllib.unquote(uri_last(self._uri))
                                    )
 
     def _getcell(self, col):
@@ -309,9 +312,9 @@ class EObject(object):
             for datatype_name, element_name \
                     in parse_put_error_message(output):
 
-                path = self._intf.inspect.schemas.look_for(element_name, 
-                                                           datatype_name
-                                                           )
+                path = self._intf.inspect.schemas.look_for(
+                    element_name, datatype_name)
+
                 paths.extend(path)
 
                 if DEBUG:
@@ -469,44 +472,94 @@ class CObject(object):
 
     def _call(self, columns):
         try:
+            start = time.time()
             uri = translate_uri(self._cbase)
+            uri = urllib.quote(uri)
+
+            request_shape = uri_shape('%s/0' % uri.split('/REST')[1])
+            reqcache = os.path.join(self._intf._cachedir, 
+                                   '%s.struct' % md5name(request_shape)
+                                   ).replace('_*', '')
+
+            gather = uri.split('/')[-1] in ['experiments', 'assessors', 
+                                            'scans', 'reconstructions']
+
+            tick = time.gmtime(time.time())[5] % 30 == 0
+
+            if (not os.path.exists(reqcache) and gather) \
+                    or (gather and tick):
+
+                columns += ['xsiType']
+
+                # nomenclature = {}
+            # if self._intf._struct.has_key(reqcache):
+            #     nomenclature = self._intf._struct[reqcache]
+            # else:
+            #     nomenclature = json.load(open(reqcache, 'rb'))
+                # self._intf._struct[reqcache] = nomenclature
+
             query_string = '?format=json&columns=%s' % ','.join(columns)
-            nomenclature = self._intf.inspect._nomenclature
 
-            for pattern in nomenclature.keys():
-                print pattern,
+            # nomenclature = {}
 
-                print uri_segment(join_uri(uri, self._pattern
-                                         ).split('/REST')[1], -2),
+            # for pattern in nomenclature.keys():
+            #     request_pat = uri_segment(
+            #         join_uri(uri, self._pattern).split('/REST')[1], -2
+            #         )
 
-                print fnmatch(pattern, 
-                              uri_segment(join_uri(uri,self._pattern
-                                                   ).split('/REST')[1], -2))
+            #     # print pattern, request_pat, fnmatch(pattern, request_pat)
+                                              
+            #     if (fnmatch(pattern, request_pat) 
+            #         and nomenclature[pattern] is not None):
 
-                if fnmatch(pattern, 
-                           uri_segment(join_uri(uri,self._pattern
-                                                ).split('/REST')[1], -2)):
+            #         self._filters.setdefault('xsiType', set()
+            #                                  ).add(nomenclature[pattern])
 
-                    self._filters.setdefault('xsiType', set()
-                                             ).add(nomenclature[pattern])
+            # if self._filters != {}:
+            #     query_string += '&' + \
+            #         '&'.join('%s=%s' % (item[0], item[1]) 
+            #                  if isinstance(item[1], (str, unicode)) 
+            #                  else '%s=%s' % (item[0], 
+            #                                  ','.join([val 
+            #                                            for val in item[1]
+            #                                            ])
+            #                                  )
+            #                  for item in self._filters.items()
+            #                  )
 
-            if self._filters != {}:
-                query_string += '&' + \
-                    '&'.join('%s=%s' % (item[0], item[1]) 
-                             if isinstance(item[1], (str, unicode)) 
-                             else '%s=%s' % (item[0], 
-                                             ','.join([val 
-                                                       for val in item[1]
-                                                       ])
-                                             )
-                             for item in self._filters.items()
-                             )
+            print query_string
+            jtable = self._intf._get_json(uri + query_string)
 
-            return self._intf._get_json(uri + query_string)
+            if (not os.path.exists(reqcache) and gather) \
+                    or (gather and tick):
+
+                print 'learn'
+                _type = uri.split('/')[-1]
+                self._learn_from_table(_type, jtable, reqcache)
+
+            print 'request in %s seconds' % (time.time() - start)
+            return jtable
         except Exception, e:
             if DEBUG:
                 raise e
             return []
+
+    def _learn_from_table(self, _type, jtable, reqcache):
+        request_knowledge = {}
+
+        for element in jtable:
+            xsitype = element.get('xsiType')
+            uri = element.get('URI').split('/REST')[1]
+            uri = uri.replace(uri.split('/')[-2], _type)
+            shape = uri_shape(uri)
+
+            request_knowledge[shape] = xsitype
+
+        if os.path.exists(reqcache):
+            previous = json.load(open(reqcache, 'rb'))
+            previous.update(request_knowledge)
+
+        json.dump(request_knowledge, open(reqcache, 'w'))
 
     def __iter__(self):
         if self._ctype == 'cobjectcuri':
@@ -519,7 +572,7 @@ class CObject(object):
 
             for res in self._call([id_header] + self._columns):
                 try:
-                    eid = res[id_header]
+                    eid = urllib.unquote(res[id_header])
                     if fnmatch(eid, self._pattern):
                         klass_name = uri_last(self._cbase
                                               ).rstrip('s').title()
@@ -673,16 +726,20 @@ class CObject(object):
                 a list.
         """
         if args == ():
-            return [uri_last(eobj._uri) for eobj in self]
+            return [urllib.unquote(uri_last(eobj._uri)) for eobj in self]
         else:
             ret = ()
             for arg in args:
                 if arg == 'id':
                     self._id_header = 'ID'
-                    ret += ([uri_last(eobj._uri) for eobj in self], )
+                    ret += ([urllib.unquote(uri_last(eobj._uri)) 
+                             for eobj in self
+                             ], )
                 elif arg == 'label':
                     self._id_header = 'label'
-                    ret +=  ([uri_last(eobj._uri) for eobj in self], )
+                    ret +=  ([urllib.unquote(uri_last(eobj._uri)) 
+                              for eobj in self
+                              ], )
                 else:
                     ret += ([eobj for eobj in self], )
 
@@ -1320,7 +1377,7 @@ class File(EObject):
                                    self._intf._pwd,
                                    self._intf._server.split('//')[1],
                                    self._absuri
-                                   )
+                                 )
 
 class In_File(File):
     __metaclass__ = ElementType
