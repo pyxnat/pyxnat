@@ -228,6 +228,13 @@ class EObject(object):
                 may not appear when listing the resources because the IDs 
                 will appear, not the labels.
 
+            ..note::
+               To set up additional variables for the element at its 
+               creation it is possible to use shortcuts defined in the
+               XNAT REST documentation or xpath in the schema:
+                   element.create(ID='theid')
+                   subject.create(**{'xnat:subjectData/ID':'theid'})
+
             Parameters
             ----------
             params: keywords or dict
@@ -243,8 +250,11 @@ class EObject(object):
 
             Examples
             --------
-                >>> interface.select('/project/PROJECT/subject/SUBJECT/experiment/EXP/scan/SCAN'
-                            ).create(experiments='xnat:mrSessionData', scans='xnat:mrScanData')
+                >>> interface.select('/project/PROJECT/subject'
+                                     '/SUBJECT/experiment/EXP/scan/SCAN'
+                            ).create(experiments='xnat:mrSessionData', 
+                                     scans='xnat:mrScanData'
+                                     )
 
             See Also
             --------
@@ -336,20 +346,29 @@ class EObject(object):
                 as well from the server filesystem.
         """
         delete_uri = self._uri if not delete_files \
-                     else self._uri + '?removeFiles=true'
+            else self._uri + '?removeFiles=true'
 
         return self._intf._exec(delete_uri, 'DELETE')
 
     def get(self):
+        """ Retrieves the XML document corresponding to this element.
+        """
         return self._intf._exec(self._uri+'?format=xml', 'GET')
 
     def children(self, show_names=True):
         """ Returns the children levels of this element.
 
+            Parameters
+            ----------
+            show_name: True | False
+                If True returns a list of strings. If False returns a collection object referencing all child objects of this elements.
+
             Examples
             --------
             >>> subject_object.children()
             ['experiments', 'resources']
+            >>> subject_object.children(False)
+            <Collection Object> 170976556
         """
         children = schema.resources_tree.get(uri_nextlast(self._uri))
 
@@ -360,23 +379,9 @@ class EObject(object):
                        self._intf
                        )
              
-    def absurl(self):
-        """ Returns an absolute URL of the element resource, including the
-            server address and the user login and password.
-
-            .. note::
-            
-                Not used at the moment.
-
-        """
-        return '%s//%s:%s@%s%s' % (self._intf._server.split('//')[0],
-                                   self._intf._user,
-                                   self._intf._pwd,
-                                   self._intf._server.split('//')[1],
-                                   self._uri
-                                   )
-
     def tag(self, name):
+        """ Tag the element.
+        """
         tag = self._intf.manage.tags.get(name)
         if not tag.exists():
             tag.create()
@@ -385,6 +390,8 @@ class EObject(object):
         return tag
 
     def untag(self, name):
+        """ Remove a tag for the element.
+        """
         tag = self._intf.manage.tags.get(name)
         tag.dereference(self._uri)
         if tag.references().get() == []:
@@ -443,6 +450,9 @@ class CObject(object):
                 identifier.
             columns: list
                 Defines additional columns to be returned.
+            filters: dict
+                Defines additional filters for the query, typically options
+                for the query string.
         """
 
         self._intf = interface
@@ -474,7 +484,6 @@ class CObject(object):
 
     def _call(self, columns):
         try:
-            start = time.time()
             uri = translate_uri(self._cbase)
             uri = urllib.quote(uri)
 
@@ -531,17 +540,14 @@ class CObject(object):
             #                  for item in self._filters.items()
             #                  )
 
-            print query_string
             jtable = self._intf._get_json(uri + query_string)
 
             if (not os.path.exists(reqcache) and gather) \
                     or (gather and tick):
 
-                print 'learn'
                 _type = uri.split('/')[-1]
                 self._learn_from_table(_type, jtable, reqcache)
 
-            print 'request in %s seconds' % (time.time() - start)
             return jtable
         except Exception, e:
             if DEBUG:
@@ -757,6 +763,8 @@ class CObject(object):
     fetchall = get
 
     def tag(self, name):
+        """ Tag the collection.
+        """
         tag = self._intf.manage.tags.get(name)
         if not tag.exists():
             tag.create()
@@ -765,6 +773,8 @@ class CObject(object):
         return tag
 
     def untag(self, name):
+        """ Remove the tag from the collection.
+        """
         tag = self._intf.manage.tags.get(name)
         tag.dereference_many([eobj._uri for eobj in self])
         if tag.references().get() == []:
@@ -780,19 +790,22 @@ class CObject(object):
             --------
             The ``where`` clause should be on the first select:
                 >>> for experiment in interface.select('//experiments'
-                >>>                           ).where([('atest/FIELD', '=', 'value'), 'AND']):
-                >>>     print experiment
+                         ).where([('atest/FIELD', '=', 'value'), 'AND']):
+                         
+                         print experiment
 
             Do NOT do this:
                 >>> for experiment in interface.select('//experiments'):
-                >>>     for assessor in experiment.assessors(
-                >>>                              ).where([('atest/FIELD', '=', 'value'), 'AND']):
-                >>>         print assessor
+                        for assessor in experiment.assessors(
+                            ).where([('atest/FIELD', '=', 'value'), 'AND']):
+                            
+                            print assessor
 
             Or this:
                 >>> for project in interface.select('//projects'
-                >>>                        ).where([('atest/FIELD', '=', 'value'), 'AND']):
-                >>>     print project
+                        ).where([('atest/FIELD', '=', 'value'), 'AND']):
+                        
+                        print project
 
             See Also
             --------
@@ -1013,7 +1026,12 @@ class Project(EObject):
     def experiment(self, ID):
         return Experiment('/REST/experiments/%s' % ID, self._intf)
 
-    def timestamps(self):
+    def last_modified(self):
+        """ Gets the last modified dates for all the project subjects.
+
+            If any element related to a subject changes, experiment,
+            variable, scan, image etc... the date will be changed.
+        """
         uri = '%s/subjects?columns=last_modified' % self._uri
 
         return dict(JsonTable(self._intf._get_json(uri), 
@@ -1030,13 +1048,33 @@ class Subject(EObject):
         return 'xnat:subjectData'
 
     def shares(self, id_filter='*'):
+        """ Returns the projects sharing this subject.
+
+            Returns
+            -------
+            Collection object.
+        """
         return Projects(join_uri(self._uri, 'projects'), 
                         self._intf, id_filter)
 
     def share(self, project):
+        """ Share this subject with another project.
+
+            Parameters
+            ----------
+                project: string
+                    The other project name.
+        """
         self._intf._exec(join_uri(self._uri, 'projects', project), 'PUT')
 
     def unshare(self, project):
+        """ Remove subject from another project in which it was shared.
+
+            Parameters
+            ----------
+                project: string
+                    The other project name.
+        """
         self._intf._exec(join_uri(self._uri, 'projects', project), 'DELETE')
 
 
@@ -1044,13 +1082,33 @@ class Experiment(EObject):
     __metaclass__ = ElementType
 
     def shares(self, id_filter='*'):
+        """ Returns the projects sharing this experiment.
+
+            Returns
+            -------
+            Collection object.
+        """
         return Projects(join_uri(self._uri, 'projects'), 
                         self._intf, id_filter)
 
     def share(self, project):
+        """ Share this experiment with another project.
+
+            Parameters
+            ----------
+                project: string
+                    The other project name.
+        """
         self._intf._exec(join_uri(self._uri, 'projects', project), 'PUT')
 
     def unshare(self, project):
+        """ Remove experiment from another project in which it was shared.
+
+            Parameters
+            ----------
+                project: string
+                    The other project name.
+        """
         self._intf._exec(join_uri(self._uri, 'projects', project), 'DELETE')
 
     def trigger_pipelines(self):
@@ -1099,13 +1157,33 @@ class Assessor(EObject):
     __metaclass__ = ElementType
 
     def shares(self, id_filter='*'):
+        """ Returns the projects sharing this assessor.
+
+            Returns
+            -------
+            Collection object.
+        """
         return Projects(join_uri(self._uri, 'projects'), 
                         self._intf, id_filter)
 
     def share(self, project):
+        """ Share this assessor with another project.
+
+            Parameters
+            ----------
+                project: string
+                    The other project name.
+        """
         self._intf._exec(join_uri(self._uri, 'projects', project), 'PUT')
 
     def unshare(self, project):
+        """ Remove assessor from another project in which it was shared.
+
+            Parameters
+            ----------
+                project: string
+                    The other project name.
+        """
         self._intf._exec(join_uri(self._uri, 'projects', project), 'DELETE')
 
 
@@ -1120,6 +1198,31 @@ class Resource(EObject):
     __metaclass__ = ElementType
 
     def get(self, dest_dir, extract=False):
+        """ Downloads all the files within a resource.
+
+            ..warning::
+                Currently XNAT adds parent folders in the zip file that
+                is downloaded to avoid name clashes if several resources
+                are downloaded in the same folder. In order to be able to
+                download the data uploaded previously with the same
+                structure, pyxnat extracts the zip file, remove the exra
+                paths and if necessary re-zips it. Careful, it may take
+                time, and there is the problem of name clashes.
+
+            Parameters
+            ----------
+            dest_dir: string
+                Destination directory for the resource data.
+            extract: True | False
+                If True, the downloaded zip file is extracted.
+                If False, not extracted.
+                
+            Returns
+            -------
+            If extract is False, the zip file path.
+            If extract is True, the list of file paths previously in 
+            the zip.
+        """
         zip_location = os.path.join(dest_dir, uri_last(self._uri) + '.zip')
 
         if dest_dir is not None:
@@ -1172,6 +1275,12 @@ class Resource(EObject):
         return zip_location if os.path.exists(zip_location) else members
 
     def put(self, sources, **datatypes):
+        """ Insert a list of files in a single resource element.
+
+            This method takes all the files an creates a zip with them
+            which will be the element to be uploaded and then extracted on
+            the server.
+        """
         zip_location = tempfile.mkstemp(suffix='.zip')[1]
         
         arcprefix = os.path.commonprefix(sources)
@@ -1187,6 +1296,11 @@ class Resource(EObject):
         os.remove(zip_location)
 
     def put_zip(self, zip_location, **datatypes):
+        """ Uploads a zip file an then extracts it on the server.
+
+            After the zip file is extracted the files are accessible
+            individually, or as a whole using get_zip.
+        """
         if not self.exists():
             self.create(**datatypes)
 
@@ -1194,7 +1308,14 @@ class Resource(EObject):
                   ).put(zip_location)
         
     def put_dir(self, src_dir, **datatypes):
+        """ Finds recursively all the files in a folder and uploads
+            them using `insert`.
+        """
         self.put(find_files(src_dir), **datatypes)
+
+    insert = put
+    insert_zip = put_zip
+    insert_dir = put_dir
 
 class In_Resource(Resource):
     __metaclass__ = ElementType
@@ -1240,7 +1361,15 @@ class File(EObject):
         """ Downloads the file to the cache directory.
 
             .. note::
-                The path is computed like this: ``path_to_cache/urichecksum_filename``
+                The path is computed like this: 
+                ``path_to_cache/urichecksum_filename``
+
+            Parameters
+            ----------
+            dest: None | string
+                If None a default path in the cache folder is automatically
+                computed. Else the file is downloaded at the requested 
+                location.
 
             Returns
             -------

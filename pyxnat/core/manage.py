@@ -11,6 +11,10 @@ from .uriutil import join_uri
 
 
 class GlobalManager(object):
+    """ Mainly a container class to provide a clean interface for all
+        management classes.
+    """
+
     def __init__(self, interface):
         self._intf = interface
 
@@ -42,6 +46,11 @@ class GlobalManager(object):
 
 
 class ProjectManager(object):
+    """ Management interface for projects.
+
+        This functionalities are also available through `Project` objects.
+    """
+
     def __init__(self, project_id, interface):
         self._intf = interface
         project = Project('/REST/projects/%s' % project_id, self._intf)
@@ -64,6 +73,12 @@ class ProjectManager(object):
 
 
 class SchemaManager(object):
+    """ Management interface for XNAT schemas.
+
+        The aim is to provide a minimal set of functionalities to parse
+        and look at XNAT schemas.
+    """
+
     def __init__(self, interface):
         self._intf = interface
         self._trees = {}
@@ -106,6 +121,8 @@ class SchemaManager(object):
             etree.fromstring(self._intf._exec(url))
 
     def remove(self, name):
+        """ Removes a schema.
+        """
         if self._trees.has_key(name):
             del self._trees[name]
 

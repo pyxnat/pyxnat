@@ -159,13 +159,13 @@ def test_get_copy_file():
     fd.close()
     os.remove(fpath)
 
-def test_timestamps():
+def test_last_modified():
     sid = subj_1.id()
 
-    t1 = central.select('/project/nosetests').timestamps()[sid]
+    t1 = central.select('/project/nosetests').last_modified()[sid]
     subj_1.attrs.set('age', '26')
     assert subj_1.attrs.get('age') == '26'
-    t2 = central.select('/project/nosetests').timestamps()[sid]
+    t2 = central.select('/project/nosetests').last_modified()[sid]
 
     assert t1 != t2
 

@@ -17,6 +17,9 @@ DEBUG = False
 
 
 def md5name(key):
+    """ Generates a unique path to store server responses.
+    """
+
     ext = re.findall('.*?(?=(\?format=.+?(?=\?|&|$)|'
                      '\&format=.+?(?=\?|&|$)))', key)
     
@@ -32,6 +35,9 @@ def md5name(key):
     return '%s_%s' % (hashlib.md5(key).hexdigest(), last.replace('=', '.'))
 
 def bytes_to_human(size, unit):
+    """ Returns a more human readable version of a size in bytes.
+    """
+
     if unit == 'mega':
         return float(size) / 1024 ** 2
     elif unit == 'giga':
@@ -40,7 +46,7 @@ def bytes_to_human(size, unit):
         return size
 
 def memstr_to_bytes(text):
-    """ Convert a memory text to it's value in kilobytes.
+    """ Convert a memory text to its value in kilobytes.
     """
     kilo = 1024**2
     units = dict(K=1, M=kilo, G=kilo**2)
@@ -56,6 +62,16 @@ def memstr_to_bytes(text):
 
 class HTCache(object):
     def __init__(self, cachedir, interface, safe=md5name):
+        """
+            Parameters
+            ----------
+            cachedir: string
+                The cache path.
+            interface:
+                `Interface` Object.
+            safe: callable
+                The function used to generate the responses cache paths.
+        """
         self._intf = interface
         
         self.cache = cachedir
@@ -94,6 +110,8 @@ class HTCache(object):
         return retval
 
     def set(self, key, value):
+        """ Sets cache entry.
+        """
         _fakepath = '%s.alt' % os.path.join(self.cache, self.safe(key))
         _headerpath = '%s.headers' % os.path.join(self.cache, self.safe(key))
         _cachepath = os.path.join(self.cache, self.safe(key))
@@ -155,9 +173,17 @@ class HTCache(object):
         f.close()
 
     def preset(self, path):
+        """ Sets and forces a path for the next entry to be set.
+
+            ..note::
+                 Basically it is a way to trick the cache mechanism into
+                 using something else than the default path to store entries.
+        """
         self._cachepath = path
 
     def delete(self, key):
+        """ Deletes the entry.
+        """
         _cachepath = os.path.join(self.cache, self.safe(key))
         _fakepath = '%s.alt' % _cachepath
         _headerpath = '%s.headers' % _cachepath
@@ -178,6 +204,9 @@ class HTCache(object):
             os.remove(_headerpath)
 
     def get_diskpath(self, key):
+        """ Gets the disk path where the entry is stored (default path 
+            or not)
+        """
         _cachepath = os.path.join(self.cache, self.safe(key))
         _fakepath = '%s.alt' % _cachepath
 
@@ -191,11 +220,21 @@ class HTCache(object):
 
 
 class CacheManager(object):
+    """ Management interface for the cache.
+
+        It provides a few methods to::
+            - evaluate the size a the cache
+            - check if there is space left on the disk
+            - clear the cache
+            - define cache usage parameters
+    """
     def __init__(self, interface):
         self._intf = interface
         self._cache = interface._conn.cache
 
     def clear(self):
+        """ Clears all files tracked by pyxnat.
+        """
         for _fakepath in glob.iglob('%s/*.alt' % self._cache.cache):
             f = file(_fakepath, "rb")
             _altpath = f.read()
@@ -236,6 +275,8 @@ class CacheManager(object):
         return bytes_to_human(size, unit)
 
     def available_disk(self, path=None, unit='bytes'):
+        """ Available disk on partition. Default location is cache folder.
+        """
         if path is None:
             path = self._cache.cache
 
@@ -258,12 +299,16 @@ class CacheManager(object):
             return bytes_to_human(cache_st.f_bavail * cache_st.f_bsize, unit)
 
     def used_disk(self, path=None, unit='bytes'):
+        """ Used disk on partition. Default location is cache folder.
+        """
         if path is None:
             path = self._cache.cache
 
         return self.total_disk(path, unit) - self.available_disk(path, unit)
 
     def total_disk(self, path=None, unit='bytes'):
+        """ Total disk on partition. Default location is cache folder.
+        """
         if path is None:
             path = self._cache.cache
 
@@ -287,6 +332,9 @@ class CacheManager(object):
             return bytes_to_human(cache_st.f_blocks * cache_st.f_bsize, unit)
 
     def disk_ready(self, path=None, ready_ratio=90.0):
+        """ Checks the status of the disk. Basically if there is enough space
+            left. The default location is cache dir.
+        """
         if path is None:
             path = self._cache.cache
 
@@ -320,4 +368,3 @@ class CacheManager(object):
             self._intf._memtimeout = expiration
         else:
             self._intf._memtimeout = expiration
-
