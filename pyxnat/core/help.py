@@ -38,10 +38,10 @@ class Inspector(object):
         """ Once in a while queries will persist additional
             information on the server. This information is available
             through the following methods of this class:
-            - experiment_types
-            - assessor_types
-            - scan_types
-            - reconstruction_types
+                - experiment_types
+                - assessor_types
+                - scan_types
+                - reconstruction_types
 
             It is also transparently used in insert operations.
 
@@ -68,14 +68,13 @@ class Inspector(object):
             pattern: string
                 Pattern for the datatype. May include wildcards.
             fields_pattern: string
-                Pattern for the datafields. May include wildcards. If
-                specified, datafields will be returned instead of
-                datatypes.
+                - Pattern for the datafields -- may include wildcards. 
+                - If specified, datafields will be returned instead of
+                  datatypes.
                 
             Returns
             -------
-            List of datatypes or datafields depending on the argument
-            usage.
+            list : datatypes or datafields depending on the argument usage.
         """
 
         search_els = self._get_json('/REST/search/elements?format=json')
@@ -112,7 +111,7 @@ class Inspector(object):
             
             See Also
             --------
-            Inspector.set_autolean()
+            Inspector.set_autolearn()
         """
         return self._resource_types('experiment')
 
@@ -122,7 +121,7 @@ class Inspector(object):
             
             See Also
             --------
-            Inspector.set_autolean()
+            Inspector.set_autolearn()
         """
         return self._resource_types('assessor')
 
@@ -132,7 +131,7 @@ class Inspector(object):
             
             See Also
             --------
-            Inspector.set_autolean()
+            Inspector.set_autolearn()
         """
         return self._resource_types('reconstruction')
 
@@ -142,7 +141,7 @@ class Inspector(object):
             
             See Also
             --------
-            Inspector.set_autolean()
+            Inspector.set_autolearn()
         """
         return self._resource_types('scan')
 
@@ -224,8 +223,6 @@ class Inspector(object):
                 An experiment type.
             project: string
                 Optional. Restrict operation to a project.
-            project: string
-                Optional. Restrict operation to a project.
         """
         return self._sub_experiment_values('assessor', 
                                            project, experiment_type)
@@ -248,8 +245,6 @@ class Inspector(object):
                 An experiment type.
             project: string
                 Optional. Restrict operation to a project.
-            project: string
-                Optional. Restrict operation to a project.
         """
         return self._sub_experiment_values('scan', project, experiment_type)
 
@@ -269,8 +264,6 @@ class Inspector(object):
             ----------
             datatype: string
                 An experiment type.
-            project: string
-                Optional. Restrict operation to a project.
             project: string
                 Optional. Restrict operation to a project.
         """

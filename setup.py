@@ -20,7 +20,7 @@ if not 'extra_setuptools_args' in globals():
 
 setup(name='pyxnat',
       version=pyxnat.__version__,
-      summary='Xnat in Python',
+      summary='XNAT in Python',
       author='Yannick Schwartz',
       author_email='yannick.schwartz@cea.fr',
       url='http://packages.python.org/pyxnat/',

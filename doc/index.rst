@@ -15,6 +15,7 @@ pyxnat: Xnat in Python
     starters_tutorial.rst
     advanced_tutorial.rst
     reference_documentation.rst
+    CHANGES.rst
 
 Introduction
 ------------

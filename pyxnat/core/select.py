@@ -200,8 +200,8 @@ def compute(path):
 
 
 class Select(object):
-    """ Data selection interface. 
-        Callable object that indicates the data to be returned to the user.
+    """ Data selection interface. Callable object that indicates the
+        data to be returned to the user.
 
         Examples
         --------
@@ -209,9 +209,14 @@ class Select(object):
                 >>> interface.select('/projects/myproj/subjects').get()
 
             Select with a datatype:
-                >>> interface.select('xnat:subjectData', 
-                ['xnat:subjectData/PROJECT', 'xnat:subjectData/SUBJECT_ID']
-                            ).where([('xnat:subjectData/SUBJECT_ID', 'LIKE', '*'), 'AND'])
+                >>> columns = ['xnat:subjectData/PROJECT', 
+                               'xnat:subjectData/SUBJECT_ID'
+                               ]
+                >>> criteria = [('xnat:subjectData/SUBJECT_ID', 'LIKE', '*'),
+                                'AND'
+                                ]
+                >>> interface.select('xnat:subjectData', columns
+                            ).where(criteria)
     """
     def __init__(self, interface):
         """ 
@@ -259,10 +264,10 @@ class Select(object):
             ----------
             datatype_or_path: string
                 Can either be a resource path or a datatype:
-                 - when a path, REST resources are returned, the `columns` 
-                   argument is useless.
-                 - when a datatype, a search Object is returned, the 
-                 `columns` argument has to be specified.
+                    - when a path, REST resources are returned, the 
+                      `columns` argument is useless.
+                    - when a datatype, a search Object is returned,
+                      the `columns` argument has to be specified.
             columns: list
                 List of fieldtypes e.g. xnat:subjectData/SUBJECT_ID
                 Datatype and columns are used to specify the search table 

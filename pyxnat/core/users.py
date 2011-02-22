@@ -11,9 +11,9 @@ class Users(object):
 
         Examples
         --------
-            >>> interface.users()
+            >>> interface.manage.users()
             ['list_of_users']
-            >>> interface.firstname('nosetests')
+            >>> interface.manage.users.firstname('nosetests')
             'nose'
 
         See Also

@@ -279,7 +279,7 @@ class Interface(object):
 
             .. warning::
                 Since the password is saved as well, make sure the file
-                is saved at a safe location with correct permissions.
+                is saved at a safe location with appropriate permissions.
 
             Parameters
             ----------

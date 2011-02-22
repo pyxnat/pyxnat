@@ -222,33 +222,32 @@ class EObject(object):
             Any non-existing ancestor will be created as well.
 
             .. warning::
-
-                An element resource both have an ID and a label that can 
-                be used to access it. At the moment, XNAT REST API defines 
-                the label when creating an element, but not the ID, which 
-                is generated. It means that the `name` given to a resource
-                may not appear when listing the resources because the IDs 
-                will appear, not the labels.
+                An element resource both have an ID and a label that
+                can be used to access it. At the moment, XNAT REST API
+                defines the label when creating an element, but not
+                the ID, which is generated. It means that the `name`
+                given to a resource may not appear when listing the
+                resources because the IDs will appear, not the labels.
 
             .. note::
-               To set up additional variables for the element at its 
+               To set up additional variables for the element at its
                creation it is possible to use shortcuts defined in the
-               XNAT REST documentation or xpath in the schema::
-                   element.create(ID='theid')
-                   subject.create(**{'xnat:subjectData/ID':'theid'})
+               XNAT REST documentation or xpath in the schema:
+                   - element.create(ID='theid')
+                   - subject.create(**{'xnat:subjectData/ID':'theid'})
+
 
             Parameters
             ----------
             params: keywords
-                Specify the datatype of the element resource and of any 
-                ancestor that may need to be created. The keywords 
-                correspond to the levels in the REST hierarchy, 
-                i.e. Interface.inspect.rest_hierarchy()
-
-                If an element is created with no specified type:
-                    - if its name matches a naming convention, this type 
-                    will be used
-                    - else a default type is defined in the schema module
+                - Specify the datatype of the element resource and of
+                  any ancestor that may need to be created. The
+                  keywords correspond to the levels in the REST
+                  hierarchy, see Interface.inspect.architecture()
+                - If an element is created with no specified type:
+                      - if its name matches a naming convention, this type 
+                        will be used
+                      - else a default type is defined in the schema module
 
             Examples
             --------
@@ -410,13 +409,14 @@ class CObject(object):
             - a collection URI e.g. /REST/projects
             - a list of element URIs
             - a list of collections 
-            e.g. /REST/projects/ONE/subjects and /REST/projects/TWO/subjects
+               e.g. /REST/projects/ONE/subjects **AND** 
+               /REST/projects/TWO/subjects
             - a list of element objects
             - a list a collection objects
 
         Collections objects built in different ways share the same behavior:
             - they behave as iterators, which enables a lazy access to 
-            the data
+              the data
             - they always yield EObjects
             - they can be nested with any other collection
 
@@ -735,11 +735,12 @@ class CObject(object):
 
             Parameters
             ----------
-            args: ID, label, obj
-                Specify to return the element ID, label or Object.
-                Any combination of ID, label and obj is valid, if more 
-                than one is given, a list of tuple is returned instead of 
-                a list.
+            args: strings
+                - Specify the information to return for the elements
+                  within ID, label and Object.
+                - Any combination of ID, label and obj is valid, if
+                  more than one is given, a list of tuple is returned
+                  instead of a list.
         """
         if args == ():
             return [urllib.unquote(uri_last(eobj._uri)) for eobj in self]
@@ -795,21 +796,18 @@ class CObject(object):
             The ``where`` clause should be on the first select:
                 >>> for experiment in interface.select('//experiments'
                          ).where([('atest/FIELD', '=', 'value'), 'AND']):
-                         
-                         print experiment
+                >>>      print experiment
 
-            Do NOT do this:
+            Do **NOT** do this:
                 >>> for experiment in interface.select('//experiments'):
                         for assessor in experiment.assessors(
                             ).where([('atest/FIELD', '=', 'value'), 'AND']):
-                            
-                            print assessor
+                >>>         print assessor
 
             Or this:
                 >>> for project in interface.select('//projects'
                         ).where([('atest/FIELD', '=', 'value'), 'AND']):
-                        
-                        print project
+                >>>     print project
 
             See Also
             --------
@@ -922,18 +920,20 @@ class Project(EObject):
     def set_accessibility(self, accessibility='protected'):
         """ Sets project accessibility.
 
+            .. note::
+                Write access is given or not by the user level for a 
+                specific project.
+
             Parameters
             ----------
             accessibility: public | protected | private
                 Sets the project accessibility:
                     - public: the project is visible and provides read 
-                    access for anyone.
+                      access for anyone.
                     - protected: the project is visible by anyone but the 
-                    data is accessible for allowed users only.
+                      data is accessible for allowed users only.
                     - private: the project is visible by allowed users only.
 
-                Write access is given or not by the user level for a 
-                specic project.
         """
         return self._intf._exec(join_uri(self._uri, 'accessibility', 
                                          accessibility), 'PUT')
@@ -975,7 +975,7 @@ class Project(EObject):
 
             Returns
             -------
-            owner | member | collaborator
+            string : owner | member | collaborator
 
         """
         return JsonTable(self._intf._get_json(join_uri(self._uri, 'users'))
@@ -984,7 +984,7 @@ class Project(EObject):
 
     def add_user(self, login, role='member'):
         """ Adds a user to the project. The user must already exist on 
-        the server.
+            the server.
 
             Parameters
             ----------
@@ -993,10 +993,10 @@ class Project(EObject):
             role: owner | member | collaborator
                 The user level for this project:
                     - owner: read and write access, as well as 
-                    administrative privileges such as adding and removing
-                    users.
+                      administrative privileges such as adding and removing
+                      users.
                     - member: read access and can create new resources but 
-                    not remove them.
+                      not remove them.
                     - collaborator: read access only.
         """
         self._intf._exec(join_uri(self._uri, 'users', 
@@ -1355,7 +1355,7 @@ class File(EObject):
 
             Returns
             -------
-            A dictionnary with the file attributes.
+            dict : a dictionnary with the file attributes
         """
 
         return self._getcells(['URI', 'Name', 'Size', 
@@ -1365,19 +1365,19 @@ class File(EObject):
         """ Downloads the file to the cache directory.
 
             .. note::
-                The path is computed like this: 
-                ``path_to_cache/urichecksum_filename``
+                The default cache path is computed like this: 
+                ``path_to_cache/md5(uri + query_string)_filename``
 
             Parameters
             ----------
-            dest: None | string
-                If None a default path in the cache folder is automatically
-                computed. Else the file is downloaded at the requested 
-                location.
+            dest: string | None
+                - If None a default path in the cache folder is
+                  automatically computed. 
+                - Else the file is downloaded at the requested location.
 
             Returns
             -------
-            The location of the file in the cache directory .
+            string : the file location.
         """
 
         start = time.time()
@@ -1402,12 +1402,13 @@ class File(EObject):
             Parameters
             ----------
             dest: string | None
-                Path for the copy. Defaults to None.
-                If None a copy is created at a default location.
+                - file path for the copy
+                - if None a copy is created at a default location based
+                  on the file URI on the server
 
             Returns
             -------
-            The location of the copy.
+            string : the copy location.
         """
 
         if not dest:

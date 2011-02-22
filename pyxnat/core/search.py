@@ -226,13 +226,16 @@ class SearchManager(object):
 
         Examples
         --------
-            >>> interface.search.save(name='mysearch', 
-                                      row='xnat:subjectData',
-                                      columns=['xnat:subjectData/PROJECT','xnat:subjectData/SUBJECT_ID'],
-                                      constraints=[('xnat:subjectData/SUBJECT_ID', 'LIKE', '*'), 'AND'],
-                                      sharing='public'
-                                      )
-
+            >>> row = 'xnat:subjectData'
+            >>> columns = ['xnat:subjectData/PROJECT',
+                           'xnat:subjectData/SUBJECT_ID'
+                           ]
+            >>> criteria = [('xnat:subjectData/SUBJECT_ID', 'LIKE', '*'), 
+                            'AND'
+                            ]
+            >>> interface.manage.search.save('mysearch', row, columns,
+                                             criteria, sharing='public'
+                                             )
     """
     def __init__(self, interface):
         self._intf = interface
@@ -243,8 +246,8 @@ class SearchManager(object):
             Parameters
             ----------
             name: string
-                Name of the query displayed on the Web Interface and used
-                to get back the results.
+                Name of the query displayed on the Web Interface and
+                used to get back the results.
             row: string
                 Datatype from `Interface.inspect.datatypes()`.
                 Usually ``xnat:subjectData``
