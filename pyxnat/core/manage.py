@@ -110,8 +110,11 @@ class SchemaManager(object):
             ----------
             url: str
                 url of the schema relative to the server.
-                e.g. for http://central.xnat.org/schemas/xnat/xnat.xsd
-                     give schemas/xnat/xnat.xsd
+                    e.g. for
+                    http://central.xnat.org/schemas/xnat/xnat.xsd give
+                    ``schemas/xnat/xnat.xsd`` or even only
+                    ``xnat.xsd``
+
         """
         self._init()
         

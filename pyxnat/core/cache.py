@@ -358,9 +358,11 @@ class CacheManager(object):
             Parameters
             ----------
             mode: string
-                'online' or 'offline' . Online will always query the
-                server to have up to date data. Offline will only try
-                to query the server if the data is not cached.
+                'online' or 'offline':
+                    - online will always query the server to have up
+                      to date data.
+                    - offline will only try to query the server if the
+                      data is not cached.
             expiration: float
                 Relevant only to online mode. The cache has an
                 expiration mechanism. If two queries on the same

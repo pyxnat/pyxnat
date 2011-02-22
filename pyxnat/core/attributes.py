@@ -66,16 +66,14 @@ class EAttrs(object):
             path: string
                 The xpath of the attribute relative to the element.
             value: string
-
                 The attribute's value. Note that the python type is
                 always a string but the content of the value must
                 match what is defined in the schema.
-
-                e.g. an element defined as a float in the schema must
-                be given a string containing a number, a valid date
-                must follow the ISO 8601 which is the standard
-                representation for dates and times established by the
-                W3C.
+                    e.g. an element defined as a float in the schema
+                    must be given a string containing a number, a
+                    valid date must follow the ISO 8601 which is the
+                    standard representation for dates and times
+                    established by the W3C.
         """
         put_uri = self._eobj._uri+'?%s=%s' % (urllib.quote(path), 
                                               urllib.quote(value)
@@ -159,7 +157,8 @@ class EAttrs(object):
 
             Returns
             -------
-            Ordered list of values (in the order of the requested paths)
+            list: ordered list of values (in the order of the
+            requested paths)
         """
 
         query_str = '?columns=ID,%s' % ','.join(paths)

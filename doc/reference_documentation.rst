@@ -55,6 +55,12 @@ The `File` class
 .. autoclass:: pyxnat.core.resources.File
     :members:
 
+The `Attributes` class
+~~~~~~~~~~~~~~~~~~~~~~
+
+.. autoclass:: pyxnat.core.attributes.EAttrs
+    :members:
+
 The `Users` class
 ~~~~~~~~~~~~~~~~~
 
@@ -65,5 +71,17 @@ The `Inspector` class
 ~~~~~~~~~~~~~~~~~~~~~
 
 .. autoclass:: pyxnat.core.help.Inspector
+    :members:
+
+The `CacheManager` class
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. autoclass:: pyxnat.core.cache.CacheManager
+    :members:
+
+The `SchemaManager` class
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. autoclass:: pyxnat.core.manage.SchemaManager
     :members:
 
