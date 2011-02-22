@@ -117,7 +117,9 @@ class EObject(object):
             Parameters
             ----------
             uri: string
-                URI for an element resource. e.g. /REST/projects/my_project
+                URI for an element resource. 
+                e.g. /REST/projects/my_project
+
             interface: :class:`Interface`
                 Main interface reference.
         """
@@ -228,16 +230,16 @@ class EObject(object):
                 may not appear when listing the resources because the IDs 
                 will appear, not the labels.
 
-            ..note::
+            .. note::
                To set up additional variables for the element at its 
                creation it is possible to use shortcuts defined in the
-               XNAT REST documentation or xpath in the schema:
+               XNAT REST documentation or xpath in the schema::
                    element.create(ID='theid')
                    subject.create(**{'xnat:subjectData/ID':'theid'})
 
             Parameters
             ----------
-            params: keywords or dict
+            params: keywords
                 Specify the datatype of the element resource and of any 
                 ancestor that may need to be created. The keywords 
                 correspond to the levels in the REST hierarchy, 
@@ -341,9 +343,9 @@ class EObject(object):
 
             Parameters
             ----------
-            delete_files: True | False
-                Tells if files attached to the element resources are removed
-                as well from the server filesystem.
+            delete_files: boolean
+                Tells if files attached to the element resources are
+                removed as well from the server filesystem.
         """
         delete_uri = self._uri if not delete_files \
             else self._uri + '?removeFiles=true'
@@ -360,8 +362,10 @@ class EObject(object):
 
             Parameters
             ----------
-            show_name: True | False
-                If True returns a list of strings. If False returns a collection object referencing all child objects of this elements.
+            show_name: boolean
+                If True returns a list of strings. If False returns a
+                collection object referencing all child objects of
+                this elements.
 
             Examples
             --------
@@ -1132,11 +1136,11 @@ class Experiment(EObject):
             
             Parameters
             ----------
-            pipelines: True | False
+            pipelines: boolean
                 Same as trigger_pipelines.
-            fix_types: True | False
+            fix_types: boolean
                 Same as fix_scan_types.
-            scan_headers: True | False
+            scan_headers: boolean
                 Same as pull_data_from headers.
         """
         if not all([not pipelines, not fix_types, not scan_headers]):
@@ -1213,7 +1217,7 @@ class Resource(EObject):
             ----------
             dest_dir: string
                 Destination directory for the resource data.
-            extract: True | False
+            extract: boolean
                 If True, the downloaded zip file is extracted.
                 If False, not extracted.
                 

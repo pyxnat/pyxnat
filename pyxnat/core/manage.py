@@ -85,10 +85,17 @@ class SchemaManager(object):
 
     def _init(self):
         if self._trees == {}:
-            cache_template = '%s/*.xsd' % self._intf._cachedir
+            cache_template = '%s/*.xsd.headers' % self._intf._cachedir
 
             for entry in glob.iglob(cache_template):
-                url  = re.findall('schemas/.*', entry)[0]
+                hfp = open(entry, 'rb')
+                content = hfp.read()
+                hfp.close()
+
+                url = re.findall('(?<=content-location:\s%s)'
+                                 '.*?(?=\r{0,1}\n)' % self._intf._server, 
+                                 content)[0]
+
                 self._trees[url.split('/')[-1]] = \
                     etree.fromstring(self._intf._exec(url))
 

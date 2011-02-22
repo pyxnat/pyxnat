@@ -68,7 +68,7 @@ class HTCache(object):
             cachedir: string
                 The cache path.
             interface:
-                `Interface` Object.
+                :class:`Interface` Object
             safe: callable
                 The function used to generate the responses cache paths.
         """
@@ -175,9 +175,10 @@ class HTCache(object):
     def preset(self, path):
         """ Sets and forces a path for the next entry to be set.
 
-            ..note::
-                 Basically it is a way to trick the cache mechanism into
-                 using something else than the default path to store entries.
+            .. note::
+                 Basically it is a way to trick the cache mechanism
+                 into using something else than the default path to
+                 store entries.
         """
         self._cachepath = path
 
@@ -229,6 +230,13 @@ class CacheManager(object):
             - define cache usage parameters
     """
     def __init__(self, interface):
+        """
+            Parameters
+            ----------
+            interface: 
+                :class:`Interface` Object
+
+        """
         self._intf = interface
         self._cache = interface._conn.cache
 
@@ -255,8 +263,8 @@ class CacheManager(object):
                 unit in which to return the size
                 can be bytes (default), mega or giga
 
-            Return
-            ------
+            Returns
+            -------
             size: float
         """
         size = 0
@@ -350,15 +358,15 @@ class CacheManager(object):
             Parameters
             ----------
             mode: string
-                'online' or 'offline'
-                online will always query the server to have up to date data
-                offline will only try to query the server if the data is not
-                cached
+                'online' or 'offline' . Online will always query the
+                server to have up to date data. Offline will only try
+                to query the server if the data is not cached.
             expiration: float
-                Relevant only to online mode. The cache has an expiration 
-                mechanism. If two queries on the same resource are issued 
-                under the specified value, the cache will be used and the 
-                server will not be requested.
+                Relevant only to online mode. The cache has an
+                expiration mechanism. If two queries on the same
+                resource are issued under the specified value, the
+                cache will be used and the server will not be
+                requested.
         """
         if mode == 'online':
             self._intf._mode = 'online'

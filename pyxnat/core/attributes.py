@@ -7,13 +7,39 @@ from .schema import datatype_attributes
 
 
 class EAttrs(object):
+    """ Accessor class to resource fields.
+
+        Help to retrieve the attributes paths relevant to this element::
+            >>> subject.attrs()
+            ['xnat:subjectData/sharing', 
+             'xnat:subjectData/sharing/share',
+             'xnat:subjectData/resources',
+             ...
+             'xnat:subjectData/experiments/experiment'
+             ]
+
+         All paths are not valid but they give an indication of what
+         is available. To retrieve the paths, the corresponding
+         schemas must be downloaded first through the schema
+         management interface in order to be parsed::
+             >>> interface.manage.schemas.add('xnat.xsd')
+             >>> interface.manage.schemas.add('myschema/myschema.xsd')
+    """
     def __init__(self, eobj):
+        """ 
+            Parameters
+            ----------
+            eobj: 
+                :class:`EObject` Object
+        """
         self._eobj = eobj
         self._intf = eobj._intf
         self._datatype = None
         self._id = None
 
     def __call__(self):
+        """ List the attributes paths relevant to this element.
+        """
         paths = []
         self._intf.manage.schemas._init()
         for root in self._intf.manage.schemas._trees.values():
@@ -33,6 +59,24 @@ class EAttrs(object):
         return self._id
 
     def set(self, path, value):
+        """ Set an attribute.
+
+            Parameters
+            ----------
+            path: string
+                The xpath of the attribute relative to the element.
+            value: string
+
+                The attribute's value. Note that the python type is
+                always a string but the content of the value must
+                match what is defined in the schema.
+
+                e.g. an element defined as a float in the schema must
+                be given a string containing a number, a valid date
+                must follow the ISO 8601 which is the standard
+                representation for dates and times established by the
+                W3C.
+        """
         put_uri = self._eobj._uri+'?%s=%s' % (urllib.quote(path), 
                                               urllib.quote(value)
                                               )
@@ -40,6 +84,20 @@ class EAttrs(object):
         self._intf._exec(put_uri, 'PUT')
 
     def mset(self, dict_attrs):
+        """ Set multiple attributes at once.
+
+            It is more efficient to use this method instead of
+            multiple times the `set()` method when setting more than
+            one attribute because only a single HTTP call is issued to
+            the server.
+
+            Parameters
+            ----------
+            dict_attrs: dict
+                The dict of key values to set. It follows the same
+                principles as the single `set()` method.
+        """
+
         query_str = '?' + '&'.join(['%s=%s' % (urllib.quote(path), 
                                                urllib.quote(val)
                                                ) 
@@ -52,6 +110,21 @@ class EAttrs(object):
         self._intf._exec(put_uri, 'PUT')
 
     def get(self, path):
+        """ Get an attribute value.
+
+            .. note::
+                The value is always returned in a Python string. It must
+                be explicitly casted or transformed if needed.
+
+            Parameters
+            ----------
+            path: string
+                The xpath of the attribute relative to the element.
+
+            Returns
+            -------
+            A string containing the value.
+        """
         query_str = '?columns=ID,%s' % path
 
         get_uri = uri_parent(self._eobj._uri) + query_str
@@ -72,6 +145,23 @@ class EAttrs(object):
         return jdata.get(header).replace('\s', ' ')
 
     def mget(self, paths):
+        """ Set multiple attributes at once.
+
+            It is more efficient to use this method instead of
+            multiple times the `get()` method when getting more than
+            one attribute because only a single HTTP call is issued to
+            the server.
+
+            Parameters
+            ----------
+            paths: list
+                List of attributes' paths.
+
+            Returns
+            -------
+            Ordered list of values (in the order of the requested paths)
+        """
+
         query_str = '?columns=ID,%s' % ','.join(paths)
         get_uri = uri_parent(self._eobj._uri) + query_str
 

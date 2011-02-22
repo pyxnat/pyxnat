@@ -22,7 +22,8 @@ class Inspector(object):
         """ 
             Parameters
             ----------
-            interface: Interface Object
+            interface: 
+                :class:`Interface` Object
         """
         self._nomenclature = {}
 
@@ -34,10 +35,48 @@ class Inspector(object):
         self.schemas = SchemasInspector(interface)
 
     def set_autolearn(self, auto=True, tick=30):
+        """ Once in a while queries will persist additional
+            information on the server. This information is available
+            through the following methods of this class:
+            - experiment_types
+            - assessor_types
+            - scan_types
+            - reconstruction_types
+
+            It is also transparently used in insert operations.
+
+            Parameters
+            ----------
+            auto: boolean
+                True to enable auto learn. False to disable.
+            tick: int
+                Every 'tick' seconds, if a query is issued, additional
+                information will be persisted.
+
+            See Also
+            --------
+            EObject.insert()
+        """
         self._auto = auto
         self._tick = tick
         
     def datatypes(self, pattern='*', fields_pattern=None):
+        """ Discovers the datatypes and datafields of the database.
+
+            Parameters
+            ----------
+            pattern: string
+                Pattern for the datatype. May include wildcards.
+            fields_pattern: string
+                Pattern for the datafields. May include wildcards. If
+                specified, datafields will be returned instead of
+                datatypes.
+                
+            Returns
+            -------
+            List of datatypes or datafields depending on the argument
+            usage.
+        """
 
         search_els = self._get_json('/REST/search/elements?format=json')
 
@@ -68,19 +107,48 @@ class Inspector(object):
                 ]
 
     def experiment_types(self):
+        """ Returns the datatypes used at the experiment level in this 
+            database.
+            
+            See Also
+            --------
+            Inspector.set_autolean()
+        """
         return self._resource_types('experiment')
 
     def assessor_types(self):
+        """ Returns the datatypes used at the assessor level in this 
+            database.
+            
+            See Also
+            --------
+            Inspector.set_autolean()
+        """
         return self._resource_types('assessor')
 
     def reconstruction_types(self):
+        """ Returns the datatypes used at the reconstruction level in this 
+            database.
+            
+            See Also
+            --------
+            Inspector.set_autolean()
+        """
         return self._resource_types('reconstruction')
 
     def scan_types(self):
+        """ Returns the datatypes used at the scan level in this 
+            database.
+            
+            See Also
+            --------
+            Inspector.set_autolean()
+        """
         return self._resource_types('scan')
 
     def field_values(self, field_name):
-
+        """ Look for the values a specific datafield takes in the database. 
+        """
         search_tbl = Search(field_name.split('/')[0], 
                             [field_name], self._intf
                             )
@@ -94,9 +162,19 @@ class Inspector(object):
                     )
 
     def project_values(self):
+        """ Look for the values a the project level in the database.
+
+            .. note::
+                Is equivalent to interface.select.projects().get()
+        """
         return get_column(self._get_json('/REST/projects'), 'ID')
 
     def subject_values(self, project=None):
+        """ Look for the values a the subject level in the database.
+
+            .. note::
+                Is equivalent to interface.select('//subjects').get()
+        """
         uri = '/REST/subjects?columns=ID'
 
         if project is not None:
@@ -105,6 +183,21 @@ class Inspector(object):
         return get_column(self._get_json(uri), 'ID')
 
     def experiment_values(self, datatype, project=None):
+        """ Look for the values a the experiment level for a given datatype
+            in the database.
+
+            .. note:: 
+                The  datatype should be one of Inspector.experiment_types()
+
+            Parameters
+            ----------
+            datatype: string
+                An experiment type.
+            project: string
+                Optional. Restrict operation to a project.
+            project: string
+                Optional. Restrict operation to a project.
+        """
         uri = '/REST/experiments?columns=ID'
         if datatype is not None:
             uri += '&xsiType=%s' % datatype
@@ -114,17 +207,79 @@ class Inspector(object):
         return get_column(self._get_json(uri), 'ID')
 
     def assessor_values(self, experiment_type, project=None):
+        """ Look for the values at the assessor level for a given experiment
+            type in the database.
+
+            .. note::
+               The experiment type should be one of 
+               Inspector.experiment_types()
+
+            .. warning::
+                Depending on the number of elements the operation may
+                take a while.
+
+            Parameters
+            ----------
+            datatype: string
+                An experiment type.
+            project: string
+                Optional. Restrict operation to a project.
+            project: string
+                Optional. Restrict operation to a project.
+        """
         return self._sub_experiment_values('assessor', 
                                            project, experiment_type)
 
     def scan_values(self, experiment_type, project=None):
+        """ Look for the values at the scan level for a given experiment
+            type in the database.
+
+            .. note::
+               The experiment type should be one of 
+               Inspector.experiment_types()
+
+            .. warning::
+                Depending on the number of elements the operation may
+                take a while.
+
+            Parameters
+            ----------
+            datatype: string
+                An experiment type.
+            project: string
+                Optional. Restrict operation to a project.
+            project: string
+                Optional. Restrict operation to a project.
+        """
         return self._sub_experiment_values('scan', project, experiment_type)
 
     def reconstruction_values(self, experiment_type, project=None):
+        """ Look for the values at the reconstruction level for a given 
+            experiment type in the database.
+
+            .. note::
+               The experiment type should be one of 
+               Inspector.experiment_types()
+
+            .. warning::
+                Depending on the number of elements the operation may
+                take a while.
+
+            Parameters
+            ----------
+            datatype: string
+                An experiment type.
+            project: string
+                Optional. Restrict operation to a project.
+            project: string
+                Optional. Restrict operation to a project.
+        """
         return self._sub_experiment_values('reconstruction', 
                                            project, experiment_type)
 
     def architecture(self):
+        """ Displays the keywords structure used in XNAT REST API.
+        """
         def traverse(coll, lvl):
             for key in schema.resources_tree[coll]:
                 print '%s+%s' % (' ' * lvl, key.upper())
@@ -180,33 +335,33 @@ class GraphData(object):
         self._intf = interface
         self._nomenclature = interface.inspect._nomenclature
 
-    def link(self, subjects, fields):
+    # def link(self, subjects, fields):
         
-        criteria = [('xnat:subjectData/SUBJECT_ID', '=', _id) 
-                    for _id in subjects
-                    ]
-        criteria += ['OR']
-        # variables = ['xnat:subjectData/SUBJECT_ID'] + fields
+    #     criteria = [('xnat:subjectData/SUBJECT_ID', '=', _id) 
+    #                 for _id in subjects
+    #                 ]
+    #     criteria += ['OR']
+    #     # variables = ['xnat:subjectData/SUBJECT_ID'] + fields
 
-        subject_id = 'xnat:subjectData/SUBJECT_ID'
+    #     subject_id = 'xnat:subjectData/SUBJECT_ID'
 
-        for field in fields:
+    #     for field in fields:
 
-            field_tbl = self._intf.select('xnat:subjectData', 
-                                          [subject_id, field]
-                                          ).where(criteria)
-            head = field_tbl.headers()
-            head.remove('subject_id')
-            head = head[0]
-            possible = set(field_tbl.get(head))
+    #         field_tbl = self._intf.select('xnat:subjectData', 
+    #                                       [subject_id, field]
+    #                                       ).where(criteria)
+    #         head = field_tbl.headers()
+    #         head.remove('subject_id')
+    #         head = head[0]
+    #         possible = set(field_tbl.get(head))
 
-            groups = {}
+    #         groups = {}
             
-            for val in possible:
-                groups[val] = field_tbl.where(**{head:val}
-                                                ).select('subject_id')
+    #         for val in possible:
+    #             groups[val] = field_tbl.where(**{head:val}
+    #                                             ).select('subject_id')
 
-        return groups
+    #     return groups
 
     def datatypes(self):
         graph = nx.DiGraph()

@@ -4,9 +4,9 @@ from StringIO import StringIO
 
 from lxml import etree
 from .jsonutil import JsonTable, get_column, get_where
-from .errors import is_xnat_error, raise_exception
-from .errors import RpnSyntaxError, XnatSearchNotFoundError
-from .errors import SearchShareModeError, SearchSyntaxError
+from .errors import is_xnat_error, catch_error
+from .errors import ProgrammingError, NotSupportedError
+from .errors import DataError, DatabaseError
 
 search_nsmap = {'xdat':'http://nrg.wustl.edu/security',
                 'xsi':'http://www.w3.org/2001/XMLSchema-instance'}
@@ -129,7 +129,7 @@ def build_criteria_set(container_node, criteria_set):
 
         if isinstance(criteria, (tuple)):
             if len(criteria) != 3:
-                raise SearchSyntaxError('%s should be a 3-element tuple' % 
+                raise ProgrammingError('%s should be a 3-element tuple' % 
                                         str(criteria)
                                         )
 
@@ -208,7 +208,7 @@ def rpn_contraints(rpn_exp):
                 right = left[:]
                 left = []
             else:
-                raise RpnSyntaxError(rpn_exp)
+                raise ProgrammingError('in expression %s' % rpn_exp)
 
         else:
             triple.append(t)
@@ -272,7 +272,7 @@ class SearchManager(object):
         elif isinstance(sharing, list):
             users = sharing
         else:
-            raise SearchShareModeError(sharing)
+            raise NotSupportedError('Share mode %s not valid' % sharing)
 
         self._intf._exec('/REST/search/saved/%s?inbody=true' % name, 
                          method='PUT', 
@@ -298,7 +298,7 @@ class SearchManager(object):
         try:
             search_id = get_where(jdata, brief_description=name)[0]['id']
         except IndexError:
-            raise XnatSearchNotFoundError(name)
+            raise DatabaseError('%s not found' % name)
 
         content = self._intf._exec(
             '/REST/search/saved/%s/results?format=csv' % search_id, 'GET')
@@ -320,7 +320,7 @@ class SearchManager(object):
         try:
             search_id = get_where(jdata, brief_description=name)[0]['id']
         except IndexError:
-            raise XnatSearchNotFoundError(name)
+            raise DatabaseError('%s not found' % name)
 
         self._intf._exec('/REST/search/saved/%s'%search_id, 'DELETE')
 
@@ -331,10 +331,11 @@ class SearchManager(object):
 class Search(object):
     """ Define constraints to make a complex search on the database.
 
-        This :class:`Search` is available at different places throughout 
+        This :class:`Search` is available at different places throughout
         the API:
+
             >>> interface.select(DATA_SELECTION).where(QUERY)
-            >>> interface.search.save('name', TABLE_DEFINITION, QUERY)
+            >>> interface.manage.search.save('name', TABLE_DEFINITION, QUERY)
 
         Examples
         --------
@@ -393,7 +394,7 @@ class Search(object):
         content = self._intf._exec("/REST/search?format=csv", 'POST', bundle)
 
         if is_xnat_error(content):
-            raise_exception(content)
+            catch_error(content)
 
         results = csv.reader(StringIO(content), delimiter=',', quotechar='"')
         headers = results.next()
@@ -407,6 +408,9 @@ class Search(object):
                         or column.split(self._row+'/')[1].lower(), 
                     headers)[0]
                 )
+
+        if len(self._columns) != len(headers_of_interest):
+            raise DataError('unvalid response headers')
 
         return JsonTable([dict(zip(headers, res)) for res in results], 
                          headers_of_interest).select(headers_of_interest)

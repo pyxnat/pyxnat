@@ -14,7 +14,7 @@ from .manage import GlobalManager
 from .uriutil import join_uri
 from .jsonutil import csv_to_json
 from .errors import is_xnat_error
-from .errors import raise_exception
+from .errors import catch_error
 
 DEBUG = False
 
@@ -28,6 +28,19 @@ class Interface(object):
                                 cachedir='/tmp'
                                 )
 
+        Or with config file:
+
+        >>> central = Interface(config='/home/me/.xnat.cfg')
+
+        Or for interactive use:
+
+        >>> central = Interface('http://central.xnat.org')
+
+        .. note::
+            The interactive mode is activated whenever an argument within
+            server, user or password is missing. In interactive mode pyxnat
+            tries to check the validity of the connection parameters.
+        
         Attributes
         ----------
         _mode: online | offline
@@ -116,7 +129,7 @@ class Interface(object):
         if self._interactive:
             self._jsession = self._exec('/REST/JSESSION')
             if is_xnat_error(self._jsession):
-                raise_exception(self._jsession)
+                catch_error(self._jsession)
 
     def _connect(self):
         """ Sets up the connection with the XNAT server.
@@ -195,7 +208,7 @@ class Interface(object):
                     self._conn.timeout = None
                     self._memcache[uri] = time.time()
                 except Exception, e:
-                    raise_exception(e)
+                    catch_error(e)
         else:
             response, content = self._conn.request(uri, method, 
                                                    body, headers)
@@ -257,11 +270,22 @@ class Interface(object):
         content = self._exec(uri, 'GET')
 
         if is_xnat_error(content):
-            raise_exception(content)
+            catch_error(content)
 
         return csv_to_json(content)
 
     def save_config(self, location):
+        """ Saves current configuration - including password - in a file.
+
+            .. warning::
+                Since the password is saved as well, make sure the file
+                is saved at a safe location with correct permissions.
+
+            Parameters
+            ----------
+            location: string
+                Destination config file.
+        """
         if not os.path.exists(os.path.dirname(location)):
             os.makedirs(os.path.dirname(location))
 
@@ -276,6 +300,14 @@ class Interface(object):
         fp.close()
 
     def load_config(self, location):
+        """ Loads a configuration file and replaces current connection
+            parameters.
+
+            Parameters
+            ----------
+            location: string
+                Configuration file path.
+        """
 
         if os.path.exists(location):
             fp = open(location, 'rb')

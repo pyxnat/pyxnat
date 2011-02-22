@@ -2,17 +2,22 @@ import re
 
 from ..externals import httplib2
 
+# parsing functions
+
 def is_xnat_error(message):
     return message.startswith('<!DOCTYPE') or message.startswith('<html>')
 
 def parse_error_message(message):
+
     if message.startswith('<html>'):
         error = message.split('<h3>')[1].split('</h3>')[0]
+
     elif message.startswith('<!DOCTYPE'):
         if 'Not Found' in message.split('<title>')[1].split('</title>')[0]:
            error = message.split('<title>')[1].split('</title>')[0]
         else:
             error = message.split('<h1>')[1].split('</h1>')[0]
+
     else:
         error = message
 
@@ -25,9 +30,11 @@ def parse_put_error_message(message):
     required_fields = []
 
     for line in error.split('\n'):
+
         try:
             datatype_name = re.findall("\'.*?\'",line)[0].strip('\'')
-            element_name = re.findall("\'.*?\'",line)[1].rsplit(':', 1)[1].strip('}\'')
+            element_name = re.findall("\'.*?\'",line
+                                      )[1].rsplit(':', 1)[1].strip('}\'')
 
             required_fields.append((datatype_name, element_name))
         except:
@@ -35,72 +42,69 @@ def parse_put_error_message(message):
 
     return required_fields
 
-def raise_exception(message_or_exception):
+def catch_error(msg_or_exception):
+
     # handle errors returned by the xnat server
-    if isinstance(message_or_exception, basestring):
-        error = parse_error_message(message_or_exception)
-    
-        if error == 'The request requires user authentication':
-            raise XnatAuthenticationError()
-        elif 'Not Found' in error:
-            raise XnatServerNotFoundError('Unable to find the server')
+    if isinstance(msg_or_exception, (str, unicode)):
+        # parse the message
+        msg = msg_or_exception
+
+        if msg.startswith('<html>'):
+            error = msg.split('<h3>')[1].split('</h3>')[0]
+
+        elif msg.startswith('<!DOCTYPE'):
+            if 'Not Found' in msg.split('<title>')[1].split('</title>')[0]:
+                error = msg.split('<title>')[1].split('</title>')[0]
+            else:
+                error = msg.split('<h1>')[1].split('</h1>')[0]
         else:
-            raise BaseXnatError(error)
+            error = msg
+            
+        # choose the exception
+        if error == 'The request requires user authentication':
+            raise OperationalError('Authentication failed')
+        elif 'Not Found' in error:
+            raise OperationalError('Connection failed')
+        else:
+            raise DatabaseError(error)
 
     # handle other errors, raised for instance by the http layer
     else:
-        if isinstance(message_or_exception, httplib2.ServerNotFoundError):
-            raise XnatServerNotFoundError(str(message_or_exception))
+        if isinstance(msg_or_exception, httplib2.ServerNotFoundError):
+            raise OperationalError('Connection failed')
         else:
-            raise BaseXnatError(str(message_or_exception))
+            raise DatabaseError(str(msg_or_exception))
 
-class BaseXnatError(Exception):
-    def __init__(self, message):
-        self.error = message
 
-    def __str__(self):
-       return repr(self.error)
+# Exceptions as defined in PEP-249, the module treats errors using thoses
+# classes following as closely as possible the original definitions.
 
-class XnatAuthenticationError(BaseXnatError):
-    def __init__(self):
-        BaseXnatError.__init__(self, 'Invalid login or password')
+class Warning(StandardError):
+    pass
 
-class XnatServerNotFoundError(BaseXnatError):
-    def __init__(self, message):
-        BaseXnatError.__init__(self, message)
+class Error(StandardError):
+    pass
 
-class XnatSearchNotFoundError(BaseXnatError):
-    def __init__(self, name):
-        BaseXnatError.__init__(self, "Search '%s' not found"%name)
+class InterfaceError(Error):
+    pass
 
-class BasePyxnatError(Exception):
-    def __init__(self, value):
-        self.parameter = value
-    def __str__(self):
-        return repr(self.parameter)
+class DatabaseError(Error):
+    pass
 
-class PathSyntaxError(BasePyxnatError):
-    def __init__(self, path):
-        BasePyxnatError.__init__(self, "Invalid syntax in '%s'"%path)
+class DataError(DatabaseError):
+    pass
 
-class SearchShareModeError(BasePyxnatError):
-    def __init__(self, share_mode):
-        raise Exception("Unknown mode '%s'"%share_mode)
+class OperationalError(DatabaseError):
+    pass
 
-class SearchSyntaxError(BasePyxnatError):
-    def __init__(self, expression):
-        raise Exception("Invalid search syntax '%s'"%expression)
+class IntegrityError(DatabaseError):
+    pass
 
-class RpnSyntaxError(BasePyxnatError):
-    def __init__(self, expression):
-        BasePyxnatError.__init__(self, "Invalid syntax in '%s'"%expression)
+class InternalError(DatabaseError):
+    pass
 
-class ResourceConcurrentAccessError(BasePyxnatError):
-    def __init__(self, pid1, pid2, uri):
-        BasePyxnatError.__init__(self, 
-            ('Multiple processes <%s,%s> are trying to access '
-             'the same resource: %s'%(pid1, pid2, uri)
-            )
-        )
-    
+class ProgrammingError(DatabaseError):
+    pass
 
+class NotSupportedError(DatabaseError):
+    pass

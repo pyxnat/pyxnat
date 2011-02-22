@@ -104,6 +104,8 @@ def csv_to_json(csv_str):
 
 
 class JsonTable(object):
+    """ Wrapper around a list of dictionnaries to provide utility functions.
+    """
     def __init__(self, jdata, order_by=[]):
         self.data = jdata
         self.order_by = order_by
@@ -146,6 +148,15 @@ class JsonTable(object):
         return self.__class__(self.data[i:j], self.order_by)
 
     def join(self, join_column, *jtables):
+        """ Join jsontables with a common column.
+
+            Parameters
+            ----------
+            join_column: string
+                The name or header of the join column.
+            jtables: *args
+                Other  jtables.
+        """
         return self.__class__(
             join_tables(join_column, self.data, 
                         *[jtable.data for jtable in jtables]),
@@ -153,9 +164,25 @@ class JsonTable(object):
             )
 
     def headers(self):
+        """ Returns the headers of the object.
+        """
         return get_headers(self.data)
 
     def get(self, col, val_pattern='*', always_list=False):
+        """ Gets a single column value.
+
+            Parameters
+            ----------
+            col: string
+                The column name
+            val_pattern: string
+                Enable a filter on the values to be returned.
+            always_list: boolean
+                If only a single value is to be returned - i.e. there
+                is only on element in the list of dicts or there is only
+                one match against the value filter - is can be returned
+                within a list (with True) or not (default).
+        """
         res = get_column(self.data, col, val_pattern)
         if always_list:
             return res
@@ -164,21 +191,63 @@ class JsonTable(object):
         return res
 
     def where(self, *args, **kwargs):
+        """ Filters the object.
+        
+            Paramaters
+            ----------
+            args:
+                Value must be matched in the key or the value of an entry.
+            kwargs:
+                Value for a specific key must be matched in an entry.
+
+            Returns
+            -------
+            A :class:`JsonTable` containing the matches.
+        """
         return self.__class__(get_where(self.data, *args, **kwargs), 
                               self.order_by
                               )
 
     def where_not(self, *args, **kwargs):
+        """ Filters the object. Conditions must not be matched.
+        
+            Paramaters
+            ----------
+            args:
+                Value must not be matched in the key or the value of an 
+                entry.
+            kwargs:
+                Value for a specific key must not be matched in an entry.
+
+            Returns
+            -------
+            A :class:`JsonTable` containing the not matches.
+        """
         return self.__class__(get_where_not(self.data, *args, **kwargs), 
                               self.order_by
                               )
 
     def select(self, columns):
+        """ Select only some columns of interest.
+
+            Returns
+            -------
+            A :class:`JsonTable` with the selected columns.
+        """
         return self.__class__(get_selection(self.data, columns), 
                               self.order_by
                               )
 
     def dump_csv(self, dest, delimiter=','):
+        """ Dumps the object content in a csv file format.
+
+            Parameters
+            ----------
+            dest: string
+                Destination file path.
+            delimiter: char
+                Character to separate values in the csv file.
+        """
         fd = open(dest, 'w')
         fd.write(self.dumps_csv(delimiter))
         fd.close()

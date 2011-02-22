@@ -2,9 +2,9 @@ import re
 
 from . import schema
 from .search import Search
-from .resources import CObject, Project, Projects
+from .resources import CObject, Project, Projects # imports used implicitly
 from .uriutil import inv_translate_uri
-from .errors import PathSyntaxError
+from .errors import ProgrammingError
 
 DEBUG = False
 
@@ -128,7 +128,7 @@ def mtransform(paths):
                 tels.append(curr_el)
 
             else:
-                raise PathSyntaxError(path)
+                raise ProgrammingError('in %s' % path)
 
         if not ignore_path:
             tpaths.append(''.join(tels))
@@ -181,7 +181,7 @@ def compute(path):
     try:
         groups = group_paths(mtransform([path]))
     except:
-        raise PathSyntaxError(path)
+        raise ProgrammingError('in %s' % path)
 
     best = []
 
@@ -310,7 +310,7 @@ class Select(object):
             except Exception, e:
                 if DEBUG:
                     print e
-                raise PathSyntaxError(datatype_or_path)
+                raise ProgrammingError('in %s' % datatype_or_path)
 
         else:
             if columns == []:
