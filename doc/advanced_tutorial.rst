@@ -4,9 +4,10 @@ Advanced Tutorial
 
 .. currentmodule:: pyxnat
 
-This advanced tutorial is not much more complicated than the starters one. It just
-goes over parts of the API that may be less used (not that they are less useful!) and
-that are more likely to change in future releases.
+This advanced tutorial is not much more complicated than the starters
+one. It just goes over parts of the API that may be less used (not
+that they are less useful!) and that are more likely to change in
+future releases.
 
 Introspection
 -------------
@@ -16,8 +17,8 @@ In order to browse a database people have to be aware of:
     - schema types and fields
     - values of fields and resources within a project
 
-The idea of this interface is to help users find their way around a XNAT server 
-by making it easier to gather the preceding information.
+The idea of this interface is to help users find their way around a
+XNAT server by making it easier to gather the preceding information.
 
 Searchable datatypes and fields
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -62,11 +63,12 @@ To known what values fields can take in the database::
 REST hierarchy
 ~~~~~~~~~~~~~~
 
-pyxnat does not support all the REST resources. The reasons for this is that, some
-of these resources are still experimental, or do not work exactly the same way which
-would make it difficult to provide a consistent interface at the Python level.
-However support for these exotic resources will increase in future releases. A good
-way to know what is the supported REST hierarchy is to use the following method:
+pyxnat does not support all the REST resources. The reasons for this
+is that, some of these resources are still experimental, or do not
+work exactly the same way which would make it difficult to provide a
+consistent interface at the Python level.  However support for these
+exotic resources will increase in future releases. A good way to know
+what is the supported REST hierarchy is to use the following method::
 
 >>> central.inspect.rest_hierarchy()
 - PROJECTS
@@ -97,9 +99,10 @@ way to know what is the supported REST hierarchy is to use the following method:
 Naming conventions
 ~~~~~~~~~~~~~~~~~~
 
-Administrators usually use a consistent vocabulary across single projects, 
-that maps to XNAT datatypes. A new feature in 0.6 is to be able to define a mapping 
-so that specific name patterns can be used to cast a resource when creating a new one.
+Administrators usually use a consistent vocabulary across single
+projects, that maps to XNAT datatypes. A new feature in 0.6 is to be
+able to define a mapping so that specific name patterns can be used to
+cast a resource when creating a new one.
 
 For example with the following mapping::
 
