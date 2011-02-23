@@ -10,3 +10,5 @@
   - new element creation features (custom fields)
 
 * run tests on different platforms
+
+* add some in-code comments on the inner workings of the module

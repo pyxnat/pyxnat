@@ -154,13 +154,13 @@ class EObject(object):
 
         get_id = p_uri + '?format=json&columns=%s' % ','.join(columns)
 
-        for pattern in self._intf.inspect._nomenclature.keys():
+        for pattern in self._intf._struct.keys():
             print uri_segment(self._uri.split('/REST')[1], -2), pattern
 
             if fnmatch(uri_segment(self._uri.split('/REST')[1], -2), 
                        pattern):
 
-                reg_pat = self._intf.inspect._nomenclature[pattern]
+                reg_pat = self._intf._struct[pattern]
                 filters.setdefault('xsiType', set()).add(reg_pat)
 
         if filters != {}:
@@ -264,12 +264,12 @@ class EObject(object):
             EObject.datatype
         """
         datatype = params.get(uri_nextlast(self._uri))
-        nomenclature = self._intf.inspect._nomenclature
+        struct = self._intf._struct
 
         if datatype is None:
-            for uri_pattern in nomenclature.keys():
+            for uri_pattern in struct.keys():
                 if fnmatch(self._uri.split('/REST')[1], uri_pattern):
-                    datatype = nomenclature.get(uri_pattern)
+                    datatype = struct.get(uri_pattern)
                     break
             else:
                 datatype = schema.default_datatypes.get(
@@ -508,18 +508,18 @@ class CObject(object):
 
                 columns += ['xsiType']
 
-                # nomenclature = {}
+                # struct = {}
             # if self._intf._struct.has_key(reqcache):
-            #     nomenclature = self._intf._struct[reqcache]
+            #     struct = self._intf._struct[reqcache]
             # else:
-            #     nomenclature = json.load(open(reqcache, 'rb'))
-                # self._intf._struct[reqcache] = nomenclature
+            #     struct = json.load(open(reqcache, 'rb'))
+                # self._intf._struct[reqcache] = struct
 
             query_string = '?format=json&columns=%s' % ','.join(columns)
 
-            # nomenclature = {}
+            # struct = {}
 
-            # for pattern in nomenclature.keys():
+            # for pattern in struct.keys():
             #     request_pat = uri_segment(
             #         join_uri(uri, self._pattern).split('/REST')[1], -2
             #         )
@@ -527,10 +527,10 @@ class CObject(object):
             #     # print pattern, request_pat, fnmatch(pattern, request_pat)
                                               
             #     if (fnmatch(pattern, request_pat) 
-            #         and nomenclature[pattern] is not None):
+            #         and struct[pattern] is not None):
 
             #         self._filters.setdefault('xsiType', set()
-            #                                  ).add(nomenclature[pattern])
+            #                                  ).add(struct[pattern])
 
             # if self._filters != {}:
             #     query_string += '&' + \
@@ -572,6 +572,9 @@ class CObject(object):
         if os.path.exists(reqcache):
             previous = json.load(open(reqcache, 'rb'))
             previous.update(request_knowledge)
+            request_knowledge = previous
+
+        self._intf._struct.update(request_knowledge)
 
         json.dump(request_knowledge, open(reqcache, 'w'))
 

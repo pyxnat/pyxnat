@@ -131,6 +131,8 @@ class Interface(object):
             if is_xnat_error(self._jsession):
                 catch_error(self._jsession)
 
+        self.inspect()
+
     def _connect(self):
         """ Sets up the connection with the XNAT server.
         """

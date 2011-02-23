@@ -25,14 +25,16 @@ class Inspector(object):
             interface: 
                 :class:`Interface` Object
         """
-        self._nomenclature = {}
-
         self._intf = interface
         self._get_json = interface._get_json
         self._auto = True
         self._tick = 30
 
         self.schemas = SchemasInspector(interface)
+
+    def __call__(self):
+        for name in ['experiment', 'assessor', 'scan', 'reconstruction']:
+            self._resource_struct(name)
 
     def set_autolearn(self, auto=True, tick=30):
         """ Once in a while queries will persist additional
@@ -278,8 +280,8 @@ class Inspector(object):
                 print '%s+%s' % (' ' * lvl, key.upper())
 
                 datatypes = set([
-                        self._intf.inspect._nomenclature[uri]
-                        for uri in self._intf.inspect._nomenclature.keys()
+                        self._intf._struct[uri]
+                        for uri in self._intf._struct.keys()
                         if uri.split('/')[-2] == key
                         ])
 
@@ -309,8 +311,8 @@ class Inspector(object):
         values = get_column(self._get_json(sub_exps), column)
 
         return list(set(values))
-    
-    def _resource_types(self, name):
+
+    def _resource_struct(self, name):
         kbase = {}
 
         for kfile in glob.iglob('%s/*.struct' % self._intf._cachedir):
@@ -320,13 +322,18 @@ class Inspector(object):
             if name in kdata.keys()[0]:
                 kbase.update(kdata)
 
-        return set(kbase.values())
+        self._intf._struct.update(kbase)
+
+        return kbase
+    
+    def _resource_types(self, name):
+        return set(self._resource_struct(name).values())
 
 
 class GraphData(object):
     def __init__(self, interface):
         self._intf = interface
-        self._nomenclature = interface.inspect._nomenclature
+        self._struct = interface._struct
 
     # def link(self, subjects, fields):
         
@@ -437,9 +444,9 @@ class GraphData(object):
                 graph.labels[as_key] = key
                 graph.weights[as_key] = weight
 
-                for uri in self._nomenclature.keys():
+                for uri in self._struct.keys():
                     if uri.split('/')[-2] == key:
-                        graph.add_edge(key, self._nomenclature[uri])
+                        graph.add_edge(key, self._struct[uri])
 
                 traverse(key, as_key)
 
