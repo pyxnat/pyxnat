@@ -14,10 +14,16 @@ The `Interface` class
 
 
 The `Select` class
-~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~
 
 .. autoclass:: pyxnat.core.select.Select
     :members: __call__, project, projects
+
+The `Inspect` class
+~~~~~~~~~~~~~~~~~~~
+
+.. autoclass:: pyxnat.core.help.Inspector
+    :members:
 
 The `SearchManager` class
 ~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -80,7 +86,7 @@ The `CacheManager` class
     :members:
 
 The `SchemaManager` class
-~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. autoclass:: pyxnat.core.manage.SchemaManager
     :members:

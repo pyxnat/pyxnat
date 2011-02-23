@@ -36,7 +36,7 @@ class Inspector(object):
         for name in ['experiment', 'assessor', 'scan', 'reconstruction']:
             self._resource_struct(name)
 
-    def set_autolearn(self, auto=True, tick=30):
+    def set_autolearn(self, auto=None, tick=None):
         """ Once in a while queries will persist additional
             information on the server. This information is available
             through the following methods of this class:
@@ -59,8 +59,10 @@ class Inspector(object):
             --------
             EObject.insert()
         """
-        self._auto = auto
-        self._tick = tick
+        if auto is not None:
+            self._auto = auto
+        if tick is not None:
+            self._tick = tick
         
     def datatypes(self, pattern='*', fields_pattern=None):
         """ Discovers the datatypes and datafields of the database.
@@ -296,6 +298,8 @@ class Inspector(object):
 
         print '- %s' % 'PROJECTS'
         traverse('projects', 4)
+
+    rest_hierarchy = architecture
 
     def _sub_experiment_values(self, sub_exp, project, experiment_type):
         values = []
