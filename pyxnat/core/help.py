@@ -433,7 +433,7 @@ class GraphData(object):
 
         return graph
 
-    def architecture(self):
+    def architecture(self, with_datatypes=True):
         graph = nx.DiGraph()
         graph.add_node('projects')
         graph.labels = {'projects':'projects'}
@@ -448,9 +448,13 @@ class GraphData(object):
                 graph.labels[as_key] = key
                 graph.weights[as_key] = weight
 
-                for uri in self._struct.keys():
-                    if uri.split('/')[-2] == key:
-                        graph.add_edge(key, self._struct[uri])
+                if with_datatypes:
+                    for uri in self._struct.keys():
+                        if uri.split('/')[-2] == key:
+                            datatype = self._struct[uri]
+                            graph.add_edge(as_key, datatype)
+                            graph.weights[datatype] = 10
+                            graph.labels[datatype] = datatype
 
                 traverse(key, as_key)
 
@@ -464,42 +468,51 @@ class PaintGraph(object):
         self._intf = interface
         self.get_graph = interface._get_graph
 
-    def architecture(self):
-        graph = self.get_graph.architecture()
+    def architecture(self, with_datatypes=True, save=None):
+        graph = self.get_graph.architecture(with_datatypes)
 
         plt.figure(figsize=(8,8))
         pos = nx.graphviz_layout(graph, prog='twopi', args='')
 
-        node_size = [(float(graph.degree(v)) * 5)**3 for v in graph]
+        # node_size = [(float(graph.degree(v)) * 5)**3 for v in graph]
         # node_size = [graph.weights[v] ** 2 for v in graph]
         # node_color = [float(graph.degree(v)) for v in graph]
-        node_color = [graph.weights[v] ** 2 for v in graph]
+        # node_color = [graph.weights[v] ** 2 for v in graph]
+
+        cost = lambda v: float(graph.degree(v)) ** 3 + \
+            graph.weights[v] ** 2
+
+        costs = norm_costs([cost(v) for v in graph], 10000)
 
         nx.draw(graph, pos, labels=graph.labels, 
-                node_size=node_size, node_color=node_color,
+                node_size=costs, node_color=costs,
                 font_size=13, font_color='orange', font_weight='bold'
                 )
     
         plt.axis('off')
+
+        if save is not None:
+            plt.savefig(save)
+
         plt.show()
 
-    def experiments(self):
+    def experiments(self, save=None):
         graph = self.get_graph.rest_resource('experiments')
-        self._draw_rest_resource(graph)
+        self._draw_rest_resource(graph, save=None)
 
-    def assessors(self):
+    def assessors(self, save=None):
         graph = self.get_graph.rest_resource('assessors')
-        self._draw_rest_resource(graph)
+        self._draw_rest_resource(graph, save=None)
 
-    def reconstructions(self):
+    def reconstructions(self, save=None):
         graph = self.get_graph.rest_resource('reconstructions')
-        self._draw_rest_resource(graph)
+        self._draw_rest_resource(graph, save=None)
 
     def scans(self):
         graph = self.get_graph.rest_resource('scans')
         self._draw_rest_resource(graph)
 
-    def _draw_rest_resource(self, graph):
+    def _draw_rest_resource(self, graph, save=None):
         plt.figure(figsize=(8,8))
         pos = nx.graphviz_layout(graph, prog='twopi', args='')
 
@@ -517,9 +530,13 @@ class PaintGraph(object):
                 )
     
         plt.axis('off')
+
+        if save is not None:
+            plt.savefig(save)
+
         plt.show()
         
-    def datatypes(self, pattern='*'):
+    def datatypes(self, pattern='*', save=None):
         graph = self.get_graph.datatypes(pattern)
 
         plt.figure(figsize=(8,8))
@@ -539,9 +556,13 @@ class PaintGraph(object):
                 )
     
         plt.axis('off')
+
+        if save is not None:
+            plt.savefig(save)
+
         plt.show()
 
-    def field_values(self, field_name):
+    def field_values(self, field_name, save=None):
         graph = self.get_graph.field_values(field_name)
 
         plt.figure(figsize=(8,8))
@@ -559,6 +580,10 @@ class PaintGraph(object):
                 )
     
         plt.axis('off')
+
+        if save is not None:
+            plt.savefig(save)
+
         plt.show()
 
 

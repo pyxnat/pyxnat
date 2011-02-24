@@ -31,8 +31,8 @@ Module contents
    :toctree: generated/
 
     Interface
-    Inspector
     Select
     SearchManager
+    CacheManager
     Users
 

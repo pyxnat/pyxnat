@@ -136,6 +136,24 @@ When a mapping is available, re-running the ``rest_hierarchy`` method will displ
                 +ASSESSORS
                 ....
 
+
+There are additional methods to visualize and display the mappings::
+
+      >>> central.inspect.experiment_types()
+      >>> central.inspect.assessor_types()
+      >>> central.inspect.scan_types()
+      >>> central.inspect.reconstruction_types()
+
+Methods also allow to have a quick look on the values at those levels
+on the database::
+
+      >>> central.inspect.experiment_values('xnat:mrSessionData')
+      >>> central.inspect.assessor_values('xnat:mrSessionData')
+      >>> central.inspect.scan_values('xnat:mrSessionData')
+      >>> central.inspect.reconstruction_values('xnat:mrSessionData')
+
+For more details check the reference documentation.
+
 .. note:: 
     With ``networkx`` and ``matplotlib`` installed, a ``draw``
     subinterface will be made available to display some data from the

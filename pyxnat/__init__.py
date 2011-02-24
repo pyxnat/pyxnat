@@ -51,6 +51,7 @@ __version__ = '0.7.0'
 
 from .core import Interface
 from .core import SearchManager
+from .core import CacheManager
 from .core import Select
 from .core import Inspector
 from .core import Users
