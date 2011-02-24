@@ -12,7 +12,8 @@ def test_user_lastname():
     assert central.manage.users.lastname('nosetests') == 'Schwartz'
 
 def test_user_email():
-    assert central.manage.users.email('nosetests') == 'yannick.schwartz@gmail.com'
+    assert central.manage.users.email('nosetests') == \
+        'yannick.schwartz@gmail.com'
 
 def test_user_id():
     assert central.manage.users.id('nosetests') == '204'
@@ -27,16 +28,20 @@ def test_project_members():
     assert isinstance(central.select.project('nosetests').members(), list)
 
 def test_project_collaborators():
-    assert isinstance(central.select.project('nosetests').collaborators(), list)
+    assert isinstance(central.select.project('nosetests').collaborators(), 
+                      list
+                      )
 
 def test_project_user_role():
-    assert central.select.project('nosetests').user_role('nosetests') == 'owner'
+    assert central.select.project('nosetests'
+                                  ).user_role('nosetests') == 'owner'
 
 def test_add_remove_user():
     central.select.project('nosetests').add_user('schwarty', 'collaborator')
     assert 'schwarty' in central.select.project('nosetests').collaborators()
     central.select.project('nosetests').remove_user('schwarty')
-    assert 'schwarty' not in central.select.project('nosetests').collaborators()
+    assert 'schwarty' not in central.select.project('nosetests'
+                                                    ).collaborators()
 
 def test_project_accessibility():
     assert central.select.project('nosetests').accessibility() in \

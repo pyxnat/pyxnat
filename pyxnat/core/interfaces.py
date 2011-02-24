@@ -160,8 +160,6 @@ class Interface(object):
             headers: dict
                 Additional headers for the HTTP request.
         """
-        start = time.time()
-
         if headers is None:
             headers = {}
 
@@ -243,7 +241,6 @@ class Interface(object):
                                                            )
                                              )
 
-        print '_exec request in %s seconds' % (time.time() - start)
         return content
 
 

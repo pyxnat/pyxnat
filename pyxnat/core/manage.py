@@ -23,7 +23,7 @@ class GlobalManager(object):
         self.tags = Tags(self._intf)
         self.schemas = SchemaManager(self._intf)
 
-    def set_callback(self, func=None):
+    def register_callback(self, func):
         """ Defines a callback to execute when collections of resources are 
             accessed.
 
@@ -37,11 +37,18 @@ class GlobalManager(object):
             --------
             >>> def notify(cobj, eobj):
             >>>    print eobj._uri
-            >>> interface.manage.set_callback(notify)
+            >>> interface.manage.register_callback(notify)
         """
-        self._intf.callback = func
+        self._intf._callback = func
+
+    def unregister_callback(self):
+        """ Unregisters the callback.
+        """
+        self._intf._callback = None
 
     def project(self, project_id):
+        """ Returns a project manager.
+        """
         return ProjectManager(project_id, self._intf)
 
 

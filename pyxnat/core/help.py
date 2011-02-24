@@ -367,13 +367,13 @@ class GraphData(object):
 
     #     return groups
 
-    def datatypes(self):
+    def datatypes(self, pattern='*'):
         graph = nx.DiGraph()
         graph.add_node('datatypes')
         graph.labels = {'datatypes':'datatypes'}
         graph.weights = {'datatypes':100.0}
         
-        datatypes = self._intf.inspect.datatypes()
+        datatypes = self._intf.inspect.datatypes(pattern)
         namespaces = set([dat.split(':')[0] for dat in datatypes])
         
         for ns in namespaces:
@@ -519,8 +519,8 @@ class PaintGraph(object):
         plt.axis('off')
         plt.show()
         
-    def datatypes(self):
-        graph = self.get_graph.datatypes()
+    def datatypes(self, pattern='*'):
+        graph = self.get_graph.datatypes(pattern)
 
         plt.figure(figsize=(8,8))
         pos = nx.graphviz_layout(graph, prog='twopi', args='')
