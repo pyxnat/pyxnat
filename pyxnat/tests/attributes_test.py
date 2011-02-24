@@ -27,6 +27,11 @@ def test_fancy_resource_create():
     assert subject.id() == 'TEST_%s' % sid
     assert experiment.id() == 'TEST_%s' % eid
 
+    globals()['subject'] = central.select.project('nosetests'
+                                                  ).subject('TEST_%s' % sid)
+
+    globals()['experiment'] = subject.experiment('TEST_%s' % eid) 
+
 def test_attr_get():
     assert experiment.attrs.get('xnat:mrSessionData/age') == '42.0'
 
@@ -46,7 +51,6 @@ def test_attr_mset():
                   'xnat:subjectData/investigator/lastname':'abidbol',
                   }
 
-    subject = central.select.project('nosetests').subject('TEST_%s' % sid)
     subject.attrs.mset(field_data)
 
     assert set(subject.attrs.mget(field_data.keys())) == \
