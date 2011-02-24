@@ -19,6 +19,31 @@ def test_fieldvalues():
     assert len(central.inspect.field_values('xnat:subjectData/SUBJECT_ID')
                ) != 0
 
+def test_inspect_resources():
+
+    assert 'OAS1_0440_MR1' in \
+        central.inspect.experiment_values('xnat:mrSessionData', 
+                                          'CENTRAL_OASIS_CS'
+                                          )
+
+    assert 'OAS1_0286_MR1_FSEG' in \
+        central.inspect.assessor_values('xnat:mrSessionData', 
+                                        'CENTRAL_OASIS_CS'
+                                        )
+
+    assert 'mpr-1' in \
+        central.inspect.scan_values('xnat:mrSessionData', 
+                                        'CENTRAL_OASIS_CS'
+                                        )
+
+    # just coverage
+    assert isinstance(central.inspect.experiment_types(), list)
+    assert isinstance(central.inspect.assessor_types(), list)
+    assert isinstance(central.inspect.scan_types(), list)
+    assert isinstance(central.inspect.reconstruction_types(), list)
+    assert isinstance(central.inspect.project_values(), list)
+    assert isinstance(central.inspect.subject_values(), list)
+
 def test_search():
     results = central.select(
         'xnat:mrSessionData', 

@@ -331,7 +331,7 @@ class Inspector(object):
         return kbase
     
     def _resource_types(self, name):
-        return set(self._resource_struct(name).values())
+        return list(set(self._resource_struct(name).values()))
 
 
 class GraphData(object):
