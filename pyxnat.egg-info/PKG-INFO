@@ -1,6 +1,6 @@
 Metadata-Version: 1.0
 Name: pyxnat
-Version: 0.6.0
+Version: 0.7.0
 Summary: Xnat in Python
 Home-page: http://packages.python.org/pyxnat/
 Author: Yannick Schwartz
@@ -16,8 +16,10 @@ Description:  pyxnat is a simple python library that relies on the REST API prov
             #. complex searches
             #. disk-caching of requested files and resources
         
-        .. [#] http://www.xnat.org/
-        .. [#] http://packages.python.org/pyxnat/
+        .. [#] XNAT home: http://www.xnat.org/
+        .. [#] pyxnat documentation: http://packages.python.org/pyxnat/
+        .. [#] pyxnat download: http://pypi.python.org/pypi/pyxnat#downloads
+        .. [#] pyxnat sources: http://github.com/schwarty/pyxnat
         
         ____
         
@@ -25,12 +27,12 @@ Description:  pyxnat is a simple python library that relies on the REST API prov
         
             *Setup the connection*
                 >>> from pyxnat import Interface
-                >>> interface = Interface(server='http://central.xnat.org:8080',
-                                          user='login',
-                                          password='pass',
-                                          cachedir=os.path.join(os.path.expanduser('~'),
-                                                                '.store')
-                                          )
+                >>> interface = Interface(
+                         server='http://central.xnat.org:8080',
+                         user='login',
+                         password='pass',
+                         cachedir=os.path.join(os.path.expanduser('~'), '.store')
+                         )
         
             *Browse the resources*
                 >>> interface.select.projects().get()
@@ -38,14 +40,18 @@ Description:  pyxnat is a simple python library that relies on the REST API prov
         
             *Create new resources*
                 >>> interface.select.project('my_project').create()
-                >>> interface.select.project('my_project').resource('images').file('image.nii').put('/tmp/image.nii')
+                >>> interface.select.project('my_project').resource('images'
+                                      ).file('image.nii').put('/tmp/image.nii')
         
             *Make complex searches*
-                >>> table = interface.select('xnat:subjectData', ['xnat:subjectData/PROJECT', 'xnat:subjectData/SUBJECT_ID']
-                                    ).where([('xnat:subjectData/SUBJECT_ID','LIKE','%'),
-                                             ('xnat:subjectData/PROJECT', '=', 'my_project'),
-                                             'AND'
-                                             ])
+                >>> table = interface.select('xnat:subjectData', 
+                                             ['xnat:subjectData/PROJECT', 
+                                              'xnat:subjectData/SUBJECT_ID'
+                                              ]
+                       ).where([('xnat:subjectData/SUBJECT_ID','LIKE','%'),
+                                ('xnat:subjectData/PROJECT', '=', 'my_project'),
+                                'AND'
+                                ])
         
         
 Platform: any

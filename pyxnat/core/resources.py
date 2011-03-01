@@ -43,11 +43,11 @@ def get_element_from_collection(rsc_name):
         Element = globals()[rsc_name.title()]
         Collection = globals()[rsc_name.title() + 's']
 
-        return Collection([Element(join_uri(eobj._uri, rsc_name + 's', ID), 
+        return Collection([Element(join_uri(eobj._uri, rsc_name + 's', ID),
                                    self._intf
                                    )
                            for eobj in self
-                           ], 
+                           ],
                           self._intf
                           )
     return getter
@@ -57,7 +57,7 @@ def get_collection_from_element(rsc_name):
     def getter(self, id_filter='*'):
 
         Collection = globals()[rsc_name.title()]
-        return Collection(join_uri(self._uri, rsc_name), 
+        return Collection(join_uri(self._uri, rsc_name),
                           self._intf, id_filter
                           )
 
@@ -68,7 +68,7 @@ def get_collection_from_collection(rsc_name):
     def getter(self, id_filter='*'):
         Collection = globals()[rsc_name.title()]
 
-        return Collection(self, self._intf, id_filter, 
+        return Collection(self, self._intf, id_filter,
                           rsc_name, self._id_header, self._columns)
 
     return getter
@@ -76,7 +76,7 @@ def get_collection_from_collection(rsc_name):
 
 class ElementType(type):
     def __new__(cls, name, bases, dct):
-        rsc_name = name.lower()+'s' \
+        rsc_name = name.lower() + 's' \
             if name.lower() in schema.resources_singular \
             else name.lower()
 
@@ -93,7 +93,7 @@ class ElementType(type):
 
 class CollectionType(type):
     def __new__(cls, name, bases, dct):
-        rsc_name = name.lower()+'s' \
+        rsc_name = name.lower() + 's' \
             if name.lower() in schema.resources_singular \
             else name.lower()
 
@@ -117,7 +117,7 @@ class EObject(object):
             Parameters
             ----------
             uri: string
-                URI for an element resource. 
+                URI for an element resource.
                 e.g. /REST/projects/my_project
 
             interface: :class:`Interface`
@@ -130,7 +130,7 @@ class EObject(object):
         self.attrs = EAttrs(self)
 
     def __repr__(self):
-        return '<%s Object> %s' % (self.__class__.__name__, 
+        return '<%s Object> %s' % (self.__class__.__name__,
                                    urllib.unquote(uri_last(self._uri))
                                    )
 
@@ -157,7 +157,7 @@ class EObject(object):
         for pattern in self._intf._struct.keys():
             print uri_segment(self._uri.split('/REST')[1], -2), pattern
 
-            if fnmatch(uri_segment(self._uri.split('/REST')[1], -2), 
+            if fnmatch(uri_segment(self._uri.split('/REST')[1], -2),
                        pattern):
 
                 reg_pat = self._intf._struct[pattern]
@@ -165,9 +165,9 @@ class EObject(object):
 
         if filters != {}:
             get_id += '&' + \
-                '&'.join('%s=%s' % (item[0], item[1]) 
-                         if isinstance(item[1], basestring) 
-                         else '%s=%s' % (item[0], 
+                '&'.join('%s=%s' % (item[0], item[1])
+                         if isinstance(item[1], basestring)
+                         else '%s=%s' % (item[0],
                                          ','.join([val for val in item[1]])
                                          )
                          for item in filters.items()
@@ -201,7 +201,7 @@ class EObject(object):
         return self._getcell(schema.json[self._urt][1])
 
     def datatype(self):
-        """ Returns the type defined in the XNAT schema for this element 
+        """ Returns the type defined in the XNAT schema for this element
         resource.
 
             +----------------+-----------------------+
@@ -211,8 +211,8 @@ class EObject(object):
             +----------------+-----------------------+
             | Subject        | xnat:subjectData      |
             +----------------+-----------------------+
-            | Experiment     | xnat:mrSessionData    | 
-            |                | xnat:petSessionData   | 
+            | Experiment     | xnat:mrSessionData    |
+            |                | xnat:petSessionData   |
             +----------------+-----------------------+
         """
         return self._getcell('xsiType')
@@ -245,7 +245,7 @@ class EObject(object):
                   keywords correspond to the levels in the REST
                   hierarchy, see Interface.inspect.architecture()
                 - If an element is created with no specified type:
-                      - if its name matches a naming convention, this type 
+                      - if its name matches a naming convention, this type
                         will be used
                       - else a default type is defined in the schema module
 
@@ -253,7 +253,7 @@ class EObject(object):
             --------
                 >>> interface.select('/project/PROJECT/subject'
                                      '/SUBJECT/experiment/EXP/scan/SCAN'
-                            ).create(experiments='xnat:mrSessionData', 
+                            ).create(experiments='xnat:mrSessionData',
                                      scans='xnat:mrScanData'
                                      )
 
@@ -292,9 +292,9 @@ class EObject(object):
                 create_uri += '&%s/ID=%s' % (datatype, uri_last(self._uri))
 
             if local_params != []:
-                create_uri += '&' + '&'.join('%s=%s' % (key, 
+                create_uri += '&' + '&'.join('%s=%s' % (key,
                                                         params.get(key)
-                                                        ) 
+                                                        )
                                              for key in local_params
                                              )
 
@@ -306,7 +306,7 @@ class EObject(object):
 
         if not uri_nextlast(self._uri) == 'projects' \
                 and not parent_element.exists():
-            
+
             parent_datatype = params.get(uri_nextlast(parent_element._uri))
             if DEBUG:
                 print 'CREATE', parent_element, parent_datatype
@@ -314,7 +314,7 @@ class EObject(object):
 
         if DEBUG:
             print 'PUT', create_uri
-        
+
         output = self._intf._exec(create_uri, 'PUT')
 
         if is_xnat_error(output):
@@ -354,7 +354,7 @@ class EObject(object):
     def get(self):
         """ Retrieves the XML document corresponding to this element.
         """
-        return self._intf._exec(self._uri+'?format=xml', 'GET')
+        return self._intf._exec(self._uri + '?format=xml', 'GET')
 
     def children(self, show_names=True):
         """ Returns the children levels of this element.
@@ -378,10 +378,10 @@ class EObject(object):
         if show_names:
             return children
 
-        return CObject([getattr(self, child)() for child in children], 
+        return CObject([getattr(self, child)() for child in children],
                        self._intf
                        )
-             
+
     def tag(self, name):
         """ Tag the element.
         """
@@ -404,18 +404,18 @@ class EObject(object):
 class CObject(object):
     """ Generic Object for a collection resource.
 
-        A collection resource is a list of element resources. There is 
+        A collection resource is a list of element resources. There is
         however several ways to obtain such a list:
             - a collection URI e.g. /REST/projects
             - a list of element URIs
-            - a list of collections 
-               e.g. /REST/projects/ONE/subjects **AND** 
+            - a list of collections
+               e.g. /REST/projects/ONE/subjects **AND**
                /REST/projects/TWO/subjects
             - a list of element objects
             - a list a collection objects
 
         Collections objects built in different ways share the same behavior:
-            - they behave as iterators, which enables a lazy access to 
+            - they behave as iterators, which enables a lazy access to
               the data
             - they always yield EObjects
             - they can be nested with any other collection
@@ -425,7 +425,7 @@ class CObject(object):
         No access to the data:
             >>> interface.select.projects()
             <Collection Object> 173667084
-        
+
         Lazy access to the data:
             >>> for project in interface.select.projects():
             >>>     print project
@@ -434,10 +434,10 @@ class CObject(object):
             >>> for subject in interface.select.projects().subjects():
             >>>     print subject
     """
-    def __init__(self, cbase, interface, pattern='*', nested=None, 
+    def __init__(self, cbase, interface, pattern='*', nested=None,
                             id_header='ID', columns=[], filters={}):
 
-        """ 
+        """
             Parameters
             ----------
             cbase: string | list | CObject
@@ -445,12 +445,12 @@ class CObject(object):
             interface: :class:`Interface`
                 Main interface reference.
             pattern: string
-                Only resource element whose ID match the pattern are 
+                Only resource element whose ID match the pattern are
                 returned.
             nested: None | string
                 Parameter used to nest collections.
             id_header: ID | label
-                Defines whether the element label or ID is returned as the 
+                Defines whether the element label or ID is returned as the
                 identifier.
             columns: list
                 Defines additional columns to be returned.
@@ -481,7 +481,7 @@ class CObject(object):
         elif isinstance(cbase, list) and cbase == []:
             self._ctype = 'cobjectempty'
         else:
-            raise Exception('Invalid collection accessor type: %s'%cbase)
+            raise Exception('Invalid collection accessor type: %s' % cbase)
 
     def __repr__(self):
         return '<Collection Object> %s' % id(self)
@@ -492,11 +492,11 @@ class CObject(object):
             uri = urllib.quote(uri)
 
             request_shape = uri_shape('%s/0' % uri.split('/REST')[1])
-            reqcache = os.path.join(self._intf._cachedir, 
+            reqcache = os.path.join(self._intf._cachedir,
                                    '%s.struct' % md5name(request_shape)
                                    ).replace('_*', '')
 
-            gather = uri.split('/')[-1] in ['experiments', 'assessors', 
+            gather = uri.split('/')[-1] in ['experiments', 'assessors',
                                             'scans', 'reconstructions']
 
             tick = time.gmtime(time.time())[5] % \
@@ -525,8 +525,8 @@ class CObject(object):
             #         )
 
             #     # print pattern, request_pat, fnmatch(pattern, request_pat)
-                                              
-            #     if (fnmatch(pattern, request_pat) 
+
+            #     if (fnmatch(pattern, request_pat)
             #         and struct[pattern] is not None):
 
             #         self._filters.setdefault('xsiType', set()
@@ -534,10 +534,10 @@ class CObject(object):
 
             # if self._filters != {}:
             #     query_string += '&' + \
-            #         '&'.join('%s=%s' % (item[0], item[1]) 
-            #                  if isinstance(item[1], (str, unicode)) 
-            #                  else '%s=%s' % (item[0], 
-            #                                  ','.join([val 
+            #         '&'.join('%s=%s' % (item[0], item[1])
+            #                  if isinstance(item[1], (str, unicode))
+            #                  else '%s=%s' % (item[0],
+            #                                  ','.join([val
             #                                            for val in item[1]
             #                                            ])
             #                                  )
@@ -563,7 +563,14 @@ class CObject(object):
 
         for element in jtable:
             xsitype = element.get('xsiType')
-            uri = element.get('URI').split('/REST')[1]
+            uri = element.get('URI')
+            if uri.startswith('/REST'):
+                uri = uri.split('/REST')[1]
+            elif uri.startswith('/data'):
+                uri = uri.split('/data')[1]
+            else:
+                #Don't know the uri type so exit out of _learn_from_table
+                return
             uri = uri.replace(uri.split('/')[-2], _type)
             shape = uri_shape(uri)
 
@@ -600,12 +607,12 @@ class CObject(object):
                             yield eobj
                         else:
                             Klass = globals()[self._nested.title()]
-                            for subeobj in Klass(cbase=join_uri(eobj._uri, 
+                            for subeobj in Klass(cbase=join_uri(eobj._uri,
                                                                 self._nested
                                                                 ),
-                                                 interface=self._intf, 
-                                                 pattern=self._pattern, 
-                                                 id_header=self._id_header, 
+                                                 interface=self._intf,
+                                                 pattern=self._pattern,
+                                                 id_header=self._id_header,
                                                  columns=self._columns):
                                 try:
                                     self._run_callback(self, subeobj)
@@ -626,11 +633,11 @@ class CObject(object):
                         yield eobj
                     else:
                         Klass = globals()[self._nested.title()]
-                        for subeobj in Klass(cbase=join_uri(eobj._uri, 
+                        for subeobj in Klass(cbase=join_uri(eobj._uri,
                                                             self._nested),
-                                             interface=self._intf, 
-                                             pattern=self._pattern, 
-                                             id_header=self._id_header, 
+                                             interface=self._intf,
+                                             pattern=self._pattern,
+                                             id_header=self._id_header,
                                              columns=self._columns):
                             try:
                                 self._run_callback(self, subeobj)
@@ -649,11 +656,11 @@ class CObject(object):
                         yield eobj
                     else:
                         Klass = globals()[self._nested.rstrip('s').title()]
-                        for subeobj in Klass(cbase=join_uri(eobj._uri, 
+                        for subeobj in Klass(cbase=join_uri(eobj._uri,
                                                             self._nested),
-                                             interface=self._intf, 
-                                             pattern=self._pattern, 
-                                             id_header=self._id_header, 
+                                             interface=self._intf,
+                                             pattern=self._pattern,
+                                             id_header=self._id_header,
                                              columns=self._columns):
                             try:
                                 self._run_callback(self, subeobj)
@@ -672,11 +679,11 @@ class CObject(object):
                         yield eobj
                     else:
                         Klass = globals()[self._nested.title()]
-                        for subeobj in Klass(cbase=join_uri(eobj._uri, 
+                        for subeobj in Klass(cbase=join_uri(eobj._uri,
                                                             self._nested),
-                                             interface=self._intf, 
-                                             pattern=self._pattern, 
-                                             id_header=self._id_header, 
+                                             interface=self._intf,
+                                             pattern=self._pattern,
+                                             id_header=self._id_header,
                                              columns=self._columns):
                             try:
                                 self._run_callback(self, eobj)
@@ -698,11 +705,11 @@ class CObject(object):
                             Klass = globals()[cobj._nested.title()]
                             for subeobj in Klass(
                                 cbase=join_uri(eobj._uri, cobj._nested),
-                                interface=cobj._intf, 
-                                pattern=cobj._pattern, 
-                                id_header=cobj._id_header, 
+                                interface=cobj._intf,
+                                pattern=cobj._pattern,
+                                id_header=cobj._id_header,
                                 columns=cobj._columns):
-                                
+
                                 try:
                                     self._run_callback(self, eobj)
                                     yield subeobj
@@ -733,7 +740,7 @@ class CObject(object):
         """ Returns every element.
 
             .. warning::
-                If a collection needs to issue thousands of queries it may 
+                If a collection needs to issue thousands of queries it may
                 be better to access the resources within a `for-loop`.
 
             Parameters
@@ -752,16 +759,16 @@ class CObject(object):
             for arg in args:
                 if arg == 'id':
                     self._id_header = 'ID'
-                    ret += ([urllib.unquote(uri_last(eobj._uri)) 
+                    ret += ([urllib.unquote(uri_last(eobj._uri))
                              for eobj in self
-                             ], )
+                             ],)
                 elif arg == 'label':
                     self._id_header = 'label'
-                    ret +=  ([urllib.unquote(uri_last(eobj._uri)) 
+                    ret += ([urllib.unquote(uri_last(eobj._uri))
                               for eobj in self
-                              ], )
+                              ],)
                 else:
-                    ret += ([eobj for eobj in self], )
+                    ret += ([eobj for eobj in self],)
 
             if len(args) != 1:
                 return ret
@@ -789,9 +796,9 @@ class CObject(object):
             tag.delete()
 
     def where(self, constraints):
-        """ Only the element objects whose subject that are matching the 
-            constraints will be returned. It means that it is not possible 
-            to use this method on an element that is not linked to a 
+        """ Only the element objects whose subject that are matching the
+            constraints will be returned. It means that it is not possible
+            to use this method on an element that is not linked to a
             subject, such as a project.
 
             Examples
@@ -819,14 +826,14 @@ class CObject(object):
         if isinstance(constraints, basestring):
             constraints = rpn_contraints(constraints)
 
-        bundle = build_search_document('xnat:subjectData', 
+        bundle = build_search_document('xnat:subjectData',
                                        ['xnat:subjectData/PROJECT',
                                         'xnat:subjectData/SUBJECT_ID'
                                         ],
                                        constraints
                                        )
 
-        content = self._intf._exec("/REST/search?format=json", 
+        content = self._intf._exec("/REST/search?format=json",
                                    'POST', bundle)
 
         if content.startswith('<html>'):
@@ -843,7 +850,7 @@ class CObject(object):
             first = cobj.first()
             if not first:
                 break
- 
+
             if uri_nextlast(first._uri) == 'subjects':
                 break
 
@@ -870,7 +877,7 @@ class CObject(object):
 
 class Project(EObject):
     __metaclass__ = ElementType
-    
+
     def prearchive_code(self):
         """ Gets project prearchive code.
         """
@@ -883,7 +890,7 @@ class Project(EObject):
             ----------
             code: 0 to 4
         """
-        self._intf._exec(join_uri(self._uri, 'prearchive_code', code), 
+        self._intf._exec(join_uri(self._uri, 'prearchive_code', code),
                          'PUT')
 
     def quarantine_code(self):
@@ -898,7 +905,7 @@ class Project(EObject):
             ----------
             code: 0 to 1
         """
-        self._intf._exec(join_uri(self._uri, 'quarantine_code', code), 
+        self._intf._exec(join_uri(self._uri, 'quarantine_code', code),
                          'PUT')
 
     def current_arc(self):
@@ -911,8 +918,8 @@ class Project(EObject):
         """
         current_arc = self._intf._exec(join_uri(self._uri, 'current_arc'))
 
-        self._intf._exec(join_uri(self._uri, 'current_arc', 
-                                  current_arc, subfolder), 
+        self._intf._exec(join_uri(self._uri, 'current_arc',
+                                  current_arc, subfolder),
                          'PUT')
 
     def accessibility(self):
@@ -924,21 +931,21 @@ class Project(EObject):
         """ Sets project accessibility.
 
             .. note::
-                Write access is given or not by the user level for a 
+                Write access is given or not by the user level for a
                 specific project.
 
             Parameters
             ----------
             accessibility: public | protected | private
                 Sets the project accessibility:
-                    - public: the project is visible and provides read 
+                    - public: the project is visible and provides read
                       access for anyone.
-                    - protected: the project is visible by anyone but the 
+                    - protected: the project is visible by anyone but the
                       data is accessible for allowed users only.
                     - private: the project is visible by allowed users only.
 
         """
-        return self._intf._exec(join_uri(self._uri, 'accessibility', 
+        return self._intf._exec(join_uri(self._uri, 'accessibility',
                                          accessibility), 'PUT')
 
     def users(self):
@@ -986,7 +993,7 @@ class Project(EObject):
                                  )['displayname'].lower().rstrip('s')
 
     def add_user(self, login, role='member'):
-        """ Adds a user to the project. The user must already exist on 
+        """ Adds a user to the project. The user must already exist on
             the server.
 
             Parameters
@@ -995,17 +1002,17 @@ class Project(EObject):
                 Valid username for the XNAT database.
             role: owner | member | collaborator
                 The user level for this project:
-                    - owner: read and write access, as well as 
+                    - owner: read and write access, as well as
                       administrative privileges such as adding and removing
                       users.
-                    - member: read access and can create new resources but 
+                    - member: read access and can create new resources but
                       not remove them.
                     - collaborator: read access only.
         """
-        self._intf._exec(join_uri(self._uri, 'users', 
-                                  role.lstrip('s').title() + 's', 
+        self._intf._exec(join_uri(self._uri, 'users',
+                                  role.lstrip('s').title() + 's',
                                   login
-                                  ), 
+                                  ),
                          'PUT')
 
     def remove_user(self, login):
@@ -1017,7 +1024,7 @@ class Project(EObject):
                 Valid username for the XNAT database.
         """
         self._intf._exec(join_uri(self._uri, 'users',
-                                  self.user_role(login).title()+'s', 
+                                  self.user_role(login).title() + 's',
                                   login
                                   ),
                          'DELETE')
@@ -1026,7 +1033,7 @@ class Project(EObject):
         return 'xnat:projectData'
 
     def experiments(self, id_filter='*'):
-        return Experiments('/REST/experiments', self._intf, id_filter, 
+        return Experiments('/REST/experiments', self._intf, id_filter,
                            filters={'project':self.id()}
                            )
 
@@ -1041,12 +1048,12 @@ class Project(EObject):
         """
         uri = '%s/subjects?columns=last_modified' % self._uri
 
-        return dict(JsonTable(self._intf._get_json(uri), 
+        return dict(JsonTable(self._intf._get_json(uri),
                               order_by=['ID', 'last_modified']
                               ).select(['ID', 'last_modified']
                                        ).items()
                     )
-            
+
 
 class Subject(EObject):
     __metaclass__ = ElementType
@@ -1061,7 +1068,7 @@ class Subject(EObject):
             -------
             Collection object.
         """
-        return Projects(join_uri(self._uri, 'projects'), 
+        return Projects(join_uri(self._uri, 'projects'),
                         self._intf, id_filter)
 
     def share(self, project):
@@ -1095,7 +1102,7 @@ class Experiment(EObject):
             -------
             Collection object.
         """
-        return Projects(join_uri(self._uri, 'projects'), 
+        return Projects(join_uri(self._uri, 'projects'),
                         self._intf, id_filter)
 
     def share(self, project):
@@ -1121,22 +1128,22 @@ class Experiment(EObject):
     def trigger_pipelines(self):
         """ Triggers the AutoRun pipeline.
         """
-        self._intf._exec(self._uri+'?triggerPipelines=true', 'PUT')
+        self._intf._exec(self._uri + '?triggerPipelines=true', 'PUT')
 
     def fix_scan_types(self):
-        """ Populate empty scan TYPE attributes based on how similar 
+        """ Populate empty scan TYPE attributes based on how similar
             scans were populated.
         """
-        self._intf._exec(self._uri+'?fixScanTypes=true', 'PUT')
+        self._intf._exec(self._uri + '?fixScanTypes=true', 'PUT')
 
     def pull_data_from_headers(self):
         """ Pull DICOM header values into the session.
         """
-        self._intf._exec(self._uri+'?pullDataFromHeaders=true', 'PUT')
+        self._intf._exec(self._uri + '?pullDataFromHeaders=true', 'PUT')
 
     def trigger(self, pipelines=True, fix_types=True, scan_headers=True):
         """ Run several triggers in a single call.
-            
+
             Parameters
             ----------
             pipelines: boolean
@@ -1156,7 +1163,7 @@ class Experiment(EObject):
                 options.append('pullDataFromHeaders=true')
 
             options = '?' + '&'.join(options)
-    
+
             self._intf._exec(self._uri + options, 'PUT')
 
 
@@ -1170,7 +1177,7 @@ class Assessor(EObject):
             -------
             Collection object.
         """
-        return Projects(join_uri(self._uri, 'projects'), 
+        return Projects(join_uri(self._uri, 'projects'),
                         self._intf, id_filter)
 
     def share(self, project):
@@ -1223,11 +1230,11 @@ class Resource(EObject):
             extract: boolean
                 If True, the downloaded zip file is extracted.
                 If False, not extracted.
-                
+
             Returns
             -------
             If extract is False, the zip file path.
-            If extract is True, the list of file paths previously in 
+            If extract is True, the list of file paths previously in
             the zip.
         """
         zip_location = os.path.join(dest_dir, uri_last(self._uri) + '.zip')
@@ -1235,19 +1242,19 @@ class Resource(EObject):
         if dest_dir is not None:
             self._intf._conn.cache.preset(zip_location)
 
-        self._intf._exec(join_uri(self._uri, 'files')+'?format=zip')
+        self._intf._exec(join_uri(self._uri, 'files') + '?format=zip')
 
         fzip = zipfile.ZipFile(zip_location, 'r')
         fzip.extractall(path=dest_dir)
         fzip.close()
 
-        members = []            
+        members = []
 
         for member in fzip.namelist():
             old_path = os.path.join(dest_dir, member)
             new_path = os.path.join(
-                dest_dir, 
-                uri_last(self._uri), 
+                dest_dir,
+                uri_last(self._uri),
                 member.split('files', 1)[1].split(os.sep, 2)[2])
 
             if not os.path.exists(os.path.dirname(new_path)):
@@ -1272,7 +1279,7 @@ class Resource(EObject):
             arcroot = '/%s' % os.path.split(arcprefix.rstrip('/'))[1]
 
             for member in members:
-                fzip.write(member, os.path.join(arcroot, 
+                fzip.write(member, os.path.join(arcroot,
                                                 member.split(arcprefix)[1])
                            )
             fzip.close()
@@ -1289,7 +1296,7 @@ class Resource(EObject):
             the server.
         """
         zip_location = tempfile.mkstemp(suffix='.zip')[1]
-        
+
         arcprefix = os.path.commonprefix(sources)
         arcroot = '/%s' % os.path.split(arcprefix.rstrip('/'))[1]
 
@@ -1313,7 +1320,7 @@ class Resource(EObject):
 
         self.file(os.path.split(zip_location)[1] + '?extract=true'
                   ).put(zip_location)
-        
+
     def put_dir(self, src_dir, **datatypes):
         """ Finds recursively all the files in a folder and uploads
             them using `insert`.
@@ -1335,8 +1342,8 @@ class File(EObject):
     """
     __metaclass__ = ElementType
 
-    def __init__(self,  uri, interface):
-        """ 
+    def __init__(self, uri, interface):
+        """
             Parameters
             ----------
             uri: string
@@ -1344,8 +1351,8 @@ class File(EObject):
             interface: Interface Object
         """
 
-        EObject.__init__(self,  uri, interface)
-        self._absuri = None        
+        EObject.__init__(self, uri, interface)
+        self._absuri = None
 
     def attributes(self):
         """ Files attributes include:
@@ -1361,21 +1368,21 @@ class File(EObject):
             dict : a dictionnary with the file attributes
         """
 
-        return self._getcells(['URI', 'Name', 'Size', 
+        return self._getcells(['URI', 'Name', 'Size',
                                'file_tags', 'file_format', 'file_content'])
 
     def get(self, dest=None):
         """ Downloads the file to the cache directory.
 
             .. note::
-                The default cache path is computed like this: 
+                The default cache path is computed like this:
                 ``path_to_cache/md5(uri + query_string)_filename``
 
             Parameters
             ----------
             dest: string | None
                 - If None a default path in the cache folder is
-                  automatically computed. 
+                  automatically computed.
                 - Else the file is downloaded at the requested location.
 
             Returns
@@ -1417,7 +1424,7 @@ class File(EObject):
         if not dest:
             dest = os.path.join(self._intf._conn.cache.cache, 'workspace',
                                 *self._absuri.strip('/').split('/')[1:])
-            
+
         if not os.path.exists(os.path.dirname(dest)):
             os.makedirs(os.path.dirname(dest))
 
@@ -1428,7 +1435,7 @@ class File(EObject):
 
         if src != dest:
             shutil.copy2(src, dest)
-            
+
         return dest
 
     def put(self, src, format='U', content='U', tags='U', **datatypes):
@@ -1438,14 +1445,14 @@ class File(EObject):
             ----------
             src: string
                 Location of the local file to upload.
-            format: string   
-                Optional parameter to specify the file format. 
+            format: string
+                Optional parameter to specify the file format.
                 Defaults to 'U'.
             content: string
-                Optional parameter to specify the file content. 
+                Optional parameter to specify the file content.
                 Defaults to 'U'.
             tags: string
-                Optional parameter to specify tags for the file. 
+                Optional parameter to specify tags for the file.
                 Defaults to 'U'.
         """
 
@@ -1463,7 +1470,7 @@ class File(EObject):
         L.append('Content-Disposition: form-data; '
                  'name="%s"; filename="%s"' % (os.path.basename(src), src)
                  )
-        L.append('Content-Type: %s' % 
+        L.append('Content-Type: %s' %
                  mimetypes.guess_type(src)[0] or 'application/octet-stream')
         L.append('')
         L.append(open(src, 'rb').read())
@@ -1477,7 +1484,7 @@ class File(EObject):
         if not self._intf.select(guri).exists():
             self._intf.select(guri).create(**datatypes)
 
-        self._intf._exec(self._uri, 'PUT', body, 
+        self._intf._exec(self._uri, 'PUT', body,
                          headers={'content-type':content_type})
 
     insert = put
@@ -1538,7 +1545,7 @@ class Subjects(CObject):
     def sharing(self, projects=[]):
         return Subjects([eobj for eobj in self
                          if set(projects).issubset(eobj.shares().get())
-                         ], 
+                         ],
                         self._intf
                         )
 
@@ -1556,7 +1563,7 @@ class Experiments(CObject):
     def sharing(self, projects=[]):
         return Experiments([eobj for eobj in self
                             if set(projects).issubset(eobj.shares().get())
-                            ], 
+                            ],
                            self._intf
                            )
 
@@ -1574,7 +1581,7 @@ class Assessors(CObject):
     def sharing(self, projects=[]):
         return Assessors([eobj for eobj in self
                           if set(projects).issubset(eobj.shares().get())
-                          ], 
+                          ],
                          self._intf
                          )
 
