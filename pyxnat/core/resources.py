@@ -155,10 +155,7 @@ class EObject(object):
         get_id = p_uri + '?format=json&columns=%s' % ','.join(columns)
 
         for pattern in self._intf._struct.keys():
-            if DEBUG:
-                print uri_segment(self._uri.split('/REST')[1], -2), pattern
-
-            if fnmatch(uri_segment(self._uri.split('/REST')[1], -2),
+            if fnmatch(uri_segment(self._uri.split('/REST')[1], -2), 
                        pattern):
 
                 reg_pat = self._intf._struct[pattern]
@@ -1391,8 +1388,6 @@ class File(EObject):
             string : the file location.
         """
 
-        start = time.time()
-
         if not self._absuri:
             self._absuri = self._getcell('URI')
 
@@ -1400,9 +1395,6 @@ class File(EObject):
             self._intf._conn.cache.preset(dest)
 
         self._intf._exec(self._absuri, 'GET')
-
-        if DEBUG:
-            print time.time() - start
 
         return self._intf._conn.cache.get_diskpath(self._intf._server + \
                                                        self._absuri)

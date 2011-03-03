@@ -304,7 +304,8 @@ class SearchManager(object):
             raise DatabaseError('%s not found' % name)
 
         content = self._intf._exec(
-            '/REST/search/saved/%s/results?format=csv' % search_id, 'GET')
+            '/REST/search/saved/%s/results?format=csv' % search_id, 'GET'
+            )
 
         results = csv.reader(StringIO(content), delimiter=',', quotechar='"')
         headers = results.next()
