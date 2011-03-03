@@ -180,7 +180,8 @@ class HTCache(object):
                  into using something else than the default path to
                  store entries.
         """
-        self._cachepath = path
+        if self._intf._mode != 'offline':
+            self._cachepath = path
 
     def delete(self, key):
         """ Deletes the entry.
