@@ -155,7 +155,8 @@ class EObject(object):
         get_id = p_uri + '?format=json&columns=%s' % ','.join(columns)
 
         for pattern in self._intf._struct.keys():
-            print uri_segment(self._uri.split('/REST')[1], -2), pattern
+            if DEBUG:
+                print uri_segment(self._uri.split('/REST')[1], -2), pattern
 
             if fnmatch(uri_segment(self._uri.split('/REST')[1], -2),
                        pattern):
@@ -1400,7 +1401,8 @@ class File(EObject):
 
         self._intf._exec(self._absuri, 'GET')
 
-        print time.time() - start
+        if DEBUG:
+            print time.time() - start
 
         return self._intf._conn.cache.get_diskpath(self._intf._server + \
                                                        self._absuri)
