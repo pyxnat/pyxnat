@@ -1486,37 +1486,35 @@ class File(EObject):
         self._absuri = re.sub('resources/.*?/', 
                               'resources/%s/' % resource_id, self._uri)
 
-        print self._absuri
-
-        print 'INSERT FILE', os.path.exists(src)
+        # print 'INSERT FILE', os.path.exists(src)
 
         self._intf._exec(self._absuri, 'PUT', body,
                          headers={'content-type':content_type})
 
         # track the uploaded file as one of the cache
 
-        print 'GET DISKPATH', os.path.exists(src)
-        _cachepath = self._intf._http.cache.get_diskpath(
-            '%s%s' % (self._intf._server, self._absuri),
-            force_default=True
-            )
+        # print 'GET DISKPATH', os.path.exists(src)
+        # _cachepath = self._intf._http.cache.get_diskpath(
+        #     '%s%s' % (self._intf._server, self._absuri),
+        #     force_default=True
+        #     )
 
-        _fakepath = '%s.alt' % _cachepath
-        _headerpath = '%s.headers' % _cachepath
+        # _fakepath = '%s.alt' % _cachepath
+        # _headerpath = '%s.headers' % _cachepath
 
-        print 'WRITE REFFILE', os.path.exists(src)
+        # print 'WRITE REFFILE', os.path.exists(src)
 
-        reffile = open(_fakepath, 'wb')
-        reffile.write(src)
-        reffile.close()
+        # reffile = open(_fakepath, 'wb')
+        # reffile.write(src)
+        # reffile.close()
 
-        info_head = self._intf._get_head(self._absuri)
+        # info_head = self._intf._get_head(self._absuri)
 
-        print 'WRITE HEADER FILE', os.path.exists(src)
+        # print 'WRITE HEADER FILE', os.path.exists(src)
 
-        headerfile = open(_headerpath, 'wb')
-        headerfile.write(info_head.as_string())
-        headerfile.close()
+        # headerfile = open(_headerpath, 'wb')
+        # headerfile.write(info_head.as_string())
+        # headerfile.close()
 
     insert = put
     create = put

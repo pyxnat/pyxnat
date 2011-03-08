@@ -85,22 +85,19 @@ class HTCache(object):
     def get(self, key):
         retval = None
 
-        print 'GET', key
+        if DEBUG:
+            print 'cache get:', key
 
         _cachepath = os.path.join(self.cache, self.safe(key))
-
-        # print 'GET cachepath', _cachepath
 
         try:
             f = file('%s.headers' % _cachepath, "rb")
             retval = f.read()
             f.close()
-            print 'found headers', len(retval)
 
             f = file(_cachepath, "rb")
             retval += f.read()
             f.close()
-            print 'found default file', len(retval)
         except IOError:
             try:
                 f = file('%s.alt' % _cachepath, "rb")
@@ -110,11 +107,6 @@ class HTCache(object):
                 f = file(_altpath, "rb")
                 retval += f.read()
                 f.close()
-
-                print 'found alt file', len(retval)
-
-                # print 'GET altpath', _altpath
-
             except:
                 return
 
@@ -124,7 +116,8 @@ class HTCache(object):
         """ Sets cache entry.
         """
 
-        print 'SET', key
+        if DEBUG:
+            print 'cache set:', key
 
         _fakepath = '%s.alt' % os.path.join(self.cache, self.safe(key))
         _headerpath = '%s.headers' % os.path.join(self.cache, self.safe(key))
@@ -165,16 +158,6 @@ class HTCache(object):
         header = ''
         value = StringIO(value)
 
-        # print 'PUT fakepath', _fakepath
-        # print 'PUT headerpath', _headerpath
-        # print 'PUT cachepath', _cachepath
-
-        # try:
-        #     _altpath
-        #     print 'PUT altpath', _altpath
-        # except:
-        #     pass
-
         # avoid checking disk status each time
         if time.gmtime(time.time())[5] % 10 == 0:
             disk_status = self._intf.cache.disk_ready(_cachepath)
@@ -211,7 +194,8 @@ class HTCache(object):
         """ Deletes the entry.
         """
 
-        print 'DEL', key
+        if DEBUG:
+            print 'cache del:', key
 
         _cachepath = os.path.join(self.cache, self.safe(key))
         _fakepath = '%s.alt' % _cachepath
