@@ -248,6 +248,8 @@ class EObject(object):
                       - if its name matches a naming convention, this type 
                         will be used
                       - else a default type is defined in the schema module
+                - To give the ID the same value as the label use 
+                  use_label=True e.g element.create(use_label=True)
 
             Examples
             --------
@@ -280,14 +282,15 @@ class EObject(object):
         else:
             local_params = \
                 [param for param in params
-                 if param not in schema.resources_types \
+                 if param not in schema.resources_types + ['use_label'] \
                      and (param.startswith(datatype) or '/' not in param)
                  ]
 
             create_uri = '%s?xsiType=%s' % (self._uri, datatype)
 
             if 'ID' not in local_params \
-                    and '%s/ID' % datatype not in local_params:
+                    and '%s/ID' % datatype not in local_params \
+                    and params.get('use_label'):
 
                 create_uri += '&%s/ID=%s' % (datatype, uri_last(self._uri))
 
@@ -1399,12 +1402,13 @@ class File(EObject):
         if dest is not None:
             self._intf._http.cache.preset(dest)
         elif not force_default:
-            dest = self._intf._http.cache.get_diskpath(
+            _location = \
+                self._intf._http.cache.get_diskpath(
                 '%s%s' % (self._intf._server, self._absuri)
                 )
-
-            self._intf._http.cache.preset(dest)            
                 
+            self._intf._http.cache.preset(_location)
+
         self._intf._exec(self._absuri, 'GET')
 
         return self._intf._http.cache.get_diskpath(
@@ -1488,9 +1492,6 @@ class File(EObject):
 
         guri = uri_grandparent(self._uri)
 
-        print self._uri
-        print guri
-
         if not self._intf.select(guri).exists():
             self._intf.select(guri).insert(**datatypes)
 
@@ -1498,8 +1499,6 @@ class File(EObject):
 
         self._absuri = re.sub('resources/.*?/', 
                               'resources/%s/' % resource_id, self._uri)
-
-        print self._absuri
 
         # print 'INSERT FILE', os.path.exists(src)
 

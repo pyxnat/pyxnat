@@ -88,7 +88,8 @@ class HTCache(object):
         _cachepath = os.path.join(self.cache, self.safe(key))
 
         if DEBUG:
-            print 'cache get:', key, _cachepath
+            print 'cache get:', key, 
+            print '\n\t', _cachepath
 
         try:
             f = file('%s.headers' % _cachepath, "rb")
@@ -120,9 +121,6 @@ class HTCache(object):
         _headerpath = '%s.headers' % os.path.join(self.cache, self.safe(key))
         _cachepath = os.path.join(self.cache, self.safe(key))
 
-        if DEBUG:
-            print 'cache set default:', key, _cachepath
-
         if self._cachepath is not None: # when using custom path
             if _cachepath != self._cachepath and os.path.exists(_cachepath):
                 os.remove(_cachepath) # remove default file if exists
@@ -139,7 +137,8 @@ class HTCache(object):
             _cachepath = self._cachepath
 
             if DEBUG:
-                print 'cache set custom:', key, _cachepath
+                print 'cache set custom:', key 
+                print '\n\t', _cachepath
 
             f = open(_fakepath, 'w')
             f.write(_cachepath)
@@ -157,6 +156,10 @@ class HTCache(object):
                     os.remove(_altpath) # remove actual file
 
                 os.remove(_fakepath) # remove pointer file
+
+            if DEBUG:
+                print 'cache set default:', key
+                print '\n\t', _cachepath
 
         header = ''
         value = StringIO(value)

@@ -26,7 +26,7 @@ def join_uri(uri, *segments):
 
 def uri_last(uri):
     # return uri.split(uri_parent(uri))[1].strip('/')
-    return uri.split('/')[-2]
+    return uri.split('/')[-1]
 
 def uri_nextlast(uri):
     # return uri_last(uri.split(uri_last(uri))[0].strip('/'))
