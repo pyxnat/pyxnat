@@ -139,8 +139,8 @@ class Interface(object):
 
         if DEBUG:   
             httplib2.debuglevel = 2
-        self._conn = httplib2.Http(HTCache(self._cachedir, self))
-        self._conn.add_credentials(self._user, self._pwd)
+        self._http = httplib2.Http(HTCache(self._cachedir, self))
+        self._http.add_credentials(self._user, self._pwd)
 
     def _exec(self, uri, method='GET', body=None, headers=None):
         """ A wrapper around a simple httplib2.request call that:
@@ -179,19 +179,19 @@ class Interface(object):
                 if DEBUG:
                     print 'send: GET CACHE %s' % uri
 
-                info, content = self._conn.cache.get(uri
+                info, content = self._http.cache.get(uri
                                                      ).split('\r\n\r\n', 1)
 
                 self._memcache[uri] = time.time()
                 response = None
             else:
-                response, content = self._conn.request(uri, method, 
+                response, content = self._http.request(uri, method, 
                                                        body, headers)
                 self._memcache[uri] = time.time()
 
         elif self._mode == 'offline' and method == 'GET':
 
-            cached_value = self._conn.cache.get(uri)
+            cached_value = self._http.cache.get(uri)
 
             if cached_value is not None:
                 if DEBUG:
@@ -200,17 +200,17 @@ class Interface(object):
                 response = None
             else:
                 try:
-                    self._conn.timeout = 10
+                    self._http.timeout = 10
 
-                    response, content = self._conn.request(uri, method, 
+                    response, content = self._http.request(uri, method, 
                                                            body, headers)
 
-                    self._conn.timeout = None
+                    self._http.timeout = None
                     self._memcache[uri] = time.time()
                 except Exception, e:
                     catch_error(e)
         else:
-            response, content = self._conn.request(uri, method, 
+            response, content = self._http.request(uri, method, 
                                                    body, headers)
 
         if DEBUG:
@@ -226,7 +226,7 @@ class Interface(object):
             self._jsession = response.get('set-cookie')[:44]
 
         if response is not None and response.get('status') == '404':
-            r,_ = self._conn.request(self._server)
+            r,_ = self._http.request(self._server)
 
             if self._server.rstrip('/') != r.get('content-location', 
                                                  self._server).rstrip('/'):
@@ -272,6 +272,32 @@ class Interface(object):
             catch_error(content)
 
         return csv_to_json(content)
+
+    def _get_head(self, uri):
+        print 'GET HEAD'
+        _nocache = httplib2.Http()
+        _nocache.add_credentials(self._user, self._pwd)
+
+        rheaders = {'cookie':self._jsession}
+
+        try:
+            head = _nocache.request(
+                '%s%s' % (self._server, uri), 'HEAD', headers=rheaders)[0]
+        except Exception as e:
+            print e
+            time.sleep(1)
+            head = _nocache.request(
+                '%s%s' % (self._server, uri), 'HEAD', headers=rheaders)[0]
+
+        info = email.Message.Message()
+
+        for key, value in head.iteritems():
+            if key == 'content-disposition':
+                info['content-location'] = '%s%s' % (self._server, uri)
+            if key not in ['set-cookie']:
+                info[key] = value
+
+        return info
 
     def save_config(self, location):
         """ Saves current configuration - including password - in a file.

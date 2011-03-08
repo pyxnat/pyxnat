@@ -1064,6 +1064,8 @@ a string that contains the response entity body.
                 for header in vary_headers:
                     key = '-varied-%s' % header
                     value = info[key]
+                    print 'HTTP', key, value
+                    print 'HTTP', key, headers.get(header)
                     #// FIXED from "if headers.get(header, '') != value" //#
                     if headers.get(header, '') != value and headers.get(header) != value:
                             cached_value = None

@@ -1,6 +1,7 @@
 from __future__ import with_statement
 
 import os
+import re
 import shutil
 import tempfile
 import mimetypes
@@ -21,6 +22,7 @@ from .pathutil import find_files
 from .attributes import EAttrs
 from .search import build_search_document, rpn_contraints
 from .errors import is_xnat_error, parse_put_error_message
+from .errors import DataError
 from .cache import md5name
 from . import schema
 
@@ -1231,7 +1233,7 @@ class Resource(EObject):
         zip_location = os.path.join(dest_dir, uri_last(self._uri) + '.zip')
 
         if dest_dir is not None:
-            self._intf._conn.cache.preset(zip_location)
+            self._intf._http.cache.preset(zip_location)
 
         self._intf._exec(join_uri(self._uri, 'files')+'?format=zip')
 
@@ -1318,9 +1320,9 @@ class Resource(EObject):
         """
         self.put(find_files(src_dir), **datatypes)
 
-    insert = put
-    insert_zip = put_zip
-    insert_dir = put_dir
+    batch_insert = put
+    zip_insert = put_zip
+    dir_insert = put_dir
 
 class In_Resource(Resource):
     __metaclass__ = ElementType
@@ -1384,13 +1386,17 @@ class File(EObject):
         if not self._absuri:
             self._absuri = self._getcell('URI')
 
+        if self._absuri is None:
+            raise DataError('Cannot get file: does not exists')
+
         if dest is not None:
-            self._intf._conn.cache.preset(dest)
+            self._intf._http.cache.preset(dest)
 
         self._intf._exec(self._absuri, 'GET')
 
-        return self._intf._conn.cache.get_diskpath(self._intf._server + \
-                                                       self._absuri)
+        return self._intf._http.cache.get_diskpath(
+            '%s%s' % (self._intf._server, self._absuri)
+            )
 
     def get_copy(self, dest=None):
         """ Downloads the file to the cache directory but creates a copy at
@@ -1409,7 +1415,7 @@ class File(EObject):
         """
 
         if not dest:
-            dest = os.path.join(self._intf._conn.cache.cache, 'workspace',
+            dest = os.path.join(self._intf._http.cache.cache, 'workspace',
                                 *self._absuri.strip('/').split('/')[1:])
             
         if not os.path.exists(os.path.dirname(dest)):
@@ -1443,9 +1449,13 @@ class File(EObject):
                 Defaults to 'U'.
         """
 
-        format = "'%s'" % format if ' ' in format else format
-        content = "'%s'" % content if ' ' in content else content
-        tags = "'%s'" % tags if ' ' in tags else tags
+        format = urllib.quote(format)
+        content = urllib.quote(content)
+        tags = urllib.quote(tags)
+
+        # format = "'%s'" % format if ' ' in format else format
+        # content = "'%s'" % content if ' ' in content else content
+        # tags = "'%s'" % tags if ' ' in tags else tags
 
         put_uri = "%s?format=%s&content=%s&tags=%s" % \
             (self._uri, format, content, tags)
@@ -1469,10 +1479,44 @@ class File(EObject):
         guri = uri_grandparent(self._uri)
 
         if not self._intf.select(guri).exists():
-            self._intf.select(guri).create(**datatypes)
+            self._intf.select(guri).insert(**datatypes)
 
-        self._intf._exec(self._uri, 'PUT', body, 
+        resource_id = self._intf.select(guri).id()
+
+        self._absuri = re.sub('resources/.*?/', 
+                              'resources/%s/' % resource_id, self._uri)
+
+        print self._absuri
+
+        print 'INSERT FILE', os.path.exists(src)
+
+        self._intf._exec(self._absuri, 'PUT', body,
                          headers={'content-type':content_type})
+
+        # track the uploaded file as one of the cache
+
+        print 'GET DISKPATH', os.path.exists(src)
+        _cachepath = self._intf._http.cache.get_diskpath(
+            '%s%s' % (self._intf._server, self._absuri),
+            force_default=True
+            )
+
+        _fakepath = '%s.alt' % _cachepath
+        _headerpath = '%s.headers' % _cachepath
+
+        print 'WRITE REFFILE', os.path.exists(src)
+
+        reffile = open(_fakepath, 'wb')
+        reffile.write(src)
+        reffile.close()
+
+        info_head = self._intf._get_head(self._absuri)
+
+        print 'WRITE HEADER FILE', os.path.exists(src)
+
+        headerfile = open(_headerpath, 'wb')
+        headerfile.write(info_head.as_string())
+        headerfile.close()
 
     insert = put
     create = put
@@ -1482,6 +1526,9 @@ class File(EObject):
         """
         if not self._absuri:
             self._absuri = self._getcell('URI')
+
+        if self._absuri is None:
+            raise DataError('Cannot delete file: does not exists')
 
         return self._intf._exec(self._absuri, 'DELETE')
 
@@ -1505,16 +1552,6 @@ class File(EObject):
         """
         return self._getcell('file_content')
 
-    def absurl(self):
-        if not self._absuri:
-            self._absuri = self._getcell('URI')
-
-        return '%s//%s:%s@%s%s' % (self._intf._server.split('//')[0],
-                                   self._intf._user,
-                                   self._intf._pwd,
-                                   self._intf._server.split('//')[1],
-                                   self._absuri
-                                 )
 
 class In_File(File):
     __metaclass__ = ElementType

@@ -85,16 +85,22 @@ class HTCache(object):
     def get(self, key):
         retval = None
 
+        print 'GET', key
+
         _cachepath = os.path.join(self.cache, self.safe(key))
-        
+
+        # print 'GET cachepath', _cachepath
+
         try:
             f = file('%s.headers' % _cachepath, "rb")
             retval = f.read()
             f.close()
+            print 'found headers', len(retval)
 
             f = file(_cachepath, "rb")
             retval += f.read()
             f.close()
+            print 'found default file', len(retval)
         except IOError:
             try:
                 f = file('%s.alt' % _cachepath, "rb")
@@ -104,7 +110,12 @@ class HTCache(object):
                 f = file(_altpath, "rb")
                 retval += f.read()
                 f.close()
-            except IOError:
+
+                print 'found alt file', len(retval)
+
+                # print 'GET altpath', _altpath
+
+            except:
                 return
 
         return retval
@@ -112,6 +123,9 @@ class HTCache(object):
     def set(self, key, value):
         """ Sets cache entry.
         """
+
+        print 'SET', key
+
         _fakepath = '%s.alt' % os.path.join(self.cache, self.safe(key))
         _headerpath = '%s.headers' % os.path.join(self.cache, self.safe(key))
         _cachepath = os.path.join(self.cache, self.safe(key))
@@ -151,6 +165,16 @@ class HTCache(object):
         header = ''
         value = StringIO(value)
 
+        # print 'PUT fakepath', _fakepath
+        # print 'PUT headerpath', _headerpath
+        # print 'PUT cachepath', _cachepath
+
+        # try:
+        #     _altpath
+        #     print 'PUT altpath', _altpath
+        # except:
+        #     pass
+
         # avoid checking disk status each time
         if time.gmtime(time.time())[5] % 10 == 0:
             disk_status = self._intf.cache.disk_ready(_cachepath)
@@ -186,6 +210,9 @@ class HTCache(object):
     def delete(self, key):
         """ Deletes the entry.
         """
+
+        print 'DEL', key
+
         _cachepath = os.path.join(self.cache, self.safe(key))
         _fakepath = '%s.alt' % _cachepath
         _headerpath = '%s.headers' % _cachepath
@@ -205,14 +232,14 @@ class HTCache(object):
         if os.path.exists(_headerpath):
             os.remove(_headerpath)
 
-    def get_diskpath(self, key):
+    def get_diskpath(self, key, force_default=False):
         """ Gets the disk path where the entry is stored (default path 
             or not)
         """
         _cachepath = os.path.join(self.cache, self.safe(key))
         _fakepath = '%s.alt' % _cachepath
 
-        if os.path.exists(_fakepath):
+        if os.path.exists(_fakepath) and not force_default:
             f = file(_fakepath, "rb")
             _altpath = f.read()
             f.close()
@@ -239,7 +266,7 @@ class CacheManager(object):
 
         """
         self._intf = interface
-        self._cache = interface._conn.cache
+        self._cache = interface._http.cache
 
     def clear(self):
         """ Clears all files tracked by pyxnat.
