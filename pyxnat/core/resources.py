@@ -1364,7 +1364,7 @@ class File(EObject):
         return self._getcells(['URI', 'Name', 'Size', 
                                'file_tags', 'file_format', 'file_content'])
 
-    def get(self, dest=None):
+    def get(self, dest=None, force_default=False):
         """ Downloads the file to the cache directory.
 
             .. note::
@@ -1377,6 +1377,13 @@ class File(EObject):
                 - If None a default path in the cache folder is
                   automatically computed. 
                 - Else the file is downloaded at the requested location.
+            force_default: boolean
+                - Has no effect if the file is downloaded for the first time
+                - If the file was previously download with a custom path,
+                  calling get() will remember the custom location unless:
+                      - another custom location is set in dest
+                      - force_default is set to True and the file will be
+                        moved to the cache
 
             Returns
             -------
@@ -1391,7 +1398,13 @@ class File(EObject):
 
         if dest is not None:
             self._intf._http.cache.preset(dest)
+        elif not force_default:
+            dest = self._intf._http.cache.get_diskpath(
+                '%s%s' % (self._intf._server, self._absuri)
+                )
 
+            self._intf._http.cache.preset(dest)            
+                
         self._intf._exec(self._absuri, 'GET')
 
         return self._intf._http.cache.get_diskpath(
@@ -1421,9 +1434,6 @@ class File(EObject):
         if not os.path.exists(os.path.dirname(dest)):
             os.makedirs(os.path.dirname(dest))
 
-        # FIXME: with the current .get() implementation if a file was
-        # previously dl with a custom location it will be moved back
-        # to the default and copied to the custom location of this function
         src = self.get()
 
         if src != dest:
@@ -1478,6 +1488,9 @@ class File(EObject):
 
         guri = uri_grandparent(self._uri)
 
+        print self._uri
+        print guri
+
         if not self._intf.select(guri).exists():
             self._intf.select(guri).insert(**datatypes)
 
@@ -1485,6 +1498,8 @@ class File(EObject):
 
         self._absuri = re.sub('resources/.*?/', 
                               'resources/%s/' % resource_id, self._uri)
+
+        print self._absuri
 
         # print 'INSERT FILE', os.path.exists(src)
 

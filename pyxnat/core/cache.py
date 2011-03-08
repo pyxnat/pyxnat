@@ -13,7 +13,7 @@ from StringIO import StringIO
 
 _platform = platform.system()
 
-DEBUG = False
+DEBUG = True
 
 
 def md5name(key):
@@ -85,10 +85,10 @@ class HTCache(object):
     def get(self, key):
         retval = None
 
-        if DEBUG:
-            print 'cache get:', key
-
         _cachepath = os.path.join(self.cache, self.safe(key))
+
+        if DEBUG:
+            print 'cache get:', key, _cachepath
 
         try:
             f = file('%s.headers' % _cachepath, "rb")
@@ -116,12 +116,12 @@ class HTCache(object):
         """ Sets cache entry.
         """
 
-        if DEBUG:
-            print 'cache set:', key
-
         _fakepath = '%s.alt' % os.path.join(self.cache, self.safe(key))
         _headerpath = '%s.headers' % os.path.join(self.cache, self.safe(key))
         _cachepath = os.path.join(self.cache, self.safe(key))
+
+        if DEBUG:
+            print 'cache set default:', key, _cachepath
 
         if self._cachepath is not None: # when using custom path
             if _cachepath != self._cachepath and os.path.exists(_cachepath):
@@ -137,6 +137,9 @@ class HTCache(object):
                     os.remove(_altpath)
 
             _cachepath = self._cachepath
+
+            if DEBUG:
+                print 'cache set custom:', key, _cachepath
 
             f = open(_fakepath, 'w')
             f.write(_cachepath)

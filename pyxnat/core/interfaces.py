@@ -283,8 +283,7 @@ class Interface(object):
         try:
             head = _nocache.request(
                 '%s%s' % (self._server, uri), 'HEAD', headers=rheaders)[0]
-        except Exception as e:
-            print e
+        except:
             time.sleep(1)
             head = _nocache.request(
                 '%s%s' % (self._server, uri), 'HEAD', headers=rheaders)[0]
