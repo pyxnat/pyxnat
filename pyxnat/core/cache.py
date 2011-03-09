@@ -13,7 +13,7 @@ from StringIO import StringIO
 
 _platform = platform.system()
 
-DEBUG = False
+DEBUG = True
 
 
 def md5name(key):
@@ -86,7 +86,11 @@ class HTCache(object):
         retval = None
 
         _cachepath = os.path.join(self.cache, self.safe(key))
-        
+
+        if DEBUG:
+            print 'cache get:', key, 
+            print '\n\t', _cachepath
+
         try:
             f = file('%s.headers' % _cachepath, "rb")
             retval = f.read()
@@ -104,7 +108,7 @@ class HTCache(object):
                 f = file(_altpath, "rb")
                 retval += f.read()
                 f.close()
-            except IOError:
+            except:
                 return
 
         return retval
@@ -112,6 +116,7 @@ class HTCache(object):
     def set(self, key, value):
         """ Sets cache entry.
         """
+
         _fakepath = '%s.alt' % os.path.join(self.cache, self.safe(key))
         _headerpath = '%s.headers' % os.path.join(self.cache, self.safe(key))
         _cachepath = os.path.join(self.cache, self.safe(key))
@@ -131,6 +136,10 @@ class HTCache(object):
 
             _cachepath = self._cachepath
 
+            if DEBUG:
+                print 'cache set custom:', key 
+                print '\n\t', _cachepath
+
             f = open(_fakepath, 'w')
             f.write(_cachepath)
             f.close()
@@ -147,6 +156,10 @@ class HTCache(object):
                     os.remove(_altpath) # remove actual file
 
                 os.remove(_fakepath) # remove pointer file
+
+            if DEBUG:
+                print 'cache set default:', key
+                print '\n\t', _cachepath
 
         header = ''
         value = StringIO(value)
@@ -186,6 +199,10 @@ class HTCache(object):
     def delete(self, key):
         """ Deletes the entry.
         """
+
+        if DEBUG:
+            print 'cache del:', key
+
         _cachepath = os.path.join(self.cache, self.safe(key))
         _fakepath = '%s.alt' % _cachepath
         _headerpath = '%s.headers' % _cachepath
@@ -205,14 +222,14 @@ class HTCache(object):
         if os.path.exists(_headerpath):
             os.remove(_headerpath)
 
-    def get_diskpath(self, key):
+    def get_diskpath(self, key, force_default=False):
         """ Gets the disk path where the entry is stored (default path 
             or not)
         """
         _cachepath = os.path.join(self.cache, self.safe(key))
         _fakepath = '%s.alt' % _cachepath
 
-        if os.path.exists(_fakepath):
+        if os.path.exists(_fakepath) and not force_default:
             f = file(_fakepath, "rb")
             _altpath = f.read()
             f.close()
@@ -239,7 +256,7 @@ class CacheManager(object):
 
         """
         self._intf = interface
-        self._cache = interface._conn.cache
+        self._cache = interface._http.cache
 
     def clear(self):
         """ Clears all files tracked by pyxnat.

@@ -1,6 +1,7 @@
 from __future__ import with_statement
 
 import os
+import re
 import shutil
 import tempfile
 import mimetypes
@@ -21,6 +22,7 @@ from .pathutil import find_files
 from .attributes import EAttrs
 from .search import build_search_document, rpn_contraints
 from .errors import is_xnat_error, parse_put_error_message
+from .errors import DataError
 from .cache import md5name
 from . import schema
 
@@ -246,6 +248,8 @@ class EObject(object):
                       - if its name matches a naming convention, this type
                         will be used
                       - else a default type is defined in the schema module
+                - To give the ID the same value as the label use 
+                  use_label=True e.g element.create(use_label=True)
 
             Examples
             --------
@@ -278,14 +282,15 @@ class EObject(object):
         else:
             local_params = \
                 [param for param in params
-                 if param not in schema.resources_types \
+                 if param not in schema.resources_types + ['use_label'] \
                      and (param.startswith(datatype) or '/' not in param)
                  ]
 
             create_uri = '%s?xsiType=%s' % (self._uri, datatype)
 
             if 'ID' not in local_params \
-                    and '%s/ID' % datatype not in local_params:
+                    and '%s/ID' % datatype not in local_params \
+                    and params.get('use_label'):
 
                 create_uri += '&%s/ID=%s' % (datatype, uri_last(self._uri))
 
@@ -1238,7 +1243,7 @@ class Resource(EObject):
         zip_location = os.path.join(dest_dir, uri_last(self._uri) + '.zip')
 
         if dest_dir is not None:
-            self._intf._conn.cache.preset(zip_location)
+            self._intf._http.cache.preset(zip_location)
 
         self._intf._exec(join_uri(self._uri, 'files') + '?format=zip')
 
@@ -1325,9 +1330,9 @@ class Resource(EObject):
         """
         self.put(find_files(src_dir), **datatypes)
 
-    insert = put
-    insert_zip = put_zip
-    insert_dir = put_dir
+    batch_insert = put
+    zip_insert = put_zip
+    dir_insert = put_dir
 
 class In_Resource(Resource):
     __metaclass__ = ElementType
@@ -1369,7 +1374,7 @@ class File(EObject):
         return self._getcells(['URI', 'Name', 'Size',
                                'file_tags', 'file_format', 'file_content'])
 
-    def get(self, dest=None):
+    def get(self, dest=None, force_default=False):
         """ Downloads the file to the cache directory.
 
             .. note::
@@ -1382,6 +1387,13 @@ class File(EObject):
                 - If None a default path in the cache folder is
                   automatically computed.
                 - Else the file is downloaded at the requested location.
+            force_default: boolean
+                - Has no effect if the file is downloaded for the first time
+                - If the file was previously download with a custom path,
+                  calling get() will remember the custom location unless:
+                      - another custom location is set in dest
+                      - force_default is set to True and the file will be
+                        moved to the cache
 
             Returns
             -------
@@ -1391,13 +1403,24 @@ class File(EObject):
         if not self._absuri:
             self._absuri = self._getcell('URI')
 
+        if self._absuri is None:
+            raise DataError('Cannot get file: does not exists')
+
         if dest is not None:
-            self._intf._conn.cache.preset(dest)
+            self._intf._http.cache.preset(dest)
+        elif not force_default:
+            _location = \
+                self._intf._http.cache.get_diskpath(
+                '%s%s' % (self._intf._server, self._absuri)
+                )
+                
+            self._intf._http.cache.preset(_location)
 
         self._intf._exec(self._absuri, 'GET')
 
-        return self._intf._conn.cache.get_diskpath(self._intf._server + \
-                                                       self._absuri)
+        return self._intf._http.cache.get_diskpath(
+            '%s%s' % (self._intf._server, self._absuri)
+            )
 
     def get_copy(self, dest=None):
         """ Downloads the file to the cache directory but creates a copy at
@@ -1416,15 +1439,12 @@ class File(EObject):
         """
 
         if not dest:
-            dest = os.path.join(self._intf._conn.cache.cache, 'workspace',
+            dest = os.path.join(self._intf._http.cache.cache, 'workspace',
                                 *self._absuri.strip('/').split('/')[1:])
 
         if not os.path.exists(os.path.dirname(dest)):
             os.makedirs(os.path.dirname(dest))
 
-        # FIXME: with the current .get() implementation if a file was
-        # previously dl with a custom location it will be moved back
-        # to the default and copied to the custom location of this function
         src = self.get()
 
         if src != dest:
@@ -1450,9 +1470,13 @@ class File(EObject):
                 Defaults to 'U'.
         """
 
-        format = "'%s'" % format if ' ' in format else format
-        content = "'%s'" % content if ' ' in content else content
-        tags = "'%s'" % tags if ' ' in tags else tags
+        format = urllib.quote(format)
+        content = urllib.quote(content)
+        tags = urllib.quote(tags)
+
+        # format = "'%s'" % format if ' ' in format else format
+        # content = "'%s'" % content if ' ' in content else content
+        # tags = "'%s'" % tags if ' ' in tags else tags
 
         put_uri = "%s?format=%s&content=%s&tags=%s" % \
             (self._uri, format, content, tags)
@@ -1476,10 +1500,42 @@ class File(EObject):
         guri = uri_grandparent(self._uri)
 
         if not self._intf.select(guri).exists():
-            self._intf.select(guri).create(**datatypes)
+            self._intf.select(guri).insert(**datatypes)
 
-        self._intf._exec(self._uri, 'PUT', body,
+        resource_id = self._intf.select(guri).id()
+
+        self._absuri = re.sub('resources/.*?/', 
+                              'resources/%s/' % resource_id, self._uri)
+
+        # print 'INSERT FILE', os.path.exists(src)
+
+        self._intf._exec(self._absuri, 'PUT', body,
                          headers={'content-type':content_type})
+
+        # track the uploaded file as one of the cache
+
+        # print 'GET DISKPATH', os.path.exists(src)
+        # _cachepath = self._intf._http.cache.get_diskpath(
+        #     '%s%s' % (self._intf._server, self._absuri),
+        #     force_default=True
+        #     )
+
+        # _fakepath = '%s.alt' % _cachepath
+        # _headerpath = '%s.headers' % _cachepath
+
+        # print 'WRITE REFFILE', os.path.exists(src)
+
+        # reffile = open(_fakepath, 'wb')
+        # reffile.write(src)
+        # reffile.close()
+
+        # info_head = self._intf._get_head(self._absuri)
+
+        # print 'WRITE HEADER FILE', os.path.exists(src)
+
+        # headerfile = open(_headerpath, 'wb')
+        # headerfile.write(info_head.as_string())
+        # headerfile.close()
 
     insert = put
     create = put
@@ -1489,6 +1545,9 @@ class File(EObject):
         """
         if not self._absuri:
             self._absuri = self._getcell('URI')
+
+        if self._absuri is None:
+            raise DataError('Cannot delete file: does not exists')
 
         return self._intf._exec(self._absuri, 'DELETE')
 
@@ -1512,16 +1571,6 @@ class File(EObject):
         """
         return self._getcell('file_content')
 
-    def absurl(self):
-        if not self._absuri:
-            self._absuri = self._getcell('URI')
-
-        return '%s//%s:%s@%s%s' % (self._intf._server.split('//')[0],
-                                   self._intf._user,
-                                   self._intf._pwd,
-                                   self._intf._server.split('//')[1],
-                                   self._absuri
-                                 )
 
 class In_File(File):
     __metaclass__ = ElementType

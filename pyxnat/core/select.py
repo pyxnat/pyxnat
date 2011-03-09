@@ -4,6 +4,7 @@ from . import schema
 from .search import Search
 from .resources import CObject, Project, Projects # imports used implicitly
 from .uriutil import inv_translate_uri
+# from .uriutil import uri_last
 from .errors import ProgrammingError
 
 DEBUG = False
@@ -295,6 +296,12 @@ class Select(object):
                         print 'path: %s' % path
 
                     pairs = zip(path.split('/')[1::2], path.split('/')[2::2])
+
+                    # # in case a level id has a / - allowed for files only
+                    # if len(path.split('/')[1:]) % 2 == 1 \
+                    #         and uri_last(path) not in schema.resources_types:
+                        
+                    #     pairs[-1] = (pairs[-1][0], uri_last(path))
 
                     obj = self
                     for resource, identifier in pairs:

@@ -3,7 +3,6 @@ setup.cfg
 setup.py
 setupegg.py
 sphinx_pypi_upload.py
-doc/CHANGES.rst
 doc/__init__.py
 doc/advanced_tutorial.rst
 doc/conf.py
@@ -13,7 +12,6 @@ doc/installing.rst
 doc/reference_documentation.rst
 doc/starters_tutorial.rst
 doc/under_the_hood.rst
-doc/generated/pyxnat.CacheManager.rst
 doc/generated/pyxnat.Inspector.rst
 doc/generated/pyxnat.Interface.rst
 doc/generated/pyxnat.SearchManager.rst

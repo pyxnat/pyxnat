@@ -1,6 +1,8 @@
+# import os
 import re
 
 from .schema import rest_translation
+# from .schema import resources_types
 
 def translate_uri(uri):
     segs = uri.split('/')
@@ -14,7 +16,7 @@ def inv_translate_uri(uri):
     inv_table = dict(zip(rest_translation.values(), rest_translation.keys()))
 
     for key in inv_table.keys():
-            uri = uri.replace(key, inv_table[key])
+            uri = uri.replace('/%s' % key, '/%s' % inv_table[key])
 
     return uri
 
@@ -23,12 +25,22 @@ def join_uri(uri, *segments):
                         [seg.lstrip('/') for seg in segments]).rstrip('/')
 
 def uri_last(uri):
+    # return uri.split(uri_parent(uri))[1].strip('/')
     return uri.split('/')[-1]
 
 def uri_nextlast(uri):
+    # return uri_last(uri.split(uri_last(uri))[0].strip('/'))
     return uri.split('/')[-2]
 
 def uri_parent(uri):
+    # parent = uri
+
+    # if not os.path.split(uri)[1] in resources_types:
+    #     while os.path.split(parent)[1] not in resources_types:
+    #         parent = os.path.split(parent)[0]
+
+    #     return parent
+
     return uri_split(uri)[0]
 
 def uri_grandparent(uri):

@@ -8,6 +8,8 @@ _modulepath = os.path.dirname(os.path.abspath(__file__))
 
 central = Interface('http://central.xnat.org', 'nosetests', 'nosetests')
 
+central = Interface('http://sandbox.xnat.org', 'schwarty', 'plopplop')
+
 _id_set1 = {
     'sid':uuid1().hex,
     'eid':uuid1().hex,
@@ -136,19 +138,22 @@ def test_put_file():
                                                 os.stat(local_path).st_size
 
 def test_get_file():
-    fpath = subj_1.resource('test').file('hello.txt').get()
+    fh = subj_1.resource('test').file('hello.txt')
+
+    central.cache.set_usage(expiration=0)
+
+    fpath = fh.get()
     assert os.path.exists(fpath)
     assert open(fpath, 'rb').read() == 'Hello XNAT!\n'
 
     custom = os.path.join(tempfile.gettempdir(), uuid1().hex)
     
-    subj_1.resource('test').file('hello.txt').get(custom)
-
+    fh.get(custom)
     assert os.path.exists(custom)
     assert not os.path.exists(fpath)
-    subj_1.resource('test').file('hello.txt').get()
-    assert not os.path.exists(custom)
-    os.remove(fpath)
+    fh.get()
+    assert os.path.exists(custom)
+    os.remove(custom)
 
 def test_get_copy_file():
     fpath = os.path.join(tempfile.gettempdir(), uuid1().hex)
@@ -158,6 +163,8 @@ def test_get_copy_file():
     assert fd.read() == 'Hello XNAT!\n'
     fd.close()
     os.remove(fpath)
+
+    central.cache.set_usage(expiration=1)
 
 def test_last_modified():
     sid = subj_1.id()
