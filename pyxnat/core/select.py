@@ -286,8 +286,14 @@ class Select(object):
         if datatype_or_path  in ['/', '//', self._intf._entry]:
             return self
 
-        if datatype_or_path.startswith(self._intf._entry):
-            datatype_or_path = datatype_or_path.split(self._intf._entry)[1]
+        try:
+            if datatype_or_path.startswith(self._intf._entry):
+                datatype_or_path = datatype_or_path.split(
+                    self._intf._entry)[1]
+        except:
+            # REST API entry point undefined
+            self._intf._get_entry_point()
+            return self.__call__(datatype_or_path, columns)
 
         if datatype_or_path.startswith('/'):
             return_list = []

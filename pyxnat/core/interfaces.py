@@ -110,6 +110,7 @@ class Interface(object):
         self._memtimeout = 1.0
         self._mode = 'online'
         self._struct = {}
+        self._entry = None
 
         self._last_memtimeout = 1.0
         self._last_mode = 'online'
@@ -121,24 +122,27 @@ class Interface(object):
         self.select = Select(self)
         self.cache = CacheManager(self)
         self.manage = GlobalManager(self)
-
-        # /REST for XNAT 1.4, /data if >=1.5
-        try:
-            self._exec('/data/users', 'HEAD')
-            self._entry = '/data'
-        except:
-            self._entry = '/REST'
         
         if _DRAW_GRAPHS:
             self._get_graph = GraphData(self)
             self.draw = PaintGraph(self)
 
         if self._interactive:
+            self._get_entry_point()
             self._jsession = self._exec('%s/JSESSION' % self._entry)
             if is_xnat_error(self._jsession):
                 catch_error(self._jsession)
 
         self.inspect()
+
+    def _get_entry_point(self):
+        if self._entry is None:
+            # /REST for XNAT 1.4, /data if >=1.5
+            try:
+                self._exec('/data/JSESSION', 'HEAD')
+                self._entry = '/data'
+            except:
+                self._entry = '/REST'
 
     def _connect(self):
         """ Sets up the connection with the XNAT server.
