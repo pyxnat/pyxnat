@@ -1,3 +1,6 @@
+import time
+import platform
+
 from lxml import etree
 from lxml.etree import Element, QName
 
@@ -27,12 +30,16 @@ _all = ['program', 'program_version', 'program_arguments',
         # 'library', 'library_version'
         ]
 
+_platform_name, _hostname, \
+_platform_version, _platform_version2,\
+_machine, _machine2 = platform.uname()
+
 def provenance_document(eobj, process_steps):
     root_node = etree.fromstring(eobj.get())
 
     existing_prov = None
     for child in root_node.getchildren():
-        if child.tag.endswith('provenance'):
+        if str(child.tag).endswith('provenance'):
             existing_prov = child
             break
 
@@ -173,6 +180,16 @@ class Provenance(object):
     def attach(self, process_steps):
         """ Attach provenance information for the data within this element.
 
+            .. note::
+
+                If some required parameters are not provided, theses
+                parameters will be extracted from the current machine
+                and set automatically. Those parameters are:
+                    - machine
+                    - platform
+                    - timestamp
+                    - user
+
             Parameters
             ----------
             process_steps: list or dict
@@ -183,6 +200,21 @@ class Provenance(object):
         """
         if isinstance(process_steps, dict):
             process_steps = [process_steps]
+
+        for process_step in process_steps:
+            _timestamp = time.strftime('%Y-%m-%dT%H:%M:%S', 
+                                       time.localtime()
+                                       )
+            
+            if not process_step.has_key('machine'):
+                process_step['machine'] = _machine
+            if not process_step.has_key('platform'):
+                process_step['platform'] = _platform_name
+                process_step['platform_version'] = _platform_version
+            if not process_step.has_key('timestamp'):
+                process_step['timestamp'] = _timestamp
+            if not process_step.has_key('user'):
+                process_step['user'] = self._intf._user
 
         doc = provenance_document(self._eobject, process_steps)
 

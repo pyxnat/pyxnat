@@ -1,4 +1,6 @@
 import os
+import socket
+import platform
 import tempfile
 from uuid import uuid1
 
@@ -56,6 +58,10 @@ def test_reconstruction_create():
     assert not reco_1.exists()
     reco_1.create()
     assert reco_1.exists()
+
+def test_provenance():
+    reco_1.provenance.attach({'program':'nosetests'})
+    assert reco_1.provenance.get()[0]['program'] == 'nosetests'
 
 def test_multi_create():
     asse_2 = central.select('/projects/nosetests/subjects/%(sid)s'
