@@ -8,7 +8,7 @@ _modulepath = os.path.dirname(os.path.abspath(__file__))
 
 central = Interface('http://central.xnat.org', 'nosetests', 'nosetests')
 
-central = Interface('http://sandbox.xnat.org', 'schwarty', 'plopplop')
+# central = Interface('http://sandbox.xnat.org', 'schwarty', 'plopplop')
 
 _id_set1 = {
     'sid':uuid1().hex,

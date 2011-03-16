@@ -277,26 +277,30 @@ class SearchManager(object):
         else:
             raise NotSupportedError('Share mode %s not valid' % sharing)
 
-        self._intf._exec('/REST/search/saved/%s?inbody=true' % name, 
-                         method='PUT', 
-                         body=build_search_document(row, columns, 
-                                                    constraints, 
-                                                    name, users
-                                                    )
-                         )
+        self._intf._exec(
+            '%s/search/saved/%s?inbody=true' % (self._intf._entry, name), 
+            method='PUT', 
+            body=build_search_document(row, columns, 
+                                       constraints, 
+                                       name, users
+                                       )
+            )
 
     def saved(self):
         """ Returns the names of accessible saved search on the server.
         """
 
-        jdata = self._intf._get_json('/REST/search/saved?format=json')
+        jdata = self._intf._get_json(
+            '%s/search/saved?format=json' % self._intf._entry)
+
         return get_column(jdata, 'brief_description')
     
     def get(self, name):
         """ Returns the results of the query saved on the XNAT server.
         """
 
-        jdata = self._intf._get_json('/REST/search/saved?format=json')
+        jdata = self._intf._get_json(
+            '%s/search/saved?format=json' % self._intf._entry)
         
         try:
             search_id = get_where(jdata, brief_description=name)[0]['id']
@@ -304,8 +308,9 @@ class SearchManager(object):
             raise DatabaseError('%s not found' % name)
 
         content = self._intf._exec(
-            '/REST/search/saved/%s/results?format=csv' % search_id, 'GET'
-            )
+            '%s/search/saved/%s/results?format=csv' % (self._intf._entry, 
+                                                       search_id
+                                                       ), 'GET')
 
         results = csv.reader(StringIO(content), delimiter=',', quotechar='"')
         headers = results.next()
@@ -319,14 +324,19 @@ class SearchManager(object):
     def delete(self, name):
         """ Removes the search from the server.
         """
-        jdata = self._intf._get_json('/REST/search/saved?format=json')
+        print 'entry point', self._intf._entry
+
+        jdata = self._intf._get_json(
+            '%s/search/saved?format=json' % self._intf._entry)
         
         try:
             search_id = get_where(jdata, brief_description=name)[0]['id']
         except IndexError:
             raise DatabaseError('%s not found' % name)
 
-        self._intf._exec('/REST/search/saved/%s'%search_id, 'DELETE')
+        self._intf._exec('%s/search/saved/%s' % (self._intf._entry, 
+                                                 search_id
+                                                 ), 'DELETE')
 
     def eval_rpn_exp(self, rpnexp):
         return rpn_contraints(rpnexp)
@@ -395,7 +405,8 @@ class Search(object):
 
         bundle = build_search_document(self._row, self._columns, constraints)
 
-        content = self._intf._exec("/REST/search?format=csv", 'POST', bundle)
+        content = self._intf._exec(
+            "%s/search?format=csv" % self._intf._entry, 'POST', bundle)
 
         if is_xnat_error(content):
             catch_error(content)

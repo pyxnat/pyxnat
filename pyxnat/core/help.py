@@ -81,7 +81,8 @@ class Inspector(object):
             list : datatypes or datafields depending on the argument usage.
         """
 
-        search_els = self._get_json('/REST/search/elements?format=json')
+        search_els = self._get_json('%s/search/elements?format=json' % 
+                                    self._intf._entry)
 
         if not fields_pattern and ('*' in pattern or '?' in pattern):       
             return get_column(search_els , 'ELEMENT_NAME', pattern)
@@ -97,8 +98,8 @@ class Inspector(object):
 
     def _datafields(self, datatype, pattern='*', prepend_type=True):
 
-        search_fds = self._get_json('/REST/search/elements/%s?format=json' \
-                                        % datatype
+        search_fds = self._get_json('%s/search/elements/%s?format=json'
+                                        % (self._intf._entry, datatype)
                                     )
 
         fields = get_column(search_fds, 'FIELD_ID', pattern)
@@ -170,7 +171,8 @@ class Inspector(object):
             .. note::
                 Is equivalent to interface.select.projects().get()
         """
-        return get_column(self._get_json('/REST/projects'), 'ID')
+        return get_column(self._get_json(
+                '%s/projects' % self._intf._entry), 'ID')
 
     def subject_values(self, project=None):
         """ Look for the values a the subject level in the database.
@@ -178,7 +180,7 @@ class Inspector(object):
             .. note::
                 Is equivalent to interface.select('//subjects').get()
         """
-        uri = '/REST/subjects?columns=ID'
+        uri = '%s/subjects?columns=ID' % self._intf._entry
 
         if project is not None:
             uri += '&project=%s' % project
@@ -201,7 +203,7 @@ class Inspector(object):
             project: string
                 Optional. Restrict operation to a project.
         """
-        uri = '/REST/experiments?columns=ID'
+        uri = '%s/experiments?columns=ID' % self._intf._entry
         if datatype is not None:
             uri += '&xsiType=%s' % datatype
         if project is not None:
@@ -307,7 +309,9 @@ class Inspector(object):
         column = '%s/%ss/%s/id' % \
             (experiment_type.lower(), sub_exp, sub_exp)
         
-        sub_exps = '/REST/experiments?columns=ID,%s' % column
+        sub_exps = '%s/experiments?columns=ID,%s' % (self._intf._entry, 
+                                                     column
+                                                     )
 
         if project is not None:
             sub_exps += '&project=%s' % project

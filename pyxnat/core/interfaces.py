@@ -121,13 +121,20 @@ class Interface(object):
         self.select = Select(self)
         self.cache = CacheManager(self)
         self.manage = GlobalManager(self)
+
+        # /REST for XNAT 1.4, /data if >=1.5
+        try:
+            self._exec('/data/users', 'HEAD')
+            self._entry = '/data'
+        except:
+            self._entry = '/REST'
         
         if _DRAW_GRAPHS:
             self._get_graph = GraphData(self)
             self.draw = PaintGraph(self)
 
         if self._interactive:
-            self._jsession = self._exec('/REST/JSESSION')
+            self._jsession = self._exec('%s/JSESSION' % self._entry)
             if is_xnat_error(self._jsession):
                 catch_error(self._jsession)
 

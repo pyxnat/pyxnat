@@ -237,7 +237,8 @@ class Select(object):
             ID: string
                 ID of the project.
         """
-        return globals()['Project']('/REST/projects/%s' % ID, self._intf)
+        return globals()['Project'](
+            '%s/projects/%s' % (self._intf._entry, ID), self._intf)
 
     def projects(self, id_filter='*'):
         """ Returns the list of all visible projects for the server.
@@ -247,7 +248,8 @@ class Select(object):
             id_filter: string
                 Name pattern to filter the returned projects.
         """
-        return globals()['Projects']('/REST/projects', self._intf, id_filter)
+        return globals()['Projects'](
+            '%s/projects' % self._intf._entry, self._intf, id_filter)
 
     def tag(self, name):
         return self._intf.manage.tags.get(name).references()
@@ -281,11 +283,11 @@ class Select(object):
             else:
                 return self.tags()
 
-        if datatype_or_path  in ['/', '//', '/REST']:
+        if datatype_or_path  in ['/', '//', self._intf._entry]:
             return self
 
-        if datatype_or_path.startswith('/REST'):
-            datatype_or_path = datatype_or_path.split('/REST')[1]
+        if datatype_or_path.startswith(self._intf._entry):
+            datatype_or_path = datatype_or_path.split(self._intf._entry)[1]
 
         if datatype_or_path.startswith('/'):
             return_list = []
