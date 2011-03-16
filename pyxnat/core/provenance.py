@@ -1,0 +1,251 @@
+from lxml import etree
+from lxml.etree import Element, QName
+
+from .uriutil import uri_parent
+from . import httputil
+
+_nsmap = {'xnat':'http://nrg.wustl.edu/xnat',
+          'prov':'http://www.nbirn.net/prov',
+          'xsi':'http://www.w3.org/2001/XMLSchema-instance'
+          }
+
+_required = ['program', 'timestamp', 'user', 'machine', 'platform']
+_optional = ['program_version', 'program_arguments', 
+             'cvs', 
+             'platform_version', 
+             'compiler', 'compiler_version', 
+             'library', 'library_version'
+             ]
+
+_all = ['program', 'program_version', 'program_arguments',
+        'timestamp',
+        'cvs', 
+        'user',
+        'machine',
+        'platform', 'platform_version', 
+        'compiler', 'compiler_version', 
+        # 'library', 'library_version'
+        ]
+
+def provenance_document(eobj, process_steps):
+    root_node = etree.fromstring(eobj.get())
+
+    existing_prov = None
+    for child in root_node.getchildren():
+        if child.tag.endswith('provenance'):
+            existing_prov = child
+            break
+
+    if existing_prov is not None:
+        prov_node = existing_prov
+    else:
+        prov_node = Element(QName(_nsmap['xnat'], 'provenance'), 
+                            nsmap=_nsmap
+                            )
+        root_node.insert(0, prov_node)
+
+    prov_node.extend(provenance_parameters(process_steps))
+
+    return etree.tostring(root_node.getroottree())
+
+
+def provenance_parameters(process_steps):
+    prov = []
+
+    for step in process_steps:
+
+        if not set(_required).issubset(step.keys()):
+            missing = list(set(_required).difference(step.keys()))
+
+            raise Exception(('Following attributes are '
+                             'required to define provenance: %s' % missing
+                             )
+                            )
+
+        prov.append(process_step_xml(**step))
+
+    return prov
+
+def process_step_xml(**kwargs):
+    
+    step_node = Element(QName(_nsmap['prov'], 'processStep'), nsmap=_nsmap)
+
+    program_node = Element(QName(_nsmap['prov'], 'program'), nsmap=_nsmap)
+    program_node.text = kwargs['program']
+
+    if kwargs.has_key('program_version'):
+        program_node.set('version', kwargs['program_version'])
+
+    if kwargs.has_key('program_arguments'):
+        program_node.set('arguments', kwargs['program_arguments'])
+
+    step_node.append(program_node)
+
+    timestamp_node = Element(QName(_nsmap['prov'], 'timestamp'), 
+                             nsmap=_nsmap
+                             )
+    timestamp_node.text = kwargs['timestamp']
+
+    step_node.append(timestamp_node)
+
+    if kwargs.has_key('cvs'):
+        cvs_node = Element(QName(_nsmap['prov'], 'cvs'), nsmap=_nsmap)
+        cvs_node.text = kwargs['cvs']
+        
+        step_node.append(cvs_node)
+
+    user_node = Element(QName(_nsmap['prov'], 'user'), nsmap=_nsmap)
+    user_node.text = kwargs['user']
+
+    step_node.append(user_node)
+
+    machine_node = Element(QName(_nsmap['prov'], 'machine'), nsmap=_nsmap)
+    machine_node.text = kwargs['machine']
+
+    step_node.append(machine_node)
+
+    platform_node = Element(QName(_nsmap['prov'], 'platform'), nsmap=_nsmap)
+    platform_node.text = kwargs['platform']
+
+    if kwargs.has_key('platform_version'):
+        platform_node.set('version', kwargs['platform_version'])
+
+    step_node.append(platform_node)
+
+    if kwargs.has_key('compiler'):
+        compiler_node = Element(QName(_nsmap['prov'], 'compiler'), 
+                                nsmap=_nsmap
+                                )
+        compiler_node.text = kwargs['compiler']
+
+        if kwargs.has_key('compiler_version'):
+            compiler_node.set('version', kwargs['compiler_version'])
+
+        step_node.append(compiler_node)
+
+    if kwargs.has_key('library'):
+        library_node = Element(QName(_nsmap['prov'], 'library'), 
+                                nsmap=_nsmap
+                                )
+        library_node.text = kwargs['library']
+
+        if kwargs.has_key('library_version'):
+            library_node.set('version', kwargs['library_version'])
+
+        step_node.append(library_node)
+
+    return step_node
+
+
+class Provenance(object):
+    """ Class to annotate processed data with provenance information.
+        The following parameters are available:
+            - program
+            - program_version
+            - program_arguments
+            - timestamp
+            - cvs
+            - user
+            - machine
+            - platform
+            - platform_version
+            - compiler
+            - compiler_version
+            - library
+            - library_version
+        
+        Examples
+        --------
+            >>> prov = {'program':'young',
+                        'timestamp':'2011-03-01T12:01:01.897987', 
+                        'user':'angus', 
+                        'machine':'war', 
+                        'platform':'linux',
+                        }
+            >>> element.provenance.attach(prov)
+            >>> element.provenance.get()
+    """
+
+    def __init__(self, eobject):
+        self._intf = eobject._intf
+        self._eobject = eobject
+
+    def attach(self, process_steps):
+        """ Attach provenance information for the data within this element.
+
+            Parameters
+            ----------
+            process_steps: list or dict
+                dict or list of dicts to define the processing steps
+                of the data. The minimum set of information to give
+                is: program, timestamp, user, machine and platform. More
+                keywords in the class documentation.
+        """
+        if isinstance(process_steps, dict):
+            process_steps = [process_steps]
+
+        doc = provenance_document(self._eobject, process_steps)
+
+        body, content_type = httputil.file_message(doc, 'text/xml', 
+                                                   'prov.xml', 'prov.xml'
+                                                   )
+
+        self._intf._exec('%s' % self._eobject._uri, 
+                         method='PUT', 
+                         body=body,
+                         headers={'content-type':content_type}
+                         )
+
+    def get(self):
+        datatype = self._eobject.datatype()
+
+        columns = ['%s/ID' % datatype] + [
+            '%s/provenance/processStep/%s' % (datatype, field)
+            for field in _all
+            ]       
+
+        prov_uri = uri_parent(self._eobject._uri)
+        prov_uri += '?columns='
+        prov_uri += ','.join(columns)
+
+        steps = []
+        for step in self._intf._get_json(prov_uri):
+            step_dict = {}
+            for key in step.keys():
+                if 'processstep' in key:
+
+                    step_dict[key.split('processstep/')[1]] = step[key]
+
+            steps.append(step_dict)
+
+        return steps
+
+    def dettach(self):
+        raise NotImplementedError('Cannot dettach provenance, '
+                                  'functionality not available.'
+                                  )
+
+        # root_node = etree.fromstring(self._eobject.get())
+
+        # existing_prov = None
+        # for child in root_node.getchildren():
+        #     if child.tag.endswith('provenance'):
+        #         existing_prov = child
+        #         break
+
+        # if existing_prov is not None:
+        #     root_node.remove(existing_prov)
+
+        # doc = etree.tostring(root_node.getroottree())
+        
+        # body, content_type = httputil.file_message(doc, 'text/xml', 
+        #                                            'prov.xml', 'prov.xml'
+        #                                            )
+
+        # self._eobject.delete()
+
+        # self._intf._exec('%s' % self._eobject._uri, 
+        #                  method='PUT', 
+        #                  body=body,
+        #                  headers={'content-type':content_type}
+        #                  )
