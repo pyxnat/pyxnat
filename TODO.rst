@@ -8,7 +8,3 @@
 * Change the test server in resources_test.py
 
 * Add support for subfolders in files
-
-* support /data as well as /REST
-
-* bug in eobject.children(False)

@@ -82,7 +82,7 @@ class Inspector(object):
         """
 
         search_els = self._get_json('%s/search/elements?format=json' % 
-                                    self._intf._entry)
+                                        self._intf._entry)
 
         if not fields_pattern and ('*' in pattern or '?' in pattern):       
             return get_column(search_els , 'ELEMENT_NAME', pattern)

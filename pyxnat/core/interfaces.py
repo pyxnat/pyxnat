@@ -133,16 +133,19 @@ class Interface(object):
             if is_xnat_error(self._jsession):
                 catch_error(self._jsession)
 
+        self._get_entry_point()
+
         self.inspect()
 
     def _get_entry_point(self):
         if self._entry is None:
             # /REST for XNAT 1.4, /data if >=1.5
+            self._entry = '/REST'
             try:
                 self._exec('/data/JSESSION', 'HEAD')
                 self._entry = '/data'
             except:
-                self._entry = '/REST'
+                pass
 
     def _connect(self):
         """ Sets up the connection with the XNAT server.
@@ -171,6 +174,7 @@ class Interface(object):
             headers: dict
                 Additional headers for the HTTP request.
         """
+
         if headers is None:
             headers = {}
 
