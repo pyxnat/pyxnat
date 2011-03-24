@@ -60,7 +60,11 @@ class ProjectManager(object):
 
     def __init__(self, project_id, interface):
         self._intf = interface
-        project = Project('/REST/projects/%s' % project_id, self._intf)
+        project = Project('%s/projects/%s' % (self._intf._entry, 
+                                              project_id
+                                              ), 
+                          self._intf
+                          )
 
         self.prearchive_code = project.prearchive_code
         self.set_prearchive_code = project.set_prearchive_code

@@ -13,7 +13,7 @@ from StringIO import StringIO
 
 _platform = platform.system()
 
-DEBUG = True
+DEBUG = False
 
 
 def md5name(key):

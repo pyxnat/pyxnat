@@ -24,6 +24,7 @@ from .search import build_search_document, rpn_contraints
 from .errors import is_xnat_error, parse_put_error_message
 from .errors import DataError
 from .cache import md5name
+from .provenance import Provenance
 from . import schema
 
 DEBUG = False
@@ -157,8 +158,8 @@ class EObject(object):
         get_id = p_uri + '?format=json&columns=%s' % ','.join(columns)
 
         for pattern in self._intf._struct.keys():
-            if fnmatch(uri_segment(self._uri.split('/REST')[1], -2), 
-                       pattern):
+            if fnmatch(uri_segment(
+                    self._uri.split(self._intf._entry)[1], -2), pattern):
 
                 reg_pat = self._intf._struct[pattern]
                 filters.setdefault('xsiType', set()).add(reg_pat)
@@ -248,7 +249,7 @@ class EObject(object):
                       - if its name matches a naming convention, this type
                         will be used
                       - else a default type is defined in the schema module
-                - To give the ID the same value as the label use 
+                - To give the ID the same value as the label use
                   use_label=True e.g element.create(use_label=True)
 
             Examples
@@ -270,7 +271,9 @@ class EObject(object):
 
         if datatype is None:
             for uri_pattern in struct.keys():
-                if fnmatch(self._uri.split('/REST')[1], uri_pattern):
+                if fnmatch(
+                    self._uri.split(self._intf._entry)[1], uri_pattern):
+
                     datatype = struct.get(uri_pattern)
                     break
             else:
@@ -358,6 +361,12 @@ class EObject(object):
         """ Retrieves the XML document corresponding to this element.
         """
         return self._intf._exec(self._uri + '?format=xml', 'GET')
+
+    def parent(self):
+        uri = uri_grandparent(self._uri)
+        Klass = globals()[uri_nextlast(uri).title().rsplit('s', 1)[0]]
+
+        return Klass(uri, self._intf)
 
     def children(self, show_names=True):
         """ Returns the children levels of this element.
@@ -494,7 +503,8 @@ class CObject(object):
             uri = translate_uri(self._cbase)
             uri = urllib.quote(uri)
 
-            request_shape = uri_shape('%s/0' % uri.split('/REST')[1])
+            request_shape = uri_shape(
+                '%s/0' % uri.split(self._intf._entry)[1])
             reqcache = os.path.join(self._intf._cachedir,
                                    '%s.struct' % md5name(request_shape)
                                    ).replace('_*', '')
@@ -566,14 +576,7 @@ class CObject(object):
 
         for element in jtable:
             xsitype = element.get('xsiType')
-            uri = element.get('URI')
-            if uri.startswith('/REST'):
-                uri = uri.split('/REST')[1]
-            elif uri.startswith('/data'):
-                uri = uri.split('/data')[1]
-            else:
-                #Don't know the uri type so exit out of _learn_from_table
-                return
+            uri = element.get('URI').split(self._intf._entry)[1]
             uri = uri.replace(uri.split('/')[-2], _type)
             shape = uri_shape(uri)
 
@@ -610,18 +613,19 @@ class CObject(object):
                             yield eobj
                         else:
                             Klass = globals()[self._nested.title()]
-                            for subeobj in Klass(cbase=join_uri(eobj._uri,
-                                                                self._nested
-                                                                ),
-                                                 interface=self._intf,
-                                                 pattern=self._pattern,
-                                                 id_header=self._id_header,
-                                                 columns=self._columns):
+                            for subeobj in Klass(
+                                cbase=join_uri(eobj._uri, self._nested),
+                                interface=self._intf,
+                                pattern=self._pattern,
+                                id_header=self._id_header,
+                                columns=self._columns):
+
                                 try:
                                     self._run_callback(self, subeobj)
                                     yield subeobj
                                 except RuntimeError:
                                     pass
+
                 except KeyboardInterrupt:
                     self._intf._connect()
                     raise StopIteration
@@ -636,17 +640,19 @@ class CObject(object):
                         yield eobj
                     else:
                         Klass = globals()[self._nested.title()]
-                        for subeobj in Klass(cbase=join_uri(eobj._uri,
-                                                            self._nested),
-                                             interface=self._intf,
-                                             pattern=self._pattern,
-                                             id_header=self._id_header,
-                                             columns=self._columns):
+                        for subeobj in Klass(
+                            cbase=join_uri(eobj._uri, self._nested),
+                            interface=self._intf,
+                            pattern=self._pattern,
+                            id_header=self._id_header,
+                            columns=self._columns):
+
                             try:
                                 self._run_callback(self, subeobj)
                                 yield subeobj
                             except RuntimeError:
                                 pass
+
                 except KeyboardInterrupt:
                     self._intf._connect()
                     raise StopIteration
@@ -659,17 +665,19 @@ class CObject(object):
                         yield eobj
                     else:
                         Klass = globals()[self._nested.rstrip('s').title()]
-                        for subeobj in Klass(cbase=join_uri(eobj._uri,
-                                                            self._nested),
-                                             interface=self._intf,
-                                             pattern=self._pattern,
-                                             id_header=self._id_header,
-                                             columns=self._columns):
+                        for subeobj in Klass(
+                            cbase=join_uri(eobj._uri, self._nested),
+                            interface=self._intf,
+                            pattern=self._pattern,
+                            id_header=self._id_header,
+                            columns=self._columns):
+
                             try:
                                 self._run_callback(self, subeobj)
                                 yield subeobj
                             except RuntimeError:
                                 pass
+
                 except KeyboardInterrupt:
                     self._intf._connect()
                     raise StopIteration
@@ -682,17 +690,19 @@ class CObject(object):
                         yield eobj
                     else:
                         Klass = globals()[self._nested.title()]
-                        for subeobj in Klass(cbase=join_uri(eobj._uri,
-                                                            self._nested),
-                                             interface=self._intf,
-                                             pattern=self._pattern,
-                                             id_header=self._id_header,
-                                             columns=self._columns):
+                        for subeobj in Klass(
+                            cbase=join_uri(eobj._uri, self._nested),
+                            interface=self._intf,
+                            pattern=self._pattern,
+                            id_header=self._id_header,
+                            columns=self._columns):
+
                             try:
                                 self._run_callback(self, eobj)
                                 yield subeobj
                             except RuntimeError:
                                 pass
+
                 except KeyboardInterrupt:
                     self._intf._connect()
                     raise StopIteration
@@ -706,6 +716,7 @@ class CObject(object):
                             yield eobj
                         else:
                             Klass = globals()[cobj._nested.title()]
+
                             for subeobj in Klass(
                                 cbase=join_uri(eobj._uri, cobj._nested),
                                 interface=cobj._intf,
@@ -836,15 +847,16 @@ class CObject(object):
                                        constraints
                                        )
 
-        content = self._intf._exec("/REST/search?format=json",
-                                   'POST', bundle)
+        content = self._intf._exec(
+            "%s/search?format=json" % self._intf._entry,
+            'POST', bundle)
 
         if content.startswith('<html>'):
             raise Exception(content.split('<h3>')[1].split('</h3>')[0])
 
         results = json.loads(content)['ResultSet']['Result']
-        searchpop = ['/REST/projects/%(project)s'
-                     '/subjects/%(subject_id)s' % res
+        searchpop = ['%s/projects/' % self._intf._entry + \
+                     '%(project)s/subjects/%(subject_id)s' % res
                      for res in results
                      ]
 
@@ -1036,12 +1048,16 @@ class Project(EObject):
         return 'xnat:projectData'
 
     def experiments(self, id_filter='*'):
-        return Experiments('/REST/experiments', self._intf, id_filter,
+        return Experiments('%s/experiments' % self._intf._entry,
+                           self._intf,
+                           id_filter,
                            filters={'project':self.id()}
                            )
 
     def experiment(self, ID):
-        return Experiment('/REST/experiments/%s' % ID, self._intf)
+        return Experiment('%s/experiments/%s' % (self._intf._entry, ID),
+                          self._intf
+                          )
 
     def last_modified(self):
         """ Gets the last modified dates for all the project subjects.
@@ -1173,6 +1189,11 @@ class Experiment(EObject):
 class Assessor(EObject):
     __metaclass__ = ElementType
 
+    def __init__(self, uri, interface):
+        EObject.__init__(self, uri, interface)
+
+        self.provenance = Provenance(self)
+
     def shares(self, id_filter='*'):
         """ Returns the projects sharing this assessor.
 
@@ -1206,6 +1227,16 @@ class Assessor(EObject):
 
 class Reconstruction(EObject):
     __metaclass__ = ElementType
+
+    def __init__(self, uri, interface):
+        EObject.__init__(self, uri, interface)
+
+        self.provenance = Provenance(self)
+
+    def datatype(self):
+        return (super(Reconstruction, self).datatype()
+                or 'xnat:reconstructedImageData'
+                )
 
 class Scan(EObject):
     __metaclass__ = ElementType
@@ -1334,6 +1365,11 @@ class Resource(EObject):
     zip_insert = put_zip
     dir_insert = put_dir
 
+    def datatype(self):
+        return (super(Reconstruction, self).datatype()
+                or 'xnat:abstractResource'
+                )
+
 class In_Resource(Resource):
     __metaclass__ = ElementType
 
@@ -1413,7 +1449,7 @@ class File(EObject):
                 self._intf._http.cache.get_diskpath(
                 '%s%s' % (self._intf._server, self._absuri)
                 )
-                
+
             self._intf._http.cache.preset(_location)
 
         self._intf._exec(self._absuri, 'GET')
@@ -1504,7 +1540,7 @@ class File(EObject):
 
         resource_id = self._intf.select(guri).id()
 
-        self._absuri = re.sub('resources/.*?/', 
+        self._absuri = re.sub('resources/.*?/',
                               'resources/%s/' % resource_id, self._uri)
 
         # print 'INSERT FILE', os.path.exists(src)
