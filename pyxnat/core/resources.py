@@ -159,7 +159,7 @@ class EObject(object):
 
         for pattern in self._intf._struct.keys():
             if fnmatch(uri_segment(
-                    self._uri.split(self._intf._entry)[1], -2), pattern):
+                    self._uri.split(self._intf._entry, 1)[1], -2), pattern):
 
                 reg_pat = self._intf._struct[pattern]
                 filters.setdefault('xsiType', set()).add(reg_pat)
@@ -272,7 +272,7 @@ class EObject(object):
         if datatype is None:
             for uri_pattern in struct.keys():
                 if fnmatch(
-                    self._uri.split(self._intf._entry)[1], uri_pattern):
+                    self._uri.split(self._intf._entry, 1)[1], uri_pattern):
                     
                     datatype = struct.get(uri_pattern)
                     break
@@ -504,7 +504,7 @@ class CObject(object):
             uri = urllib.quote(uri)
 
             request_shape = uri_shape(
-                '%s/0' % uri.split(self._intf._entry)[1])
+                '%s/0' % uri.split(self._intf._entry, 1)[1])
             reqcache = os.path.join(self._intf._cachedir, 
                                    '%s.struct' % md5name(request_shape)
                                    ).replace('_*', '')
@@ -576,7 +576,7 @@ class CObject(object):
 
         for element in jtable:
             xsitype = element.get('xsiType')
-            uri = element.get('URI').split(self._intf._entry)[1]
+            uri = element.get('URI').split(self._intf._entry, 1)[1]
             uri = uri.replace(uri.split('/')[-2], _type)
             shape = uri_shape(uri)
 
@@ -1225,6 +1225,13 @@ class Assessor(EObject):
         self._intf._exec(join_uri(self._uri, 'projects', project), 'DELETE')
 
 
+    def set_param(self, key, value):
+        self.attrs.set('%s/parameters/addParam[name=%s]/addField' \
+                           % (self.datatype(), key), 
+                       value
+                       )
+
+
 class Reconstruction(EObject):
     __metaclass__ = ElementType
 
@@ -1240,6 +1247,12 @@ class Reconstruction(EObject):
 
 class Scan(EObject):
     __metaclass__ = ElementType
+
+    def set_param(self, key, value):
+        self.attrs.set('%s/parameters/addParam[name=%s]/addField' \
+                           % (self.datatype(), key), 
+                       value
+                       )
 
 
 class Resource(EObject):
