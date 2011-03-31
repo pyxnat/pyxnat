@@ -5,8 +5,4 @@
 
 * Improve get file
 
-* Change the test server in resources_test.py
-
 * Add support for subfolders in files
-
-* raise an exception when create a resource that already exists
