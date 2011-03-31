@@ -8,6 +8,7 @@ import mimetypes
 import zipfile
 import time
 import urllib
+import codecs
 from fnmatch import fnmatch
 
 from ..externals import simplejson as json
@@ -22,7 +23,7 @@ from .pathutil import find_files
 from .attributes import EAttrs
 from .search import build_search_document, rpn_contraints
 from .errors import is_xnat_error, parse_put_error_message
-from .errors import DataError
+from .errors import DataError, catch_error
 from .cache import md5name
 from .provenance import Provenance
 from . import schema
@@ -356,7 +357,9 @@ class EObject(object):
         delete_uri = self._uri if not delete_files \
             else self._uri + '?removeFiles=true'
 
-        return self._intf._exec(delete_uri, 'DELETE')
+        out = self._intf._exec(delete_uri, 'DELETE')
+
+        catch_error(out)
 
     def get(self):
         """ Retrieves the XML document corresponding to this element.
@@ -1525,11 +1528,15 @@ class File(EObject):
         content = urllib.quote(content)
         tags = urllib.quote(tags)
 
-        if os.path.exists(src):
-            path = src
-            name = os.path.basename(path)
-            src = open(src, 'rb').read()
-        else:
+        try:
+            if os.path.exists(src):
+                path = src
+                name = os.path.basename(path)
+                src = codecs.open(src).read()
+            else:
+                path = self._uri.split('/')[-1]
+                name = path
+        except:
             path = self._uri.split('/')[-1]
             name = path
 
