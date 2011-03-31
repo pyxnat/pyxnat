@@ -1,6 +1,6 @@
 
-_boundary = '----------ThIs_Is_tHe_bouNdaRY_$'
-_crlf = '\r\n'
+_boundary = u'----------ThIs_Is_tHe_bouNdaRY_$'
+_crlf = u'\r\n'
 
 
 def file_message(content, content_type, path, name):
@@ -11,7 +11,7 @@ def file_message(content, content_type, path, name):
                 )
     body.append('Content-Type: %s' % content_type)
     body.append('')
-    body.append(content)
+    body.append(unicode(content))
     body.append('--' + _boundary + '--')
     body.append('')
     body = _crlf.join(body)
