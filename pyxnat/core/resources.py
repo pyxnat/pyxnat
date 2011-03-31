@@ -26,6 +26,7 @@ from .errors import DataError
 from .cache import md5name
 from .provenance import Provenance
 from . import schema
+from . import httputil
 
 DEBUG = False
 
@@ -1507,7 +1508,8 @@ class File(EObject):
             Parameters
             ----------
             src: string
-                Location of the local file to upload.
+                Location of the local file to upload or the actual content
+                to upload.
             format: string   
                 Optional parameter to specify the file format. 
                 Defaults to 'U'.
@@ -1523,28 +1525,20 @@ class File(EObject):
         content = urllib.quote(content)
         tags = urllib.quote(tags)
 
-        # format = "'%s'" % format if ' ' in format else format
-        # content = "'%s'" % content if ' ' in content else content
-        # tags = "'%s'" % tags if ' ' in tags else tags
+        if os.path.exists(src):
+            path = src
+            name = os.path.basename(path)
+            src = open(src, 'rb').read()
+        else:
+            path = self._uri.split('/')[-1]
+            name = path
 
-        put_uri = "%s?format=%s&content=%s&tags=%s" % \
-            (self._uri, format, content, tags)
-
-        BOUNDARY = '----------ThIs_Is_tHe_bouNdaRY_$'
-        CRLF = '\r\n'
-        L = []
-        L.append('--' + BOUNDARY)
-        L.append('Content-Disposition: form-data; '
-                 'name="%s"; filename="%s"' % (os.path.basename(src), src)
-                 )
-        L.append('Content-Type: %s' % 
-                 mimetypes.guess_type(src)[0] or 'application/octet-stream')
-        L.append('')
-        L.append(open(src, 'rb').read())
-        L.append('--' + BOUNDARY + '--')
-        L.append('')
-        body = CRLF.join(L)
-        content_type = 'multipart/form-data; boundary=%s' % BOUNDARY
+        content_type = mimetypes.guess_type(path)[0] or \
+            'application/octet-stream'
+            
+        body, content_type = httputil.file_message(src, content_type, 
+                                                   path, name
+                                                   )
 
         guri = uri_grandparent(self._uri)
 
@@ -1558,8 +1552,11 @@ class File(EObject):
 
         # print 'INSERT FILE', os.path.exists(src)
 
-        self._intf._exec(self._absuri, 'PUT', body,
-                         headers={'content-type':content_type})
+        self._intf._exec('%s?format=%s&content=%s&tags=%s' % \
+                             (self._absuri, format, content, tags), 
+                         'PUT', body, 
+                         headers={'content-type':content_type}
+                         )
 
         # track the uploaded file as one of the cache
 

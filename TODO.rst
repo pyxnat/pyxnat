@@ -10,6 +10,3 @@
 * Add support for subfolders in files
 
 * raise an exception when create a resource that already exists
-
-* feed string to insert file instead of file (optional) and refactor
-  push_file function (put it in a utility module)
