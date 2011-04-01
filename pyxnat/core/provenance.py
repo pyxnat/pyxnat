@@ -5,6 +5,7 @@ from lxml import etree
 from lxml.etree import Element, QName
 
 from .uriutil import uri_parent
+from .jsonutil import JsonTable
 from . import httputil
 
 _nsmap = {'xnat':'http://nrg.wustl.edu/xnat',
@@ -34,7 +35,7 @@ _platform_name, _hostname, \
 _platform_version, _platform_version2,\
 _machine, _machine2 = platform.uname()
 
-def provenance_document(eobj, process_steps):
+def provenance_document(eobj, process_steps, overwrite):
     root_node = etree.fromstring(eobj.get())
 
     existing_prov = None
@@ -43,9 +44,12 @@ def provenance_document(eobj, process_steps):
             existing_prov = child
             break
 
-    if existing_prov is not None:
+    if existing_prov is not None and not overwrite:
         prov_node = existing_prov
     else:
+        if existing_prov is not None and overwrite:
+            root_node.remove(existing_prov)
+
         prov_node = Element(QName(_nsmap['xnat'], 'provenance'), 
                             nsmap=_nsmap
                             )
@@ -177,7 +181,7 @@ class Provenance(object):
         self._intf = eobject._intf
         self._eobject = eobject
 
-    def attach(self, process_steps):
+    def attach(self, process_steps, overwrite=False):
         """ Attach provenance information for the data within this element.
 
             .. note::
@@ -197,6 +201,9 @@ class Provenance(object):
                 of the data. The minimum set of information to give
                 is: program, timestamp, user, machine and platform. More
                 keywords in the class documentation.
+            overwrite: boolean
+                If False the process_steps are added to the existing ones.
+                Else the processing steps overwrite any existing provenance.
         """
         if isinstance(process_steps, dict):
             process_steps = [process_steps]
@@ -216,19 +223,29 @@ class Provenance(object):
             if not process_step.has_key('user'):
                 process_step['user'] = self._intf._user
 
-        doc = provenance_document(self._eobject, process_steps)
+        doc = provenance_document(self._eobject, process_steps, overwrite)
 
-        body, content_type = httputil.file_message(doc, 'text/xml', 
-                                                   'prov.xml', 'prov.xml'
-                                                   )
+        body, content_type = httputil.file_message(
+            doc, 'text/xml', 'prov.xml', 'prov.xml')
 
-        self._intf._exec('%s' % self._eobject._uri, 
+        prov_uri = self._eobject._uri
+
+        if overwrite:
+            prov_uri += '?allowDataDeletion=true'
+
+        self._intf._exec(prov_uri, 
                          method='PUT', 
                          body=body,
                          headers={'content-type':content_type}
                          )
 
     def get(self):
+        """ Gets all the provenance information for that object.
+
+            Returns
+            -------
+            A list of dicts.
+        """
         datatype = self._eobject.datatype()
 
         columns = ['%s/ID' % datatype] + [
@@ -241,11 +258,13 @@ class Provenance(object):
         prov_uri += ','.join(columns)
 
         steps = []
-        for step in self._intf._get_json(prov_uri):
+
+        table = JsonTable(self._intf._get_json(prov_uri))
+
+        for step in table.where(ID=self._eobject.id()):
             step_dict = {}
             for key in step.keys():
                 if 'processstep' in key:
-
                     step_dict[key.split('processstep/')[1]] = step[key]
 
             steps.append(step_dict)
@@ -253,31 +272,30 @@ class Provenance(object):
         return steps
 
     def dettach(self):
-        raise NotImplementedError('Cannot dettach provenance, '
-                                  'functionality not available.'
-                                  )
+        """ Removes the provenance attached to this object.
 
-        # root_node = etree.fromstring(self._eobject.get())
+            .. note::
+                This is equivalent to self.attach({}, overwrite=True)
+        """
 
-        # existing_prov = None
-        # for child in root_node.getchildren():
-        #     if child.tag.endswith('provenance'):
-        #         existing_prov = child
-        #         break
+        root_node = etree.fromstring(self._eobject.get())
 
-        # if existing_prov is not None:
-        #     root_node.remove(existing_prov)
+        existing_prov = None
+        for child in root_node.getchildren():
+            if str(child.tag).endswith('provenance'):
+                existing_prov = child
+                break
 
-        # doc = etree.tostring(root_node.getroottree())
+        if existing_prov is not None:
+            root_node.remove(existing_prov)
+
+        doc = etree.tostring(root_node.getroottree())
         
-        # body, content_type = httputil.file_message(doc, 'text/xml', 
-        #                                            'prov.xml', 'prov.xml'
-        #                                            )
+        body, content_type = httputil.file_message(
+            doc, 'text/xml', 'prov.xml', 'prov.xml')
 
-        # self._eobject.delete()
-
-        # self._intf._exec('%s' % self._eobject._uri, 
-        #                  method='PUT', 
-        #                  body=body,
-        #                  headers={'content-type':content_type}
-        #                  )
+        self._intf._exec('%s?allowDataDeletion=true' % self._eobject._uri, 
+                         method='PUT', 
+                         body=body,
+                         headers={'content-type':content_type}
+                         )
