@@ -21,9 +21,9 @@ from .uriutil import uri_shape
 from .jsonutil import JsonTable, get_selection
 from .pathutil import find_files
 from .attributes import EAttrs
-from .search import build_search_document, rpn_contraints
+from .search import build_search_document, rpn_contraints, query_from_xml
 from .errors import is_xnat_error, parse_put_error_message
-from .errors import DataError, catch_error
+from .errors import DataError, ProgrammingError, catch_error
 from .cache import md5name
 from .provenance import Provenance
 from . import schema
@@ -813,7 +813,7 @@ class CObject(object):
         if tag.references().get() == []:
             tag.delete()
 
-    def where(self, constraints):
+    def where(self, constraints=None, template=None, query=None):
         """ Only the element objects whose subject that are matching the 
             constraints will be returned. It means that it is not possible 
             to use this method on an element that is not linked to a 
@@ -841,8 +841,22 @@ class CObject(object):
             --------
             search.Search()
         """
-        if isinstance(constraints, basestring):
+        if isinstance(constraints, (str, unicode)):
             constraints = rpn_contraints(constraints)
+        elif isinstance(template, (tuple)):
+            tmp_bundle = self._intf.manage.search.get_template(
+                template[0], True)
+
+            tmp_bundle = tmp_bundle % template[1]
+            constraints = query_from_xml(tmp_bundle)['constraints']
+        elif isinstance(query, (str, unicode)):
+            tmp_bundle = self._intf.manage.search.get(query, 'xml')
+            constraints = query_from_xml(tmp_bundle)['constraints']
+        elif isinstance(constraints, list):
+            pass
+        else:
+            raise ProgrammingError('One of contraints, template and query'
+                                   'parameters must be correctly set.')
 
         bundle = build_search_document('xnat:subjectData', 
                                        ['xnat:subjectData/PROJECT',

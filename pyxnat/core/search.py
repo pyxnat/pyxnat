@@ -1,8 +1,13 @@
+import os
+import re
+import glob
 import csv
 import difflib
 from StringIO import StringIO
 
 from lxml import etree
+from ..externals import simplejson as json
+
 from .jsonutil import JsonTable, get_column, get_where
 from .errors import is_xnat_error, catch_error
 from .errors import ProgrammingError, NotSupportedError
@@ -174,6 +179,63 @@ def build_criteria_set(container_node, criteria_set):
 
     return container_node
 
+def query_from_xml(document):
+    query = {}
+    root = etree.fromstring(document)
+    _nsmap=root.nsmap
+
+    query['row'] = root.xpath('xdat:root_element_name', 
+                              namespaces=root.nsmap)[0].text
+
+    query['columns'] = []
+
+    for node in root.xpath('xdat:search_field', 
+                           namespaces=_nsmap):
+
+        en = node.xpath('xdat:element_name', namespaces=root.nsmap)[0].text
+        fid = node.xpath('xdat:field_ID', namespaces=root.nsmap)[0].text
+
+        query['columns'].append('%s/%s' % (en, fid))
+
+    query['users'] = [
+        node.text
+        for node in root.xpath('xdat:allowed_user/xdat:login', 
+                               namespaces=root.nsmap
+                               )
+        ]
+
+    try:
+        search_where = root.xpath('xdat:search_where', 
+                                  namespaces=root.nsmap)[0]
+
+        query['constraints'] = query_from_criteria_set(search_where)
+    except:
+        query['constraints'] = [('%s/ID' % query['row'], 'LIKE', '%'), 'AND']
+
+    return query
+
+def query_from_criteria_set(criteria_set):
+    query = []
+    query.append(criteria_set.get('method'))
+    _nsmap = criteria_set.nsmap
+
+    for criteria in criteria_set.xpath('xdat:criteria', 
+                                       namespaces=_nsmap):
+
+        _f = criteria.xpath('xdat:schema_field', namespaces=_nsmap)[0]
+        _o = criteria.xpath('xdat:comparison_type', namespaces=_nsmap)[0]
+        _v = criteria.xpath('xdat:value', namespaces=_nsmap)[0]
+        
+        constraint = (_f.text, _o.text, _v.text)
+        query.insert(0, constraint)
+
+    for child_set in criteria_set.xpath('xdat:child_set', 
+                                        namespaces=_nsmap):
+        
+        query.insert(0, query_from_criteria_set(child_set))
+
+    return query
+
 def rpn_contraints(rpn_exp):
     left = []
     right = []
@@ -240,6 +302,29 @@ class SearchManager(object):
     def __init__(self, interface):
         self._intf = interface
 
+    def _save_search(self, row, columns, constraints, name, sharing):
+        if self._intf._entry is None:
+            self._intf._get_entry_point()
+
+        name = name.replace(' ', '_')
+        if sharing == 'private':
+            users = [self._intf._user]
+        elif sharing == 'public':
+            users = []
+        elif isinstance(sharing, list):
+            users = sharing
+        else:
+            raise NotSupportedError('Share mode %s not valid' % sharing)
+
+        self._intf._exec(
+            '%s/search/saved/%s?inbody=true' % (self._intf._entry, name), 
+            method='PUT', 
+            body=build_search_document(row, columns, 
+                                       constraints, 
+                                       name, users
+                                       )
+            )
+
     def save(self, name, row, columns, constraints, sharing='private'):
         """ Saves a query on the XNAT server.
 
@@ -267,37 +352,38 @@ class SearchManager(object):
             --------
             Search.where
         """
-        name = name.replace(' ', '_')
-        if sharing == 'private':
-            users = [self._intf._user]
-        elif sharing == 'public':
-            users = []
-        elif isinstance(sharing, list):
-            users = sharing
-        else:
-            raise NotSupportedError('Share mode %s not valid' % sharing)
-
-        self._intf._exec(
-            '%s/search/saved/%s?inbody=true' % (self._intf._entry, name), 
-            method='PUT', 
-            body=build_search_document(row, columns, 
-                                       constraints, 
-                                       name, users
-                                       )
-            )
+        self._save_search(row, columns, constraints, name, sharing)
 
     def saved(self):
         """ Returns the names of accessible saved search on the server.
         """
+        if self._intf._entry is None:
+            self._intf._get_entry_point()
 
         jdata = self._intf._get_json(
             '%s/search/saved?format=json' % self._intf._entry)
 
-        return get_column(jdata, 'brief_description')
+        return [name 
+                for name in get_column(jdata, 'brief_description')
+                if not name.startswith('template_')]
     
-    def get(self, name):
-        """ Returns the results of the query saved on the XNAT server.
+    def get(self, name, out_format='results'):
+        """ Returns the results of the query saved on the XNAT server or
+            the query itself to know what it does.
+
+            Parameters
+            ----------
+            name: string
+                Name of the saved search. An exception is raised if the name
+                does not exist.
+            out_format: string
+                Can take the following values:
+                    - results to download the results of the search
+                    - xml to download the XML document defining the search
+                    - query to get the pyxnat representation of the search
         """
+        if self._intf._entry is None:
+            self._intf._get_entry_point()
 
         jdata = self._intf._get_json(
             '%s/search/saved?format=json' % self._intf._entry)
@@ -307,6 +393,17 @@ class SearchManager(object):
         except IndexError:
             raise DatabaseError('%s not found' % name)
 
+        if out_format in ['xml', 'query']:
+            bundle = self._intf._exec(
+                '%s/search/saved/%s' % (self._intf._entry, 
+                                        search_id
+                                        ), 'GET')
+
+            if out_format == 'xml':
+                return bundle
+            else:
+                return query_from_xml(bundle)
+        
         content = self._intf._exec(
             '%s/search/saved/%s/results?format=csv' % (self._intf._entry, 
                                                        search_id
@@ -324,7 +421,8 @@ class SearchManager(object):
     def delete(self, name):
         """ Removes the search from the server.
         """
-        print 'entry point', self._intf._entry
+        if self._intf._entry is None:
+            self._intf._get_entry_point()
 
         jdata = self._intf._get_json(
             '%s/search/saved?format=json' % self._intf._entry)
@@ -337,6 +435,98 @@ class SearchManager(object):
         self._intf._exec('%s/search/saved/%s' % (self._intf._entry, 
                                                  search_id
                                                  ), 'DELETE')
+
+    def save_template(self, name, row=None, columns=[], 
+                      constraints=[], sharing='private'):
+
+        def _make_template(query):
+            query_template = []
+
+            for constraint in query:
+                if isinstance(constraint, tuple):
+                    query_template.append((constraint[0],
+                                           constraint[1],
+                                           '%%(%s)s' % constraint[2])
+                                          )
+                elif isinstance(constraint, (unicode, str)):
+                    query_template.append(constraint)
+                elif isinstance(constraint, list):
+                    query_template.append(_make_template(constraint))
+                else:
+                    raise ProgrammingError('Unrecognized token '
+                                           'in query: %s' % constraint
+                                           )
+
+            return query_template
+
+        self._save_search(row, columns, _make_template(constraints), 
+                          'template_%s' % name, sharing)
+
+    def saved_templates(self):
+        if self._intf._entry is None:
+            self._intf._get_entry_point()
+
+        jdata = self._intf._get_json(
+            '%s/search/saved?format=json' % self._intf._entry)
+
+        return [name.split('template_')[1]
+                for name in get_column(jdata, 'brief_description')
+                if name.startswith('template_')]
+            
+    def use_template(self, name, values):
+        """
+            Parameters
+            ----------
+            name: string
+                Name of the template.
+            values: dict
+                Values to put in the template, get the valid keys using
+                the get_template method.
+        """
+        if self._intf._entry is None:
+            self._intf._get_entry_point()
+
+        bundle = self.get_template(name) % values
+
+        content = self._intf._exec(
+            "%s/search?format=csv" % self._intf._entry, 'POST', bundle)
+
+        results = csv.reader(StringIO(content), delimiter=',', quotechar='"')
+        headers = results.next()
+
+        return JsonTable([dict(zip(headers, res)) 
+                          for res in results
+                          ],
+                         headers
+                         )
+
+    def get_template(self, name, as_xml=False):
+        if self._intf._entry is None:
+            self._intf._get_entry_point()
+
+        jdata = self._intf._get_json(
+            '%s/search/saved?format=json' % self._intf._entry)
+        
+        try:
+            search_id = get_where(jdata, 
+                                  brief_description='template_%s' % name
+                                  )[0]['id']
+        except IndexError:
+            raise DatabaseError('%s not found' % name)
+
+        bundle = self._intf._exec(
+            '%s/search/saved/%s' % (self._intf._entry, 
+                                    search_id
+                                    ), 'GET')
+        
+        if as_xml:
+            return bundle
+        else:
+            _query = query_from_xml(bundle)
+            return _query['row'], _query['columns'], _query['constraints']
+
+    def delete_template(self, name):
+        self.delete('template_%s' % name)
 
     def eval_rpn_exp(self, rpnexp):
         return rpn_contraints(rpnexp)
