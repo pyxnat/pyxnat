@@ -568,7 +568,7 @@ class Search(object):
         self._columns = columns
         self._intf = interface
 
-    def where(self, constraints):
+    def where(self, constraints=None, template=None, query=None):
         """ Triggers the search.
 
             Parameters
@@ -590,8 +590,23 @@ class Search(object):
                 basically a list of dictionaries that has additional 
                 helper methods.
         """
-        if isinstance(constraints, basestring):
+
+        if isinstance(constraints, (str, unicode)):
             constraints = rpn_contraints(constraints)
+        elif isinstance(template, (tuple)):
+            tmp_bundle = self._intf.manage.search.get_template(
+                template[0], True)
+
+            tmp_bundle = tmp_bundle % template[1]
+            constraints = query_from_xml(tmp_bundle)['constraints']
+        elif isinstance(query, (str, unicode)):
+            tmp_bundle = self._intf.manage.search.get(query, 'xml')
+            constraints = query_from_xml(tmp_bundle)['constraints']
+        elif isinstance(constraints, list):
+            pass
+        else:
+            raise ProgrammingError('One of contraints, template and query'
+                                   'parameters must be correctly set.')
 
         bundle = build_search_document(self._row, self._columns, constraints)
 
