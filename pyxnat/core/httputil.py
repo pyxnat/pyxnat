@@ -11,6 +11,7 @@ def file_message(content, content_type, path, name):
                 )
     body.append('Content-Type: %s' % content_type)
     body.append('')
+
     body.append(content)
     body.append('--' + _boundary + '--')
     body.append('')

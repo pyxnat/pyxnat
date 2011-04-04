@@ -8,6 +8,7 @@ import mimetypes
 import zipfile
 import time
 import urllib
+import codecs
 from fnmatch import fnmatch
 
 from ..externals import simplejson as json
@@ -20,12 +21,13 @@ from .uriutil import uri_shape
 from .jsonutil import JsonTable, get_selection
 from .pathutil import find_files
 from .attributes import EAttrs
-from .search import build_search_document, rpn_contraints
+from .search import build_search_document, rpn_contraints, query_from_xml
 from .errors import is_xnat_error, parse_put_error_message
-from .errors import DataError
+from .errors import DataError, ProgrammingError, catch_error
 from .cache import md5name
 from .provenance import Provenance
 from . import schema
+from . import httputil
 
 DEBUG = False
 
@@ -159,7 +161,7 @@ class EObject(object):
 
         for pattern in self._intf._struct.keys():
             if fnmatch(uri_segment(
-                    self._uri.split(self._intf._entry)[1], -2), pattern):
+                    self._uri.split(self._intf._entry, 1)[1], -2), pattern):
 
                 reg_pat = self._intf._struct[pattern]
                 filters.setdefault('xsiType', set()).add(reg_pat)
@@ -272,8 +274,7 @@ class EObject(object):
         if datatype is None:
             for uri_pattern in struct.keys():
                 if fnmatch(
-                    self._uri.split(self._intf._entry)[1], uri_pattern):
-
+                    self._uri.split(self._intf._entry, 1)[1], uri_pattern):
                     datatype = struct.get(uri_pattern)
                     break
             else:
@@ -355,7 +356,9 @@ class EObject(object):
         delete_uri = self._uri if not delete_files \
             else self._uri + '?removeFiles=true'
 
-        return self._intf._exec(delete_uri, 'DELETE')
+        out = self._intf._exec(delete_uri, 'DELETE')
+
+        catch_error(out)
 
     def get(self):
         """ Retrieves the XML document corresponding to this element.
@@ -504,8 +507,8 @@ class CObject(object):
             uri = urllib.quote(uri)
 
             request_shape = uri_shape(
-                '%s/0' % uri.split(self._intf._entry)[1])
-            reqcache = os.path.join(self._intf._cachedir,
+                '%s/0' % uri.split(self._intf._entry, 1)[1])
+            reqcache = os.path.join(self._intf._cachedir, 
                                    '%s.struct' % md5name(request_shape)
                                    ).replace('_*', '')
 
@@ -576,7 +579,7 @@ class CObject(object):
 
         for element in jtable:
             xsitype = element.get('xsiType')
-            uri = element.get('URI').split(self._intf._entry)[1]
+            uri = element.get('URI').split(self._intf._entry, 1)[1]
             uri = uri.replace(uri.split('/')[-2], _type)
             shape = uri_shape(uri)
 
@@ -809,10 +812,10 @@ class CObject(object):
         if tag.references().get() == []:
             tag.delete()
 
-    def where(self, constraints):
-        """ Only the element objects whose subject that are matching the
-            constraints will be returned. It means that it is not possible
-            to use this method on an element that is not linked to a
+    def where(self, constraints=None, template=None, query=None):
+        """ Only the element objects whose subject that are matching the 
+            constraints will be returned. It means that it is not possible 
+            to use this method on an element that is not linked to a 
             subject, such as a project.
 
             Examples
@@ -837,8 +840,22 @@ class CObject(object):
             --------
             search.Search()
         """
-        if isinstance(constraints, basestring):
+        if isinstance(constraints, (str, unicode)):
             constraints = rpn_contraints(constraints)
+        elif isinstance(template, (tuple)):
+            tmp_bundle = self._intf.manage.search.get_template(
+                template[0], True)
+
+            tmp_bundle = tmp_bundle % template[1]
+            constraints = query_from_xml(tmp_bundle)['constraints']
+        elif isinstance(query, (str, unicode)):
+            tmp_bundle = self._intf.manage.search.get(query, 'xml')
+            constraints = query_from_xml(tmp_bundle)['constraints']
+        elif isinstance(constraints, list):
+            pass
+        else:
+            raise ProgrammingError('One of contraints, template and query'
+                                   'parameters must be correctly set.')
 
         bundle = build_search_document('xnat:subjectData',
                                        ['xnat:subjectData/PROJECT',
@@ -1225,6 +1242,13 @@ class Assessor(EObject):
         self._intf._exec(join_uri(self._uri, 'projects', project), 'DELETE')
 
 
+    def set_param(self, key, value):
+        self.attrs.set('%s/parameters/addParam[name=%s]/addField' \
+                           % (self.datatype(), key), 
+                       value
+                       )
+
+
 class Reconstruction(EObject):
     __metaclass__ = ElementType
 
@@ -1240,6 +1264,12 @@ class Reconstruction(EObject):
 
 class Scan(EObject):
     __metaclass__ = ElementType
+
+    def set_param(self, key, value):
+        self.attrs.set('%s/parameters/addParam[name=%s]/addField' \
+                           % (self.datatype(), key), 
+                       value
+                       )
 
 
 class Resource(EObject):
@@ -1494,9 +1524,10 @@ class File(EObject):
             Parameters
             ----------
             src: string
-                Location of the local file to upload.
-            format: string
-                Optional parameter to specify the file format.
+                Location of the local file to upload or the actual content
+                to upload.
+            format: string   
+                Optional parameter to specify the file format. 
                 Defaults to 'U'.
             content: string
                 Optional parameter to specify the file content.
@@ -1510,28 +1541,24 @@ class File(EObject):
         content = urllib.quote(content)
         tags = urllib.quote(tags)
 
-        # format = "'%s'" % format if ' ' in format else format
-        # content = "'%s'" % content if ' ' in content else content
-        # tags = "'%s'" % tags if ' ' in tags else tags
+        try:
+            if os.path.exists(src):
+                path = src
+                name = os.path.basename(path)
+                src = codecs.open(src).read()
+            else:
+                path = self._uri.split('/')[-1]
+                name = path
+        except:
+            path = self._uri.split('/')[-1]
+            name = path
 
-        put_uri = "%s?format=%s&content=%s&tags=%s" % \
-            (self._uri, format, content, tags)
-
-        BOUNDARY = '----------ThIs_Is_tHe_bouNdaRY_$'
-        CRLF = '\r\n'
-        L = []
-        L.append('--' + BOUNDARY)
-        L.append('Content-Disposition: form-data; '
-                 'name="%s"; filename="%s"' % (os.path.basename(src), src)
-                 )
-        L.append('Content-Type: %s' %
-                 mimetypes.guess_type(src)[0] or 'application/octet-stream')
-        L.append('')
-        L.append(open(src, 'rb').read())
-        L.append('--' + BOUNDARY + '--')
-        L.append('')
-        body = CRLF.join(L)
-        content_type = 'multipart/form-data; boundary=%s' % BOUNDARY
+        content_type = mimetypes.guess_type(path)[0] or \
+            'application/octet-stream'
+            
+        body, content_type = httputil.file_message(src, content_type, 
+                                                   path, name
+                                                   )
 
         guri = uri_grandparent(self._uri)
 
@@ -1545,8 +1572,11 @@ class File(EObject):
 
         # print 'INSERT FILE', os.path.exists(src)
 
-        self._intf._exec(self._absuri, 'PUT', body,
-                         headers={'content-type':content_type})
+        self._intf._exec('%s?format=%s&content=%s&tags=%s' % \
+                             (self._absuri, format, content, tags), 
+                         'PUT', body, 
+                         headers={'content-type':content_type}
+                         )
 
         # track the uploaded file as one of the cache
 

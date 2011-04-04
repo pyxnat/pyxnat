@@ -5,6 +5,6 @@
 
 * Improve get file
 
-* Change the test server in resources_test.py
-
 * Add support for subfolders in files
+
+* implement the dettach provenance
