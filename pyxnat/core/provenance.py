@@ -1,5 +1,6 @@
 import time
 import platform
+import socket
 
 from lxml import etree
 from lxml.etree import Element, QName
@@ -34,6 +35,8 @@ _all = ['program', 'program_version', 'program_arguments',
 _platform_name, _hostname, \
 _platform_version, _platform_version2,\
 _machine, _machine2 = platform.uname()
+_machine = socket.gethostname()
+
 
 def provenance_document(eobj, process_steps, overwrite):
     root_node = etree.fromstring(eobj.get())
@@ -261,7 +264,10 @@ class Provenance(object):
 
         table = JsonTable(self._intf._get_json(prov_uri))
 
-        for step in table.where(ID=self._eobject.id()):
+        id_header = 'ID' if table.has_header('ID') \
+            else '%s/id' % datatype.lower()
+
+        for step in table.where(**{id_header:self._eobject.id()}):
             step_dict = {}
             for key in step.keys():
                 if 'processstep' in key:
@@ -299,3 +305,4 @@ class Provenance(object):
                          body=body,
                          headers={'content-type':content_type}
                          )
+

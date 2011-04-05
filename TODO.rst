@@ -7,4 +7,3 @@
 
 * Add support for subfolders in files
 
-* implement the dettach provenance
