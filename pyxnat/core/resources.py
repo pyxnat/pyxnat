@@ -359,7 +359,8 @@ class EObject(object):
 
         out = self._intf._exec(delete_uri, 'DELETE')
 
-        catch_error(out)
+        if is_xnat_error(out):
+            catch_error(out)
 
     def get(self):
         """ Retrieves the XML document corresponding to this element.
