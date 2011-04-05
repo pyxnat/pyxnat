@@ -163,6 +163,9 @@ class JsonTable(object):
             self.order_by
             )
 
+    def has_header(self, name):
+        return name in self.headers()
+
     def headers(self):
         """ Returns the headers of the object.
         """
