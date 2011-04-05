@@ -486,7 +486,7 @@ class SearchManager(object):
         if self._intf._entry is None:
             self._intf._get_entry_point()
 
-        bundle = self.get_template(name) % values
+        bundle = self.get_template(name, True) % values
 
         content = self._intf._exec(
             "%s/search?format=csv" % self._intf._entry, 'POST', bundle)
