@@ -133,7 +133,7 @@ class Interface(object):
             if is_xnat_error(self._jsession):
                 catch_error(self._jsession)
 
-        self.inspect()
+        # self.inspect()
 
     def _get_entry_point(self):
         if self._entry is None:
@@ -176,8 +176,7 @@ class Interface(object):
         if headers is None:
             headers = {}
 
-        if self._entry is None:
-            self._get_entry_point()
+        self._get_entry_point()
 
         uri = join_uri(self._server, uri)
 
@@ -423,4 +422,3 @@ class Interface(object):
 #                                 )
 
 #         return CObject(uris, self)
-

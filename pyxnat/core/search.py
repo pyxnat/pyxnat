@@ -12,6 +12,7 @@ from .jsonutil import JsonTable, get_column, get_where, get_selection
 from .errors import is_xnat_error, catch_error
 from .errors import ProgrammingError, NotSupportedError
 from .errors import DataError, DatabaseError
+from .uriutil import check_entry
 
 search_nsmap = {'xdat':'http://nrg.wustl.edu/security',
                 'xsi':'http://www.w3.org/2001/XMLSchema-instance'}
@@ -305,10 +306,8 @@ class SearchManager(object):
     def __init__(self, interface):
         self._intf = interface
 
+    @check_entry
     def _save_search(self, row, columns, constraints, name, desc, sharing):
-        if self._intf._entry is None:
-            self._intf._get_entry_point()
-
         name = name.replace(' ', '_')
         if sharing == 'private':
             users = [self._intf._user]
@@ -360,12 +359,11 @@ class SearchManager(object):
         self._save_search(row, columns, constraints, 
                           name, description, sharing)
 
+
+    @check_entry
     def saved(self, with_description=False):
         """ Returns the names of accessible saved search on the server.
         """
-        if self._intf._entry is None:
-            self._intf._get_entry_point()
-
         jdata = self._intf._get_json(
             '%s/search/saved?format=json' % self._intf._entry)
 
@@ -381,6 +379,7 @@ class SearchManager(object):
                     for name in get_column(jdata, 'brief_description')
                     if not name.startswith('template_')]
     
+    @check_entry
     def get(self, name, out_format='results'):
         """ Returns the results of the query saved on the XNAT server or
             the query itself to know what it does.
@@ -396,9 +395,6 @@ class SearchManager(object):
                     - xml to download the XML document defining the search
                     - query to get the pyxnat representation of the search
         """
-        if self._intf._entry is None:
-            self._intf._get_entry_point()
-
         jdata = self._intf._get_json(
             '%s/search/saved?format=json' % self._intf._entry)
         
@@ -434,12 +430,10 @@ class SearchManager(object):
                          )
 
 
+    @check_entry
     def delete(self, name):
         """ Removes the search from the server.
         """
-        if self._intf._entry is None:
-            self._intf._get_entry_point()
-
         jdata = self._intf._get_json(
             '%s/search/saved?format=json' % self._intf._entry)
         
@@ -478,10 +472,8 @@ class SearchManager(object):
         self._save_search(row, columns, _make_template(constraints), 
                           'template_%s' % name, description, sharing)
 
+    @check_entry
     def saved_templates(self, with_description=False):
-        if self._intf._entry is None:
-            self._intf._get_entry_point()
-
         jdata = self._intf._get_json(
             '%s/search/saved?format=json' % self._intf._entry)
 
@@ -497,6 +489,7 @@ class SearchManager(object):
                     for name in get_column(jdata, 'brief_description')
                     if name.startswith('template_')]
             
+    @check_entry
     def use_template(self, name, values):
         """
             Parameters
@@ -507,10 +500,14 @@ class SearchManager(object):
                 Values to put in the template, get the valid keys using
                 the get_template method.
         """
-        if self._intf._entry is None:
-            self._intf._get_entry_point()
-
         bundle = self.get_template(name, True) % values
+
+        # have to remove search_id information before re-posting it
+        _query = query_from_xml(bundle)
+        bundle = build_search_document(_query['row'], 
+                                       _query['columns'], 
+                                       _query['constraints']
+                                       )
 
         content = self._intf._exec(
             "%s/search?format=csv" % self._intf._entry, 'POST', bundle)
@@ -524,10 +521,8 @@ class SearchManager(object):
                          headers
                          )
 
+    @check_entry
     def get_template(self, name, as_xml=False):
-        if self._intf._entry is None:
-            self._intf._get_entry_point()
-
         jdata = self._intf._get_json(
             '%s/search/saved?format=json' % self._intf._entry)
         
@@ -592,6 +587,7 @@ class Search(object):
         self._columns = columns
         self._intf = interface
 
+    @check_entry
     def where(self, constraints=None, template=None, query=None):
         """ Triggers the search.
 

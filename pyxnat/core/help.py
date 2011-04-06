@@ -12,7 +12,7 @@ from ..externals import simplejson as json
 from . import schema
 from .jsonutil import get_column
 from .search import Search
-
+from .uriutil import check_entry
 
 class Inspector(object):
     """ Database introspection interface.
@@ -32,6 +32,7 @@ class Inspector(object):
 
         self.schemas = SchemasInspector(interface)
 
+    @check_entry
     def __call__(self):
         for name in ['experiment', 'assessor', 'scan', 'reconstruction']:
             self._resource_struct(name)
@@ -63,7 +64,8 @@ class Inspector(object):
             self._auto = auto
         if tick is not None:
             self._tick = tick
-        
+
+    @check_entry        
     def datatypes(self, pattern='*', fields_pattern=None):
         """ Discovers the datatypes and datafields of the database.
 
@@ -96,6 +98,7 @@ class Inspector(object):
 
             return fields
 
+    @check_entry
     def _datafields(self, datatype, pattern='*', prepend_type=True):
 
         search_fds = self._get_json('%s/search/elements/%s?format=json'
@@ -150,6 +153,8 @@ class Inspector(object):
         """
         return self._resource_types('scan')
 
+
+    @check_entry
     def field_values(self, field_name):
         """ Look for the values a specific datafield takes in the database. 
         """
@@ -165,6 +170,7 @@ class Inspector(object):
                          ])
                     )
 
+    @check_entry
     def project_values(self):
         """ Look for the values a the project level in the database.
 
@@ -174,6 +180,7 @@ class Inspector(object):
         return get_column(self._get_json(
                 '%s/projects' % self._intf._entry), 'ID')
 
+    @check_entry
     def subject_values(self, project=None):
         """ Look for the values a the subject level in the database.
 
@@ -187,6 +194,7 @@ class Inspector(object):
 
         return get_column(self._get_json(uri), 'ID')
 
+    @check_entry
     def experiment_values(self, datatype, project=None):
         """ Look for the values a the experiment level for a given datatype
             in the database.
@@ -303,6 +311,7 @@ class Inspector(object):
 
     rest_hierarchy = architecture
 
+    @check_entry
     def _sub_experiment_values(self, sub_exp, project, experiment_type):
         values = []
 
