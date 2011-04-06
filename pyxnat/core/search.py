@@ -8,7 +8,7 @@ from StringIO import StringIO
 from lxml import etree
 from ..externals import simplejson as json
 
-from .jsonutil import JsonTable, get_column, get_where
+from .jsonutil import JsonTable, get_column, get_where, get_selection
 from .errors import is_xnat_error, catch_error
 from .errors import ProgrammingError, NotSupportedError
 from .errors import DataError, DatabaseError
@@ -20,7 +20,8 @@ special_ops = {'*':'%',}
 
 
 def build_search_document(root_element_name, columns, criteria_set, 
-                               brief_description='', allowed_users=[]):
+                          brief_description='', long_description='',
+                          allowed_users=[]):
     root_node = \
         etree.Element(etree.QName(search_nsmap['xdat'], 'bundle'),
                       nsmap=search_nsmap
@@ -28,6 +29,7 @@ def build_search_document(root_element_name, columns, criteria_set,
 
     root_node.set('ID', "@%s" % root_element_name)
     root_node.set('brief-description', brief_description)
+    root_node.set('description', long_description)
     root_node.set('allow-diff-columns', "0")
     root_node.set('secure', "false")
 
@@ -296,13 +298,14 @@ class SearchManager(object):
                             'AND'
                             ]
             >>> interface.manage.search.save('mysearch', row, columns,
-                                             criteria, sharing='public'
+                                             criteria, sharing='public',
+                                             description='my first search'
                                              )
     """
     def __init__(self, interface):
         self._intf = interface
 
-    def _save_search(self, row, columns, constraints, name, sharing):
+    def _save_search(self, row, columns, constraints, name, desc, sharing):
         if self._intf._entry is None:
             self._intf._get_entry_point()
 
@@ -321,11 +324,13 @@ class SearchManager(object):
             method='PUT', 
             body=build_search_document(row, columns, 
                                        constraints, 
-                                       name, users
+                                       name, desc, 
+                                       users
                                        )
             )
 
-    def save(self, name, row, columns, constraints, sharing='private'):
+    def save(self, name, row, columns, constraints, 
+             sharing='private', description=''):
         """ Saves a query on the XNAT server.
 
             Parameters
@@ -352,9 +357,10 @@ class SearchManager(object):
             --------
             Search.where
         """
-        self._save_search(row, columns, constraints, name, sharing)
+        self._save_search(row, columns, constraints, 
+                          name, description, sharing)
 
-    def saved(self):
+    def saved(self, with_description=False):
         """ Returns the names of accessible saved search on the server.
         """
         if self._intf._entry is None:
@@ -363,9 +369,17 @@ class SearchManager(object):
         jdata = self._intf._get_json(
             '%s/search/saved?format=json' % self._intf._entry)
 
-        return [name 
-                for name in get_column(jdata, 'brief_description')
-                if not name.startswith('template_')]
+        if with_description:
+            return [(ld['brief_description'], ld['description'])
+                    for ld in get_selection(jdata, ['brief_description', 
+                                                    'description'
+                                                    ]
+                                            )
+                    if not ld['brief_description'].startswith('template_')]
+        else:
+            return [name 
+                    for name in get_column(jdata, 'brief_description')
+                    if not name.startswith('template_')]
     
     def get(self, name, out_format='results'):
         """ Returns the results of the query saved on the XNAT server or
@@ -404,12 +418,13 @@ class SearchManager(object):
             else:
                 return query_from_xml(bundle)
         
+
         content = self._intf._exec(
             '%s/search/saved/%s/results?format=csv' % (self._intf._entry, 
-                                                       search_id
-                                                       ), 'GET')
+                                                       search_id), 'GET')
 
         results = csv.reader(StringIO(content), delimiter=',', quotechar='"')
+        
         headers = results.next()
 
         return JsonTable([dict(zip(headers, res)) 
@@ -417,6 +432,7 @@ class SearchManager(object):
                           ],
                          headers
                          )
+
 
     def delete(self, name):
         """ Removes the search from the server.
@@ -437,7 +453,7 @@ class SearchManager(object):
                                                  ), 'DELETE')
 
     def save_template(self, name, row=None, columns=[], 
-                      constraints=[], sharing='private'):
+                      constraints=[], sharing='private', description=''):
 
         def _make_template(query):
             query_template = []
@@ -460,18 +476,26 @@ class SearchManager(object):
             return query_template
 
         self._save_search(row, columns, _make_template(constraints), 
-                          'template_%s' % name, sharing)
+                          'template_%s' % name, description, sharing)
 
-    def saved_templates(self):
+    def saved_templates(self, with_description=False):
         if self._intf._entry is None:
             self._intf._get_entry_point()
 
         jdata = self._intf._get_json(
             '%s/search/saved?format=json' % self._intf._entry)
 
-        return [name.split('template_')[1]
-                for name in get_column(jdata, 'brief_description')
-                if name.startswith('template_')]
+        if with_description:
+            return [(ld['brief_description'], ld['description'])
+                    for ld in get_selection(jdata, ['brief_description', 
+                                                    'description'
+                                                    ]
+                                            )
+                    if ld['brief_description'].startswith('template_')]
+        else:
+            return [name.split('template_')[1]
+                    for name in get_column(jdata, 'brief_description')
+                    if name.startswith('template_')]
             
     def use_template(self, name, values):
         """
