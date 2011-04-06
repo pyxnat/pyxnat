@@ -133,7 +133,7 @@ class Interface(object):
             if is_xnat_error(self._jsession):
                 catch_error(self._jsession)
 
-        # self.inspect()
+        self.inspect()
 
     def _get_entry_point(self):
         if self._entry is None:

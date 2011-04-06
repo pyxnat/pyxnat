@@ -32,7 +32,6 @@ class Inspector(object):
 
         self.schemas = SchemasInspector(interface)
 
-    @check_entry
     def __call__(self):
         for name in ['experiment', 'assessor', 'scan', 'reconstruction']:
             self._resource_struct(name)
