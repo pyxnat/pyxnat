@@ -7,3 +7,12 @@
 
 * Add support for subfolders in files
 
+* Add/update documentation for:
+  - search_templates
+  - search.saved(_templates) methods
+  - provenance
+  - nipype and cff integration
+
+* Add/update tests for:
+  - provenance
+  - templates

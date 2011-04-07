@@ -3,7 +3,7 @@ import re
 from . import schema
 from .search import Search
 from .resources import CObject, Project, Projects # imports used implicitly
-from .uriutil import inv_translate_uri
+from .uriutil import inv_translate_uri, check_entry
 # from .uriutil import uri_last
 from .errors import ProgrammingError
 
@@ -229,6 +229,7 @@ class Select(object):
 
         self._intf = interface
 
+    @check_entry
     def project(self, ID):
         """ Access a particular project.
 
@@ -240,6 +241,7 @@ class Select(object):
         return globals()['Project'](
             '%s/projects/%s' % (self._intf._entry, ID), self._intf)
 
+    @check_entry
     def projects(self, id_filter='*'):
         """ Returns the list of all visible projects for the server.
 
@@ -251,15 +253,18 @@ class Select(object):
         return globals()['Projects'](
             '%s/projects' % self._intf._entry, self._intf, id_filter)
 
+    @check_entry
     def tag(self, name):
         return self._intf.manage.tags.get(name).references()
 
+    @check_entry
     def tags(self):
         return self._intf.manage.tags()
 
     def __repr__(self):
         return '<Root Object>'
 
+    @check_entry
     def __call__(self, datatype_or_path, columns=[]):
         """ Select clause to specify what type of data is to be returned.
 
@@ -286,14 +291,9 @@ class Select(object):
         if datatype_or_path  in ['/', '//', self._intf._entry]:
             return self
 
-        try:
-            if datatype_or_path.startswith(self._intf._entry):
-                datatype_or_path = datatype_or_path.split(
-                    self._intf._entry, 1)[1]
-        except:
-            # REST API entry point undefined
-            self._intf._get_entry_point()
-            return self.__call__(datatype_or_path, columns)
+        if datatype_or_path.startswith(self._intf._entry):
+            datatype_or_path = datatype_or_path.split(
+                self._intf._entry, 1)[1]
 
         if datatype_or_path.startswith('/'):
             return_list = []

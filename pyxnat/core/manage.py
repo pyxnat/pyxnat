@@ -7,7 +7,7 @@ from .search import SearchManager
 from .users import Users
 from .resources import Project
 from .tags import Tags
-from .uriutil import join_uri
+from .uriutil import join_uri, check_entry
 
 
 class GlobalManager(object):
@@ -58,6 +58,7 @@ class ProjectManager(object):
         This functionalities are also available through `Project` objects.
     """
 
+    @check_entry
     def __init__(self, project_id, interface):
         self._intf = interface
         project = Project('%s/projects/%s' % (self._intf._entry, 

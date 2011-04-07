@@ -96,3 +96,11 @@ def make_uri(_dict):
             uri += '/%s/%s' % (kw, _dict.get(kw))
 
     return uri
+
+def check_entry(func):
+    def inner(*args, **kwargs):
+        args[0]._intf._get_entry_point()
+        return func(*args, **kwargs)
+
+    return inner
+

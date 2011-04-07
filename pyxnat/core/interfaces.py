@@ -176,8 +176,7 @@ class Interface(object):
         if headers is None:
             headers = {}
 
-        if self._entry is None:
-            self._get_entry_point()
+        self._get_entry_point()
 
         uri = join_uri(self._server, uri)
 
@@ -423,4 +422,3 @@ class Interface(object):
 #                                 )
 
 #         return CObject(uris, self)
-
