@@ -478,12 +478,16 @@ class SearchManager(object):
             '%s/search/saved?format=json' % self._intf._entry)
 
         if with_description:
-            return [(ld['brief_description'], ld['description'])
-                    for ld in get_selection(jdata, ['brief_description', 
-                                                    'description'
-                                                    ]
-                                            )
-                    if ld['brief_description'].startswith('template_')]
+            return [
+                (ld['brief_description'].split('template_')[1], 
+                 ld['description']
+                 )
+                for ld in get_selection(jdata, ['brief_description', 
+                                                'description'
+                                                ]
+                                        )
+                if ld['brief_description'].startswith('template_')
+                ]
         else:
             return [name.split('template_')[1]
                     for name in get_column(jdata, 'brief_description')
