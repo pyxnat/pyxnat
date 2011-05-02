@@ -16,3 +16,6 @@
 * Add/update tests for:
   - provenance
   - templates
+
+* replace the entry point decorator because it hides the functions 
+  documentation
