@@ -19,3 +19,6 @@
 
 * replace the entry point decorator because it hides the functions 
   documentation
+
+* replace Klass = globals()[uri_nextlast(uri).title().rsplit('s', 1)[0]] with something like
+  Klass = globals().get(uri_nextlast(uri).title().rsplit('s', 1)[0], Interface)

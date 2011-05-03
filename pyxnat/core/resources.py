@@ -550,17 +550,14 @@ class CObject(object):
             #         self._filters.setdefault('xsiType', set()
             #                                  ).add(struct[pattern])
 
-            # if self._filters != {}:
-            #     query_string += '&' + \
-            #         '&'.join('%s=%s' % (item[0], item[1]) 
-            #                  if isinstance(item[1], (str, unicode)) 
-            #                  else '%s=%s' % (item[0], 
-            #                                  ','.join([val 
-            #                                            for val in item[1]
-            #                                            ])
-            #                                  )
-            #                  for item in self._filters.items()
-            #                  )
+            if self._filters != {}:
+                query_string += '&' + '&'.join(
+                    '%s=%s' % (item[0], item[1]) 
+                    if isinstance(item[1], (str, unicode)) 
+                    else '%s=%s' % (
+                        item[0], ','.join([val for val in item[1]]) )
+                    for item in self._filters.items()
+                    )
 
             jtable = self._intf._get_json(uri + query_string)
 
@@ -842,12 +839,12 @@ class CObject(object):
             --------
             search.Search()
         """
+
         if isinstance(constraints, (str, unicode)):
             constraints = rpn_contraints(constraints)
         elif isinstance(template, (tuple)):
             tmp_bundle = self._intf.manage.search.get_template(
                 template[0], True)
-
             tmp_bundle = tmp_bundle % template[1]
             constraints = query_from_xml(tmp_bundle)['constraints']
         elif isinstance(query, (str, unicode)):
@@ -856,24 +853,40 @@ class CObject(object):
         elif isinstance(constraints, list):
             pass
         else:
-            raise ProgrammingError('One of contraints, template and query'
-                                   'parameters must be correctly set.')
+            raise ProgrammingError('One in [contraints, template and '
+                                   'query] parameters must be correctly '
+                                   'set.'
+                                   )
 
-        bundle = build_search_document('xnat:subjectData', 
-                                       ['xnat:subjectData/PROJECT',
-                                        'xnat:subjectData/SUBJECT_ID'
-                                        ],
-                                       constraints
-                                       )
 
-        content = self._intf._exec(
-            "%s/search?format=json" % self._intf._entry, 
-            'POST', bundle)
+        # _columns = [
+        #     'xnat:subjectData/PROJECT',
+        #     'xnat:subjectData/SUBJECT_ID',
+        #     ] + ['%s/ID' %qtype for qtype in _queried_types]
 
-        if content.startswith('<html>'):
-            raise Exception(content.split('<h3>')[1].split('</h3>')[0])
+        # bundle = build_search_document(
+        #     'xnat:imageSessionData', _columns, constraints)
 
-        results = json.loads(content)['ResultSet']['Result']
+        # content = self._intf._exec(
+        #     "%s/search?format=json" % self._intf._entry, 
+        #     'POST', bundle)
+
+        # if content.startswith('<html>'):
+        #     raise Exception(content.split('<h3>')[1].split('</h3>')[0])
+
+        # results = JsonTable(json.loads(content)['ResultSet']['Result'])
+
+        # return results
+
+        results = query_with(
+            interface=self._intf, 
+            join_field='xnat:subjectData/SUBJECT_ID', 
+            common_field='SUBJECT_ID',
+            return_values=['xnat:subjectData/PROJECT', 
+                           'xnat:subjectData/SUBJECT_ID'],
+            _filter=constraints
+            )        
+        
         searchpop = ['%s/projects/' % self._intf._entry + \
                      '%(project)s/subjects/%(subject_id)s' % res
                      for res in results
@@ -1728,4 +1741,58 @@ class In_Files(Files):
 
 class Out_Files(Files):
     __metaclass__ = CollectionType
+
+
+def _datatypes_from_query(query):
+    datatypes = []
+
+    for constraint in query:
+        if isinstance(constraint, list):
+            datatypes.extend(_datatypes_from_query(constraint))
+        elif isinstance(constraint, tuple):
+            datatypes.append(constraint[0].split('/')[0])
+
+    return datatypes
+
+
+def query_with(interface, join_field, 
+               common_field, return_values, _filter):
+
+    _stm = (join_field.split('/')[0], return_values)
+    _cls = rewrite_query(interface, join_field, 
+                         common_field, _filter)
+
+    return interface.select(*_stm).where(_cls)
+
+
+def rewrite_query(interface, join_field, 
+                  common_field, _filter):
+
+    _new_filter = []
+
+    for _f in _filter:
+        if isinstance(_f, list):
+            _new_filter.append(rewrite_query(
+                    interface, join_field, common_field, _f))
+
+        elif isinstance(_f, tuple):
+            _datatype = _f[0].split('/')[0]
+            _res = interface.select(
+                _datatype, ['%s/%s' % (_datatype, common_field)]
+                ).where([_f, 'AND'])
+            
+            _new_f = [(join_field, '=', '%s' % sid)
+                      for sid in _res['subject_id']
+                      ]
+
+            _new_f.append('OR')
+            _new_filter.append(_new_f)
+
+        elif isinstance(_f, (str, unicode)):
+            _new_filter.append(_f)
+
+        else:
+            raise Exception('Invalid filter')
+
+    return _new_filter
 
