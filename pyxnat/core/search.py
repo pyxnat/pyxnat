@@ -323,7 +323,7 @@ class SearchManager(object):
             method='PUT', 
             body=build_search_document(row, columns, 
                                        constraints, 
-                                       name, desc, 
+                                       name, desc.replace('%', '%%'), 
                                        users
                                        )
             )
@@ -368,7 +368,8 @@ class SearchManager(object):
             '%s/search/saved?format=json' % self._intf._entry)
 
         if with_description:
-            return [(ld['brief_description'], ld['description'])
+            return [(ld['brief_description'], 
+                     ld['description'].replace('%%', '%'))
                     for ld in get_selection(jdata, ['brief_description', 
                                                     'description'
                                                     ]
@@ -469,8 +470,10 @@ class SearchManager(object):
 
             return query_template
 
-        self._save_search(row, columns, _make_template(constraints), 
-                          'template_%s' % name, description, sharing)
+        self._save_search(
+            row, columns, _make_template(constraints), 
+            'template_%s' % name, description, sharing
+            )
 
     @check_entry
     def saved_templates(self, with_description=False):
@@ -479,8 +482,8 @@ class SearchManager(object):
 
         if with_description:
             return [
-                (ld['brief_description'].split('template_')[1], 
-                 ld['description']
+                (ld['brief_description'].split('template_')[1],
+                 ld['description'].replace('%%', '%')
                  )
                 for ld in get_selection(jdata, ['brief_description', 
                                                 'description'
