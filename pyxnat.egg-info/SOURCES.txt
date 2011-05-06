@@ -36,10 +36,12 @@ pyxnat/core/attributes.py
 pyxnat/core/cache.py
 pyxnat/core/errors.py
 pyxnat/core/help.py
+pyxnat/core/httputil.py
 pyxnat/core/interfaces.py
 pyxnat/core/jsonutil.py
 pyxnat/core/manage.py
 pyxnat/core/pathutil.py
+pyxnat/core/provenance.py
 pyxnat/core/resources.py
 pyxnat/core/schema.py
 pyxnat/core/search.py
