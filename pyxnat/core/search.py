@@ -17,10 +17,10 @@ from .uriutil import check_entry
 search_nsmap = {'xdat':'http://nrg.wustl.edu/security',
                 'xsi':'http://www.w3.org/2001/XMLSchema-instance'}
 
-special_ops = {'*':'%', }
+special_ops = {'*':'%',}
 
 
-def build_search_document(root_element_name, columns, criteria_set,
+def build_search_document(root_element_name, columns, criteria_set, 
                           brief_description='', long_description='',
                           allowed_users=[]):
     root_node = \
@@ -47,40 +47,40 @@ def build_search_document(root_element_name, columns, criteria_set,
         element_name, field_ID = column.split('/')
 
         search_field_node = \
-            etree.Element(etree.QName(search_nsmap['xdat'], 'search_field'),
+            etree.Element(etree.QName(search_nsmap['xdat'], 'search_field'), 
                           nsmap=search_nsmap
                           )
 
         element_name_node = \
-            etree.Element(etree.QName(search_nsmap['xdat'], 'element_name'),
+            etree.Element(etree.QName(search_nsmap['xdat'], 'element_name'), 
                           nsmap=search_nsmap
                           )
 
         element_name_node.text = element_name
 
         field_ID_node = \
-            etree.Element(etree.QName(search_nsmap['xdat'], 'field_ID'),
+            etree.Element(etree.QName(search_nsmap['xdat'], 'field_ID'), 
                           nsmap=search_nsmap
                           )
 
         field_ID_node.text = field_ID
 
         sequence_node = \
-            etree.Element(etree.QName(search_nsmap['xdat'], 'sequence'),
+            etree.Element(etree.QName(search_nsmap['xdat'], 'sequence'), 
                           nsmap=search_nsmap
                           )
 
         sequence_node.text = str(i)
 
         type_node = \
-            etree.Element(etree.QName(search_nsmap['xdat'], 'type'),
+            etree.Element(etree.QName(search_nsmap['xdat'], 'type'), 
                           nsmap=search_nsmap
                           )
 
         type_node.text = 'string'
 
         header_node = \
-            etree.Element(etree.QName(search_nsmap['xdat'], 'header'),
+            etree.Element(etree.QName(search_nsmap['xdat'], 'header'), 
                           nsmap=search_nsmap
                           )
 
@@ -95,7 +95,7 @@ def build_search_document(root_element_name, columns, criteria_set,
         root_node.append(search_field_node)
 
     search_where_node = \
-        etree.Element(etree.QName(search_nsmap['xdat'], 'search_where'),
+        etree.Element(etree.QName(search_nsmap['xdat'], 'search_where'), 
                       nsmap=search_nsmap
                       )
 
@@ -104,13 +104,13 @@ def build_search_document(root_element_name, columns, criteria_set,
     if allowed_users != []:
 
         allowed_users_node = \
-            etree.Element(etree.QName(search_nsmap['xdat'], 'allowed_user'),
+            etree.Element(etree.QName(search_nsmap['xdat'], 'allowed_user'), 
                           nsmap=search_nsmap
                           )
 
         for allowed_user in allowed_users:
             login_node = \
-                etree.Element(etree.QName(search_nsmap['xdat'], 'login'),
+                etree.Element(etree.QName(search_nsmap['xdat'], 'login'), 
                               nsmap=search_nsmap
                               )
             login_node.text = allowed_user
@@ -137,12 +137,12 @@ def build_criteria_set(container_node, criteria_set):
 
         if isinstance(criteria, (tuple)):
             if len(criteria) != 3:
-                raise ProgrammingError('%s should be a 3-element tuple' %
+                raise ProgrammingError('%s should be a 3-element tuple' % 
                                         str(criteria)
                                         )
 
             constraint_node = \
-                etree.Element(etree.QName(search_nsmap['xdat'], 'criteria'),
+                etree.Element(etree.QName(search_nsmap['xdat'], 'criteria'), 
                               nsmap=search_nsmap
                               )
 
@@ -151,7 +151,7 @@ def build_criteria_set(container_node, criteria_set):
             schema_field_node = \
                 etree.Element(etree.QName(search_nsmap['xdat'],
                                           'schema_field'
-                                          ),
+                                          ), 
                               nsmap=search_nsmap
                               )
 
@@ -160,11 +160,11 @@ def build_criteria_set(container_node, criteria_set):
             comparison_type_node = \
                 etree.Element(etree.QName(search_nsmap['xdat'],
                                           'comparison_type'
-                                          ),
+                                          ), 
                               nsmap=search_nsmap
                               )
 
-            comparison_type_node.text = special_ops.get(criteria[1],
+            comparison_type_node.text = special_ops.get(criteria[1], 
                                                         criteria[1]
                                                         )
 
@@ -185,16 +185,16 @@ def build_criteria_set(container_node, criteria_set):
 def query_from_xml(document):
     query = {}
     root = etree.fromstring(document)
-    _nsmap = root.nsmap
+    _nsmap=root.nsmap
 
     query['description'] = root.get('description', default="")
 
-    query['row'] = root.xpath('xdat:root_element_name',
+    query['row'] = root.xpath('xdat:root_element_name', 
                               namespaces=root.nsmap)[0].text
 
     query['columns'] = []
 
-    for node in root.xpath('xdat:search_field',
+    for node in root.xpath('xdat:search_field', 
                            namespaces=_nsmap):
 
         en = node.xpath('xdat:element_name', namespaces=root.nsmap)[0].text
@@ -204,13 +204,13 @@ def query_from_xml(document):
 
     query['users'] = [
         node.text
-        for node in root.xpath('xdat:allowed_user/xdat:login',
+        for node in root.xpath('xdat:allowed_user/xdat:login', 
                                namespaces=root.nsmap
                                )
         ]
 
     try:
-        search_where = root.xpath('xdat:search_where',
+        search_where = root.xpath('xdat:search_where', 
                                   namespaces=root.nsmap)[0]
 
         query['constraints'] = query_from_criteria_set(search_where)
@@ -224,19 +224,19 @@ def query_from_criteria_set(criteria_set):
     query.append(criteria_set.get('method'))
     _nsmap = criteria_set.nsmap
 
-    for criteria in criteria_set.xpath('xdat:criteria',
+    for criteria in criteria_set.xpath('xdat:criteria', 
                                        namespaces=_nsmap):
 
         _f = criteria.xpath('xdat:schema_field', namespaces=_nsmap)[0]
         _o = criteria.xpath('xdat:comparison_type', namespaces=_nsmap)[0]
         _v = criteria.xpath('xdat:value', namespaces=_nsmap)[0]
-
+        
         constraint = (_f.text, _o.text, _v.text)
         query.insert(0, constraint)
 
-    for child_set in criteria_set.xpath('xdat:child_set',
+    for child_set in criteria_set.xpath('xdat:child_set', 
                                         namespaces=_nsmap):
-
+        
         query.insert(0, query_from_criteria_set(child_set))
 
     return query
@@ -288,7 +288,7 @@ def rpn_contraints(rpn_exp):
 # ---------------------------------------------------------------
 
 class SearchManager(object):
-    """ Search interface.
+    """ Search interface. 
         Handles operations to save and get back searches on the server.
 
         Examples
@@ -297,7 +297,7 @@ class SearchManager(object):
             >>> columns = ['xnat:subjectData/PROJECT',
                            'xnat:subjectData/SUBJECT_ID'
                            ]
-            >>> criteria = [('xnat:subjectData/SUBJECT_ID', 'LIKE', '*'),
+            >>> criteria = [('xnat:subjectData/SUBJECT_ID', 'LIKE', '*'), 
                             'AND'
                             ]
             >>> interface.manage.search.save('mysearch', row, columns,
@@ -321,16 +321,16 @@ class SearchManager(object):
             raise NotSupportedError('Share mode %s not valid' % sharing)
 
         self._intf._exec(
-            '%s/search/saved/%s?inbody=true' % (self._intf._entry, name),
-            method='PUT',
-            body=build_search_document(row, columns,
-                                       constraints,
-                                       name, desc,
+            '%s/search/saved/%s?inbody=true' % (self._intf._entry, name), 
+            method='PUT', 
+            body=build_search_document(row, columns, 
+                                       constraints, 
+                                       name, desc.replace('%', '%%'), 
                                        users
                                        )
             )
 
-    def save(self, name, row, columns, constraints,
+    def save(self, name, row, columns, constraints, 
              sharing='private', description=''):
         """ Saves a query on the XNAT server.
 
@@ -343,22 +343,22 @@ class SearchManager(object):
                 Datatype from `Interface.inspect.datatypes()`.
                 Usually ``xnat:subjectData``
             columns: list
-                List of data fields from
+                List of data fields from 
                 `Interface.inspect.datatypes('*', '*')`
             constraints: list
                 See also: `Search.where()`
             sharing: string | list
                 Define by whom the query is visible.
-                If sharing is a string it may be either
+                If sharing is a string it may be either 
                 ``private`` or ``public``.
-                Otherwise a list of valid logins for the XNAT server
+                Otherwise a list of valid logins for the XNAT server 
                 from `Interface.users()`.
 
             See Also
             --------
             Search.where
         """
-        self._save_search(row, columns, constraints,
+        self._save_search(row, columns, constraints, 
                           name, description, sharing)
 
 
@@ -370,17 +370,18 @@ class SearchManager(object):
             '%s/search/saved?format=json' % self._intf._entry)
 
         if with_description:
-            return [(ld['brief_description'], ld['description'])
-                    for ld in get_selection(jdata, ['brief_description',
+            return [(ld['brief_description'], 
+                     ld['description'].replace('%%', '%'))
+                    for ld in get_selection(jdata, ['brief_description', 
                                                     'description'
                                                     ]
                                             )
                     if not ld['brief_description'].startswith('template_')]
         else:
-            return [name
+            return [name 
                     for name in get_column(jdata, 'brief_description')
                     if not name.startswith('template_')]
-
+    
     @check_entry
     def get(self, name, out_format='results'):
         """ Returns the results of the query saved on the XNAT server or
@@ -399,7 +400,7 @@ class SearchManager(object):
         """
         jdata = self._intf._get_json(
             '%s/search/saved?format=json' % self._intf._entry)
-
+        
         try:
             search_id = get_where(jdata, brief_description=name)[0]['id']
         except IndexError:
@@ -407,7 +408,7 @@ class SearchManager(object):
 
         if out_format in ['xml', 'query']:
             bundle = self._intf._exec(
-                '%s/search/saved/%s' % (self._intf._entry,
+                '%s/search/saved/%s' % (self._intf._entry, 
                                         search_id
                                         ), 'GET')
 
@@ -415,17 +416,17 @@ class SearchManager(object):
                 return bundle
             else:
                 return query_from_xml(bundle)
-
+        
 
         content = self._intf._exec(
-            '%s/search/saved/%s/results?format=csv' % (self._intf._entry,
+            '%s/search/saved/%s/results?format=csv' % (self._intf._entry, 
                                                        search_id), 'GET')
 
         results = csv.reader(StringIO(content), delimiter=',', quotechar='"')
-
+        
         headers = results.next()
 
-        return JsonTable([dict(zip(headers, res))
+        return JsonTable([dict(zip(headers, res)) 
                           for res in results
                           ],
                          headers
@@ -438,17 +439,17 @@ class SearchManager(object):
         """
         jdata = self._intf._get_json(
             '%s/search/saved?format=json' % self._intf._entry)
-
+        
         try:
             search_id = get_where(jdata, brief_description=name)[0]['id']
         except IndexError:
             raise DatabaseError('%s not found' % name)
 
-        self._intf._exec('%s/search/saved/%s' % (self._intf._entry,
+        self._intf._exec('%s/search/saved/%s' % (self._intf._entry, 
                                                  search_id
                                                  ), 'DELETE')
 
-    def save_template(self, name, row=None, columns=[],
+    def save_template(self, name, row=None, columns=[], 
                       constraints=[], sharing='private', description=''):
 
         def _make_template(query):
@@ -471,8 +472,10 @@ class SearchManager(object):
 
             return query_template
 
-        self._save_search(row, columns, _make_template(constraints),
-                          'template_%s' % name, description, sharing)
+        self._save_search(
+            row, columns, _make_template(constraints), 
+            'template_%s' % name, description, sharing
+            )
 
     @check_entry
     def saved_templates(self, with_description=False):
@@ -482,9 +485,9 @@ class SearchManager(object):
         if with_description:
             return [
                 (ld['brief_description'].split('template_')[1],
-                 ld['description']
+                 ld['description'].replace('%%', '%')
                  )
-                for ld in get_selection(jdata, ['brief_description',
+                for ld in get_selection(jdata, ['brief_description', 
                                                 'description'
                                                 ]
                                         )
@@ -494,7 +497,7 @@ class SearchManager(object):
             return [name.split('template_')[1]
                     for name in get_column(jdata, 'brief_description')
                     if name.startswith('template_')]
-
+            
     @check_entry
     def use_template(self, name, values):
         """
@@ -510,8 +513,8 @@ class SearchManager(object):
 
         # have to remove search_id information before re-posting it
         _query = query_from_xml(bundle)
-        bundle = build_search_document(_query['row'],
-                                       _query['columns'],
+        bundle = build_search_document(_query['row'], 
+                                       _query['columns'], 
                                        _query['constraints']
                                        )
 
@@ -521,7 +524,7 @@ class SearchManager(object):
         results = csv.reader(StringIO(content), delimiter=',', quotechar='"')
         headers = results.next()
 
-        return JsonTable([dict(zip(headers, res))
+        return JsonTable([dict(zip(headers, res)) 
                           for res in results
                           ],
                          headers
@@ -531,19 +534,19 @@ class SearchManager(object):
     def get_template(self, name, as_xml=False):
         jdata = self._intf._get_json(
             '%s/search/saved?format=json' % self._intf._entry)
-
+        
         try:
-            search_id = get_where(jdata,
+            search_id = get_where(jdata, 
                                   brief_description='template_%s' % name
                                   )[0]['id']
         except IndexError:
             raise DatabaseError('%s not found' % name)
 
         bundle = self._intf._exec(
-            '%s/search/saved/%s' % (self._intf._entry,
+            '%s/search/saved/%s' % (self._intf._entry, 
                                     search_id
                                     ), 'GET')
-
+        
         if as_xml:
             return bundle
         else:
@@ -568,7 +571,7 @@ class Search(object):
 
         Examples
         --------
-            >>> query = [('xnat:subjectData/SUBJECT_ID', 'LIKE', '%'),
+            >>> query = [('xnat:subjectData/SUBJECT_ID', 'LIKE', '%'), 
                          ('xnat:projectData/ID', '=', 'my_project'),
                          [('xnat:subjectData/AGE', '>', '14'),
                            'AND'
@@ -584,7 +587,7 @@ class Search(object):
             row: string
                 The returned table will have one line for every matching
                 occurence of this type.
-                e.g. xnat:subjectData
+                e.g. xnat:subjectData 
                 --> table with one line per matching subject
             columns: list
                 The returned table will have all the given columns.
@@ -603,7 +606,7 @@ class Search(object):
                 A query is an unordered list that contains
                     - 1 or more constraints
                     - 0 or more sub-queries (lists as this one)
-                    - 1 comparison method between the constraints
+                    - 1 comparison method between the constraints 
                         ('AND' or 'OR')
                 A constraint is an ordered tuple that contains
                     - 1 valid searchable_type/searchable_field
@@ -612,8 +615,8 @@ class Search(object):
             Returns
             -------
             results: JsonTable object
-                An table-like object containing the results. It is
-                basically a list of dictionaries that has additional
+                An table-like object containing the results. It is 
+                basically a list of dictionaries that has additional 
                 helper methods.
         """
 
@@ -650,17 +653,17 @@ class Search(object):
         for column in self._columns:
             headers_of_interest.append(
                 difflib.get_close_matches(
-                    column.split(self._row + '/')[0].lower() \
-                        or column.split(self._row + '/')[1].lower(),
+                    column.split(self._row+'/')[0].lower() \
+                        or column.split(self._row+'/')[1].lower(), 
                     headers)[0]
                 )
 
         if len(self._columns) != len(headers_of_interest):
             raise DataError('unvalid response headers')
 
-        return JsonTable([dict(zip(headers, res)) for res in results],
+        return JsonTable([dict(zip(headers, res)) for res in results], 
                          headers_of_interest).select(headers_of_interest)
 
     def all(self):
-        return self.where([(self._row + '/ID', 'LIKE', '%'), 'AND'])
+        return self.where([(self._row+'/ID', 'LIKE', '%'), 'AND'])
 
