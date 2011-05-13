@@ -98,10 +98,11 @@ class Interface(object):
             self._pwd = password
 
             self._cachedir = os.path.join(
-                cachedir, 
-                '%s@%s' % (self._user, 
-                           self._server.split('//')[1].replace('/', '.')
-                           )
+                cachedir, '%s@%s' % (
+                    self._user, 
+                    self._server.split('//')[1].replace(
+                        '/', '.').replace(':', '_')
+                    )
                 )
         
         self._callback = None
