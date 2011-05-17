@@ -306,8 +306,9 @@ class SearchManager(object):
     def __init__(self, interface):
         self._intf = interface
 
-    @check_entry
     def _save_search(self, row, columns, constraints, name, desc, sharing):
+        self._intf._get_entry_point()
+
         name = name.replace(' ', '_')
         if sharing == 'private':
             users = [self._intf._user]
@@ -360,10 +361,11 @@ class SearchManager(object):
                           name, description, sharing)
 
 
-    @check_entry
     def saved(self, with_description=False):
         """ Returns the names of accessible saved search on the server.
         """
+        self._intf._get_entry_point()
+
         jdata = self._intf._get_json(
             '%s/search/saved?format=json' % self._intf._entry)
 
@@ -380,7 +382,6 @@ class SearchManager(object):
                     for name in get_column(jdata, 'brief_description')
                     if not name.startswith('template_')]
     
-    @check_entry
     def get(self, name, out_format='results'):
         """ Returns the results of the query saved on the XNAT server or
             the query itself to know what it does.
@@ -396,6 +397,8 @@ class SearchManager(object):
                     - xml to download the XML document defining the search
                     - query to get the pyxnat representation of the search
         """
+        self._intf._get_entry_point()
+
         jdata = self._intf._get_json(
             '%s/search/saved?format=json' % self._intf._entry)
         
@@ -430,11 +433,11 @@ class SearchManager(object):
                          headers
                          )
 
-
-    @check_entry
     def delete(self, name):
         """ Removes the search from the server.
         """
+        self._intf._get_entry_point()
+
         jdata = self._intf._get_json(
             '%s/search/saved?format=json' % self._intf._entry)
         
@@ -449,6 +452,33 @@ class SearchManager(object):
 
     def save_template(self, name, row=None, columns=[], 
                       constraints=[], sharing='private', description=''):
+        """
+            Define and save a search template. Same as the save method, but
+            the values in the constraints are used as keywords for value
+            replacement when using the template.
+
+            Parameters
+            ----------
+            name: string
+                Name under which the template is save in XNAT. A 'template_' is
+                prepended to the name so that it appear clearly as a template
+                on the web interface.
+            row: string
+                Datatype from `Interface.inspect.datatypes()`.
+                Usually ``xnat:subjectData``
+            columns: list
+                List of data fields from 
+                `Interface.inspect.datatypes('*', '*')`
+            constraints: list
+                See also: `Search.where()`, values are keywords for the template
+            sharing: string | list
+                Define by whom the query is visible.
+                If sharing is a string it may be either 
+                ``private`` or ``public``.
+                Otherwise a list of valid logins for the XNAT server 
+                from `Interface.users()`.            
+        """
+
 
         def _make_template(query):
             query_template = []
@@ -475,8 +505,11 @@ class SearchManager(object):
             'template_%s' % name, description, sharing
             )
 
-    @check_entry
     def saved_templates(self, with_description=False):
+        """ Returns the names of accessible saved search templates on the server.
+        """
+        self._intf._get_entry_point()
+
         jdata = self._intf._get_json(
             '%s/search/saved?format=json' % self._intf._entry)
 
@@ -496,7 +529,6 @@ class SearchManager(object):
                     for name in get_column(jdata, 'brief_description')
                     if name.startswith('template_')]
             
-    @check_entry
     def use_template(self, name, values):
         """
             Parameters
@@ -506,7 +538,17 @@ class SearchManager(object):
             values: dict
                 Values to put in the template, get the valid keys using
                 the get_template method.
+
+            Examples
+            --------
+            >>> interface.manage.search.use_template(name, 
+                          {'subject_id':'ID',
+                           'age':'32'
+                           })
+
         """
+        self._intf._get_entry_point()
+
         bundle = self.get_template(name, True) % values
 
         # have to remove search_id information before re-posting it
@@ -528,8 +570,21 @@ class SearchManager(object):
                          headers
                          )
 
-    @check_entry
     def get_template(self, name, as_xml=False):
+        """ Get a saved template, either as an xml document, or as a pyxnat
+            representation, with the keys to be used in the template
+            between the parentheses in %()s.
+
+            Parameters
+            ----------
+            name: str
+                Name under which the template is saved
+            as_xml: boolean
+                If True returns an XML document, else return a list of 
+                constraints. Defaults to False.
+        """
+        self._intf._get_entry_point()
+
         jdata = self._intf._get_json(
             '%s/search/saved?format=json' % self._intf._entry)
         
@@ -552,6 +607,8 @@ class SearchManager(object):
             return _query['row'], _query['columns'], _query['constraints']
 
     def delete_template(self, name):
+        """ Deletes a search template.
+        """
         self.delete('template_%s' % name)
 
     def eval_rpn_exp(self, rpnexp):
@@ -594,7 +651,6 @@ class Search(object):
         self._columns = columns
         self._intf = interface
 
-    @check_entry
     def where(self, constraints=None, template=None, query=None):
         """ Triggers the search.
 
@@ -617,6 +673,7 @@ class Search(object):
                 basically a list of dictionaries that has additional 
                 helper methods.
         """
+        self._intf._get_entry_point()
 
         if isinstance(constraints, (str, unicode)):
             constraints = rpn_contraints(constraints)

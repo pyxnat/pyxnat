@@ -608,13 +608,14 @@ class CObject(object):
                     if fnmatch(eid, self._pattern):
                         klass_name = uri_last(self._cbase
                                               ).rstrip('s').title()
-                        Klass = globals()[klass_name]
+                        Klass = globals().get(klass_name, self._intf.__class__)
                         eobj = Klass(join_uri(self._cbase, eid), self._intf)
                         if self._nested is None:
                             self._run_callback(self, eobj)
                             yield eobj
                         else:
-                            Klass = globals()[self._nested.title()]
+                            Klass = globals().get(self._nested.title(), 
+                                                  self._intf.__class__)
                             for subeobj in Klass(
                                 cbase=join_uri(eobj._uri, self._nested),
                                 interface=self._intf, 
@@ -635,13 +636,15 @@ class CObject(object):
         elif self._ctype == 'cobjecteuris':
             for uri in self._cbase:
                 try:
-                    Klass = globals()[uri_nextlast(uri).rstrip('s').title()]
+                    Klass = globals().get(uri_nextlast(uri).rstrip('s').title(),
+                                          self._intf.__class__)
                     eobj = Klass(uri, self._intf)
                     if self._nested is None:
                         self._run_callback(self, eobj)
                         yield eobj
                     else:
-                        Klass = globals()[self._nested.title()]
+                        Klass = globals().get(self._nested.title(), 
+                                              self._intf.__class__)
                         for subeobj in Klass(
                             cbase=join_uri(eobj._uri, self._nested),
                             interface=self._intf, 
@@ -666,7 +669,8 @@ class CObject(object):
                         self._run_callback(self, eobj)
                         yield eobj
                     else:
-                        Klass = globals()[self._nested.rstrip('s').title()]
+                        Klass = globals().get(self._nested.rstrip('s').title(), 
+                                              self._intf.__class__)
                         for subeobj in Klass(
                             cbase=join_uri(eobj._uri, self._nested),
                             interface=self._intf, 
@@ -691,7 +695,8 @@ class CObject(object):
                         self._run_callback(self, eobj)
                         yield eobj
                     else:
-                        Klass = globals()[self._nested.title()]
+                        Klass = globals().get(self._nested.title(), 
+                                              self._intf.__class__)
                         for subeobj in Klass(
                             cbase=join_uri(eobj._uri, self._nested),
                             interface=self._intf, 
@@ -717,7 +722,8 @@ class CObject(object):
                             self._run_callback(self, eobj)
                             yield eobj
                         else:
-                            Klass = globals()[cobj._nested.title()]
+                            Klass = globals().get(cobj._nested.title(), 
+                                                  self._intf.__class__)
 
                             for subeobj in Klass(
                                 cbase=join_uri(eobj._uri, cobj._nested),

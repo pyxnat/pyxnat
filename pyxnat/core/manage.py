@@ -58,8 +58,9 @@ class ProjectManager(object):
         This functionalities are also available through `Project` objects.
     """
 
-    @check_entry
     def __init__(self, project_id, interface):
+        self._intf._get_entry_point()
+
         self._intf = interface
         project = Project('%s/projects/%s' % (self._intf._entry, 
                                               project_id

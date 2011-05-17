@@ -64,7 +64,6 @@ class Inspector(object):
         if tick is not None:
             self._tick = tick
 
-    @check_entry        
     def datatypes(self, pattern='*', fields_pattern=None):
         """ Discovers the datatypes and datafields of the database.
 
@@ -81,6 +80,7 @@ class Inspector(object):
             -------
             list : datatypes or datafields depending on the argument usage.
         """
+        self._intf._get_entry_point()
 
         search_els = self._get_json('%s/search/elements?format=json' % 
                                         self._intf._entry)
@@ -97,8 +97,8 @@ class Inspector(object):
 
             return fields
 
-    @check_entry
     def _datafields(self, datatype, pattern='*', prepend_type=True):
+        self._intf._get_entry_point()
 
         search_fds = self._get_json('%s/search/elements/%s?format=json'
                                         % (self._intf._entry, datatype)
@@ -153,10 +153,11 @@ class Inspector(object):
         return self._resource_types('scan')
 
 
-    @check_entry
     def field_values(self, field_name):
         """ Look for the values a specific datafield takes in the database. 
         """
+        self._intf._get_entry_point()
+
         search_tbl = Search(field_name.split('/')[0], 
                             [field_name], self._intf
                             )
@@ -169,23 +170,25 @@ class Inspector(object):
                          ])
                     )
 
-    @check_entry
     def project_values(self):
         """ Look for the values a the project level in the database.
 
             .. note::
                 Is equivalent to interface.select.projects().get()
         """
+        self._intf._get_entry_point()
+
         return get_column(self._get_json(
                 '%s/projects' % self._intf._entry), 'ID')
 
-    @check_entry
     def subject_values(self, project=None):
         """ Look for the values a the subject level in the database.
 
             .. note::
                 Is equivalent to interface.select('//subjects').get()
         """
+        self._intf._get_entry_point()
+
         uri = '%s/subjects?columns=ID' % self._intf._entry
 
         if project is not None:
@@ -193,7 +196,6 @@ class Inspector(object):
 
         return get_column(self._get_json(uri), 'ID')
 
-    @check_entry
     def experiment_values(self, datatype, project=None):
         """ Look for the values a the experiment level for a given datatype
             in the database.
@@ -210,6 +212,8 @@ class Inspector(object):
             project: string
                 Optional. Restrict operation to a project.
         """
+        self._intf._get_entry_point()
+
         uri = '%s/experiments?columns=ID' % self._intf._entry
         if datatype is not None:
             uri += '&xsiType=%s' % datatype
@@ -310,8 +314,9 @@ class Inspector(object):
 
     rest_hierarchy = architecture
 
-    @check_entry
     def _sub_experiment_values(self, sub_exp, project, experiment_type):
+        self._intf._get_entry_point()
+
         values = []
 
         column = '%s/%ss/%s/id' % \
