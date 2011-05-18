@@ -199,7 +199,7 @@ Almost the same interface is available for collection objects::
     through a project that is not its orginial one.
 
 
-Seach templates
+Search templates
 ---------------
 
 PyXNAT is also able to define templates to use with XNAT search engine.
@@ -241,3 +241,36 @@ same way as the templates. It means that you re-use the contraints but not the
 data selection which still changes:
 
      >>> interface.select(...).where(query='saved_name')
+
+Provenance definition
+--------------------
+
+PyXNAT 0.8 introduces a way to store provenance i.e. to describre the steps that 
+were performed on an initial data to produce this one. Reconstructions and 
+assessors only can be annotated with provenace information:
+
+    >>> prov = {'program':'young',
+                'timestamp':'2011-03-01T12:01:01.897987', 
+                'user':'angus', 
+                'machine':'war', 
+                'platform':'linux',
+                }
+    >>> element.provenance.attach(prov)
+    >>> element.provenance.get()
+
+The provenance attach method adds new steps with each call, unless the overwrite 
+parameter is set to True. The following keywords for the provenance dictionnay are available:
+
+    - program
+    - program_version
+    - program_arguments
+    - timestamp
+    - cvs
+    - user
+    - machine
+    - platform
+    - platform_version
+    - compiler
+    - compiler_version
+    - library
+    - library_version
