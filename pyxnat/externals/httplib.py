@@ -211,6 +211,9 @@ responses = {
 # maximal amount of data to read at one time in _safe_read
 MAXAMOUNT = 1048576
 
+read_callback = None
+send_callback = None
+
 class HTTPMessage(mimetools.Message):
 
     def addheader(self, key, value):
@@ -515,16 +518,13 @@ class HTTPResponse:
             return ''
 
         if self.chunked:
-            print 'read', amt
             return self._read_chunked(amt)
 
         if amt is None:
             # unbounded read
             if self.length is None:
-                print 'read', 'no length'
                 s = self.fp.read()
             else:
-                print 'read', self.length
                 s = self._safe_read(self.length)
                 self.length = 0
             self.close()        # we read everything
@@ -534,8 +534,6 @@ class HTTPResponse:
             if amt > self.length:
                 # clip the read to the "end of response"
                 amt = self.length
-
-        print 'read', amt
 
         # we do not use _safe_read() here because this may be a .will_close
         # connection, and the user is reading more bytes than will be provided
@@ -617,12 +615,12 @@ class HTTPResponse:
         """
         s = []
 
+        total = amt
+
         while amt > 0:
-            print 'read safe', amt, self.chunk_left, 
-            if not isinstance(self.chunk_left, str):
-                print int(amt or 0) + int(self.chunk_left or 0)
-            else:
-                print 'undefined'
+
+            if read_callback is not None:
+                read_callback(total=total, read=total-amt)
 
             chunk = self.fp.read(min(amt, MAXAMOUNT))
             if not chunk:
@@ -742,6 +740,7 @@ class HTTPConnection:
 
     def send(self, str):
         """Send `str' to the server."""
+
         if self.sock is None:
             if self.auto_open:
                 self.connect()
@@ -756,16 +755,24 @@ class HTTPConnection:
         if self.debuglevel > 0:
             print "send:", repr(str)
         try:
+            le = len(str)
             blocksize=8192
-            if hasattr(str,'read') and not isinstance(str, array):
-                if self.debuglevel > 0: print "sendIng a read()able"
+            if not (hasattr(str,'read') or isinstance(str, array)):
+                str = StringIO(str)
+
+            if self.debuglevel > 0: print "sendIng a read()able"
+
+            data=str.read(blocksize)
+
+            sent = 0
+            while data:
+                sent += blocksize
+#                print sent
+                if send_callback is not None:
+                    send_callback(total=le, sent=sent)
+                self.sock.sendall(data)
                 data=str.read(blocksize)
-                while data:
-                    print 'send', len(data)
-                    self.sock.sendall(data)
-                    data=str.read(blocksize)
-            else:
-                self.sock.sendall(str)
+
         except socket.error, v:
             if v[0] == 32:      # Broken pipe
                 self.close()
