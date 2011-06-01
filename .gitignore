@@ -1,0 +1,5 @@
+*.pyc
+MANIFEST
+pyxnat.egg-info/
+build/
+dist/
