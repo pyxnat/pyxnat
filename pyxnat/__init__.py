@@ -47,7 +47,7 @@ ____
 
 """
 
-__version__ = '0.7.0'
+__version__ = '0.8.0'
 
 from .core import Interface
 from .core import SearchManager

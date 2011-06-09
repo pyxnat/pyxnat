@@ -67,6 +67,12 @@ The `Attributes` class
 .. autoclass:: pyxnat.core.attributes.EAttrs
     :members:
 
+The `Provenance` class
+~~~~~~~~~~~~~~~~~~~~~~
+
+.. autoclass:: pyxnat.core.provenance.Provenance
+    :members:
+
 The `Users` class
 ~~~~~~~~~~~~~~~~~
 

@@ -245,9 +245,9 @@ data selection which still changes:
 Provenance definition
 --------------------
 
-PyXNAT 0.8 introduces a way to store provenance i.e. to describre the steps that 
-were performed on an initial data to produce this one. Reconstructions and 
-assessors only can be annotated with provenace information:
+PyXNAT 0.8 introduces a way to store provenance i.e. to describe the steps 
+that were performed on an initial data to produce this one. Reconstructions
+and assessors only can be annotated with provenace information:
 
     >>> prov = {'program':'young',
                 'timestamp':'2011-03-01T12:01:01.897987', 
@@ -257,6 +257,7 @@ assessors only can be annotated with provenace information:
                 }
     >>> element.provenance.attach(prov)
     >>> element.provenance.get()
+    >>> element.dettach()
 
 The provenance attach method adds new steps with each call, unless the overwrite 
 parameter is set to True. The following keywords for the provenance dictionnay are available:
@@ -272,5 +273,3 @@ parameter is set to True. The following keywords for the provenance dictionnay a
     - platform_version
     - compiler
     - compiler_version
-    - library
-    - library_version
