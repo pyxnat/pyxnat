@@ -229,7 +229,6 @@ class Select(object):
 
         self._intf = interface
 
-    @check_entry
     def project(self, ID):
         """ Access a particular project.
 
@@ -238,10 +237,11 @@ class Select(object):
             ID: string
                 ID of the project.
         """
+        self._intf._get_entry_point()
+
         return globals()['Project'](
             '%s/projects/%s' % (self._intf._entry, ID), self._intf)
 
-    @check_entry
     def projects(self, id_filter='*'):
         """ Returns the list of all visible projects for the server.
 
@@ -250,21 +250,24 @@ class Select(object):
             id_filter: string
                 Name pattern to filter the returned projects.
         """
+        self._intf._get_entry_point()
+
         return globals()['Projects'](
             '%s/projects' % self._intf._entry, self._intf, id_filter)
 
-    @check_entry
     def tag(self, name):
+        self._intf._get_entry_point()
+
         return self._intf.manage.tags.get(name).references()
 
-    @check_entry
     def tags(self):
+        self._intf._get_entry_point()
+
         return self._intf.manage.tags()
 
     def __repr__(self):
         return '<Root Object>'
 
-    @check_entry
     def __call__(self, datatype_or_path, columns=[]):
         """ Select clause to specify what type of data is to be returned.
 
@@ -282,6 +285,8 @@ class Select(object):
                 that has to be returned. Use the method `where` on the 
                 `Search` object to trigger a search on the database.
         """
+        self._intf._get_entry_point()
+
         if datatype_or_path.startswith('/tag'):
             if len(datatype_or_path.split('/')) == 3:
                 return self.tag(datatype_or_path.split('/')[-1])

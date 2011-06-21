@@ -165,8 +165,6 @@ class Provenance(object):
             - platform_version
             - compiler
             - compiler_version
-            - library
-            - library_version
         
         Examples
         --------
@@ -178,6 +176,7 @@ class Provenance(object):
                         }
             >>> element.provenance.attach(prov)
             >>> element.provenance.get()
+            >>> element.dettach()
     """
 
     def __init__(self, eobject):

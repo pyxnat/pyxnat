@@ -1,6 +1,26 @@
 Latest changes
 ===============
 
+Release 0.8.0
+----------------
+
+    * Compatible with XNAT 1.5
+
+    * New features:
+        - provenance annotation on assessors and recontructions
+	- search templates
+	- callback system to monitor data streams to and from the server
+
+    * Improvements:
+        - support for proxies in the Interface object
+	- a description can be added when a search is saved on the server
+	- python strings can be uploaded and saved just like files
+
+    * Bug fixes including:
+        - improved unicode support for uploaded files
+	- solved cache issue on Windows
+	- a major bug in the Collection.where method
+
 Release 0.7.0
 ----------------
 

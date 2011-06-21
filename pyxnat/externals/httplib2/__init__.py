@@ -41,8 +41,8 @@ import calendar
 import time
 import random
 
-import httplib
-#from .. import httplib
+#import httplib
+from .. import httplib
 
 # remove depracated warning in python2.6
 try:

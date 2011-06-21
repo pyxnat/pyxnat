@@ -33,39 +33,43 @@ class Users(object):
         """
         self._intf = interface
 
-
-    @check_entry
     def __call__(self):
         """ Returns the list of all registered users on the server.
         """
+        self._intf._get_entry_point()
+
         return JsonTable(self._intf._get_json('%s/users' % self._intf._entry)
                          ).get('login', always_list=True)
 
-    @check_entry
     def firstname(self, login):
         """ Returns the firstname of the user.
         """
+        self._intf._get_entry_point()
+
         return JsonTable(self._intf._get_json('%s/users' % self._intf._entry)
                          ).where(login=login)['firstname']
 
-    @check_entry
     def lastname(self, login):
         """ Returns the lastname of the user.
         """
+        self._intf._get_entry_point()
+
         return JsonTable(self._intf._get_json('%s/users' % self._intf._entry)
                          ).where(login=login)['lastname']
 
-    @check_entry
     def id(self, login):
         """ Returns the id of the user.
         """
+        self._intf._get_entry_point()
+
         return JsonTable(self._intf._get_json('%s/users' % self._intf._entry)
                          ).where(login=login)['xdat_user_id']
 
-    @check_entry
     def email(self, login):
         """ Returns the email of the user.
         """
+        self._intf._get_entry_point()
+
         return JsonTable(self._intf._get_json('%s/users' % self._intf._entry)
                          ).where(login=login)['email']
 

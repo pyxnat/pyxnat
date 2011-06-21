@@ -72,7 +72,7 @@ class Interface(object):
                 downloaded files)
                 If no path is provided, a platform dependent temp dir is 
                 used.
-           config: string
+v           config: string
                Reads a config file in json to get the connection parameters.
                If a config file is specified, it will be used regardless of
                other parameters that might have been given.
@@ -98,10 +98,11 @@ class Interface(object):
             self._pwd = password
 
             self._cachedir = os.path.join(
-                cachedir, 
-                '%s@%s' % (self._user, 
-                           self._server.split('//')[1].replace('/', '.')
-                           )
+                cachedir, '%s@%s' % (
+                    self._user, 
+                    self._server.split('//')[1].replace(
+                        '/', '.').replace(':', '_')
+                    )
                 )
         
         self._callback = None
@@ -116,6 +117,7 @@ class Interface(object):
         self._last_mode = 'online'
 
         self._jsession = 'authentication_by_credentials'
+        self._connect_extras = {}
         self._connect()
 
         self.inspect = Inspector(self)
@@ -144,14 +146,26 @@ class Interface(object):
                 self._entry = '/data'
             except:
                 pass
-
-    def _connect(self):
+            
+    def _connect(self, **kwargs):
         """ Sets up the connection with the XNAT server.
+
+            Parameters
+            ----------
+            kwargs: dict
+                Can be used to pass additional arguments to
+                the Http constructor. See the httplib2 documentation
+                for details. http://code.google.com/p/httplib2/
         """
 
+        if kwargs != {}:
+            self._connect_extras = kwargs
+        else:
+            kwargs = self._connect_extras
+        
         if DEBUG:   
             httplib2.debuglevel = 2
-        self._http = httplib2.Http(HTCache(self._cachedir, self))
+        self._http = httplib2.Http(HTCache(self._cachedir, self), **kwargs)
         self._http.add_credentials(self._user, self._pwd)
 
     def _exec(self, uri, method='GET', body=None, headers=None):

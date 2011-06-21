@@ -7,10 +7,10 @@ Getting the latest code
 
 To get the latest code using git, simply type::
 
-    git clone git://github.com/schwarty/pyxnat.git
+    git clone git://github.com/pyxnat/pyxnat.git
 
 If you don't have git installed, you can download a zip or tarball
-of the latest code: http://github.com/schwarty/pyxnat/archives/master
+of the latest code: http://github.com/pyxnat/pyxnat/archives/master
 
 Or the lastest stable version: http://pypi.python.org/pypi/pyxnat
 
@@ -28,7 +28,7 @@ Workflow to contribute
 
 To contribute to pyxnat, first create an account on `github
 <http://github.com/>`_. Once this is done, fork the `pyxnat repository
-<http://github.com/schwarty/pyxnat>`_ to have you own repository,
+<http://github.com/pyxnat/pyxnat>`_ to have you own repository,
 clone it using 'git clone' on the computers where you want to work. Make
 your changes in your clone, push them to your github account, test them
 on several computer, and when you are happy with them, send a pull

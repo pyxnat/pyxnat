@@ -11,7 +11,7 @@ features:
 .. [#] XNAT home: http://www.xnat.org/
 .. [#] pyxnat documentation: http://packages.python.org/pyxnat/
 .. [#] pyxnat download: http://pypi.python.org/pypi/pyxnat#downloads
-.. [#] pyxnat sources: http://github.com/schwarty/pyxnat
+.. [#] pyxnat sources: http://github.com/pyxnat/pyxnat
 
 ____
 
@@ -47,7 +47,7 @@ ____
 
 """
 
-__version__ = '0.7.0'
+__version__ = '0.8.0'
 
 from .core import Interface
 from .core import SearchManager
