@@ -12,6 +12,7 @@ import codecs
 from fnmatch import fnmatch
 
 from ..externals import simplejson as json
+from lxml import etree
 
 from .uriutil import join_uri, translate_uri, uri_segment
 from .uriutil import uri_last, uri_nextlast
@@ -268,6 +269,33 @@ class EObject(object):
             EObject.label
             EObject.datatype
         """
+        if params.has_key('xml') and os.path.exists(params.get('xml')):
+
+            f = codecs.open(params.get('xml'))
+            doc = f.read()
+            f.close()
+
+            try:
+                doc_tree = etree.fromstring(doc)
+                doc_tree.xpath('//*')[0].set('label', uri_last(self._uri))
+                doc = etree.tostring(doc_tree)
+            except:
+                pass
+
+            body, content_type = httputil.file_message(
+                doc, 'text/xml', 'data.xml', 'data.xml')
+
+            _uri = self._uri
+            _uri += '?allowDataDeletion=true'
+
+            self._intf._exec(_uri, 
+                             method='PUT', 
+                             body=body,
+                             headers={'content-type':content_type}
+                             )
+
+            return self
+
         datatype = params.get(uri_nextlast(self._uri))
         struct = self._intf._struct
 
