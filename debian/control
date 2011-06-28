@@ -2,11 +2,10 @@ Source: pyxnat
 Section: python
 Priority: extra
 Maintainer: Yannick Schwartz <yannick.schwartz@cea.fr>
-Build-Depends: debhelper (>= 7.2.18), 
+Build-Depends: debhelper (>= 7.2.18),
 	       python-all,
 	       python-lxml,
-	       python-simplejson
-	       python-sphinx,
+	       python-simplejson,
 	       python-nose
 Standards-Version: 3.9.2
 Homepage: http://packages.python.org/pyxnat/
