@@ -133,3 +133,9 @@ def get_nsmap(node):
 
     return nsmap
 
+def klassName(self):
+    """
+    Return the name of this class without qualification.
+    eg. If the class name is "x.y.class" return only "class"
+    """
+    return self.__class__.__name__.split('.')[-1]
