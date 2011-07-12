@@ -1,4 +1,4 @@
-from ..pyxnat import select
+from ..core import select
 
 
 def test_switch_to_singular():

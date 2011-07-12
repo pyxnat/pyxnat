@@ -1,5 +1,5 @@
 from uuid import uuid1
-from ..pyxnat import Interface
+from ..core import Interface
 
 central = Interface('http://central.xnat.org', 'nosetests', 'nosetests')
 

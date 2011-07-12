@@ -1,7 +1,7 @@
 import os
 import tempfile
 
-from ..pyxnat import jsonutil
+from ..core import jsonutil
 
 _csv_example = os.path.join(os.path.dirname(os.path.abspath(__file__)), 
                             'results.csv')
