@@ -4,6 +4,7 @@ from . import schema
 from .search import Search
 from .resources import CObject, Project, Projects # imports used implicitly
 from .uriutil import inv_translate_uri, check_entry
+from .jsonutil import JsonTable
 # from .uriutil import uri_last
 from .errors import ProgrammingError
 
@@ -254,6 +255,74 @@ class Select(object):
 
         return globals()['Projects'](
             '%s/projects' % self._intf._entry, self._intf, id_filter)
+
+    def scans(self, project_id=None, subject_id=None, subject_label=None,
+              experiment_id=None, experiment_label=None,
+              experiment_type='xnat:imageSessionData', 
+              scan_type='xnat:imageScanData',
+              constraints=None
+              ):
+
+        """ Returns a list of all visible scan IDs of the specified type,
+            filtered by optional constraints.
+
+            Parameters
+            ----------
+            project_id: string
+                Name pattern to filter by project ID.
+            subject_id: string
+                Name pattern to filter by subject ID.
+            subject_label: string
+                Name pattern to filter by subject ID.
+            experiment_id: string
+                Name pattern to filter by experiment ID.
+            experiment_label: string
+                Name pattern to filter by experiment ID.
+            experiment_type: string
+                xsi path type; e.g. 'xnat:mrSessionData'
+            scan_type: string
+                xsi path type; e.g. 'xnat:mrScanData', etc.
+            constraints: dict
+                Dictionary of xsi_type (key--) and parameter (--value)
+                pairs by which to filter.
+            """
+
+        if constraints is None:
+            constraints = {}
+
+        uri = '/data/experiments?xsiType=%s' % experiment_type
+
+        if project_id is not None:
+            uri += '&project=%s' % project_id
+
+        if subject_id is not None:
+            uri += '&subject_id=%s' % subject_id
+
+        if subject_label is not None:
+            uri += '&subject_label=%s' % subject_label
+
+        if experiment_id is not None:
+            uri += '&ID=%s' % experiment_id
+
+        if experiment_label is not None:
+            uri += '&label=%s' % experiment_label
+
+        uri += '&columns=ID,project,subject_id,%s/ID' % scan_type
+
+        if constraints != {}:
+            uri += ',' + ','.join(['%s/%s' % (scan_type, field) 
+                                   for field in  constraints.keys()
+                                   ])
+
+        print uri
+
+        c = {}
+
+        [c.setdefault('%s/%s' % (scan_type.lower(), key.lower()), value) 
+         for key, value in constraints.items()
+         ]
+
+        return JsonTable(self._intf._get_json(uri)).where(**c)
 
     def tag(self, name):
         self._intf._get_entry_point()
