@@ -8,87 +8,7 @@ from .users import Users
 from .resources import Project
 from .tags import Tags
 from .uriutil import join_uri, check_entry
-
-from . import schema
-
-def get_element_from_element(rsc_name):
-
-    def getter(self, ID):
-        Element = globals()[rsc_name.title()]
-
-        return Element(join_uri(self._uri, rsc_name + 's', ID), self._intf)
-
-    return getter
-
-def get_element_from_collection(rsc_name):
-
-    def getter(self, ID):
-        Element = globals()[rsc_name.title()]
-        Collection = globals()[rsc_name.title() + 's']
-
-        return Collection([Element(join_uri(eobj._uri, rsc_name + 's', ID), 
-                                   self._intf
-                                   )
-                           for eobj in self
-                           ], 
-                          self._intf
-                          )
-    return getter
-
-def get_collection_from_element(rsc_name):
-
-    def getter(self, id_filter='*'):
-
-        Collection = globals()[rsc_name.title()]
-        return Collection(join_uri(self._uri, rsc_name), 
-                          self._intf, id_filter
-                          )
-
-    return getter
-
-def get_collection_from_collection(rsc_name):
-
-    def getter(self, id_filter='*'):
-        Collection = globals()[rsc_name.title()]
-
-        return Collection(self, self._intf, id_filter, 
-                          rsc_name, self._id_header, self._columns)
-
-    return getter
-
-
-class ElementType(type):
-    def __new__(cls, name, bases, dct):
-        rsc_name = name.lower().split('pre')[1]+'s' \
-            if name.lower().split('pre')[1] in schema.resources_singular \
-            else name.lower().split('pre')[1]
-
-        for child_rsc in schema.resources_tree[rsc_name]:
-            dct[child_rsc] = get_collection_from_element(child_rsc)
-            dct[child_rsc.rstrip('s')] = \
-                get_element_from_element(child_rsc.rstrip('s'))
-
-        return type.__new__(cls, name, bases, dct)
-
-    def __init__(cls, name, bases, dct):
-        super(ElementType, cls).__init__(name, bases, dct)
-
-
-class CollectionType(type):
-    def __new__(cls, name, bases, dct):
-        rsc_name = name.lower().split('pre')[1]+'s' \
-            if name.lower().split('pre')[1] in schema.resources_singular \
-            else name.lower().split('pre')[1]
-
-        for child_rsc in schema.resources_tree[rsc_name]:
-            dct[child_rsc] = get_collection_from_collection(child_rsc)
-            dct[child_rsc.rstrip('s')] = \
-                get_element_from_collection(child_rsc.rstrip('s'))
-
-        return type.__new__(cls, name, bases, dct)
-
-    def __init__(cls, name, bases, dct):
-        super(CollectionType, cls).__init__(name, bases, dct)
+from .jsonutil import JsonTable
 
 
 class GlobalManager(object):
@@ -237,34 +157,55 @@ class PreArchive(object):
     def __init__(self, interface):
         self._intf = interface
 
-    def project(self, project_id):
-        return PreProject('/data/prearchive/projects/%s' % project_id, *
-                          self._intf)
+    def status(self, triple):
+        return JsonTable(
+            self._intf._get_json('/data/prearchive/projects')
+            ).where(
+            project=triple[0], timestamp=triple[1], folderName=triple[2]
+            ).get('status')
 
-    def projects(self):
-        return PreProjects('/data/prearchive/projects')
+    def get(self):
+        return JsonTable(self._intf._get_json('/data/prearchive/projects'), 
+                         ['project', 'timestamp', 'folderName']
+                         ).select(['project', 'timestamp', 'folderName']
+                                  ).as_list()[1:]
+
+    def get_scans(self, triple):
+        return JsonTable(self._intf._get_json(
+                '/data/prearchive/projects/%s/scans' \
+                    % '/'.join(triple)
+                )).get('ID')
+
+    def get_resources(self, triple, scan_id):
+        return JsonTable(self._intf._get_json(
+                '/data/prearchive/projects/%s'
+                '/scans/%s/resources' % ('/'.join(triple), scan_id)
+                )).get('label')
+        
+    def get_files(self, triple, scan_id, resource_id):
+        return JsonTable(self._intf._get_json(
+                '/data/prearchive/projects/%s'
+                '/scans/%s/resources/%s/files' % ('/'.join(triple), 
+                                                  scan_id, 
+                                                  resource_id)
+                )).get('Name')
+        
+    # def project(self, project_id):
+    #     return PreProject('/data/prearchive/projects/%s' % project_id, *
+    #                       self._intf)
+
+    # def projects(self):
+    #     return PreProjects('/data/prearchive/projects')
 
 
-class PreEObject(object):
+class PreProject(object):
     
     def __init__(self, uri, interface):
         self._intf = interface
         self._uri = uri
 
-class PreCObjects(object):
-    
-    def __init__(self, interface):
+class PreProjects(object):
+
+    def __init__(self, uri, interface):
         self._intf = interface
-
-class PreProjects(PreCObjects):
-    __metaclass__ = CollectionType
-        
-class PreProject(PreEObject):
-    __metaclass__ = ElementType
-
-class PreSubjects(PreCObjects):
-    __metaclass__ = CollectionType
-        
-class PreSubject(PreEObject):
-    __metaclass__ = ElementType
-        
+        self._uri = uri
