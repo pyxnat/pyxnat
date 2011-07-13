@@ -9,6 +9,87 @@ from .resources import Project
 from .tags import Tags
 from .uriutil import join_uri, check_entry
 
+from . import schema
+
+def get_element_from_element(rsc_name):
+
+    def getter(self, ID):
+        Element = globals()[rsc_name.title()]
+
+        return Element(join_uri(self._uri, rsc_name + 's', ID), self._intf)
+
+    return getter
+
+def get_element_from_collection(rsc_name):
+
+    def getter(self, ID):
+        Element = globals()[rsc_name.title()]
+        Collection = globals()[rsc_name.title() + 's']
+
+        return Collection([Element(join_uri(eobj._uri, rsc_name + 's', ID), 
+                                   self._intf
+                                   )
+                           for eobj in self
+                           ], 
+                          self._intf
+                          )
+    return getter
+
+def get_collection_from_element(rsc_name):
+
+    def getter(self, id_filter='*'):
+
+        Collection = globals()[rsc_name.title()]
+        return Collection(join_uri(self._uri, rsc_name), 
+                          self._intf, id_filter
+                          )
+
+    return getter
+
+def get_collection_from_collection(rsc_name):
+
+    def getter(self, id_filter='*'):
+        Collection = globals()[rsc_name.title()]
+
+        return Collection(self, self._intf, id_filter, 
+                          rsc_name, self._id_header, self._columns)
+
+    return getter
+
+
+class ElementType(type):
+    def __new__(cls, name, bases, dct):
+        rsc_name = name.lower().split('pre')[1]+'s' \
+            if name.lower().split('pre')[1] in schema.resources_singular \
+            else name.lower().split('pre')[1]
+
+        for child_rsc in schema.resources_tree[rsc_name]:
+            dct[child_rsc] = get_collection_from_element(child_rsc)
+            dct[child_rsc.rstrip('s')] = \
+                get_element_from_element(child_rsc.rstrip('s'))
+
+        return type.__new__(cls, name, bases, dct)
+
+    def __init__(cls, name, bases, dct):
+        super(ElementType, cls).__init__(name, bases, dct)
+
+
+class CollectionType(type):
+    def __new__(cls, name, bases, dct):
+        rsc_name = name.lower().split('pre')[1]+'s' \
+            if name.lower().split('pre')[1] in schema.resources_singular \
+            else name.lower().split('pre')[1]
+
+        for child_rsc in schema.resources_tree[rsc_name]:
+            dct[child_rsc] = get_collection_from_collection(child_rsc)
+            dct[child_rsc.rstrip('s')] = \
+                get_element_from_collection(child_rsc.rstrip('s'))
+
+        return type.__new__(cls, name, bases, dct)
+
+    def __init__(cls, name, bases, dct):
+        super(CollectionType, cls).__init__(name, bases, dct)
+
 
 class GlobalManager(object):
     """ Mainly a container class to provide a clean interface for all
@@ -22,6 +103,7 @@ class GlobalManager(object):
         self.users = Users(self._intf)
         self.tags = Tags(self._intf)
         self.schemas = SchemaManager(self._intf)
+        self.prearchive = PreArchive(self._intf)
 
     def register_callback(self, func):
         """ Defines a callback to execute when collections of resources are 
@@ -149,3 +231,40 @@ class SchemaManager(object):
         if self._trees.has_key(name):
             del self._trees[name]
 
+
+class PreArchive(object):
+
+    def __init__(self, interface):
+        self._intf = interface
+
+    def project(self, project_id):
+        return PreProject('/data/prearchive/projects/%s' % project_id, *
+                          self._intf)
+
+    def projects(self):
+        return PreProjects('/data/prearchive/projects')
+
+
+class PreEObject(object):
+    
+    def __init__(self, uri, interface):
+        self._intf = interface
+        self._uri = uri
+
+class PreCObjects(object):
+    
+    def __init__(self, interface):
+        self._intf = interface
+
+class PreProjects(PreCObjects):
+    __metaclass__ = CollectionType
+        
+class PreProject(PreEObject):
+    __metaclass__ = ElementType
+
+class PreSubjects(PreCObjects):
+    __metaclass__ = CollectionType
+        
+class PreSubject(PreEObject):
+    __metaclass__ = ElementType
+        
