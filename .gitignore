@@ -3,3 +3,6 @@ MANIFEST
 pyxnat.egg-info/
 build/
 dist/
+*.DS_Store*
+.project
+.pydevproject
