@@ -73,3 +73,11 @@ class Users(object):
         return JsonTable(self._intf._get_json('%s/users' % self._intf._entry)
                          ).where(login=login)['email']
 
+
+    def resources(self):
+        """ Returns the resources of the user.
+        """
+        self._intf._get_entry_point()
+
+        print self._intf._get_json(
+            '%s/user/cache/resources' % self._intf._entry)

@@ -8,6 +8,7 @@ from .users import Users
 from .resources import Project
 from .tags import Tags
 from .uriutil import join_uri, check_entry
+from .jsonutil import JsonTable
 
 
 class GlobalManager(object):
@@ -22,6 +23,7 @@ class GlobalManager(object):
         self.users = Users(self._intf)
         self.tags = Tags(self._intf)
         self.schemas = SchemaManager(self._intf)
+        self.prearchive = PreArchive(self._intf)
 
     def register_callback(self, func):
         """ Defines a callback to execute when collections of resources are 
@@ -149,3 +151,61 @@ class SchemaManager(object):
         if self._trees.has_key(name):
             del self._trees[name]
 
+
+class PreArchive(object):
+
+    def __init__(self, interface):
+        self._intf = interface
+
+    def status(self, triple):
+        return JsonTable(
+            self._intf._get_json('/data/prearchive/projects')
+            ).where(
+            project=triple[0], timestamp=triple[1], folderName=triple[2]
+            ).get('status')
+
+    def get(self):
+        return JsonTable(self._intf._get_json('/data/prearchive/projects'), 
+                         ['project', 'timestamp', 'folderName']
+                         ).select(['project', 'timestamp', 'folderName']
+                                  ).as_list()[1:]
+
+    def get_scans(self, triple):
+        return JsonTable(self._intf._get_json(
+                '/data/prearchive/projects/%s/scans' \
+                    % '/'.join(triple)
+                )).get('ID')
+
+    def get_resources(self, triple, scan_id):
+        return JsonTable(self._intf._get_json(
+                '/data/prearchive/projects/%s'
+                '/scans/%s/resources' % ('/'.join(triple), scan_id)
+                )).get('label')
+        
+    def get_files(self, triple, scan_id, resource_id):
+        return JsonTable(self._intf._get_json(
+                '/data/prearchive/projects/%s'
+                '/scans/%s/resources/%s/files' % ('/'.join(triple), 
+                                                  scan_id, 
+                                                  resource_id)
+                )).get('Name')
+        
+    # def project(self, project_id):
+    #     return PreProject('/data/prearchive/projects/%s' % project_id, *
+    #                       self._intf)
+
+    # def projects(self):
+    #     return PreProjects('/data/prearchive/projects')
+
+
+class PreProject(object):
+    
+    def __init__(self, uri, interface):
+        self._intf = interface
+        self._uri = uri
+
+class PreProjects(object):
+
+    def __init__(self, uri, interface):
+        self._intf = interface
+        self._uri = uri
