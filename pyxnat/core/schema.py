@@ -1,20 +1,24 @@
 
 # REST collection resources tree
-resources_tree = {'projects':['subjects', 'resources'],
-            'subjects':['experiments', 'resources'],
-            'experiments':['assessors', 'reconstructions', 'scans', 
-                           'resources'],
-            'assessors':['resources', 'in_resources','out_resources'],
-            'reconstructions':['in_resources','out_resources'],
-            'scans':['resources'],
-            'resources':['files'],
-            'files':[],
-            'in_resources':['files'],
-            'in_files':[],
-            'out_resources':['files'],
-            'out_files':[],
+resources_tree = {
+            'projects'        :['subjects', 'resources'],
+            'subjects'        :['experiments', 'resources'],
+            'experiments'     :['assessors', 'reconstructions', 'scans', 'resources'],
+            'assessors'       :['resources', 'in_resources','out_resources'],
+            'reconstructions' :['in_resources','out_resources'],
+            'scans'           :['resources'],
+            'resources'       :['files'],
+            'files'           :[],
+            'in_resources'    :['files'],
+            'in_files'        :[],
+            'out_resources'   :['files'],
+            'out_files'       :[],
             }
 
+prearc_tree = {'projects'   :['scans'],
+               'scans'      :['resources'],
+               'resources'  :['files']
+               }
 # REST resources that are not natively supported
 extra_resources_tree = {'projects':['assessors', 'scans', 'reconstructions'],
                         'subjects':['assessors', 'scans', 'reconstructions'],
@@ -30,6 +34,8 @@ rest_translation = {'in_resources':'in/resources',
                     'out_resource':'out/resource',
                     'out_file':'out/file',
                     }
+
+
 
 # REST json format <id_header, label_header>
 json = {'projects':['ID', 'ID'],
