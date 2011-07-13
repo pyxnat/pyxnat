@@ -29,6 +29,7 @@ from .cache import md5name
 from .provenance import Provenance
 from . import schema
 from . import httputil
+from . import downloadutils
 
 DEBUG = False
 
@@ -355,7 +356,6 @@ class EObject(object):
 
         if is_xnat_error(output):
             paths = []
-            print output
             for datatype_name, element_name \
                     in parse_put_error_message(output):
 
@@ -511,7 +511,7 @@ class CObject(object):
         self._columns = columns
         self._filters = filters
         self._nested = nested
-
+        
         if isinstance(cbase, basestring):
             self._ctype = 'cobjectcuri'
         elif isinstance(cbase, CObject):
@@ -1365,10 +1365,14 @@ class Resource(EObject):
 
         for member in fzip.namelist():
             old_path = os.path.join(dest_dir, member)
+            print member
+            print member.split('files',1)
             new_path = os.path.join(
                 dest_dir, 
-                uri_last(self._uri), 
-                member.split('files', 1)[1].split(os.sep, 2)[2])
+                uri_last(self._uri)
+                
+                #, member.split('files', 1)[1].split(os.sep, 2)[2]
+                )
 
             if not os.path.exists(os.path.dirname(new_path)):
                 os.makedirs(os.path.dirname(new_path))
@@ -1381,7 +1385,7 @@ class Resource(EObject):
         for extracted in fzip.namelist():
             pth = os.path.join(dest_dir, extracted.split(os.sep, 1)[0])
 
-            if os.path.exists(pth):
+            if os.path.isdir(pth):
                 shutil.rmtree(pth)
 
         os.remove(zip_location)
@@ -1390,14 +1394,17 @@ class Resource(EObject):
             fzip = zipfile.ZipFile(zip_location, 'w')
             arcprefix = os.path.commonprefix(members)
             arcroot = '/%s' % os.path.split(arcprefix.rstrip('/'))[1]
-
             for member in members:
                 fzip.write(member, os.path.join(arcroot, 
                                                 member.split(arcprefix)[1])
                            )
             fzip.close()
-
-            shutil.rmtree(os.path.join(dest_dir, uri_last(self._uri)))
+            unzippedTree = os.path.join(dest_dir, uri_last(self._uri))
+            if os.path.exists(unzippedTree):
+                if os.path.isdir(unzippedTree):
+                    shutil.rmtree(os.path.join(dest_dir, uri_last(self._uri)))
+                else :
+                    os.remove(unzippedTree)
 
         return zip_location if os.path.exists(zip_location) else members
 
@@ -1751,13 +1758,46 @@ class Assessors(CObject):
         for eobj in self:
             eobj.unshare(project)
 
+    def download (self, dest_dir, type="ALL",name=None, extract=False, safe=False):
+        """
+        A wrapper around downloadutils.download(..)
+        """
+        return downloadutils.download(dest_dir, self,type,name, extract, safe)
+        
+    def klassName(self):
+        """
+        A wrapper around schema.klassName(..)
+        """
+        return schema.klassName(self)
 
 class Reconstructions(CObject):
     __metaclass__ = CollectionType
+    def download (self, dest_dir, type="ALL",name=None, extract=False, safe=False):
+        """
+        A wrapper around downloadutils.download(..)
+        """
+        return downloadutils.download(dest_dir, self,type,name, extract, safe)
+        
+    def klassName(self):
+        """
+        A wrapper around schema.klassName(..)
+        """
+        return schema.klassName(self)
 
 class Scans(CObject):
     __metaclass__ = CollectionType
-
+    def download (self, dest_dir, type="ALL",name=None, extract=False, safe=False):
+        """
+        A wrapper around downloadutils.download(..)
+        """
+        return downloadutils.download(dest_dir, self,type,name, extract, safe)
+        
+    def klassName(self):
+        """
+        A wrapper around schema.klassName(..)
+        """
+        return schema.klassName(self)
+        
 class Resources(CObject):
     __metaclass__ = CollectionType
 
@@ -1775,6 +1815,8 @@ class In_Files(Files):
 
 class Out_Files(Files):
     __metaclass__ = CollectionType
+
+## Utility functions for downloading and extracting zip archives
 
 
 def _datatypes_from_query(query):
