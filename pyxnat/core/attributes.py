@@ -139,8 +139,12 @@ class EAttrs(object):
             header = difflib.get_close_matches(path, jdata.headers())[0]
         else:
             header = header[0]
-
-        return jdata.get(header).replace('\s', ' ')
+           
+        replaceSlashS = lambda x : x.replace('\s',' ')
+        if type(jdata.get(header)) == list:
+            return map(replaceSlashS, jdata.get(header))
+        else:
+            return jdata.get(header).replace('\s', ' ')
 
     def mget(self, paths):
         """ Set multiple attributes at once.

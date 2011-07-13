@@ -194,6 +194,8 @@ v           config: string
 
         uri = join_uri(self._server, uri)
 
+        if DEBUG:
+            print uri
         # using session authentication
         headers['cookie'] = self._jsession
         headers['connection'] = 'keep-alive'
@@ -269,7 +271,6 @@ v           config: string
                                                            response.reason
                                                            )
                                              )
-
         return content
 
 
@@ -296,7 +297,7 @@ v           config: string
                 uri += '?format=csv'
 
         content = self._exec(uri, 'GET')
-
+        
         if is_xnat_error(content):
             catch_error(content)
 
