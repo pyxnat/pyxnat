@@ -304,7 +304,6 @@ class EObject(object):
             for uri_pattern in struct.keys():
                 if fnmatch(
                     self._uri.split(self._intf._entry, 1)[1], uri_pattern):
-                    
                     datatype = struct.get(uri_pattern)
                     break
             else:
