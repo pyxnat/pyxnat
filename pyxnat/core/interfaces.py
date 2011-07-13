@@ -371,7 +371,13 @@ v           config: string
             self._server = config['server']
             self._user = config['user']
             self._pwd = config['password']
-            self._cachedir = config['cachedir']
+            self._cachedir = config.get('cachedir', tempfile.gettempdir())
+
+    def version(self):
+        return self._exec('/data/version')
+
+    def set_logging(self, level=0):
+        pass
 
 #     def grab(self, datatype, seq_type=None):
 #         columns = []

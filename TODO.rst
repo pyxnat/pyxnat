@@ -14,3 +14,4 @@
   - provenance
   - templates
 
+* Bug on config file loading
