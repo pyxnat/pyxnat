@@ -14,4 +14,5 @@
   - provenance
   - templates
 
-* Bug on config file loading
+* Add arbitrary scan data on the nosetests project on central to augment the
+  tests for the global scan listing function
