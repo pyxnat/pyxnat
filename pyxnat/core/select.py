@@ -260,6 +260,7 @@ class Select(object):
               experiment_id=None, experiment_label=None,
               experiment_type='xnat:imageSessionData', 
               scan_type='xnat:imageScanData',
+              columns=None,
               constraints=None
               ):
 
@@ -314,6 +315,11 @@ class Select(object):
                                    for field in  constraints.keys()
                                    ])
 
+        if columns is not None:
+            uri += ',' + ','.join(['%s/%s' % (scan_type, field) 
+                                   for field in  constraints.keys()
+                                   ])
+            
         print uri
 
         c = {}

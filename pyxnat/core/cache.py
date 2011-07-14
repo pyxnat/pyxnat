@@ -168,7 +168,7 @@ class HTCache(object):
         if time.gmtime(time.time())[5] % 10 == 0:
             disk_status = self._intf.cache.disk_ready(_cachepath)
 
-            if not disk_status[0]:
+            if not disk_status[0] and self._intf.cache._warn:
                 print 'Warning: %s is %.2f%% full' % \
                     (os.path.dirname(_cachepath), disk_status[1])
 
@@ -257,6 +257,10 @@ class CacheManager(object):
         """
         self._intf = interface
         self._cache = interface._http.cache
+        self._warn = True
+
+    def enable_warnings(self, toggle=True):
+        self._warn = toggle
 
     def clear(self):
         """ Clears all files tracked by pyxnat.
