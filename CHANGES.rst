@@ -10,7 +10,8 @@ Release 0.9.0
       - Prearchive services
       - Batch function for downloading all files related to a scan or an assessor
       - Create element with an XML document
-
+      - New xpath function for EObjects
+      
     * Improvements:
       - Catching authencation errors
       - Toggle option for cache warnings

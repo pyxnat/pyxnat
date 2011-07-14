@@ -82,6 +82,9 @@ v           config: string
 
         self._interactive = False
 
+        if not all([server, user, password]) and not config:
+            self._interactive = True
+
         if all(arg is None
                for arg in [server, user, password, config]):
 
@@ -101,9 +104,6 @@ v           config: string
                         '/', '.').replace(':', '_')
                     )
                 )
-
-        elif not all([server, user, password]) and not config:
-            self._interactive = True
 
         elif config is not None:
             self.load_config(config)
