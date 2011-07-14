@@ -157,9 +157,6 @@ v           config: string
 
         if self._interactive:
             self._get_entry_point()
-            self._jsession = self._exec('%s/JSESSION' % self._entry)
-            if is_xnat_error(self._jsession):
-                catch_error(self._jsession)
 
         self.inspect()
 
@@ -168,10 +165,14 @@ v           config: string
             # /REST for XNAT 1.4, /data if >=1.5
             self._entry = '/REST'
             try:
-                self._exec('/data/JSESSION', 'HEAD')
+                self._jsession = self._exec('/data/JSESSION')
                 self._entry = '/data'
-            except:
-                pass
+
+                if is_xnat_error(self._jsession):
+                    catch_error(self._jsession)
+
+            except Exception, e:
+                raise e
             
     def _connect(self, **kwargs):
         """ Sets up the connection with the XNAT server.
