@@ -395,6 +395,11 @@ class EObject(object):
         """
         return self._intf._exec(self._uri+'?format=xml', 'GET')
 
+    def xpath(self, xpath):
+        root = etree.fromstring(self.get())
+
+        return root.xpath(xpath, namespaces=root.nsmap)
+
     def parent(self):
         uri = uri_grandparent(self._uri)
         Klass = globals()[uri_nextlast(uri).title().rsplit('s', 1)[0]]
