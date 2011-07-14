@@ -68,6 +68,22 @@ def findToken(tok,line):
     else:
         return (splitString[0],splitString[1])
 
+#[a] -> [a]
+#str -> str
+def tail(xs):
+    l = list(xs)
+    if len(l) == 1:
+        return []
+    else:
+        tmp = []
+        for i in range(len(l)):
+            if i != 0:
+                tmp.append(l[i])
+        if type(xs) == str:
+            return "".join(tmp)
+        else:
+            return tmp
+ 
 ## Tests
 def findPlusLineTest():
     print "Testing findPlusLine"
@@ -77,6 +93,12 @@ def findPlusLineTest():
     assert(findPlusLine(test2) == None)
     test3 = []
     assert(findPlusLine(test3) == None)
+
+def tailTest():
+    assert(tail([1,2,3]) == [2,3])
+    assert(tail([]) == [])
+    assert(tail("hello world") == "ello world")
+    assert(tail("") == "")
 
 def findTokenTest():
     print "Testing findToken"
