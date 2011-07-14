@@ -15,6 +15,8 @@ from .uriutil import join_uri
 from .jsonutil import csv_to_json
 from .errors import is_xnat_error
 from .errors import catch_error
+from . import xpass
+
 
 DEBUG = False
 
@@ -78,10 +80,34 @@ v           config: string
                other parameters that might have been given.
         """
 
-        self._interactive = not all([server, user, password]) and not config
+        self._interactive = False
 
-        if config is not None:
+        if all(arg is None
+               for arg in [server, user, password, config]):
+
+            connection_args = xpass.readXnatPass(xpass.path())
+
+            if connection_args is None:
+                raise Exception('XNAT configuration file not found '
+                                'or formated incorrectly.')
+
+            self._server = connection_args['host']
+            self._user = connection_args['u']
+            self._pwd = connection_args['p']
+            self._cachedir = os.path.join(
+                cachedir, '%s@%s' % (
+                    self._user, 
+                    self._server.split('//')[1].replace(
+                        '/', '.').replace(':', '_')
+                    )
+                )
+
+        elif not all([server, user, password]) and not config:
+            self._interactive = True
+
+        elif config is not None:
             self.load_config(config)
+
         else:
             if server is None:
                 self._server = raw_input('Server: ')
