@@ -255,8 +255,11 @@ class PreArchive(object):
                 )).get('Name')
     
     """
-    Move session from one project to another in the prearchive. This
-    does *not* archive a session.
+    Move multiple sessions to a project in the prearchive asynchronously.
+    If only one session is it is done now.
+    
+    This does *not* archive a session.
+
     Parameters
     ----------
        uris - a list of session uris
@@ -264,9 +267,13 @@ class PreArchive(object):
     """
     def move (self, uris, new_project):
         add_src = lambda u: urllib.urlencode({'src':u})
+
+        async = len(uris) > 1 and 'true' or 'false'
+        print async
+
         post_body = '&'.join ((map(add_src,uris))
                             + [urllib.urlencode({'newProject':new_project})]
-                            + [urllib.urlencode({'async':'false'})])
+                            + [urllib.urlencode({'async':async})])
         
         request_uri = '/data/services/prearchive/move?format=csv'
         return self._intf._exec(request_uri ,'POST', post_body,
