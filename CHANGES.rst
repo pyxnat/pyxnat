@@ -1,6 +1,22 @@
 Latest changes
 ===============
 
+Release 0.9.0
+----------------
+
+    * New features:
+      - Global scan listing function: interface.select.scans()
+      - Support for XNAT configuration file format
+      - Prearchive services
+      - Batch function for downloading all files related to a scan or an assessor
+      - Create element with an XML document
+
+    * Improvements:
+      - Catching authencation errors
+      - Toggle option for cache warnings
+      - Description for search templates is displayed
+      
+
 Release 0.8.0
 ----------------
 
