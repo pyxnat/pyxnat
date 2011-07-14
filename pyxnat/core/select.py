@@ -311,20 +311,14 @@ class Select(object):
         uri += '&columns=ID,project,subject_id,%s/ID' % scan_type
 
         if constraints != {}:
-            uri += ',' + ','.join(['%s/%s' % (scan_type, field) 
-                                   for field in  constraints.keys()
-                                   ])
+            uri += ',' + ','.join(constraints.keys())
 
         if columns is not None:
-            uri += ',' + ','.join(['%s/%s' % (scan_type, field) 
-                                   for field in  constraints.keys()
-                                   ])
+            uri += ',' + ','.join(columns)
             
-        print uri
-
         c = {}
 
-        [c.setdefault('%s/%s' % (scan_type.lower(), key.lower()), value) 
+        [c.setdefault(key.lower(), value) 
          for key, value in constraints.items()
          ]
 
