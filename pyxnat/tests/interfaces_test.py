@@ -1,7 +1,7 @@
 from uuid import uuid1
 from ..pyxnat import Interface
 
-central = Interface('http://central.xnat.org', 'nosetests', 'nosetests')
+central = Interface('https://central.xnat.org', 'nosetests', 'nosetests')
 
 def test_simple_object_listing():
     assert isinstance(central.select.projects().get(), list)

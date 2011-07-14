@@ -298,6 +298,10 @@ v           config: string
                                                            response.reason
                                                            )
                                              )
+
+        if is_xnat_error(content):
+            catch_error(content)
+
         return content
 
 

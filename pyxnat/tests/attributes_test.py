@@ -5,7 +5,7 @@ from ..pyxnat import Interface
 
 _modulepath = os.path.dirname(os.path.abspath(__file__))
 
-central = Interface('http://central.xnat.org', 'nosetests', 'nosetests')
+central = Interface('https://central.xnat.org', 'nosetests', 'nosetests')
 
 sid = uuid1().hex
 eid = uuid1().hex
@@ -24,7 +24,9 @@ def test_fancy_resource_create():
 
     experiment.create(**field_data) 
 
+    print subject.id()
     assert subject.id() == 'TEST_%s' % sid
+    print experiment.id()
     assert experiment.id() == 'TEST_%s' % eid
 
     globals()['subject'] = central.select.project('nosetests'

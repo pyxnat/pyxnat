@@ -3,16 +3,16 @@ from uuid import uuid1
 from ..pyxnat import Interface
 from ..pyxnat import jsonutil
 
-central = Interface('http://central.xnat.org', 'nosetests', 'nosetests')
+central = Interface('https://central.xnat.org', 'nosetests', 'nosetests')
 search_name = uuid1().hex
 
 def test_datatypes():
     assert 'xnat:subjectData' in central.inspect.datatypes()
 
 def test_datafields():
-    assert 'xnat:subjectData/SUBJECT_ID' in \
+    assert 'xnat:subjectData/DOB' in \
                     central.inspect.datatypes('xnat:subjectData')
-    assert 'xnat:subjectData/SUBJECT_ID' in \
+    assert 'xnat:subjectData/DOB' in \
                     central.inspect.datatypes('xnat:subjectData', '*')
 
 def test_fieldvalues():
