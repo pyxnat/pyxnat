@@ -1139,8 +1139,21 @@ class Project(EObject):
                                        ).items()
                     )
 
-    def add_custom_variables(self, custom_variables, allowdataDeletion=False):
+    def add_custom_variables(self, custom_variables, allowDataDeletion=False):
         """Adds a custom variable to a specified group
+
+        Parameters
+        ----------
+
+        custom_variables: a dictionary
+        allowDataDeletion : a boolean
+
+        Examples
+        --------
+
+        >>> variables = {'Subjects' : {'newgroup' : {'foo' : 'string', 'bar' : 'int'}}}
+        >>> project.add_custom_variables(variables)
+
         """
         tree = lxml.etree.fromstring(self.get())
         update = False
@@ -1200,13 +1213,16 @@ class Project(EObject):
                                                        'cust.xml',
                                                        'cust.xml')
             uri = self._uri
-            if allowdataDeletion:
+            if allowDataDeletion:
                 uri = self._uri + '?allowDataDeletion=true'
             self._intf._exec(uri, method='PUT', body=body,
                              headers= {'content-type':content_type})
 
     def get_custom_variables(self):
-        """Retrieves custom variables to a specified group
+        """Retrieves custom variables as a dictionary
+
+        It has the format {studyProtocol: { setname : {field: type, ...}}}
+
         """
         tree = lxml.etree.fromstring(self.get())
         nsmap = tree.nsmap
