@@ -1206,7 +1206,7 @@ class Project(EObject):
                              headers= {'content-type':content_type})
 
     def get_custom_variables(self):
-        """Adds a custom variable to a specified group
+        """Retrieves custom variables to a specified group
         """
         tree = lxml.etree.fromstring(self.get())
         nsmap = tree.nsmap
