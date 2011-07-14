@@ -347,7 +347,7 @@ v           config: string
         config = {'server':self._server, 
                   'user':self._user, 
                   'password':self._pwd,
-                  'cachedir':self._cachedir,
+                  'cachedir':os.path.split(self._cachedir)[0],
                   }
 
         json.dump(config, fp)
@@ -368,10 +368,20 @@ v           config: string
             config = json.load(fp)
             fp.close()
 
-            self._server = config['server']
-            self._user = config['user']
-            self._pwd = config['password']
-            self._cachedir = config.get('cachedir', tempfile.gettempdir())
+            self._server = str(config['server'])
+            self._user = str(config['user'])
+            self._pwd = str(config['password'])
+            self._cachedir = str(config['cachedir'])
+
+            self._cachedir = os.path.join(
+                self._cachedir, '%s@%s' % (
+                    self._user, 
+                    self._server.split('//')[1].replace(
+                        '/', '.').replace(':', '_')
+                    )
+                )
+        else:
+            raise Exception('Configuration file does not exists.')
 
     def version(self):
         return self._exec('/data/version')
