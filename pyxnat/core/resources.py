@@ -1238,7 +1238,8 @@ class Project(EObject):
                 for field in definition.xpath('xnat:fields/xnat:field',
                                               namespaces=nsmap):
                     field_name = field.get('name')
-                    custom_variables[protocol_name][definition_id][field_name] = field.get('datatype')
+                    if field.get('type') == 'custom':
+                        custom_variables[protocol_name][definition_id][field_name] = field.get('datatype')
         return custom_variables
 
 
