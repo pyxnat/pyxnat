@@ -1,6 +1,6 @@
 from ..pyxnat import Interface
 
-central = Interface('http://central.xnat.org', 'nosetests', 'nosetests')
+central = Interface('https://central.xnat.org', 'nosetests', 'nosetests')
 
 def test_users():
     assert isinstance(central.manage.users(), list)

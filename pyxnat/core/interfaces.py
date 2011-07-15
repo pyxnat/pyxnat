@@ -15,6 +15,8 @@ from .uriutil import join_uri
 from .jsonutil import csv_to_json
 from .errors import is_xnat_error
 from .errors import catch_error
+from . import xpass
+
 
 DEBUG = False
 
@@ -78,10 +80,34 @@ v           config: string
                other parameters that might have been given.
         """
 
-        self._interactive = not all([server, user, password]) and not config
+        self._interactive = False
 
-        if config is not None:
+        if not all([server, user, password]) and not config:
+            self._interactive = True
+
+        if all(arg is None
+               for arg in [server, user, password, config]):
+
+            connection_args = xpass.readXnatPass(xpass.path())
+
+            if connection_args is None:
+                raise Exception('XNAT configuration file not found '
+                                'or formated incorrectly.')
+
+            self._server = connection_args['host']
+            self._user = connection_args['u']
+            self._pwd = connection_args['p']
+            self._cachedir = os.path.join(
+                cachedir, '%s@%s' % (
+                    self._user, 
+                    self._server.split('//')[1].replace(
+                        '/', '.').replace(':', '_')
+                    )
+                )
+
+        elif config is not None:
             self.load_config(config)
+
         else:
             if server is None:
                 self._server = raw_input('Server: ')
@@ -131,9 +157,6 @@ v           config: string
 
         if self._interactive:
             self._get_entry_point()
-            self._jsession = self._exec('%s/JSESSION' % self._entry)
-            if is_xnat_error(self._jsession):
-                catch_error(self._jsession)
 
         self.inspect()
 
@@ -142,10 +165,14 @@ v           config: string
             # /REST for XNAT 1.4, /data if >=1.5
             self._entry = '/REST'
             try:
-                self._exec('/data/JSESSION', 'HEAD')
+                self._jsession = self._exec('/data/JSESSION')
                 self._entry = '/data'
-            except:
-                pass
+
+                if is_xnat_error(self._jsession):
+                    catch_error(self._jsession)
+
+            except Exception, e:
+                raise e
             
     def _connect(self, **kwargs):
         """ Sets up the connection with the XNAT server.
@@ -271,6 +298,10 @@ v           config: string
                                                            response.reason
                                                            )
                                              )
+
+        if is_xnat_error(content):
+            catch_error(content)
+
         return content
 
 
@@ -347,7 +378,7 @@ v           config: string
         config = {'server':self._server, 
                   'user':self._user, 
                   'password':self._pwd,
-                  'cachedir':self._cachedir,
+                  'cachedir':os.path.split(self._cachedir)[0],
                   }
 
         json.dump(config, fp)
@@ -368,10 +399,20 @@ v           config: string
             config = json.load(fp)
             fp.close()
 
-            self._server = config['server']
-            self._user = config['user']
-            self._pwd = config['password']
-            self._cachedir = config.get('cachedir', tempfile.gettempdir())
+            self._server = str(config['server'])
+            self._user = str(config['user'])
+            self._pwd = str(config['password'])
+            self._cachedir = str(config['cachedir'])
+
+            self._cachedir = os.path.join(
+                self._cachedir, '%s@%s' % (
+                    self._user, 
+                    self._server.split('//')[1].replace(
+                        '/', '.').replace(':', '_')
+                    )
+                )
+        else:
+            raise Exception('Configuration file does not exists.')
 
     def version(self):
         return self._exec('/data/version')

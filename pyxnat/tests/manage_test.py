@@ -1,6 +1,6 @@
 from ..pyxnat import Interface
 
-central = Interface('http://central.xnat.org', 'nosetests', 'nosetests')
+central = Interface('https://central.xnat.org', 'nosetests', 'nosetests')
 
 notified = []
 
