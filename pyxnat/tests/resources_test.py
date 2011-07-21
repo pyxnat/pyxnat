@@ -203,3 +203,4 @@ def test_project_configuration():
     assert project.user_role('nosetests') == 'owner'
     
 
+    

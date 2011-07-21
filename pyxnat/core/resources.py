@@ -1538,10 +1538,10 @@ class Resource(EObject):
         os.remove(zip_location)
 
     def put_zip(self, zip_location, **datatypes):
-        """ Uploads a zip file an then extracts it on the server.
+        """ Uploads a zip or tgz file an then extracts it on the server.
 
-            After the zip file is extracted the files are accessible
-            individually, or as a whole using get_zip.
+            After the compressed file is extracted the individual 
+            files are accessible separately, or as a whole using get_zip.
         """
         if not self.exists():
             self.create(**datatypes)
@@ -1707,13 +1707,16 @@ class File(EObject):
 
         try:
             if os.path.exists(src):
+                print 'exists'
                 path = src
-                name = os.path.basename(path)
+                name = os.path.basename(path).split('?')[0]
                 src = codecs.open(src).read()
             else:
+                print 'not exists'
                 path = self._uri.split('/')[-1]
                 name = path
         except:
+            print 'exception'
             path = self._uri.split('/')[-1]
             name = path
 
@@ -1731,16 +1734,33 @@ class File(EObject):
 
         resource_id = self._intf.select(guri).id()
 
-        self._absuri = re.sub('resources/.*?/', 
-                              'resources/%s/' % resource_id, self._uri)
+        self._absuri = urllib.unquote(
+            re.sub('resources/.*?/', 
+                   'resources/%s/' % resource_id, self._uri)
+            )
 
+        query_args = {
+            'format': format, 
+            'content': content, 
+            'tags': tags,
+            }
+
+        if '?' in self._absuri:
+            k, v = self._absuri.split('?')[1].split('=')
+            query_args[k] = v
+            self._absuri = self._absuri.split('?')[0]
+
+        put_uri = '%s?%s' % (
+            self._absuri,
+            '&'.join('%s=%s' % (k,v) for k, v in query_args.items())
+            )
+        
         # print 'INSERT FILE', os.path.exists(src)
 
-        self._intf._exec('%s?format=%s&content=%s&tags=%s' % \
-                             (self._absuri, format, content, tags), 
-                         'PUT', body, 
-                         headers={'content-type':content_type}
-                         )
+        self._intf._exec(
+            put_uri, 'PUT', body, 
+            headers={'content-type':content_type}
+            )
 
         # track the uploaded file as one of the cache
 
