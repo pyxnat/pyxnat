@@ -15,6 +15,7 @@ from .uriutil import join_uri
 from .jsonutil import csv_to_json
 from .errors import is_xnat_error
 from .errors import catch_error
+from .array import ArrayData
 from . import xpass
 
 
@@ -148,6 +149,7 @@ v           config: string
 
         self.inspect = Inspector(self)
         self.select = Select(self)
+        self.array = ArrayData(self)
         self.cache = CacheManager(self)
         self.manage = GlobalManager(self)
         
