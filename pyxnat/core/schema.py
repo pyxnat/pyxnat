@@ -139,7 +139,7 @@ def get_nsmap(node):
 
     return nsmap
 
-def klassName(self):
+def class_name(self):
     """
     Return the name of this class without qualification.
     eg. If the class name is "x.y.class" return only "class"

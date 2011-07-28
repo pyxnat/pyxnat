@@ -89,7 +89,7 @@ v           config: string
         if all(arg is None
                for arg in [server, user, password, config]):
 
-            connection_args = xpass.readXnatPass(xpass.path())
+            connection_args = xpass.read_xnat_pass(xpass.path())
 
             if connection_args is None:
                 raise Exception('XNAT configuration file not found '
