@@ -166,15 +166,15 @@ v           config: string
         if self._entry is None:
             # /REST for XNAT 1.4, /data if >=1.5
             self._entry = '/REST'
-            try:
+            try:                
                 self._jsession = self._exec('/data/JSESSION')
                 self._entry = '/data'
 
                 if is_xnat_error(self._jsession):
                     catch_error(self._jsession)
-
             except Exception, e:
-                raise e
+                if not '/data/JSESSION' in e.message:
+                    raise e
             
     def _connect(self, **kwargs):
         """ Sets up the connection with the XNAT server.
