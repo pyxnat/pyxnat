@@ -4,7 +4,6 @@ from . import schema
 from .search import Search
 from .resources import CObject, Project, Projects # imports used implicitly
 from .uriutil import inv_translate_uri, check_entry
-from .jsonutil import JsonTable
 # from .uriutil import uri_last
 from .errors import ProgrammingError
 

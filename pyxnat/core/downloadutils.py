@@ -1,8 +1,10 @@
 import os
 import zipfile
 
+from .schema import class_name
 from . import uriutil
 from . import schema
+
 
 def unzip(fzip,
           dest_dir,
@@ -94,7 +96,8 @@ def download (dest_dir, instance=None,type="ALL",name=None, extract=False, safe=
     # Check that there are resources at this level
     available = instance.get()
     if len(available) == 0:
-        raise LookupError("There are no " + instance.klassName().lower() + " to download")
+        raise LookupError(
+            'There are no %s to download' % class_name(instance).lower())
 
     pse = uriutil.extract_uri(instance._cbase)
     if pse is None:
@@ -115,9 +118,10 @@ def download (dest_dir, instance=None,type="ALL",name=None, extract=False, safe=
     (p,s,e) = pse
 
     # Make the name of the zip file
-    default_zip_name = lambda : p + "_" + s + "_" + e + "_" + schema.klassName(instance).lower() + '_' + '_'.join(types.values())
-    zip_name = name if name != None else default_zip_name()
-    
+    default_zip_name = lambda: '%s_%s_%s_%s_%s' % (
+        p, s, e, class_name(instance).lower(), '_'.join(types.values())) 
+
+    zip_name = name if name != None else default_zip_name()    
     zip_location = os.path.join(dest_dir, zip_name + '.zip')
 
     if safe:
@@ -126,18 +130,19 @@ def download (dest_dir, instance=None,type="ALL",name=None, extract=False, safe=
 
     # Download from the server
     instance._intf._http.cache.preset(zip_location)
-    instance._intf._exec(uriutil.join_uri(instance._cbase,','.join(types.values())) + '/files?format=zip')
+    instance._intf._exec(uriutil.join_uri(
+            instance._cbase,','.join(types.values())) + '/files?format=zip')
     
     # Extract the archive
     fzip = zipfile.ZipFile(zip_location,'r')
     if extract:
         check = {'run': lambda f, d: not os.path.exists(os.path.join(dest_dir,f)),
-                 'desc' : 'File does not exist in the parent directory'}                                     
+                 'desc': 'File does not exist in the parent directory'}                                     
         safeUnzip = lambda: unzip(fzip, dest_dir, check) if safe else lambda:unzip(fzip,dest_dir)
         (unzipped, paths) = safeUnzip()()
         if not unzipped:
             fzip.close()
-            raise EnvironmentError("Unable to extract " + zip_location + " because file " + path + " failed the following test: " + check['desc'])
+            raise EnvironmentError("Unable to extract " + zip_location + " because file " + paths + " failed the following test: " + check['desc'])
         else:
             return paths
     else:

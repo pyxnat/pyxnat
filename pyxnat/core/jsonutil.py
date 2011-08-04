@@ -111,21 +111,32 @@ class JsonTable(object):
         self.order_by = order_by
 
     def __repr__(self):
-        if len(self.data) == 0:
-            return '[]'
-        elif len(self.data) == 1:
-            return str(self.data[0])
+        # if len(self.data) == 0:
+        #     return '[]'
+        # elif len(self.data) == 1:
+        #     return str(self.data[0])
         
-        return ('[%s\n .\n .\n . \n%s]\n\n'
-                '------------\n'
-                '%s rows\n'
-                '%s columns\n'
-                '%s characters') % (str(self.data[0]), 
-                                    str(self.data[-1]),
-                                    len(self), 
-                                    len(self.headers()),
-                                    len(self.dumps_csv()) 
-                                    )
+        if len(self.headers()) <= 5:
+            _headers = ','.join(self.headers())
+        else:
+            _headers = '%s ... %s' % (','.join(self.headers()[:2]), 
+                                      ','.join(self.headers()[-2:])
+                                      )
+
+        return '<JsonTable %s:%s> %s' % (
+            len(self), len(self.headers()), _headers
+            )
+    
+        # return ('[%s\n .\n .\n . \n%s]\n\n'
+        #         '------------\n'
+        #         '%s rows\n'
+        #         '%s columns\n'
+        #         '%s characters') % (str(self.data[0]), 
+        #                             str(self.data[-1]),
+        #                             len(self), 
+        #                             len(self.headers()),
+        #                             len(self.dumps_csv()) 
+        #                             )
 
     def __str__(self):
         return self.dumps_csv()

@@ -1886,45 +1886,35 @@ class Assessors(CObject):
         for eobj in self:
             eobj.unshare(project)
 
-    def download (self, dest_dir, type="ALL",name=None, extract=False, safe=False):
+    def download (self, dest_dir, type="ALL",
+                  name=None, extract=False, safe=False):
         """
         A wrapper around downloadutils.download(..)
         """
-        return downloadutils.download(dest_dir, self,type,name, extract, safe)
+        return downloadutils.download(dest_dir, self, type, name, 
+                                      extract, safe)
         
-    def klassName(self):
-        """
-        A wrapper around schema.klassName(..)
-        """
-        return schema.klassName(self)
-
 class Reconstructions(CObject):
     __metaclass__ = CollectionType
-    def download (self, dest_dir, type="ALL",name=None, extract=False, safe=False):
+
+    def download (self, dest_dir, type="ALL",
+                  name=None, extract=False, safe=False):
         """
         A wrapper around downloadutils.download(..)
         """
-        return downloadutils.download(dest_dir, self,type,name, extract, safe)
+        return downloadutils.download(dest_dir, self, type, name, 
+                                      extract, safe)
         
-    def klassName(self):
-        """
-        A wrapper around schema.klassName(..)
-        """
-        return schema.klassName(self)
-
 class Scans(CObject):
     __metaclass__ = CollectionType
-    def download (self, dest_dir, type="ALL",name=None, extract=False, safe=False):
+
+    def download (self, dest_dir, type="ALL",
+                  name=None, extract=False, safe=False):
         """
         A wrapper around downloadutils.download(..)
         """
-        return downloadutils.download(dest_dir, self,type,name, extract, safe)
-        
-    def klassName(self):
-        """
-        A wrapper around schema.klassName(..)
-        """
-        return schema.klassName(self)
+        return downloadutils.download(dest_dir, self, type, name, 
+                                      extract, safe)
         
 class Resources(CObject):
     __metaclass__ = CollectionType

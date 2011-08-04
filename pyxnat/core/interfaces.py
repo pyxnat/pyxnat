@@ -15,6 +15,7 @@ from .uriutil import join_uri
 from .jsonutil import csv_to_json
 from .errors import is_xnat_error
 from .errors import catch_error
+from .array import ArrayData
 from . import xpass
 
 
@@ -88,7 +89,7 @@ v           config: string
         if all(arg is None
                for arg in [server, user, password, config]):
 
-            connection_args = xpass.readXnatPass(xpass.path())
+            connection_args = xpass.read_xnat_pass(xpass.path())
 
             if connection_args is None:
                 raise Exception('XNAT configuration file not found '
@@ -148,6 +149,7 @@ v           config: string
 
         self.inspect = Inspector(self)
         self.select = Select(self)
+        self.array = ArrayData(self)
         self.cache = CacheManager(self)
         self.manage = GlobalManager(self)
         
@@ -164,15 +166,15 @@ v           config: string
         if self._entry is None:
             # /REST for XNAT 1.4, /data if >=1.5
             self._entry = '/REST'
-            try:
+            try:                
                 self._jsession = self._exec('/data/JSESSION')
                 self._entry = '/data'
 
                 if is_xnat_error(self._jsession):
                     catch_error(self._jsession)
-
             except Exception, e:
-                raise e
+                if not '/data/JSESSION' in e.message:
+                    raise e
             
     def _connect(self, **kwargs):
         """ Sets up the connection with the XNAT server.
@@ -419,68 +421,3 @@ v           config: string
 
     def set_logging(self, level=0):
         pass
-
-#     def grab(self, datatype, seq_type=None):
-#         columns = []
-#         if datatype.endswith('ScanData'):
-#             columns = ['%s/%s' % (datatype, field)
-#                        for field in ['type', 'ID', 'image_session_ID']
-#                        ]
-# #        else:
-# #            columns = ['%s/%s'%(datatype, field) for field in ['type', 'ID', 'session_id']]
-#         try:
-#             data = self.select(datatype, columns).all()
-#         except:
-#             data = self.select(datatype).all()
-
-#         print data.headers()
-
-#         uris = []
-
-#         type_header = difflib.get_close_matches('type', data.headers())
-
-#         if difflib.get_close_matches('id', data.headers()) == []:
-#             session_header = difflib.get_close_matches('session_id', 
-#                                                        data.headers())[0]
-
-#             subject_header = difflib.get_close_matches('subject_id', 
-#                                                        data.headers())[0]
-
-#             project_header = difflib.get_close_matches('project', 
-#                                                        data.headers())[0]
-
-
-#             print project_header, subject_header, session_header
-
-#             for entry in data:
-#                 if seq_type is None \
-#                         or type_header == [] \
-#                         or entry[type_header[0]] == seq_type:
-
-#                     uris.append('/REST/projects/%s'
-#                                 '/subjects/%s'
-#                                 '/experiments/%s' % \
-#                                     (entry[project_header],
-#                                      entry[subject_header],
-#                                      entry[session_header]
-#                                      )
-#                                 )
-
-#         else:
-#             id_header = difflib.get_close_matches('id', data.headers())[0]
-#             session_header = difflib.get_close_matches('session_id', \
-#                                                            data.headers())[0]
-
-#             for entry in data:
-#                 if (seq_type is None 
-#                     or type_header == []
-#                     or entry[type_header[0]] == seq_type
-#                     ):
-                    
-#                     uris.append('/REST/experiments/%s/scans/%s' % \
-#                                     (entry[session_header], 
-#                                      entry[id_header]
-#                                      )
-#                                 )
-
-#         return CObject(uris, self)
