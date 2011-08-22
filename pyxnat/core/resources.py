@@ -1738,16 +1738,13 @@ class File(EObject):
 
         try:
             if os.path.exists(src):
-                print 'exists'
                 path = src
                 name = os.path.basename(path).split('?')[0]
                 src = codecs.open(src).read()
             else:
-                print 'not exists'
                 path = self._uri.split('/')[-1]
                 name = path
         except:
-            print 'exception'
             path = self._uri.split('/')[-1]
             name = path
 
@@ -1943,6 +1940,7 @@ class Scans(CObject):
                   name=None, extract=False, safe=False):
         """
         A wrapper around :func:`downloadutils.download`
+
         """
         return downloadutils.download(dest_dir, self, type, name, 
                                       extract, safe)

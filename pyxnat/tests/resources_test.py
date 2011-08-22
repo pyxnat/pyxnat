@@ -8,9 +8,7 @@ from ..pyxnat import Interface
 
 _modulepath = os.path.dirname(os.path.abspath(__file__))
 
-central = Interface('http://sandbox.xnat.org/xnat', 'testuser', 'testuser')
-
-# central = Interface('http://sandbox.xnat.org', 'schwarty', 'plopplop')
+central = Interface('https://central.xnat.org', 'nosestests', 'nosetests')
 
 _id_set1 = {
     'sid':uuid1().hex,
