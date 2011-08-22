@@ -22,17 +22,15 @@ def test_fancy_resource_create():
                   'xnat:subjectData/ID': 'TEST_%s' % sid,
                   }
 
-    experiment.create(**field_data) 
+    experiment.create(**field_data)
 
     print subject.id()
-    assert subject.id() == 'TEST_%s' % sid
+    assert subject.exists()
     print experiment.id()
-    assert experiment.id() == 'TEST_%s' % eid
+    assert experiment.exists()
 
-    globals()['subject'] = central.select.project('nosetests'
-                                                  ).subject('TEST_%s' % sid)
-
-    globals()['experiment'] = subject.experiment('TEST_%s' % eid) 
+    globals()['subject'] = experiment.parent()
+    globals()['experiment'] = experiment
 
 def test_attr_get():
     assert experiment.attrs.get('xnat:mrSessionData/age') == '42.0'
@@ -49,14 +47,14 @@ def test_attr_set():
     assert experiment.attrs.get('xnat:mrSessionData/age') == '26.0'
 
 def test_attr_mset():
-    field_data = {'xnat:subjectData/investigator/firstname':'george',
-                  'xnat:subjectData/investigator/lastname':'abidbol',
+    field_data = {'xnat:subjectData/investigator/firstname':'angus',
+                  'xnat:subjectData/investigator/lastname':'young',
                   }
 
     subject.attrs.mset(field_data)
 
     assert set(subject.attrs.mget(field_data.keys())) == \
-        set(['george', 'abidbol'])
+        set(['angus', 'young'])
 
 def test_cleanup():
     subject.delete()
