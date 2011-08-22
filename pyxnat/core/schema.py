@@ -1,19 +1,19 @@
 
 # REST collection resources tree
 resources_tree = {
-            'projects'        :['subjects', 'resources'],
-            'subjects'        :['experiments', 'resources'],
-            'experiments'     :['assessors', 'reconstructions', 'scans', 'resources'],
-            'assessors'       :['resources', 'in_resources','out_resources'],
-            'reconstructions' :['in_resources','out_resources'],
-            'scans'           :['resources'],
-            'resources'       :['files'],
-            'files'           :[],
-            'in_resources'    :['files'],
-            'in_files'        :[],
-            'out_resources'   :['files'],
-            'out_files'       :[],
-            }
+    'projects'        :['subjects', 'resources'],
+    'subjects'        :['experiments', 'resources'],
+    'experiments'     :['assessors', 'reconstructions', 'scans', 'resources'],
+    'assessors'       :['resources', 'in_resources','out_resources'],
+    'reconstructions' :['in_resources','out_resources'],
+    'scans'           :['resources'],
+    'resources'       :['files'],
+    'files'           :[],
+    'in_resources'    :['files'],
+    'in_files'        :[],
+    'out_resources'   :['files'],
+    'out_files'       :[],
+    }
 
 prearc_tree = {'projects'   :['scans'],
                'scans'      :['resources'],

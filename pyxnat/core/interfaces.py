@@ -19,7 +19,7 @@ from .array import ArrayData
 from . import xpass
 
 
-DEBUG = False
+DEBUG = True
 
 # main entry point
 class Interface(object):

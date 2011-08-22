@@ -65,4 +65,4 @@ from .core import select
 from .core import users
 from .core import jsonutil
 from .core import uriutil
-
+from .core import xpass
