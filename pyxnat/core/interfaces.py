@@ -19,7 +19,7 @@ from .array import ArrayData
 from . import xpass
 
 
-DEBUG = True
+DEBUG = False
 
 # main entry point
 class Interface(object):
@@ -337,7 +337,8 @@ v           config: string
         return csv_to_json(content)
 
     def _get_head(self, uri):
-        print 'GET HEAD'
+        if DEBUG:
+            print 'GET HEAD'
         _nocache = httplib2.Http()
         _nocache.add_credentials(self._user, self._pwd)
 
