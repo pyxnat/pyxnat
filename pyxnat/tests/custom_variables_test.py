@@ -1,6 +1,6 @@
 from uuid import uuid1
 
-from ..pyxnat import Interface
+from .. import Interface
 
 central = Interface('https://central.xnat.org', 'nosetests', 'nosetests')
 project = central.select('/project/nosetests')

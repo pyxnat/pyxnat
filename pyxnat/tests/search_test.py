@@ -1,7 +1,7 @@
 from uuid import uuid1
 
-from ..pyxnat import Interface
-from ..pyxnat import jsonutil
+from .. import Interface
+from .. import jsonutil
 
 central = Interface('https://central.xnat.org', 'nosetests', 'nosetests')
 search_name = uuid1().hex

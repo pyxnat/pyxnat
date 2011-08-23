@@ -1,4 +1,4 @@
-from ..pyxnat import uriutil
+from .. import uriutil
 
 def test_translate_uri():
     assert uriutil.translate_uri('/assessors/out_resources/files') == '/assessors/out/resources/files'

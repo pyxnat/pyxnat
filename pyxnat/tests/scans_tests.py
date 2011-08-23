@@ -1,6 +1,6 @@
 import os
 
-from ..pyxnat import Interface
+from .. import Interface
 
 _modulepath = os.path.dirname(os.path.abspath(__file__))
 
