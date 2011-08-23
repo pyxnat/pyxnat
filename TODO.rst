@@ -14,5 +14,4 @@
   - provenance
   - templates
 
-* Add arbitrary scan data on the nosetests project on central to augment the
-  tests for the global scan listing function
+* Seems to be a bug in select('/project/PROJ//files') syntax
