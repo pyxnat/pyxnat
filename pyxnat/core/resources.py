@@ -1144,14 +1144,14 @@ class Project(EObject):
                                        ).items()
                     )
 
-    def add_custom_variables(self, custom_variables, allowDataDeletion=False):
+    def add_custom_variables(self, custom_variables, allow_data_deletion=False):
         """Adds a custom variable to a specified group
 
         Parameters
         ----------
 
         custom_variables: a dictionary
-        allowDataDeletion : a boolean
+        allow_data_deletion : a boolean
 
         Examples
         --------
@@ -1242,7 +1242,7 @@ class Project(EObject):
                 )
 
             uri = self._uri
-            if allowDataDeletion:
+            if allow_data_deletion:
                 uri = self._uri + '?allowDataDeletion=true'
             self._intf._exec(uri, method='PUT', body=body,
                              headers= {'content-type':content_type})
@@ -1436,6 +1436,16 @@ class Assessor(EObject):
                        value
                        )
 
+    def get_param(self, key):
+        return self.xpath(
+            "//xnat:addParam[@name='%s']/child::text()" % key)[-1]     
+
+    def get_params(self):
+        return self.xpath("//xnat:addParam/child::text()")[1::2]
+    
+    def params(self):
+        return self.xpath('//xnat:addParam/attribute::*')
+
 
 class Reconstruction(EObject):
     __metaclass__ = ElementType
@@ -1458,6 +1468,17 @@ class Scan(EObject):
                            % (self.datatype(), key), 
                        value
                        )
+
+    def get_param(self, key):
+        return self.xpath(
+            "//xnat:addParam[@name='%s']/child::text()" % key)[-1]     
+
+    def get_params(self):
+        return self.xpath("//xnat:addParam/child::text()")[1::2]
+    
+    def params(self):
+        return self.xpath('//xnat:addParam/attribute::*')
+
 
 
 class Resource(EObject):
