@@ -1,6 +1,6 @@
 import re
 
-from ..externals import httplib2
+import httplib2
 
 # parsing functions
 

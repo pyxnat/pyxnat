@@ -12,7 +12,7 @@ import urllib
 import codecs
 from fnmatch import fnmatch
 
-from ..externals import simplejson as json
+import json
 from lxml import etree
 
 from .uriutil import join_uri, translate_uri, uri_segment

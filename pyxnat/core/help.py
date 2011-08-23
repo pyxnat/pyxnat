@@ -7,7 +7,7 @@ try:
 except:
     _DRAW_GRAPHS = False
 
-from ..externals import simplejson as json
+import json
 
 from . import schema
 from .jsonutil import get_column

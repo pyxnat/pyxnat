@@ -4,8 +4,8 @@ import tempfile
 import email
 import getpass
 
-from ..externals import httplib2
-from ..externals import simplejson as json
+import httplib2
+import json
 
 from .select import Select
 from .cache import CacheManager, HTCache
@@ -192,6 +192,8 @@ v           config: string
         else:
             kwargs = self._connect_extras
         
+        kwargs['disable_ssl_certificate_validation'] = True
+
         if DEBUG:   
             httplib2.debuglevel = 2
         self._http = httplib2.Http(HTCache(self._cachedir, self), **kwargs)

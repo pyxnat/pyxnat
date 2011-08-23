@@ -3,7 +3,7 @@ import copy
 from fnmatch import fnmatch
 from StringIO import StringIO
 
-from ..externals import simplejson as json
+import json
 
 # jdata is a list of dicts
 
