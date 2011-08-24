@@ -402,6 +402,9 @@ class EObject(object):
 
         return root.xpath(xpath, namespaces=root.nsmap)
 
+    def namespaces(self):
+        pass
+
     def parent(self):
         uri = uri_grandparent(self._uri)
         Klass = globals()[uri_nextlast(uri).title().rsplit('s', 1)[0]]

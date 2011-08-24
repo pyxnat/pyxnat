@@ -16,7 +16,7 @@
 
 * Seems to be a bug in select('/project/PROJ//files') syntax
 
-* bug in provenance?
+* bug in provenance? --> bug with the allowDataDeletion flag
 
 * BUG: have to go to the dropdown menu of custom variables before being 
   able to add custom variables
