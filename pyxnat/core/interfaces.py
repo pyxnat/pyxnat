@@ -176,6 +176,8 @@ v           config: string
                 if not '/data/JSESSION' in e.message:
                     raise e
             
+        return self._entry
+
     def _connect(self, **kwargs):
         """ Sets up the connection with the XNAT server.
 

@@ -28,3 +28,7 @@ def test_set_param():
     
 def test_get_params():
     assert scan.get_params() == ['foostring', '1']
+
+def test_params_cleanup():
+    project.subject(sid).delete()
+    assert not project.subject(sid).exists()

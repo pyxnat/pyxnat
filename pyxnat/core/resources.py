@@ -28,9 +28,11 @@ from .errors import is_xnat_error, parse_put_error_message
 from .errors import DataError, ProgrammingError, catch_error
 from .cache import md5name
 from .provenance import Provenance
+from .pipelines import Pipelines
 from . import schema
 from . import httputil
 from . import downloadutils
+
 
 DEBUG = False
 
@@ -964,6 +966,18 @@ class CObject(object):
 class Project(EObject):
     __metaclass__ = ElementType
     
+    def __init__(self,  uri, interface):
+        """ 
+            Parameters
+            ----------
+            uri: string
+                The file resource URI
+            interface: Interface Object
+        """
+
+        EObject.__init__(self,  uri, interface)
+        self.pipelines = Pipelines(self.id(), self._intf)
+
     def prearchive_code(self):
         """ Gets project prearchive code.
         """
