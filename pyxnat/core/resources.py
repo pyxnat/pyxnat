@@ -28,7 +28,7 @@ from .errors import is_xnat_error, parse_put_error_message
 from .errors import DataError, ProgrammingError, catch_error
 from .cache import md5name
 from .provenance import Provenance
-from .pipelines import Pipelines
+# from .pipelines import Pipelines
 from . import schema
 from . import httputil
 from . import downloadutils
@@ -979,7 +979,7 @@ class Project(EObject):
         """
 
         EObject.__init__(self,  uri, interface)
-        self.pipelines = Pipelines(self.id(), self._intf)
+        # self.pipelines = Pipelines(self.id(), self._intf)
 
     def prearchive_code(self):
         """ Gets project prearchive code.
