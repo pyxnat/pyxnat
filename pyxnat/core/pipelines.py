@@ -52,7 +52,6 @@ class Pipelines(object):
                          headers={'content-type':content_type}
                          )
 
-
     def delete(self, pipeline_id):
         pass
         

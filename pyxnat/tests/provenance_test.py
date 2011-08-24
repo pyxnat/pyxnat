@@ -22,13 +22,14 @@ assessor = project.subject(sid).experiment(eid).assessor(
 
 
 def test_provenance():
-    assessor.provenance.attach(prov)
+    assessor.provenance.set(prov)
     _prov = assessor.provenance.get()[0]
 
     assert prov['program'] == _prov['program']
 
 def test_del_provenance():
-    assessor.provenance.dettach()
+    assessor.provenance.delete()
+    print assessor.provenance.get()
     assert assessor.provenance.get()[0] == []
 
 def test_provenance_cleanup():

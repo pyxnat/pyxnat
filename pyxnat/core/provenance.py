@@ -174,17 +174,17 @@ class Provenance(object):
                         'machine':'war', 
                         'platform':'linux',
                         }
-            >>> element.provenance.attach(prov)
+            >>> element.provenance.set(prov)
             >>> element.provenance.get()
-            >>> element.dettach()
+            >>> element.delete()
     """
 
     def __init__(self, eobject):
         self._intf = eobject._intf
         self._eobject = eobject
 
-    def attach(self, process_steps, overwrite=False):
-        """ Attach provenance information for the data within this element.
+    def set(self, process_steps, overwrite=False):
+        """ Set provenance information for the data within this element.
 
             .. note::
 
@@ -195,6 +195,10 @@ class Provenance(object):
                     - platform
                     - timestamp
                     - user
+
+            .. warning::
+                overwrite option doesn't work because of a bug with the 
+                allowDataDeletion flag in XNAT
 
             Parameters
             ----------
@@ -276,32 +280,31 @@ class Provenance(object):
 
         return steps
 
-    def dettach(self):
+    def delete(self):
         """ Removes the provenance attached to this object.
 
-            .. note::
-                This is equivalent to self.attach({}, overwrite=True)
+            .. warning::
+                doesn't work because of a bug with the allowDataDeletion
+                flag in XNAT
         """
 
-        root_node = etree.fromstring(self._eobject.get())
+        provenance_node = self._eobject.xpath('//xnat:provenance')
 
-        existing_prov = None
-        for child in root_node.getchildren():
-            if str(child.tag).endswith('provenance'):
-                existing_prov = child
-                break
+        if provenance_node != []:
+            provenance_node = provenance_node[0]
 
-        if existing_prov is not None:
-            root_node.remove(existing_prov)
+            parent_node = provenance_node.getparent()
+            parent_node.remove(provenance_node)
 
-        doc = etree.tostring(root_node.getroottree())
-        
-        body, content_type = httputil.file_message(
-            doc, 'text/xml', 'prov.xml', 'prov.xml')
+            doc = etree.tostring(parent_node.getroottree())
 
-        self._intf._exec('%s?allowDataDeletion=true' % self._eobject._uri, 
-                         method='PUT', 
-                         body=body,
-                         headers={'content-type':content_type}
-                         )
+            body, content_type = httputil.file_message(
+                doc, 'text/xml', 'prov.xml', 'prov.xml')
 
+            self._intf._exec(
+                '%s?allowDataDeletion=true' % self._eobject._uri, 
+                method='PUT', 
+                body=body,
+                headers={'content-type':content_type}
+                )
+            
