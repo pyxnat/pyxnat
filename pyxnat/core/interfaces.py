@@ -16,6 +16,7 @@ from .jsonutil import csv_to_json
 from .errors import is_xnat_error
 from .errors import catch_error
 from .array import ArrayData
+from .xpath_store import XpathStore
 from . import xpass
 
 
@@ -152,6 +153,7 @@ v           config: string
         self.array = ArrayData(self)
         self.cache = CacheManager(self)
         self.manage = GlobalManager(self)
+        self.xpath = XpathStore(self)
         
         if _DRAW_GRAPHS:
             self._get_graph = GraphData(self)
