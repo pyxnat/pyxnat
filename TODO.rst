@@ -22,3 +22,5 @@
   able to add custom variables
 
 * BUG in manage.schemas.add?
+
+* check ext2py in pymvpa.tools to generate sphinx from example scripts
