@@ -23,4 +23,4 @@
 
 * BUG in manage.schemas.add?
 
-* check ext2py in pymvpa.tools to generate sphinx from example scripts
+* check ex2rst in pymvpa.tools to generate sphinx from example scripts
