@@ -2,24 +2,31 @@ Latest changes
 ===============
 
 Release 0.9.0
-----------------
+-------------
 
     * New features:
-      - Global scan listing function: interface.select.scans()
-      - Support for XNAT configuration file format
-      - Prearchive services
-      - Batch function for downloading all files related to a scan or an assessor
-      - Create element with an XML document
-      - New xpath function for EObjects
-      
+        - Global listing functions:
+            - interface.array.experiments()
+	    - interface.array.search_experiments()
+	    - interface.array.scans()
+	       
+        - Support for XNAT configuration file format
+        - Prearchive services
+        - Batch function for downloading all files related to a scan or an assessor
+        - Create element with an XML document
+        - New xpath function for EObjects
+        - xpath store facility to query cached subject XMLs with xpath
+
     * Improvements:
-      - Catching authencation errors
-      - Toggle option for cache warnings
-      - Description for search templates is displayed
+        - Catching authencation errors
+        - Toggle option for cache warnings
+        - Description for search templates is displayed
       
+    * Bug fixes:
+        - Config file
 
 Release 0.8.0
-----------------
+-------------
 
     * Compatible with XNAT 1.5
 
@@ -39,7 +46,7 @@ Release 0.8.0
 	- a major bug in the Collection.where method
 
 Release 0.7.0
-----------------
+-------------
 
     * Errors following the PEP-249
 

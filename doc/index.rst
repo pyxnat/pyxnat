@@ -16,13 +16,16 @@ to plug-in external tools or python scripts by exposing a simple and
 consistent API.
 
 :doc:`installing`
-  Instructions on how to get the distribution.
+	Instructions on how to get the distribution.
 
 :doc:`tutorial`
-  Start here for a quick overview.
+	Start here for a quick overview.
 
 :doc:`features/index`
-  Examples of how to perform specific tasks.
+	Examples of how to perform specific tasks.
+
+:doc:`CHANGES`
+	See changes from the latest version.
 
 Links
 """""
@@ -87,12 +90,12 @@ Module contents
     CacheManager
     Users
 
- .. toctree::
-    :maxdepth: 1
+ .. .. toctree::
+ ..    :maxdepth: 1
 
-    installing.rst
-    under_the_hood.rst
-    starters_tutorial.rst
-    advanced_tutorial.rst
-    reference_documentation.rst
-    CHANGES.rst
+ ..    installing.rst
+ ..    under_the_hood.rst
+ ..    starters_tutorial.rst
+ ..    advanced_tutorial.rst
+ ..    reference_documentation.rst
+ ..    CHANGES.rst
