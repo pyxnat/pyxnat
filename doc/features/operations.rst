@@ -108,10 +108,10 @@ It is possible to upload and then download files at every REST resource level::
 
     >>> my_project.files()
     []
-    >>> my_project.file('image.nii').put('/tmp/image.nii')
+    >>> my_project.file('image.nii').insert('/tmp/image.nii')
     >>> # you can add any of the following arguments to give additional 
     >>> # information on the file you are uploading
-    >>> my_project.file('image.nii').put( '/tmp/image.nii', 
+    >>> my_project.file('image.nii').insert( '/tmp/image.nii', 
                                           content='T1', 
                                           format='NIFTI'
                                           tags='image test'
@@ -131,8 +131,8 @@ It is possible to upload and then download files at every REST resource level::
     >>> my_project.file('image.nii').get_copy('/tmp/test.nii')
     '/tmp/test.nii'
     >>> # the resource level can be used to group files
-    >>> my_project.resource('ANALYZE').file('image.hdr').put('/tmp/image.hdr')
-    >>> my_project.resource('ANALYZE').file('image.img').put('/tmp/image.img')
+    >>> my_project.resource('ANALYZE').file('image.hdr').insert('/tmp/image.hdr')
+    >>> my_project.resource('ANALYZE').file('image.img').insert('/tmp/image.img')
     >>> my_project.resources()
     ['NIFTI', 'ANALYZE']
     >>> my_project.resource('ANALYZE').files()
