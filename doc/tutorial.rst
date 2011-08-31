@@ -10,7 +10,7 @@ of **XNAT** mechanisms and consequently **pyxnat** design decisions.
 Prerequisites
 -------------
 Before we start, make sure that you have the **pyxnat** distribution
-:doc:`installed <installation>`. In the Python shell, the following
+:doc:`installed <installating>`. In the Python shell, the following
 should run without raising an exception:
 
 .. code-block:: python

@@ -9,5 +9,7 @@ options for operations described in the tutorial.
    :maxdepth: 2
 
    operations
+   files
+   attributes
    search_engine
    paths

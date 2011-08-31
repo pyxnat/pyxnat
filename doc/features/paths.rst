@@ -1,8 +1,8 @@
 
 
 
-More on ``paths``
------------------
+More on paths
+-------------
 
 The ``paths`` which are passed as arguments to 
 :class:`~pyxnat.Interface.select` can take different forms. They are
