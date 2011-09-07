@@ -13,3 +13,5 @@ options for operations described in the tutorial.
    attributes
    search_engine
    paths
+   inspect
+   permissions
