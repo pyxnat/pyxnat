@@ -1,7 +1,4 @@
-
-
-
-More on paths
+More on Paths
 -------------
 
 The ``paths`` which are passed as arguments to 

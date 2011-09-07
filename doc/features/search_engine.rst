@@ -33,13 +33,27 @@ from the schema.
     >>> central.select('xnat:subjectData', 
     ...		       ['xnat:subjectData/SUBJECT_ID', 
     ... 	        'xnat:subjectData/AGE']
-    ...		).where(contraints)
+    ...		).where(constraints)
 
 
 .. note:: For additional documentation on the Search Engine:
    - :class:`~pyxnat.Search`
    - :class:`~pyxnat.SearchManager`
    - :class:`~pyxnat.CObject`
+
+The query syntax
+~~~~~~~~~~~~~~~~
+
+Constraints for the ``where`` clause are expressed as follows:
+
+	    - A query is an unordered list that contains
+                    - 1 or more constraint(s)
+                    - 0 or more sub-queries (lists as this one)
+                    - 1 comparison method between the constraints
+                        ('AND' or 'OR')
+	    - A constraint is an ordered tuple that contains
+                    - 1 valid searchable_type/searchable_field
+                    - 1 operator among '=', '<', '>', '<=', '>=', 'LIKE'
 
 Search Help
 ~~~~~~~~~~~
@@ -79,3 +93,53 @@ method:
    .. code-block:: python
 
       >>> table = central.select('xnat:subjectData').all()
+
+Search Templates
+~~~~~~~~~~~~~~~~
+
+**pyxnat** offers a templating feature for the search engine. The first
+thing is to create a template. The syntax is the same as for saving a
+normal search, but values in the contraints must be keys to be re-used
+in the future. In the following example ``sid`` is a key for the subject
+identifiers.
+
+.. code-block:: python
+   
+   >>> central.manage.search.save_template(
+   ...		'template_name',
+   ...		'xnat:subjectData',
+   ...		['xnat:subjectData/PROJECT', 'xnat:subjectData/SUBHECT_ID'],
+   ...		[('xnat:subjectData/SUBJECT_ID', 'LIKE', 'sid'), 'AND'])
+
+
+To use the template, the easiest way is through the search manager.
+
+.. code-block:: python
+   
+   >>> central.manage.search.use_template('template_name', 
+   ...                                    {'sid':'*5*'})
+   >>> central.manage.search.use_template('template_name', 
+   ...                                    {'sid':'CENTRAL'})
+
+It can also be used with the usual syntax with the ``select`` statement.
+In that case only the constraints will be used because the return
+data is re-defined in the select statement.
+
+.. code-block:: python
+
+   >>> central.select('//subjects').where(template=('my_template', 
+   ... 					            {'sid':'*5*'}))
+   >>> central.select('xnat:mrSessionData', 
+   ... 	              ['xnat:mrSessionData/SESSION_ID']
+   ... 		      ).where(template=('my_template', {'sid':'*5*'}))
+
+.. warning:: This functionality hacks a bit the search saving system
+   of XNAT. The only problem is that it will create saved searches
+   that will be names ``template_something`` that will not work from
+   the web interface. Do not use this feature if it is an issue for you.
+
+.. note:: For additional documentation on templates:
+   - :func:`~pyxnat.SearchManager.use_template`
+   - :func:`~pyxnat.SearchManager.saved_template`
+   - :func:`~pyxnat.SearchManager.save_template`
+   - :func:`~pyxnat.SearchManager.get_template`
