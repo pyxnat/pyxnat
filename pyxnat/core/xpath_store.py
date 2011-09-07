@@ -65,7 +65,7 @@ class XpathStore(object):
                                        ).items()
                     )
 
-    def pull(self):
+    def update(self):
         """ Updates the xml files in the cachedir.
         """
         last_modified = self._last_modified()
@@ -86,17 +86,28 @@ class XpathStore(object):
                     self._exec('%s/subjects/%s' % (
                             self._intf._get_entry_point(), subject_id))
 
-    def clone(self, project_id):
-        """ Downloads all the subject XMLs for a project
+    def checkout(self, project=None, subjects=None):
+        """ Downloads all the subject XMLs for a project or a list
+            of subjects.
 
             Parameters
             ----------
-            project_id: str
+            project: str
                 The id of the project
+            subjects: list
+                List of subjects that have to be downloaded.
         """
-        for s in self._intf.select('/project/%s/subjects' % project_id):
-            s.get()
-        
+        if project is not None and subjects is None:
+            for s in self._intf.select('/project/%s/subjects' % project):
+                s.get()
+        elif subjects is not None:
+            for s in self._intf.select('//subjects').where(
+                [('xnat:subjectData/SUBJECT_ID', '=', sid) 
+                 for sid in subjects
+                 ] + ['OR']):
+
+                s.get()
+                    
     def subjects(self):
         """ Returns all the subject ids.
         """
