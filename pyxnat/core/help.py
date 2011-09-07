@@ -287,7 +287,7 @@ class Inspector(object):
         return self._sub_experiment_values('reconstruction', 
                                            project, experiment_type)
 
-    def architecture(self):
+    def structure(self):
         """ Displays the keywords structure used in XNAT REST API.
         """
         def traverse(coll, lvl):
@@ -311,8 +311,6 @@ class Inspector(object):
 
         print '- %s' % 'PROJECTS'
         traverse('projects', 4)
-
-    rest_hierarchy = architecture
 
     def _sub_experiment_values(self, sub_exp, project, experiment_type):
         self._intf._get_entry_point()
