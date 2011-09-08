@@ -24,7 +24,7 @@ ifeq (,$(filter nocheck,$(DEB_BUILD_OPTIONS)))
 	for PYTHON in $(shell pyversions -r); do \
 		echo "I: Running pyxnat unittests using $$PYTHON"; \
 		PYTHONPATH=$$(/bin/ls -d $(INSTALL_PATH)/usr/lib/$$PYTHON/*-packages):$$PYTHONPATH \
-		$$PYTHON /usr/bin/nosetests pyxnat; \
+		$$PYTHON /usr/bin/nosetests --exclude=test_del_provenance pyxnat; \
 	done
 endif
 
