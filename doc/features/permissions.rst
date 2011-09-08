@@ -1,6 +1,9 @@
 Permission Model
 ----------------
 
+Project Configuration
+~~~~~~~~~~~~~~~~~~~~~
+
 XNAT permission model uses a number of methods. The first thing is 
 the project accessibility. A project can be private, protected or 
 public. A private project is visible only by its users, a protected project
@@ -20,6 +23,9 @@ members or collaborators to give read or write access to projects:
 
    >>> central.select('/project/PROJ').add_user('my_friend', 'member')
    >>> central.select('/project/PROJ').add_user('my_other_friend', 'owner')
+
+Resource Sharing
+~~~~~~~~~~~~~~~~
 
 The last thing is the ability to share subjects, experiments and assessors
 accross projects. Subjects shared to a private project enables a user to
@@ -57,3 +63,4 @@ Almost the same interface is available for collection objects:
     issue: subjects for example are accessible through their ID or
     label. But labels stop working when trying to access a subject
     through a project that is not its orginial one.
+

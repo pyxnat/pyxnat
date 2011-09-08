@@ -19,7 +19,8 @@ Download the XML documents from a project or from a subject list:
    >>> central.xpath.checkout(project='my_project')
    >>> central.xpath.checkout(subjects=['CENTRAL_00001', 'CENTRAL_00005'])
 
-Update the XML documents:
+Update the subjects XML documents if any data related to them has changed
+on the server since the last update:
 
 .. code-block:: python
 

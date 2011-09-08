@@ -15,3 +15,5 @@ options for operations described in the tutorial.
    paths
    inspect
    permissions
+   provenance
+   custom_variables
