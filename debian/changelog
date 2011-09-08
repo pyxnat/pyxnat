@@ -1,4 +1,4 @@
-pyxnat (0.9.0~dev0-1) UNRELEASED; urgency=low
+pyxnat (0.9.0~dev0-1) unstable; urgency=low
 
   * Initial release (Closes: #609820).
 
