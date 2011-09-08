@@ -6,7 +6,7 @@ Uploaders: Yaroslav Halchenko <debian@onerussian.com>, Michael Hanke <michael.ha
 Build-Depends: debhelper (>= 7.2.18),
 	       python-all,
 	       python-lxml,
-	       python-httplib2,
+	       python-httplib2 (>= 0.7.0),
 	       python-simplejson,
 	       python-nose
 Standards-Version: 3.9.2
@@ -19,7 +19,7 @@ Architecture: all
 Depends: ${python:Depends}, ${misc:Depends},
 		python-lxml,
 		python-simplejson,
-		python-httplib2,
+		python-httplib2 (>= 0.7.0),
 Recommends: python-networkx,
             python-matplotlib
 Provides: ${python:Provides}
