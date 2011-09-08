@@ -2,6 +2,7 @@ Source: pyxnat
 Section: python
 Priority: extra
 Maintainer: Yannick Schwartz <yannick.schwartz@cea.fr>
+Uploaders: Yaroslav Halchenko <debian@onerussian.com>, Michael Hanke <michael.hanke@gmail.com>
 Build-Depends: debhelper (>= 7.2.18),
 	       python-all,
 	       python-lxml,
