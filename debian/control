@@ -5,6 +5,7 @@ Maintainer: Yannick Schwartz <yannick.schwartz@cea.fr>
 Build-Depends: debhelper (>= 7.2.18),
 	       python-all,
 	       python-lxml,
+	       python-httplib2,
 	       python-simplejson,
 	       python-nose
 Standards-Version: 3.9.2
@@ -16,7 +17,8 @@ Package: python-pyxnat
 Architecture: all
 Depends: ${python:Depends}, ${misc:Depends},
 		python-lxml,
-		python-simplejson
+		python-simplejson,
+		python-httplib2,
 Recommends: python-networkx,
             python-matplotlib
 Provides: ${python:Provides}

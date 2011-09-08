@@ -1,5 +1,5 @@
-pyxnat (0.8.0-1) UNRELEASED; urgency=low
+pyxnat (0.9.0~dev0-1) UNRELEASED; urgency=low
 
   * Initial release (Closes: #609820).
 
- -- Yannick Schwartz <yannick.schwartz@cea.fr>  Tue, 28 Jun 2011 16:37:25 -0400
+ -- Yannick Schwartz <yannick.schwartz@cea.fr>  Thu, 08 Sep 2011 15:31:48 -0400
