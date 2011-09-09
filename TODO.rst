@@ -24,3 +24,6 @@
 * BUG in manage.schemas.add?
 
 * check ex2rst in pymvpa.tools to generate sphinx from example scripts
+
+* solve the problem with the new httplib2 optiion to ignore certificate
+  so that users who don't have the latest version of httplib2 can work
