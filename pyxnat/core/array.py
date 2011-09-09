@@ -72,6 +72,8 @@ class ArrayData(object):
                 Name pattern to filter by experiment ID.
             experiment_type: string
                 xsi path type; e.g. 'xnat:mrSessionData'
+            columns: list
+                Values to return.
             constraints: dict
                 Dictionary of xsi_type (key--) and parameter (--value)
                 pairs by which to filter.
@@ -82,7 +84,7 @@ class ArrayData(object):
         return self._get_array(query_string, project_id, 
                                subject_id, subject_label, 
                                experiment_id, experiment_label, 
-                               experiment_type, constraints
+                               experiment_type, columns, constraints
                                )
 
     def scans(self, project_id=None, subject_id=None, subject_label=None,
@@ -112,6 +114,8 @@ class ArrayData(object):
                 xsi path type; e.g. 'xnat:mrSessionData'
             scan_type: string
                 xsi path type; e.g. 'xnat:mrScanData', etc.
+            columns: list
+                Values to return.
             constraints: dict
                 Dictionary of xsi_type (key--) and parameter (--value)
                 pairs by which to filter.
@@ -123,7 +127,7 @@ class ArrayData(object):
         return self._get_array(query_string, project_id, 
                                subject_id, subject_label, 
                                experiment_id, experiment_label, 
-                               experiment_type, constraints
+                               experiment_type, columns, constraints
                                )
 
     def search_experiments(self, 
