@@ -11,9 +11,12 @@ options for operations described in the tutorial.
    operations
    files
    attributes
-   search_engine
    paths
+   search_engine
    inspect
+   global_listing
    permissions
    provenance
    custom_variables
+   users
+   schema
