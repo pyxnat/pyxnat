@@ -24,6 +24,9 @@ consistent API.
 :doc:`features/index`
 	Examples of how to perform specific tasks.
 
+:doc:`contributors`
+	Thanks
+
 :doc:`CHANGES`
 	See changes from the latest version.
 
