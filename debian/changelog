@@ -1,5 +1,5 @@
-pyxnat (2.0.5-1) unstable; urgency=low
+pyxnat (0.9.0~dev0-1) unstable; urgency=low
 
   * Initial release (Closes: #609820).
 
- -- Stephan Gerhard <debian@unidesign.ch>  Thu, 28 Apr 2011 10:49:57 +0200
+ -- Yannick Schwartz <yannick.schwartz@cea.fr>  Thu, 08 Sep 2011 15:31:48 -0400

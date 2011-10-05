@@ -16,7 +16,7 @@ override_dh_auto_test:
 
 override_dh_auto_install:
 	dh_auto_install
-	
+
 # All tests later on
 # cd build to prevent use of local/not-built source tree
 ifeq (,$(filter nocheck,$(DEB_BUILD_OPTIONS)))
@@ -24,10 +24,10 @@ ifeq (,$(filter nocheck,$(DEB_BUILD_OPTIONS)))
 	for PYTHON in $(shell pyversions -r); do \
 		echo "I: Running pyxnat unittests using $$PYTHON"; \
 		PYTHONPATH=$$(/bin/ls -d $(INSTALL_PATH)/usr/lib/$$PYTHON/*-packages):$$PYTHONPATH \
-		$$PYTHON /usr/bin/nosetests pyxnat; \
+		$$PYTHON /usr/bin/nosetests --exclude=test_del_provenance pyxnat; \
 	done
 endif
 
 override_dh_auto_clean:
 	dh_auto_clean
-	-rm -rf doc/build
+	-rm -rf doc/build build

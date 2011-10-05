@@ -58,7 +58,7 @@ def test_reconstruction_create():
     assert reco_1.exists()
 
 def test_provenance():
-    reco_1.provenance.attach({'program':'nosetests'})
+    reco_1.provenance.set({'program':'nosetests'})
     assert reco_1.provenance.get()[0]['program'] == 'nosetests'
 
 def test_multi_create():
