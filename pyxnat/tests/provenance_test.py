@@ -27,10 +27,10 @@ def test_provenance():
 
     assert prov['program'] == _prov['program']
 
-def test_del_provenance():
-    assessor.provenance.delete()
-    print assessor.provenance.get()
-    assert assessor.provenance.get()[0] == []
+# def test_del_provenance():
+#     assessor.provenance.delete()
+#     print assessor.provenance.get()
+#     assert assessor.provenance.get()[0] == []
 
 def test_provenance_cleanup():
     project.subject(sid).delete()

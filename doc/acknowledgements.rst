@@ -12,24 +12,24 @@ Neurospin.
 People
 ------
 
-- Yannick Schwartz
-- Jean-Baptiste Poline
-- Vincent Frouin
-- Alexis Barbot
-- Benjamin Thyreau
-- Gael Varoquaux
-- Satra Ghosh
-- Stephan Gehard
-- Dan Marcus
-- Tim Olsen
-- Deech
-- Yaroslav Halchenko
-- David Just
-- David Gutman
-- Alexandra Anghelescu
-- Mark Scully
-- Adam Harding
-- Janis Breeze
+* Yannick Schwartz
+* Jean-Baptiste Poline
+* Vincent Frouin
+* Alexis Barbot
+* Benjamin Thyreau
+* Gael Varoquaux
+* Satra Ghosh
+* Stephan Gerhard
+* Dan Marcus
+* Tim Olsen
+* Deech
+* Yaroslav Halchenko
+* David Just
+* David Gutman
+* Alexandra Anghelescu
+* Mark Scully
+* Adam Harding
+* Janis Breeze
 
 .. note:: If we forgot anyone, do not hesitate to send an email to 
 	  mailto:yannick.schwartz@cea.fr and I’ll include you in the list.
@@ -37,9 +37,10 @@ People
 Funding
 -------
 
-- Originally funded by the European Project IMAGEN.
+* Originally funded by the European Project IMAGEN.
 
-- PyXNAT workshop that took place at Washington University in 2011 was 
-  generously funded by the INCF and the XNAT team:
-  http://nrg.wustl.edu/events/nrg-to-host-2011-pyxnat-workshop/
-  http://datasharing.incf.org/ni/PyXNAT_Workshop
+* PyXNAT workshop that took place at Washington University in 2011 was 
+  generously funded by the `INCF <http://www.incf.org/>`_ 
+  and the XNAT team:
+    - http://nrg.wustl.edu/events/nrg-to-host-2011-pyxnat-workshop/
+    - http://datasharing.incf.org/ni/PyXNAT_Workshop

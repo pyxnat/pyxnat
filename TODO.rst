@@ -12,6 +12,4 @@
 * BUG: have to go to the dropdown menu of custom variables before being 
   able to add custom variables
 
-* BUG in manage.schemas.add?
-
 * check ex2rst in pymvpa.tools to generate sphinx from example scripts
