@@ -17,7 +17,7 @@ def test_values():
     assert 'OAS1_0002' in central.xpath.values('ID')
 
 def test_element_attrs():
-    assert isinstance(central.xpath.element_attrs('fs:region')[0], dict)
+    assert isinstance(central.xpath.element_attrs('fs:region'), list)
 
     assert set(['SegId', 'hemisphere', 'name']).issubset(
         central.xpath.element_keys('fs:region'))
