@@ -24,8 +24,11 @@ consistent API.
 :doc:`features/index`
 	Examples of how to perform specific tasks.
 
-:doc:`contributors`
-	Thanks
+:doc:`external_resources`
+	References to related projects and external resources.
+
+:doc:`acknowledgements`
+	Contributors and funding.
 
 :doc:`CHANGES`
 	See changes from the latest version.

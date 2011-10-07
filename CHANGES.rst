@@ -18,7 +18,7 @@ Release 0.9.0
         - xpath store facility to query cached subject XMLs with xpath
 
     * Improvements:
-        - Catching authencation errors
+        - Catching authentication errors
         - Toggle option for cache warnings
         - Description for search templates is displayed
       

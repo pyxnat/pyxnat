@@ -14,9 +14,10 @@ options for operations described in the tutorial.
    paths
    search_engine
    inspect
-   global_listing
    permissions
    provenance
    custom_variables
    users
    schema
+   global_listing
+   xpath_store

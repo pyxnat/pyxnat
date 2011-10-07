@@ -7,7 +7,7 @@ get and set attributes for XNAT datatypes (see documentation on attributes).
 However this helpers are far from perfect and do not provide all the paths,
 and all the paths that are provided are not valid. Addictional documentation
 on attributes paths is available here: 
-http://www.xnat.org/XNAT+REST+XML+Path+Shortcuts.
+http://docs.xnat.org/XNAT+REST+XML+Path+Shortcuts.
 
 The first things to do when using this manager is to add a schema. There
 is currently no way to guess the URLs of the schema so this is a manual

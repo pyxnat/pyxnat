@@ -8,7 +8,7 @@ The only way to know all the attributes is to look at the relevant
 schemas. The schemas are found on the XNAT server instances: e.g. 
 https://central.xnat.org/schemas/xnat/xnat.xsd XNAT provides some
 documentation on the attributes here: 
-http://www.xnat.org/XNAT+REST+XML+Path+Shortcuts
+http://docs.xnat.org/XNAT+REST+XML+Path+Shortcuts
 The attributes interface in **pyxnat** follows the same syntax.
 
 Predefined shortcuts:
