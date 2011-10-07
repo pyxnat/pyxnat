@@ -95,13 +95,3 @@ Module contents
     SearchManager
     CacheManager
     Users
-
- .. .. toctree::
- ..    :maxdepth: 1
-
- ..    installing.rst
- ..    under_the_hood.rst
- ..    starters_tutorial.rst
- ..    advanced_tutorial.rst
- ..    reference_documentation.rst
- ..    CHANGES.rst
