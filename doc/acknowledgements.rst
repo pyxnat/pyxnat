@@ -1,8 +1,7 @@
-About Us
-========
+Acknowlegements
+===============
 
-**pyxnat** has benefited from the help of a lot of people. It was 
-originally developed at `CEA/Neurospin 
+**pyxnat** was originally developed at `CEA/Neurospin 
 <http://www-dsv.cea.fr/en/instituts/institut-d-imagerie-biomedicale-i2bm/services/neurospin-neurospin>`_ and funded by the European project 
 `IMAGEN <http://imagen-europe.com/>`_. The project was started in 2009 with
 Yannick Schwartz as the main developer but has since benefited from the
