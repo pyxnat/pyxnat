@@ -200,7 +200,20 @@ v           config: string
 
         if DEBUG:   
             httplib2.debuglevel = 2
-        self._http = httplib2.Http(HTCache(self._cachedir, self), **kwargs)
+
+        # compatibility with httplib2 < 0.7
+        try:
+            self._http = httplib2.Http(
+                HTCache(self._cachedir, self), 
+                **kwargs
+                )
+        except:
+            del kwargs['disable_ssl_certificate_validation']
+            self._http = httplib2.Http(
+                HTCache(self._cachedir, self), 
+                **kwargs
+                )
+            
         self._http.add_credentials(self._user, self._pwd)
 
     def _exec(self, uri, method='GET', body=None, headers=None):
