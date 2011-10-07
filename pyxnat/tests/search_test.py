@@ -5,6 +5,8 @@ from .. import jsonutil
 
 central = Interface('https://central.xnat.org', 'nosetests', 'nosetests')
 search_name = uuid1().hex
+search_template_name = uuid1().hex
+
 
 def test_datatypes():
     assert 'xnat:subjectData' in central.inspect.datatypes()
@@ -68,3 +70,17 @@ def test_get_search():
 def test_delete_search():
     central.manage.search.delete(search_name)
     assert search_name not in central.manage.search.saved()
+
+def test_save_search_template():
+    central.manage.search.save_template(
+        search_template_name, 'xnat:mrSessionData', 
+        central.inspect.datatypes('xnat:mrSessionData'),
+        [('xnat:mrSessionData/SCANNER', 'LIKE', '*GE*'), 'AND']
+        )
+
+    assert search_template_name in central.manage.search.saved_templates()
+
+def test_delete_search_template():
+    central.manage.search.delete_template(search_template_name)
+    assert search_template_name not in \
+        central.manage.search.saved_templates()
