@@ -27,7 +27,7 @@ consistent API.
 :doc:`external_resources`
 	References to related projects and external resources.
 
-:doc:`acknowledgements`
+:doc:`About`
 	Contributors and funding.
 
 :doc:`CHANGES`

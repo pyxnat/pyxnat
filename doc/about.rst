@@ -1,5 +1,5 @@
-Acknowlegements
-===============
+About
+=====
 
 **pyxnat** was originally developed at `CEA/Neurospin 
 <http://www-dsv.cea.fr/en/instituts/institut-d-imagerie-biomedicale-i2bm/services/neurospin-neurospin>`_ and funded by the European project 
