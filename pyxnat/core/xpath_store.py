@@ -101,12 +101,12 @@ class XpathStore(object):
             for s in self._intf.select('/project/%s/subjects' % project):
                 s.get()
         elif subjects is not None:
-            for s in self._intf.select('//subjects').where(
-                [('xnat:subjectData/SUBJECT_ID', '=', sid) 
-                 for sid in subjects
-                 ] + ['OR']):
+            for sid in subjects:
+                self._intf._exec('%s/subjects/%s?format=xml' % (
+                        self._intf._get_entry_point(), sid))
 
-                s.get()
+        self._load()
+
                     
     def subjects(self):
         """ Returns all the subject ids.
