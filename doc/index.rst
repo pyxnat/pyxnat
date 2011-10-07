@@ -22,12 +22,12 @@ consistent API.
 	Start here for a quick overview.
 
 :doc:`features/index`
-	Examples of how to perform specific tasks.
+	Detailed documentation and examples.
 
 :doc:`external_resources`
 	References to related projects and external resources.
 
-:doc:`About`
+:doc:`about`
 	Contributors and funding.
 
 :doc:`CHANGES`

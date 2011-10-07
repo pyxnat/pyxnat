@@ -1,5 +1,5 @@
-Features
-========
+Documentation
+=============
 
 The modules in this section are intended to give in depth overviews
 of how to accomplish specific tasks with **pyxnat**, as well as advanced
