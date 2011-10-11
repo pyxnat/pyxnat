@@ -88,7 +88,8 @@ v           config: string
             self._interactive = True
 
         if all(arg is None
-               for arg in [server, user, password, config]):
+               for arg in [server, user, password, config]) \
+               and os.path.exists(xpass.path()):
 
             connection_args = xpass.read_xnat_pass(xpass.path())
 
