@@ -79,8 +79,16 @@ The best way to create this kind of configuration file is to use the
    >>> central.save_config('central.cfg')
 
 The second one is the XNAT format config file, which is placed at a
-default location. It is used without passing any argument to the
-:class:`~pyxnat.Interface` object.
+default location (on linux in ~/.xnatPass). It is used without passing 
+any argument to the :class:`~pyxnat.Interface` object. It is formatted
+as follows and supports multiple accounts and servers, the active one
+being the one selected by a ``+`` sign:
+
+.. code-block:: none
+
+   +loginone@http://central.xnat.org=password
+   -logintwo@http://central.xnat.org=password
+   -logintwo@http://localhost=password
 
 .. code-block:: python
 
