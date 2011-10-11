@@ -32,7 +32,7 @@ People
 * Janis Breeze
 
 .. note:: If we forgot anyone, do not hesitate to send an email to 
-	  mailto:yannick.schwartz@cea.fr and I’ll include you in the list.
+	  yannick.schwartz@cea.fr and I’ll include you in the list.
 
 Funding
 -------

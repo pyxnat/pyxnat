@@ -1,6 +1,7 @@
 Installing pyxnat
 ===================
 
+
 Platforms
 ---------
 
@@ -8,36 +9,64 @@ OS Independent.
 
 It was tested under:
     - Ubuntu 10.04 with python 2.6
-    - Ubuntu 8.04  with python 2.5
-    - Mandriva 2008 with python 2.5
-    - Windows XP with python 2.6
-    - Mac OS X 10.5 Leopard with python 2.5
+    - Ubuntu 11.04 with python 2.7
+    - Debian Squeeze with python 2.6
+    - Windows XP with python 2.7
+    - Mac OS X untested but should work with python >= 2.6
 
 Prerequisites
 -------------
 
-- *python* v2.5+
+- *python* v2.6+
 
 - *python-lxml* v1.3.6+ recommanded, earlier versions may work:
-    All Python dependencies but lxml are shipped with this package. Lxml may be 
-    installed using standard Python distribution tools, here are the recommanded 
-    ones. For more details on installing procedures please see the sections 
-    following this one.
+  Lxml may be installed using standard Python distribution tools, here are the 
+  recommanded ones. For more details on installing procedures please see the 
+  sections following this one.
 
         #. easy_install: lxml may be installed via easy_install under 
            Unix and Windows
-        #. Windows only: a .exe installer is provided
+
+        #. Windows only: installers are provided 
+	   `here <http://pypi.python.org/pypi/lxml/2.2.8>`_, select the .exe for
+	   your python version and install.
+
+	#. Most linux distributions provide a package for lxml. e.g. for debian
+	   or debian-based distributions:
+
+	   .. code-block:: none
+	   
+	      apt-get install python-lxml
+
         #. Mac OS X: a macport of lxml is available, see lxml site for further information. 
                      Alternatively, you can compile the package from sources by following 
-                     the instructions. If the recommanded command on the site fails::
+                     the instructions. If the recommanded command on the site fails:
 
-                         python setup.py build --static-deps
+		     .. code-block:: none
 
-                     Try forcing an older version of libxml2::
+                        python setup.py build --static-deps
 
-                         python setup.py build --static-deps --libxml2-version=2.7.3
+                     Try forcing an older version of libxml2:
+
+		     .. code-block:: none
+
+                        python setup.py build --static-deps --libxml2-version=2.7.3
 
                      Do not forget to add lxml to your PYTHONPATH afterwards.
+
+- python-httplib2 v0.6+, a version above 0.7 is however recommanded:
+
+  #. On all platforms:
+
+     .. code-block:: none
+
+		     easy_install httplib2
+
+  #. Or with the packaging system on linux e.g. for debian:
+
+     .. code-block:: none
+
+		     apt-get install python-httplib2
 
 - *python-nose* v0.10+ to run the unit tests
 
