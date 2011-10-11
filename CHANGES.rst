@@ -11,7 +11,6 @@ Release 0.9.0
 	    - interface.array.scans()
 	       
         - Support for XNAT configuration file format
-        - Prearchive services
         - Batch function for downloading all files related to a scan or an assessor
         - Create element with an XML document
         - New xpath function for EObjects
