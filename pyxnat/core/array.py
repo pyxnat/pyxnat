@@ -15,7 +15,8 @@ class ArrayData(object):
         if constraints is None:
             constraints = {}
 
-        uri = '/data/experiments?xsiType=%s' % experiment_type
+        uri = '%s/experiments?xsiType=%s' % (self._intf._get_entry_point(), 
+                                             experiment_type)
 
         if project_id is not None:
             uri += '&project=%s' % project_id
