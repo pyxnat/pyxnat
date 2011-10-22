@@ -170,7 +170,7 @@ v           config: string
             # /REST for XNAT 1.4, /data if >=1.5
             self._entry = '/REST'
             try:                
-                self._jsession = self._exec('/data/JSESSION')
+                self._jsession = 'JSESSIONID=' + self._exec('/data/JSESSION')
                 self._entry = '/data'
 
                 if is_xnat_error(self._jsession):
@@ -215,7 +215,8 @@ v           config: string
                 **kwargs
                 )
             
-        self._http.add_credentials(self._user, self._pwd)
+        if self._user:
+            self._http.add_credentials(self._user, self._pwd)
 
     def _exec(self, uri, method='GET', body=None, headers=None):
         """ A wrapper around a simple httplib2.request call that:
@@ -360,7 +361,8 @@ v           config: string
         if DEBUG:
             print 'GET HEAD'
         _nocache = httplib2.Http()
-        _nocache.add_credentials(self._user, self._pwd)
+        if self._user:
+            _nocache.add_credentials(self._user, self._pwd)
 
         rheaders = {'cookie':self._jsession}
 
@@ -442,3 +444,88 @@ v           config: string
 
     def set_logging(self, level=0):
         pass
+
+class UnauthInterface(Interface):
+    """ Entry point to access an unauthenticated XNAT server.
+
+        >>> central = UnauthInterface(server='https://central.xnat.org',
+                                      cachedir='/tmp'
+                                      )
+
+        Config files are not supported.
+
+        For interactive use:
+
+        >>> central = UnauthInterface('http://central.xnat.org')
+
+        .. note::
+            The interactive mode is activated whenever the server argument 
+            is missing. In interactive mode pyxnat tries to check the 
+            validity of the connection parameters.
+        
+        Attributes
+        ----------
+        _mode: online | offline
+            Online or offline mode
+        _memtimeout: float
+            Lifespan of in-memory cache
+    """
+
+    def __init__(self, server=None, cachedir=tempfile.gettempdir()):
+
+        self._interactive = False
+
+        if server is None:
+            self._server = raw_input('Server: ')
+        else:
+            self._server = server
+
+        self._user = None
+        self._pwd = None
+
+        self._cachedir = os.path.join(
+            cachedir, '%s@%s' % (
+                self._user, 
+                self._server.split('//')[1].replace(
+                    '/', '.').replace(':', '_')
+                )
+            )
+        
+        self._callback = None
+
+        self._memcache = {}
+        self._memtimeout = 1.0
+        self._mode = 'online'
+        self._struct = {}
+        self._entry = None
+
+        self._last_memtimeout = 1.0
+        self._last_mode = 'online'
+
+        self._connect_extras = {}
+        self._connect()
+
+        self.inspect = Inspector(self)
+        self.select = Select(self)
+        self.array = ArrayData(self)
+        self.cache = CacheManager(self)
+        self.manage = GlobalManager(self)
+        self.xpath = XpathStore(self)
+        
+        if _DRAW_GRAPHS:
+            self._get_graph = GraphData(self)
+            self.draw = PaintGraph(self)
+
+        response, content = self._http.request(self._server, 'GET')
+        self._jsession = response['set-cookie'][:44]
+
+        if self._interactive:
+            self._get_entry_point()
+
+        self.inspect()
+
+    def save_config(self, location):
+        raise NotImplementedError
+
+    def load_config(self, location):
+        raise NotImplementedError

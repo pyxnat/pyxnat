@@ -1,7 +1,7 @@
 import os
 import sys
 
-from .interfaces import Interface
+from .interfaces import Interface, UnauthInterface
 from .search import SearchManager
 from .cache import CacheManager
 from .select import Select
