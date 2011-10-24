@@ -1,18 +1,9 @@
 
-* Add some in-code comments on the inner workings of the mod	ule
+* Add some in-code comments on the inner workings of the module
 
 * Support current reserved keywords as resource identifiers
 
-* Improve get file
-
 * Add support for subfolders in files
-
-  - provenance
-  - nipype and cff integration
-
-* Add/update tests for:
-  - provenance
-  - templates
 
 * Seems to be a bug in select('/project/PROJ//files') syntax
 
@@ -20,7 +11,5 @@
 
 * BUG: have to go to the dropdown menu of custom variables before being 
   able to add custom variables
-
-* BUG in manage.schemas.add?
 
 * check ex2rst in pymvpa.tools to generate sphinx from example scripts

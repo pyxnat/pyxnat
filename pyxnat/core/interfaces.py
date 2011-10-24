@@ -88,7 +88,8 @@ v           config: string
             self._interactive = True
 
         if all(arg is None
-               for arg in [server, user, password, config]):
+               for arg in [server, user, password, config]) \
+               and os.path.exists(xpass.path()):
 
             connection_args = xpass.read_xnat_pass(xpass.path())
 
@@ -200,7 +201,20 @@ v           config: string
 
         if DEBUG:   
             httplib2.debuglevel = 2
-        self._http = httplib2.Http(HTCache(self._cachedir, self), **kwargs)
+
+        # compatibility with httplib2 < 0.7
+        try:
+            self._http = httplib2.Http(
+                HTCache(self._cachedir, self), 
+                **kwargs
+                )
+        except:
+            del kwargs['disable_ssl_certificate_validation']
+            self._http = httplib2.Http(
+                HTCache(self._cachedir, self), 
+                **kwargs
+                )
+            
         self._http.add_credentials(self._user, self._pwd)
 
     def _exec(self, uri, method='GET', body=None, headers=None):
