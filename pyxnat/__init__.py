@@ -1,6 +1,6 @@
 __version__ = '0.9.0'
 
-from .core import Interface, UnauthInterface
+from .core import Interface
 from .core import SearchManager
 from .core import CacheManager
 from .core import Select
