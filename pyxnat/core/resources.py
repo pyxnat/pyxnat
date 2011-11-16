@@ -1887,6 +1887,19 @@ class File(EObject):
         """
         return self._getcell('file_content')
 
+    def last_modified(self):
+        """ Gets the file last-modified date.
+        """
+
+        if not self._absuri:
+            self._absuri = self._getcell('URI')
+
+        if self._absuri is None:
+            raise DataError('Cannot get file: does not exists')
+
+        info = self._intf._get_head(self._absuri)
+        return info['last-modifiedd']
+
 
 class In_File(File):
     __metaclass__ = ElementType
