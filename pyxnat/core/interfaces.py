@@ -210,7 +210,7 @@ class Interface(object):
                 if is_xnat_error(self._jsession):
                     catch_error(self._jsession)
             except Exception, e:
-                if not '/data/JSESSION' in e.message:
+                if not '/data/JSESSION' in str(e):
                     raise e
             
         return self._entry
