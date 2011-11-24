@@ -81,7 +81,7 @@ class Interface(object):
                 downloaded files)
                 If no path is provided, a platform dependent temp dir is 
                 used.
-v           config: string
+            config: string
                Reads a config file in json to get the connection parameters.
                If a config file is specified, it will be used regardless of
                other parameters that might have been given.
