@@ -1898,7 +1898,7 @@ class File(EObject):
             raise DataError('Cannot get file: does not exists')
 
         info = self._intf._get_head(self._absuri)
-        return info['last-modifiedd']
+        return info['last-modified']
 
 
 class In_File(File):

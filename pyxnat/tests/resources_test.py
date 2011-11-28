@@ -170,6 +170,11 @@ def test_get_copy_file():
 
     central.cache.set_usage(expiration=1)
 
+def test_file_last_modified():
+    f = subj_1.resource('test').file('hello.txt')
+    assert isinstance(f.last_modified(), basestring)
+    assert len(f.last_modified()) > 0
+
 def test_last_modified():
     sid = subj_1.id()
 
