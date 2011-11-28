@@ -47,7 +47,7 @@ json = {'projects':['ID', 'ID'],
         'resources':['xnat_abstractresource_id', 'label'],
         'out_resources':['xnat_abstractresource_id', 'label'],
         'in_resources':['xnat_abstractresource_id', 'label'],
-        'files':['Name', 'Name'],
+        'files':['path', 'path'],
         }
 
 resources_singular = [key.rsplit('s', 1)[0] for key in resources_tree.keys()]

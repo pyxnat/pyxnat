@@ -19,6 +19,7 @@ from .uriutil import join_uri, translate_uri, uri_segment
 from .uriutil import uri_last, uri_nextlast
 from .uriutil import uri_parent, uri_grandparent
 from .uriutil import uri_shape
+from .uriutil import file_path
 
 from .jsonutil import JsonTable, get_selection
 from .pathutil import find_files
@@ -1654,13 +1655,20 @@ class File(EObject):
         """
 
         EObject.__init__(self,  uri, interface)
+        self._urn = file_path(uri)
         self._absuri = None        
+
+    def __repr__(self):
+        return '<%s Object> %s' % (self.__class__.__name__, 
+                                   self._urn
+                                   )
 
     def attributes(self):
         """ Files attributes include:
                 - URI
                 - Name
                 - Size in bytes
+                - path (relative to the parent resource)
                 - file_tags
                 - file_format
                 - file_content
@@ -1670,7 +1678,7 @@ class File(EObject):
             dict : a dictionnary with the file attributes
         """
 
-        return self._getcells(['URI', 'Name', 'Size', 
+        return self._getcells(['URI', 'Name', 'Size', 'path', 
                                'file_tags', 'file_format', 'file_content'])
 
     def get(self, dest=None, force_default=False):
@@ -1898,7 +1906,7 @@ class File(EObject):
             raise DataError('Cannot get file: does not exists')
 
         info = self._intf._get_head(self._absuri)
-        return info['last-modifiedd']
+        return info['last-modified']
 
 
 class In_File(File):
