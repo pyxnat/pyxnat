@@ -30,6 +30,9 @@ def uri_last(uri):
 
 def uri_nextlast(uri):
     # return uri_last(uri.split(uri_last(uri))[0].strip('/'))
+    # support files in a hierarchy
+    if '/files/' in uri:
+        return 'files'
     return uri.split('/')[-2]
 
 def uri_parent(uri):
@@ -41,6 +44,10 @@ def uri_parent(uri):
 
     #     return parent
 
+    # support files in a hierarchy by stripping all but one level
+    files_index = uri.find('/files/')
+    if files_index >= 0:
+        uri = uri[:7+files_index]
     return uri_split(uri)[0]
 
 def uri_grandparent(uri):
@@ -126,4 +133,12 @@ def extract_uri(uri) :
 
     return (project,subject,experiment)
 
+def file_path(uri):
+    """return the relative path of the file in the given URI
+
+    for uri = '/.../files/a/b/c', return 'a/b/c'
+
+    raises ValueError (through .index()) if '/files/' is not in the URI
+    """
+    return uri[7+uri.index('/files/'):]
 
