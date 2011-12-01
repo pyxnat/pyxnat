@@ -11,7 +11,7 @@ from .select import Select
 from .cache import CacheManager, HTCache
 from .help import Inspector, GraphData, PaintGraph, _DRAW_GRAPHS
 from .manage import GlobalManager
-from .uriutil import join_uri
+from .uriutil import join_uri, file_path, uri_last
 from .jsonutil import csv_to_json
 from .errors import is_xnat_error
 from .errors import catch_error
@@ -389,7 +389,14 @@ class Interface(object):
         if is_xnat_error(content):
             catch_error(content)
 
-        return csv_to_json(content)
+        json_content = csv_to_json(content)
+
+        # add the (relative) path field for files
+        base_uri = uri.split('?')[0]
+        if uri_last(base_uri) == 'files':
+            for element in json_content:
+                element['path'] = file_path(element['URI'])
+        return json_content
 
     def _get_head(self, uri):
         if DEBUG:
