@@ -11,7 +11,7 @@ from .select import Select
 from .cache import CacheManager, HTCache
 from .help import Inspector, GraphData, PaintGraph, _DRAW_GRAPHS
 from .manage import GlobalManager
-from .uriutil import join_uri
+from .uriutil import join_uri, file_path, uri_last
 from .jsonutil import csv_to_json
 from .errors import is_xnat_error
 from .errors import catch_error
@@ -45,6 +45,10 @@ class Interface(object):
             server, user or password is missing. In interactive mode pyxnat
             tries to check the validity of the connection parameters.
         
+        Or anonymously (unauthenticated):
+
+        >>> central = Interface('http://central.xnat.org', anonymous=True)
+
         Attributes
         ----------
         _mode: online | offline
@@ -54,7 +58,8 @@ class Interface(object):
     """
 
     def __init__(self, server=None, user=None, password=None, 
-                 cachedir=tempfile.gettempdir(), config=None):
+                 cachedir=tempfile.gettempdir(), config=None, 
+                 anonymous=False):
         """ 
             Parameters
             ----------
@@ -76,64 +81,89 @@ class Interface(object):
                 downloaded files)
                 If no path is provided, a platform dependent temp dir is 
                 used.
-v           config: string
+            config: string
                Reads a config file in json to get the connection parameters.
                If a config file is specified, it will be used regardless of
                other parameters that might have been given.
+            anonymous: boolean
+               Indicates an unauthenticated connection.  If True, user 
+               and password are ignored and a session is started with 
+               no credentials.
         """
 
         self._interactive = False
 
-        if not all([server, user, password]) and not config:
-            self._interactive = True
+        self._anonymous = anonymous
 
-        if all(arg is None
-               for arg in [server, user, password, config]) \
-               and os.path.exists(xpass.path()):
+        if self._anonymous:
 
-            connection_args = xpass.read_xnat_pass(xpass.path())
-
-            if connection_args is None:
-                raise Exception('XNAT configuration file not found '
-                                'or formated incorrectly.')
-
-            self._server = connection_args['host']
-            self._user = connection_args['u']
-            self._pwd = connection_args['p']
-            self._cachedir = os.path.join(
-                cachedir, '%s@%s' % (
-                    self._user, 
-                    self._server.split('//')[1].replace(
-                        '/', '.').replace(':', '_')
-                    )
-                )
-
-        elif config is not None:
-            self.load_config(config)
-
-        else:
             if server is None:
                 self._server = raw_input('Server: ')
+                self._interactive = True
             else:
                 self._server = server
+                self._interactive = False
 
-            if user is None:
-                user = raw_input('User: ')
-
-            if password is None:
-                password = getpass.getpass()
-
-            self._user = user
-            self._pwd = password
+            self._user = None
+            self._pwd = None
 
             self._cachedir = os.path.join(
-                cachedir, '%s@%s' % (
-                    self._user, 
-                    self._server.split('//')[1].replace(
+                cachedir, 'anonymous@%s' % self._server.split('//')[1].replace(
                         '/', '.').replace(':', '_')
-                    )
                 )
         
+        else:
+
+            if not all([server, user, password]) and not config:
+                self._interactive = True
+
+            if all(arg is None
+                   for arg in [server, user, password, config]) \
+                   and os.path.exists(xpass.path()):
+
+                connection_args = xpass.read_xnat_pass(xpass.path())
+
+                if connection_args is None:
+                    raise Exception('XNAT configuration file not found '
+                                    'or formated incorrectly.')
+
+                self._server = connection_args['host']
+                self._user = connection_args['u']
+                self._pwd = connection_args['p']
+                self._cachedir = os.path.join(
+                    cachedir, '%s@%s' % (
+                        self._user, 
+                        self._server.split('//')[1].replace(
+                            '/', '.').replace(':', '_')
+                        )
+                    )
+
+            elif config is not None:
+                self.load_config(config)
+
+            else:
+                if server is None:
+                    self._server = raw_input('Server: ')
+                else:
+                    self._server = server
+
+                if user is None:
+                    user = raw_input('User: ')
+
+                if password is None:
+                    password = getpass.getpass()
+
+                self._user = user
+                self._pwd = password
+
+                self._cachedir = os.path.join(
+                    cachedir, '%s@%s' % (
+                        self._user, 
+                        self._server.split('//')[1].replace(
+                            '/', '.').replace(':', '_')
+                        )
+                    )
+
         self._callback = None
 
         self._memcache = {}
@@ -160,6 +190,10 @@ v           config: string
             self._get_graph = GraphData(self)
             self.draw = PaintGraph(self)
 
+        if self._anonymous:
+            response, content = self._http.request(self._server, 'GET')
+            self._jsession = response['set-cookie'][:44]
+
         if self._interactive:
             self._get_entry_point()
 
@@ -170,13 +204,13 @@ v           config: string
             # /REST for XNAT 1.4, /data if >=1.5
             self._entry = '/REST'
             try:                
-                self._jsession = self._exec('/data/JSESSION')
+                self._jsession = 'JSESSIONID=' + self._exec('/data/JSESSION')
                 self._entry = '/data'
 
                 if is_xnat_error(self._jsession):
                     catch_error(self._jsession)
             except Exception, e:
-                if not '/data/JSESSION' in e.message:
+                if not '/data/JSESSION' in str(e):
                     raise e
             
         return self._entry
@@ -215,7 +249,8 @@ v           config: string
                 **kwargs
                 )
             
-        self._http.add_credentials(self._user, self._pwd)
+        if not self._anonymous:
+            self._http.add_credentials(self._user, self._pwd)
 
     def _exec(self, uri, method='GET', body=None, headers=None):
         """ A wrapper around a simple httplib2.request call that:
@@ -354,13 +389,21 @@ v           config: string
         if is_xnat_error(content):
             catch_error(content)
 
-        return csv_to_json(content)
+        json_content = csv_to_json(content)
+
+        # add the (relative) path field for files
+        base_uri = uri.split('?')[0]
+        if uri_last(base_uri) == 'files':
+            for element in json_content:
+                element['path'] = file_path(element['URI'])
+        return json_content
 
     def _get_head(self, uri):
         if DEBUG:
             print 'GET HEAD'
         _nocache = httplib2.Http()
-        _nocache.add_credentials(self._user, self._pwd)
+        if self._user:
+            _nocache.add_credentials(self._user, self._pwd)
 
         rheaders = {'cookie':self._jsession}
 
@@ -389,11 +432,19 @@ v           config: string
                 Since the password is saved as well, make sure the file
                 is saved at a safe location with appropriate permissions.
 
+            .. note::
+                This method raises NotImplementedError for an anonymous 
+                interface.
+
             Parameters
             ----------
             location: string
                 Destination config file.
         """
+        if self._anonymous:
+            raise NotImplementedError, \
+                  'no save_config() for anonymous interfaces'
+
         if not os.path.exists(os.path.dirname(location)):
             os.makedirs(os.path.dirname(location))
 
@@ -411,11 +462,18 @@ v           config: string
         """ Loads a configuration file and replaces current connection
             parameters.
 
+            .. note::
+                This method raises NotImplementedError for an anonymous 
+                interface.
+
             Parameters
             ----------
             location: string
                 Configuration file path.
         """
+        if self._anonymous:
+            raise NotImplementedError, \
+                  'no load_config() for anonymous interfaces'
 
         if os.path.exists(location):
             fp = open(location, 'rb')

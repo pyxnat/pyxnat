@@ -4,13 +4,14 @@ from multiprocessing import Pool
 
 import pyxnat
 
-interface = pyxnat.Interface('https://imagen.cea.fr/imagen_database',
-                             'login', 'password')
+url = 'https://imagen.cea.fr/imagen_database'
+
+interface = pyxnat.Interface(url, login, password)
 
 def bet(in_image):
-    route, name = os.path.split(in_image)
-    in_image = os.path.join(route, name.rsplit('.')[0])
-    out_image = os.path.join(route, name.rsplit('.')[0] + '_brain')
+    path, name = os.path.split(in_image)
+    in_image = os.path.join(path, name.rsplit('.')[0])
+    out_image = os.path.join(path, name.rsplit('.')[0] + '_brain')
 
     print '==> %s' % in_image[-120:]
 
@@ -20,15 +21,15 @@ def bet(in_image):
     return out_image
 
 def notify(message):
-    print '<== %s'%message[-120:]
+    print '<== %s' % message[-120:]
 
 pool = Pool(processes=8)
 
-for adni_mprage in interface.select('//experiments/*SessionA*'
-                                    '/assessors/*ADNI*/out/resources/files'
-                                    ).where('psytool:tci_parentData/TCI051 = 1 AND'):
+for mprage in interface.select(
+    '//experiments/*SessionA*/assessors/*ADNI*/out/resources/files'
+    ).where([('psytool:tci_parentData/TCI051', '=', '1'), 'AND']):
 
-    pool.apply_async(bet, (adni_mprage.get(),), callback=notify)
+    pool.apply_async(bet, (mprage.get(),), callback=notify)
 
 pool.close()
 pool.join()
