@@ -1637,8 +1637,18 @@ class Resource(EObject):
 class In_Resource(Resource):
     __metaclass__ = ElementType
 
+    def parent(self):
+        uri = uri_grandparent(self._uri)
+        Klass = globals()[uri.split('/')[-3].title().rsplit('s', 1)[0]]
+        return Klass(uri_parent(uri), self._intf)
+
 class Out_Resource(Resource):
     __metaclass__ = ElementType
+
+    def parent(self):
+        uri = uri_grandparent(self._uri)
+        Klass = globals()[uri.split('/')[-3].title().rsplit('s', 1)[0]]
+        return Klass(uri_parent(uri), self._intf)
 
 class File(EObject):
     """ EObject for files stored in XNAT.
