@@ -5,17 +5,17 @@ class ArrayData(object):
     def __init__(self, interface):
         self._intf = interface
 
-    def _get_array(self, query_string, project_id=None, 
+    def _get_array(self, query_string, project_id=None,
                    subject_id=None, subject_label=None,
                    experiment_id=None, experiment_label=None,
-                   experiment_type='xnat:imageSessionData', 
+                   experiment_type='xnat:imageSessionData',
                    columns=None, constraints=None
                    ):
 
         if constraints is None:
             constraints = {}
 
-        uri = '%s/experiments?xsiType=%s' % (self._intf._get_entry_point(), 
+        uri = '%s/experiments?xsiType=%s' % (self._intf._get_entry_point(),
                                              experiment_type)
 
         if project_id is not None:
@@ -24,8 +24,10 @@ class ArrayData(object):
         if subject_id is not None:
             uri += '&%s/subject_id=%s' % (experiment_type, subject_id)
 
+        #Subject Label is only held in the xnat:subjectData so look for it there.
+        #this should join against whatever the experiment type is. 
         if subject_label is not None:
-            uri += '&%s/subject_label=%s' % (experiment_type, subject_label)
+            uri += '&xnat:subjectData/label=%s' % (subject_label)
 
         if experiment_id is not None:
             uri += '&ID=%s' % experiment_id
@@ -40,10 +42,10 @@ class ArrayData(object):
 
         if columns is not None:
             uri += ',' + ','.join(columns)
-            
+
         c = {}
 
-        [c.setdefault(key.lower(), value) 
+        [c.setdefault(key.lower(), value)
          for key, value in constraints.items()
          ]
 
@@ -51,7 +53,7 @@ class ArrayData(object):
 
     def experiments(self, project_id=None, subject_id=None, subject_label=None,
               experiment_id=None, experiment_label=None,
-              experiment_type='xnat:mrSessionData', 
+              experiment_type='xnat:mrSessionData',
               columns=None,
               constraints=None
               ):
@@ -82,15 +84,15 @@ class ArrayData(object):
 
         query_string = '&columns=ID,project,%s/subject_id' % experiment_type
 
-        return self._get_array(query_string, project_id, 
-                               subject_id, subject_label, 
-                               experiment_id, experiment_label, 
+        return self._get_array(query_string, project_id,
+                               subject_id, subject_label,
+                               experiment_id, experiment_label,
                                experiment_type, columns, constraints
                                )
 
     def scans(self, project_id=None, subject_id=None, subject_label=None,
               experiment_id=None, experiment_label=None,
-              experiment_type='xnat:mrSessionData', 
+              experiment_type='xnat:mrSessionData',
               scan_type='xnat:mrScanData',
               columns=None,
               constraints=None
@@ -125,18 +127,18 @@ class ArrayData(object):
         query_string = '&columns=ID,project,%s/subject_id,%s/ID' % (
             experiment_type, scan_type)
 
-        return self._get_array(query_string, project_id, 
-                               subject_id, subject_label, 
-                               experiment_id, experiment_label, 
+        return self._get_array(query_string, project_id,
+                               subject_id, subject_label,
+                               experiment_id, experiment_label,
                                experiment_type, columns, constraints
                                )
 
-    def search_experiments(self, 
-                           project_id=None, 
-                           subject_id=None, 
-                           subject_label=None, 
-                           experiment_type='xnat:mrSessionData', 
-                           columns=None, 
+    def search_experiments(self,
+                           project_id=None,
+                           subject_id=None,
+                           subject_label=None,
+                           experiment_type='xnat:mrSessionData',
+                           columns=None,
                            constraints=None
                            ):
 
