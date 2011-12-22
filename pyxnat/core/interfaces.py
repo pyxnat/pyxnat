@@ -401,7 +401,7 @@ class Interface(object):
     def _get_head(self, uri):
         if DEBUG:
             print 'GET HEAD'
-        _nocache = httplib2.Http()
+        _nocache = httplib2.Http(**self._connect_extras)
         if self._user:
             _nocache.add_credentials(self._user, self._pwd)
 
