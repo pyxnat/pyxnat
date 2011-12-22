@@ -24,9 +24,7 @@ def test_fancy_resource_create():
 
     experiment.create(**field_data)
 
-    print subject.id()
     assert subject.exists()
-    print experiment.id()
     assert experiment.exists()
 
     globals()['subject'] = experiment.parent()
@@ -54,7 +52,7 @@ def test_attr_mset():
     subject.attrs.mset(field_data)
 
     assert set(subject.attrs.mget(field_data.keys())) == \
-        set(['angus', 'young'])
+        set(field_data.values())
 
 def test_cleanup():
     subject.delete()
