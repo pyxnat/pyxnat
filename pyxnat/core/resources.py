@@ -816,25 +816,26 @@ class CObject(object):
         if args == ():
             return [urllib.unquote(uri_last(eobj._uri)) for eobj in self]
         else:
-            ret = ()
-            for arg in args:
-                if arg == 'id':
-                    self._id_header = 'ID'
-                    ret += ([urllib.unquote(uri_last(eobj._uri)) 
-                             for eobj in self
-                             ], )
-                elif arg == 'label':
-                    self._id_header = 'label'
-                    ret +=  ([urllib.unquote(uri_last(eobj._uri)) 
-                              for eobj in self
-                              ], )
-                else:
-                    ret += ([eobj for eobj in self], )
+            entries = []
+
+            for eobj in self:
+                entry = ()
+                for arg in args:
+                    if arg == 'id':
+                        self._id_header = 'ID'
+                        entry += (urllib.unquote(uri_last(eobj._uri)), )
+                    elif arg == 'label':
+                        self._id_header = 'label'
+                        entry += (urllib.unquote(uri_last(eobj._uri)), )
+                    else:
+                        entry += (eobj, )
+
+                entries.append(entry)
 
             if len(args) != 1:
-                return ret
+                return entries
             else:
-                return ret[0]
+                return [entry[0] for entry in entries]
 
     fetchall = get
 
