@@ -32,6 +32,7 @@ def md5name(key):
     else:
         last = key.split('/')[-1]
 
+    key, _ = os.path.split(key)
     return '%s_%s' % (hashlib.md5(key).hexdigest(), last.replace('=', '.'))
 
 def bytes_to_human(size, unit):
