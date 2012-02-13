@@ -140,6 +140,15 @@ class EObject(object):
         self._intf = interface
         self.attrs = EAttrs(self)
 
+    def __getstate__(self):
+        return {
+            'uri': self._uri,
+            'interface': self._intf
+            }
+
+    def __setstate__(self, dict):
+        self.__init__(dict['uri'], dict['interface'])
+
     def __repr__(self):
         return '<%s Object> %s' % (self.__class__.__name__, 
                                    urllib.unquote(uri_last(self._uri))
@@ -167,7 +176,8 @@ class EObject(object):
 
         for pattern in self._intf._struct.keys():
             if fnmatch(uri_segment(
-                    self._uri.split(self._intf._entry, 1)[1], -2), pattern):
+                    self._uri.split(
+                        self._intf._get_entry_point(), 1)[1], -2), pattern):
 
                 reg_pat = self._intf._struct[pattern]
                 filters.setdefault('xsiType', set()).add(reg_pat)
@@ -307,7 +317,8 @@ class EObject(object):
         if datatype is None:
             for uri_pattern in struct.keys():
                 if fnmatch(
-                    self._uri.split(self._intf._entry, 1)[1], uri_pattern):
+                    self._uri.split(
+                        self._intf._get_entry_point(), 1)[1], uri_pattern):
                     datatype = struct.get(uri_pattern)
                     break
             else:
@@ -548,7 +559,7 @@ class CObject(object):
             uri = urllib.quote(uri)
 
             request_shape = uri_shape(
-                '%s/0' % uri.split(self._intf._entry, 1)[1])
+                '%s/0' % uri.split(self._intf._get_entry_point(), 1)[1])
             reqcache = os.path.join(self._intf._cachedir, 
                                    '%s.struct' % md5name(request_shape)
                                    ).replace('_*', '')
@@ -617,7 +628,7 @@ class CObject(object):
 
         for element in jtable:
             xsitype = element.get('xsiType')
-            uri = element.get('URI').split(self._intf._entry, 1)[1]
+            uri = element.get('URI').split(self._intf._get_entry_point(), 1)[1]
             uri = uri.replace(uri.split('/')[-2], _type)
             shape = uri_shape(uri)
 
@@ -933,7 +944,7 @@ class CObject(object):
             _filter=constraints
             )
         
-        searchpop = ['%s/projects/' % self._intf._entry + \
+        searchpop = ['%s/projects/' % self._intf._get_entry_point() + \
                      '%(project)s/subjects/%(subject_id)s' % res
                      for res in results
                      ]
@@ -1138,14 +1149,15 @@ class Project(EObject):
         return 'xnat:projectData'
 
     def experiments(self, id_filter='*'):
-        return Experiments('%s/experiments' % self._intf._entry, 
+        return Experiments('%s/experiments' % self._intf._get_entry_point(), 
                            self._intf, 
                            id_filter, 
                            filters={'project':self.id()}
                            )
 
     def experiment(self, ID):
-        return Experiment('%s/experiments/%s' % (self._intf._entry, ID), 
+        return Experiment('%s/experiments/%s' % (
+                self._intf._get_entry_point(), ID), 
                           self._intf
                           )
 
