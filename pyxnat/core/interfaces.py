@@ -205,11 +205,15 @@ class Interface(object):
             '_user': self._user, 
             '_pwd': self._pwd,
             '_cachedir': os.path.split(self._cachedir)[0],
+            '_anonymous': self._anonymous,
             }
 
     def __setstate__(self, dict):
         self.__dict__ = dict
-        self.__init__(self._server, self._user, self._pwd, self._cachedir)
+        if self._anonymous:
+            self.__init__(self._server, anonymous=True)
+        else:
+            self.__init__(self._server, self._user, self._pwd, self._cachedir)
 
     def _get_entry_point(self):
         if self._entry is None:
