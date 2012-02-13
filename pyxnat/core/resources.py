@@ -931,7 +931,7 @@ class CObject(object):
             return_values=['xnat:subjectData/PROJECT', 
                            'xnat:subjectData/SUBJECT_ID'],
             _filter=constraints
-            )        
+            )
         
         searchpop = ['%s/projects/' % self._intf._entry + \
                      '%(project)s/subjects/%(subject_id)s' % res
