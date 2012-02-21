@@ -1775,7 +1775,7 @@ class File(EObject):
         if not os.path.exists(os.path.dirname(dest)):
             os.makedirs(os.path.dirname(dest))
 
-        src = self.get()
+        src = self.get(dest)
 
         if src != dest:
             shutil.copy2(src, dest)
