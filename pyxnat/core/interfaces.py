@@ -1,4 +1,5 @@
 import os
+import re
 import time
 import tempfile
 import email
@@ -354,7 +355,10 @@ class Interface(object):
                     print 'header: %s: %s' % (key.title(), response.get(key))
 
         if response is not None and response.has_key('set-cookie'):
-            self._jsession = response.get('set-cookie')[:44]
+            cookies = response.get('set-cookie')
+            jsessionid = re.findall(r'(JSESSIONID=[0-9A-F]+);', cookies)
+            if len(jsessionid) > 0:
+                self._jsession = jsessionid[0]
 
         if response is not None and response.get('status') == '404':
             r,_ = self._http.request(self._server)
