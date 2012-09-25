@@ -1794,7 +1794,7 @@ class File(EObject):
 
         return dest
 
-    def put(self, src, format='U', content='U', tags='U', **datatypes):
+    def put(self, src, format='U', content='U', tags='U', overwrite=False, **datatypes):
         """ Uploads a file to XNAT.
 
             Parameters
@@ -1811,6 +1811,9 @@ class File(EObject):
             tags: string
                 Optional parameter to specify tags for the file. 
                 Defaults to 'U'.
+            overwrite: boolean
+                Optional parameter to specify if the file should be overwritten.
+                Defaults to False
         """
 
         format = urllib.quote(format)
@@ -1853,6 +1856,8 @@ class File(EObject):
             'content': content,
             'tags': tags,
             }
+        if overwrite:
+            query_args['overwrite'] = "true"
 
         if '?' in self._absuri:
             k, v = self._absuri.split('?')[1].split('=')
@@ -1865,6 +1870,7 @@ class File(EObject):
             )
 
         # print 'INSERT FILE', os.path.exists(src)
+        print "URI is: " + put_uri
 
         self._intf._exec(
             put_uri, 'PUT', body,
