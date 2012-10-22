@@ -1870,7 +1870,7 @@ class File(EObject):
             )
 
         # print 'INSERT FILE', os.path.exists(src)
-        print "URI is: " + put_uri
+        # print "URI is: " + put_uri
 
         self._intf._exec(
             put_uri, 'PUT', body,

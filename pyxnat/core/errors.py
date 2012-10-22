@@ -48,7 +48,6 @@ def catch_error(msg_or_exception):
     if isinstance(msg_or_exception, (str, unicode)):
         # parse the message
         msg = msg_or_exception
-
         if msg.startswith('<html>'):
             error = msg.split('<h3>')[1].split('</h3>')[0]
 

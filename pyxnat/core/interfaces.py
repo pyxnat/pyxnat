@@ -377,6 +377,9 @@ class Interface(object):
                                              )
 
         if is_xnat_error(content):
+            print response.keys()
+            print response.get("status")
+
             catch_error(content)
 
         return content
