@@ -1746,7 +1746,7 @@ class File(EObject):
                 
             self._intf._http.cache.preset(_location)
 
-        self._intf._exec(self._absuri, 'GET')
+        self._intf._exec(self._uri, 'GET')
 
         return self._intf._http.cache.get_diskpath(
             '%s%s' % (self._intf._server, self._absuri)
