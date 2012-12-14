@@ -1,4 +1,4 @@
-__version__ = '0.9.2'
+__version__ = '0.9.2.djj'
 
 from .core import Interface
 from .core import SearchManager

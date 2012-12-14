@@ -523,3 +523,12 @@ class Interface(object):
 
     def set_logging(self, level=0):
         pass
+
+    def disconnect(self):
+        """ 
+            Tell XNAT to disconnect this session
+        """
+        self._exec('/data/JSESSION', method='DELETE')
+        pass
+
+
