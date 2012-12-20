@@ -377,6 +377,9 @@ class Interface(object):
                                              )
 
         if is_xnat_error(content):
+            print response.keys()
+            print response.get("status")
+
             catch_error(content)
 
         return content
@@ -520,3 +523,12 @@ class Interface(object):
 
     def set_logging(self, level=0):
         pass
+
+    def disconnect(self):
+        """ 
+            Tell XNAT to disconnect this session
+        """
+        self._exec('/data/JSESSION', method='DELETE')
+        pass
+
+
