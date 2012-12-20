@@ -51,7 +51,7 @@ class EAttrs(object):
             self._datatype = self._eobj.datatype()
 
         return self._datatype
-    
+
     def _get_id(self):
         if self._id is None:
             self._id = self._eobj.id()
@@ -75,8 +75,9 @@ class EAttrs(object):
                     standard representation for dates and times
                     established by the W3C.
         """
-        put_uri = self._eobj._uri+'?%s=%s' % (urllib.quote(path), 
-                                              urllib.quote(value)
+        put_uri = self._eobj._uri + '?xsiType=%s&%s=%s' % (urllib.quote(self._get_datatype())
+                                                         , urllib.quote(path)
+                                                         , urllib.quote(value)
                                               )
 
         self._intf._exec(put_uri, 'PUT')
@@ -96,9 +97,9 @@ class EAttrs(object):
                 principles as the single `set()` method.
         """
 
-        query_str = '?' + '&'.join(['%s=%s' % (urllib.quote(path), 
+        query_str = '?xsiType=%s' % (urllib.quote(self._get_datatype())) + '&'.join(['%s=%s' % (urllib.quote(path),
                                                urllib.quote(val)
-                                               ) 
+                                               )
                                     for path, val in dict_attrs.items()
                                     ]
                                    )
@@ -132,15 +133,15 @@ class EAttrs(object):
         # unfortunately the return headers do not always have the
         # expected name
 
-        header = difflib.get_close_matches(path.split('/')[-1], 
+        header = difflib.get_close_matches(path.split('/')[-1],
                                            jdata.headers()
                                            )
         if header == []:
             header = difflib.get_close_matches(path, jdata.headers())[0]
         else:
             header = header[0]
-           
-        replaceSlashS = lambda x : x.replace('\s',' ')
+
+        replaceSlashS = lambda x : x.replace('\s', ' ')
         if type(jdata.get(header)) == list:
             return map(replaceSlashS, jdata.get(header))
         else:
@@ -177,7 +178,7 @@ class EAttrs(object):
         # expected name
 
         for path in paths:
-            header = difflib.get_close_matches(path.split('/')[-1], 
+            header = difflib.get_close_matches(path.split('/')[-1],
                                                jdata.headers())
 
             if header == []:
@@ -185,5 +186,5 @@ class EAttrs(object):
             else:
                 header = header[0]
             results.append(jdata.get(header).replace('\s', ' '))
-                
+
         return results

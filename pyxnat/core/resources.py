@@ -54,11 +54,11 @@ def get_element_from_collection(rsc_name):
         Element = globals()[rsc_name.title()]
         Collection = globals()[rsc_name.title() + 's']
 
-        return Collection([Element(join_uri(eobj._uri, rsc_name + 's', ID), 
+        return Collection([Element(join_uri(eobj._uri, rsc_name + 's', ID),
                                    self._intf
                                    )
                            for eobj in self
-                           ], 
+                           ],
                           self._intf
                           )
     return getter
@@ -68,7 +68,7 @@ def get_collection_from_element(rsc_name):
     def getter(self, id_filter='*'):
 
         Collection = globals()[rsc_name.title()]
-        return Collection(join_uri(self._uri, rsc_name), 
+        return Collection(join_uri(self._uri, rsc_name),
                           self._intf, id_filter
                           )
 
@@ -79,7 +79,7 @@ def get_collection_from_collection(rsc_name):
     def getter(self, id_filter='*'):
         Collection = globals()[rsc_name.title()]
 
-        return Collection(self, self._intf, id_filter, 
+        return Collection(self, self._intf, id_filter,
                           rsc_name, self._id_header, self._columns)
 
     return getter
@@ -87,7 +87,7 @@ def get_collection_from_collection(rsc_name):
 
 class ElementType(type):
     def __new__(cls, name, bases, dct):
-        rsc_name = name.lower()+'s' \
+        rsc_name = name.lower() + 's' \
             if name.lower() in schema.resources_singular \
             else name.lower()
 
@@ -104,7 +104,7 @@ class ElementType(type):
 
 class CollectionType(type):
     def __new__(cls, name, bases, dct):
-        rsc_name = name.lower()+'s' \
+        rsc_name = name.lower() + 's' \
             if name.lower() in schema.resources_singular \
             else name.lower()
 
@@ -150,7 +150,7 @@ class EObject(object):
         self.__init__(dict['uri'], dict['interface'])
 
     def __repr__(self):
-        return '<%s Object> %s' % (self.__class__.__name__, 
+        return '<%s Object> %s' % (self.__class__.__name__,
                                    urllib.unquote(uri_last(self._uri))
                                    )
 
@@ -184,9 +184,9 @@ class EObject(object):
 
         if filters != {}:
             get_id += '&' + \
-                '&'.join('%s=%s' % (item[0], item[1]) 
-                         if isinstance(item[1], basestring) 
-                         else '%s=%s' % (item[0], 
+                '&'.join('%s=%s' % (item[0], item[1])
+                         if isinstance(item[1], basestring)
+                         else '%s=%s' % (item[0],
                                          ','.join([val for val in item[1]])
                                          )
                          for item in filters.items()
@@ -303,8 +303,8 @@ class EObject(object):
             _uri = self._uri
             _uri += '?allowDataDeletion=true'
 
-            self._intf._exec(_uri, 
-                             method='PUT', 
+            self._intf._exec(_uri,
+                             method='PUT',
                              body=body,
                              headers={'content-type':content_type}
                              )
@@ -343,9 +343,9 @@ class EObject(object):
                 create_uri += '&%s/ID=%s' % (datatype, uri_last(self._uri))
 
             if local_params != []:
-                create_uri += '&' + '&'.join('%s=%s' % (key, 
+                create_uri += '&' + '&'.join('%s=%s' % (key,
                                                         params.get(key)
-                                                        ) 
+                                                        )
                                              for key in local_params
                                              )
 
@@ -357,7 +357,7 @@ class EObject(object):
 
         if not uri_nextlast(self._uri) == 'projects' \
                 and not parent_element.exists():
-            
+
             parent_datatype = params.get(uri_nextlast(parent_element._uri))
             if DEBUG:
                 print 'CREATE', parent_element, parent_datatype
@@ -365,7 +365,7 @@ class EObject(object):
 
         if DEBUG:
             print 'PUT', create_uri
-        
+
         output = self._intf._exec(create_uri, 'PUT')
 
         if is_xnat_error(output):
@@ -407,7 +407,7 @@ class EObject(object):
     def get(self):
         """ Retrieves the XML document corresponding to this element.
         """
-        return self._intf._exec(self._uri+'?format=xml', 'GET')
+        return self._intf._exec(self._uri + '?format=xml', 'GET')
 
     def xpath(self, xpath):
         root = etree.fromstring(self.get())
@@ -445,10 +445,10 @@ class EObject(object):
         if show_names:
             return children
 
-        return CObject([getattr(self, child)() for child in children], 
+        return CObject([getattr(self, child)() for child in children],
                        self._intf
                        )
-             
+
     def tag(self, name):
         """ Tag the element.
         """
@@ -501,7 +501,7 @@ class CObject(object):
             >>> for subject in interface.select.projects().subjects():
             >>>     print subject
     """
-    def __init__(self, cbase, interface, pattern='*', nested=None, 
+    def __init__(self, cbase, interface, pattern='*', nested=None,
                             id_header='ID', columns=[], filters={}):
 
         """ 
@@ -533,7 +533,7 @@ class CObject(object):
         self._columns = columns
         self._filters = filters
         self._nested = nested
-        
+
         if isinstance(cbase, basestring):
             self._ctype = 'cobjectcuri'
         elif isinstance(cbase, CObject):
@@ -548,7 +548,7 @@ class CObject(object):
         elif isinstance(cbase, list) and cbase == []:
             self._ctype = 'cobjectempty'
         else:
-            raise Exception('Invalid collection accessor type: %s'%cbase)
+            raise Exception('Invalid collection accessor type: %s' % cbase)
 
     def __repr__(self):
         return '<Collection Object> %s' % id(self)
@@ -560,11 +560,11 @@ class CObject(object):
 
             request_shape = uri_shape(
                 '%s/0' % uri.split(self._intf._get_entry_point(), 1)[1])
-            reqcache = os.path.join(self._intf._cachedir, 
+            reqcache = os.path.join(self._intf._cachedir,
                                    '%s.struct' % md5name(request_shape)
                                    ).replace('_*', '')
 
-            gather = uri.split('/')[-1] in ['experiments', 'assessors', 
+            gather = uri.split('/')[-1] in ['experiments', 'assessors',
                                             'scans', 'reconstructions']
 
             tick = time.gmtime(time.time())[5] % \
@@ -593,7 +593,7 @@ class CObject(object):
             #         )
 
             #     # print pattern, request_pat, fnmatch(pattern, request_pat)
-                                              
+
             #     if (fnmatch(pattern, request_pat) 
             #         and struct[pattern] is not None):
 
@@ -602,10 +602,10 @@ class CObject(object):
 
             if self._filters != {}:
                 query_string += '&' + '&'.join(
-                    '%s=%s' % (item[0], item[1]) 
-                    if isinstance(item[1], (str, unicode)) 
+                    '%s=%s' % (item[0], item[1])
+                    if isinstance(item[1], (str, unicode))
                     else '%s=%s' % (
-                        item[0], ','.join([val for val in item[1]]) )
+                        item[0], ','.join([val for val in item[1]]))
                     for item in self._filters.items()
                     )
 
@@ -664,13 +664,13 @@ class CObject(object):
                             self._run_callback(self, eobj)
                             yield eobj
                         else:
-                            Klass = globals().get(self._nested.title(), 
+                            Klass = globals().get(self._nested.title(),
                                                   self._intf.__class__)
                             for subeobj in Klass(
                                 cbase=join_uri(eobj._uri, self._nested),
-                                interface=self._intf, 
-                                pattern=self._pattern, 
-                                id_header=self._id_header, 
+                                interface=self._intf,
+                                pattern=self._pattern,
+                                id_header=self._id_header,
                                 columns=self._columns):
 
                                 try:
@@ -693,13 +693,13 @@ class CObject(object):
                         self._run_callback(self, eobj)
                         yield eobj
                     else:
-                        Klass = globals().get(self._nested.title(), 
+                        Klass = globals().get(self._nested.title(),
                                               self._intf.__class__)
                         for subeobj in Klass(
                             cbase=join_uri(eobj._uri, self._nested),
-                            interface=self._intf, 
-                            pattern=self._pattern, 
-                            id_header=self._id_header, 
+                            interface=self._intf,
+                            pattern=self._pattern,
+                            id_header=self._id_header,
                             columns=self._columns):
 
                             try:
@@ -719,13 +719,13 @@ class CObject(object):
                         self._run_callback(self, eobj)
                         yield eobj
                     else:
-                        Klass = globals().get(self._nested.rstrip('s').title(), 
+                        Klass = globals().get(self._nested.rstrip('s').title(),
                                               self._intf.__class__)
                         for subeobj in Klass(
                             cbase=join_uri(eobj._uri, self._nested),
-                            interface=self._intf, 
-                            pattern=self._pattern, 
-                            id_header=self._id_header, 
+                            interface=self._intf,
+                            pattern=self._pattern,
+                            id_header=self._id_header,
                             columns=self._columns):
 
                             try:
@@ -745,13 +745,13 @@ class CObject(object):
                         self._run_callback(self, eobj)
                         yield eobj
                     else:
-                        Klass = globals().get(self._nested.title(), 
+                        Klass = globals().get(self._nested.title(),
                                               self._intf.__class__)
                         for subeobj in Klass(
                             cbase=join_uri(eobj._uri, self._nested),
-                            interface=self._intf, 
-                            pattern=self._pattern, 
-                            id_header=self._id_header, 
+                            interface=self._intf,
+                            pattern=self._pattern,
+                            id_header=self._id_header,
                             columns=self._columns):
 
                             try:
@@ -772,16 +772,16 @@ class CObject(object):
                             self._run_callback(self, eobj)
                             yield eobj
                         else:
-                            Klass = globals().get(cobj._nested.title(), 
+                            Klass = globals().get(cobj._nested.title(),
                                                   self._intf.__class__)
 
                             for subeobj in Klass(
                                 cbase=join_uri(eobj._uri, cobj._nested),
-                                interface=cobj._intf, 
-                                pattern=cobj._pattern, 
-                                id_header=cobj._id_header, 
+                                interface=cobj._intf,
+                                pattern=cobj._pattern,
+                                id_header=cobj._id_header,
                                 columns=cobj._columns):
-                                
+
                                 try:
                                     self._run_callback(self, eobj)
                                     yield subeobj
@@ -834,12 +834,12 @@ class CObject(object):
                 for arg in args:
                     if arg == 'id':
                         self._id_header = 'ID'
-                        entry += (urllib.unquote(uri_last(eobj._uri)), )
+                        entry += (urllib.unquote(uri_last(eobj._uri)),)
                     elif arg == 'label':
                         self._id_header = 'label'
-                        entry += (urllib.unquote(uri_last(eobj._uri)), )
+                        entry += (urllib.unquote(uri_last(eobj._uri)),)
                     else:
-                        entry += (eobj, )
+                        entry += (eobj,)
 
                 entries.append(entry)
 
@@ -936,14 +936,14 @@ class CObject(object):
         # return results
 
         results = query_with(
-            interface=self._intf, 
-            join_field='xnat:subjectData/SUBJECT_ID', 
+            interface=self._intf,
+            join_field='xnat:subjectData/SUBJECT_ID',
             common_field='SUBJECT_ID',
-            return_values=['xnat:subjectData/PROJECT', 
+            return_values=['xnat:subjectData/PROJECT',
                            'xnat:subjectData/SUBJECT_ID'],
             _filter=constraints
             )
-        
+
         searchpop = ['%s/projects/' % self._intf._get_entry_point() + \
                      '%(project)s/subjects/%(subject_id)s' % res
                      for res in results
@@ -954,7 +954,7 @@ class CObject(object):
             first = cobj.first()
             if not first:
                 break
- 
+
             if uri_nextlast(first._uri) == 'subjects':
                 break
 
@@ -981,8 +981,8 @@ class CObject(object):
 
 class Project(EObject):
     __metaclass__ = ElementType
-    
-    def __init__(self,  uri, interface):
+
+    def __init__(self, uri, interface):
         """ 
             Parameters
             ----------
@@ -991,7 +991,7 @@ class Project(EObject):
             interface: Interface Object
         """
 
-        EObject.__init__(self,  uri, interface)
+        EObject.__init__(self, uri, interface)
         # self.pipelines = Pipelines(self.id(), self._intf)
 
     def prearchive_code(self):
@@ -1006,7 +1006,7 @@ class Project(EObject):
             ----------
             code: 0 to 4
         """
-        self._intf._exec(join_uri(self._uri, 'prearchive_code', code), 
+        self._intf._exec(join_uri(self._uri, 'prearchive_code', code),
                          'PUT')
 
     def quarantine_code(self):
@@ -1021,7 +1021,7 @@ class Project(EObject):
             ----------
             code: 0 to 1
         """
-        self._intf._exec(join_uri(self._uri, 'quarantine_code', code), 
+        self._intf._exec(join_uri(self._uri, 'quarantine_code', code),
                          'PUT')
 
     def current_arc(self):
@@ -1034,8 +1034,8 @@ class Project(EObject):
         """
         current_arc = self._intf._exec(join_uri(self._uri, 'current_arc'))
 
-        self._intf._exec(join_uri(self._uri, 'current_arc', 
-                                  current_arc, subfolder), 
+        self._intf._exec(join_uri(self._uri, 'current_arc',
+                                  current_arc, subfolder),
                          'PUT')
 
     def accessibility(self):
@@ -1061,7 +1061,7 @@ class Project(EObject):
                     - private: the project is visible by allowed users only.
 
         """
-        return self._intf._exec(join_uri(self._uri, 'accessibility', 
+        return self._intf._exec(join_uri(self._uri, 'accessibility',
                                          accessibility), 'PUT')
 
     def users(self):
@@ -1125,10 +1125,10 @@ class Project(EObject):
                       not remove them.
                     - collaborator: read access only.
         """
-        self._intf._exec(join_uri(self._uri, 'users', 
-                                  role.lstrip('s').title() + 's', 
+        self._intf._exec(join_uri(self._uri, 'users',
+                                  role.lstrip('s').title() + 's',
                                   login
-                                  ), 
+                                  ),
                          'PUT')
 
     def remove_user(self, login):
@@ -1140,7 +1140,7 @@ class Project(EObject):
                 Valid username for the XNAT database.
         """
         self._intf._exec(join_uri(self._uri, 'users',
-                                  self.user_role(login).title()+'s', 
+                                  self.user_role(login).title() + 's',
                                   login
                                   ),
                          'DELETE')
@@ -1149,15 +1149,27 @@ class Project(EObject):
         return 'xnat:projectData'
 
     def experiments(self, id_filter='*'):
-        return Experiments('%s/experiments' % self._intf._get_entry_point(), 
-                           self._intf, 
-                           id_filter, 
-                           filters={'project':self.id()}
+        datapath = '%s/projects/%s/experiments'
+
+        return Experiments(datapath % (self._intf._get_entry_point(), self.id()),
+                           self._intf,
+                           id_filter
                            )
 
     def experiment(self, ID):
-        return Experiment('%s/experiments/%s' % (
-                self._intf._get_entry_point(), ID), 
+        datapath = '%s/projects/%s/experiments/%s'
+
+        tmp = Experiment(datapath % (
+                self._intf._get_entry_point(), self.id(), ID),
+                          self._intf
+                          )
+        if tmp.id() == ID:
+            return tmp
+        else:
+            #if id id not mach given id (which may have been a label
+            #re-select with the ID of the matching experiment.
+            return Experiment(datapath % (
+                self._intf._get_entry_point(), self.id(), tmp.id()),
                           self._intf
                           )
 
@@ -1169,7 +1181,7 @@ class Project(EObject):
         """
         uri = '%s/subjects?columns=last_modified' % self._uri
 
-        return dict(JsonTable(self._intf._get_json(uri), 
+        return dict(JsonTable(self._intf._get_json(uri),
                               order_by=['ID', 'last_modified']
                               ).select(['ID', 'last_modified']
                                        ).items()
@@ -1207,11 +1219,11 @@ class Project(EObject):
 
             try:
                 definitions_element = protocol_element.xpath(
-                    'xnat:definitions', namespaces = tree.nsmap).pop()
+                    'xnat:definitions', namespaces=tree.nsmap).pop()
             except IndexError:
                 update = True
                 definitions_element = lxml.etree.Element(
-                    lxml.etree.QName(tree.nsmap['xnat'],'definitions'),
+                    lxml.etree.QName(tree.nsmap['xnat'], 'definitions'),
                     nsmap=tree.nsmap
                     )
                 protocol_element.append(definitions_element)
@@ -1220,26 +1232,26 @@ class Project(EObject):
                 try:
                     group_element = definitions_element.xpath(
                         "xnat:definition[@ID='%s']" % group,
-                        namespaces = tree.nsmap).pop()
+                        namespaces=tree.nsmap).pop()
 
                     fields_element = group_element.xpath(
                         "xnat:fields",
-                        namespaces = tree.nsmap).pop()
+                        namespaces=tree.nsmap).pop()
                 except IndexError:
                     update = True
                     group_element = lxml.etree.Element(
-                        lxml.etree.QName(tree.nsmap['xnat'],'definition'),
-                        nsmap = tree.nsmap
+                        lxml.etree.QName(tree.nsmap['xnat'], 'definition'),
+                        nsmap=tree.nsmap
                         )
                     group_element.set('ID', group)
                     group_element.set(
                         'data-type', protocol_element.get('data-type'))
-                    group_element.set('description','')
-                    group_element.set('project-specific','1')
+                    group_element.set('description', '')
+                    group_element.set('project-specific', '1')
                     definitions_element.append(group_element)
                     fields_element = lxml.etree.Element(
-                        lxml.etree.QName(tree.nsmap['xnat'],'fields'),
-                        nsmap = tree.nsmap
+                        lxml.etree.QName(tree.nsmap['xnat'], 'fields'),
+                        nsmap=tree.nsmap
                         )
                     group_element.append(fields_element)
 
@@ -1247,17 +1259,17 @@ class Project(EObject):
                     try:
                         field_element = fields_element.xpath(
                             "xnat:field[@name='%s']" % field,
-                            namespaces = tree.nsmap).pop()
+                            namespaces=tree.nsmap).pop()
                     except IndexError:
                         field_element = lxml.etree.Element(
-                            lxml.etree.QName(tree.nsmap['xnat'],'field'),
-                            nsmap = tree.nsmap)
+                            lxml.etree.QName(tree.nsmap['xnat'], 'field'),
+                            nsmap=tree.nsmap)
                         field_element.set('name', field)
                         field_element.set('datatype', datatype)
                         field_element.set('type', 'custom')
                         field_element.set('required', '0')
                         field_element.set(
-                            'xmlPath', 
+                            'xmlPath',
                             "xnat:%s/fields/field[name=%s]/field" % (
                                 protocol_element.get(
                                     'data-type').split(':')[-1], field)
@@ -1276,7 +1288,7 @@ class Project(EObject):
             if allow_data_deletion:
                 uri = self._uri + '?allowDataDeletion=true'
             self._intf._exec(uri, method='PUT', body=body,
-                             headers= {'content-type':content_type})
+                             headers={'content-type':content_type})
 
     def get_custom_variables(self):
         """Retrieves custom variables as a dictionary
@@ -1323,7 +1335,7 @@ class Subject(EObject):
             -------
             Collection object.
         """
-        return Projects(join_uri(self._uri, 'projects'), 
+        return Projects(join_uri(self._uri, 'projects'),
                         self._intf, id_filter)
 
     def share(self, project):
@@ -1357,7 +1369,7 @@ class Experiment(EObject):
             -------
             Collection object.
         """
-        return Projects(join_uri(self._uri, 'projects'), 
+        return Projects(join_uri(self._uri, 'projects'),
                         self._intf, id_filter)
 
     def share(self, project):
@@ -1383,18 +1395,18 @@ class Experiment(EObject):
     def trigger_pipelines(self):
         """ Triggers the AutoRun pipeline.
         """
-        self._intf._exec(self._uri+'?triggerPipelines=true', 'PUT')
+        self._intf._exec(self._uri + '?triggerPipelines=true', 'PUT')
 
     def fix_scan_types(self):
         """ Populate empty scan TYPE attributes based on how similar 
             scans were populated.
         """
-        self._intf._exec(self._uri+'?fixScanTypes=true', 'PUT')
+        self._intf._exec(self._uri + '?fixScanTypes=true', 'PUT')
 
     def pull_data_from_headers(self):
         """ Pull DICOM header values into the session.
         """
-        self._intf._exec(self._uri+'?pullDataFromHeaders=true', 'PUT')
+        self._intf._exec(self._uri + '?pullDataFromHeaders=true', 'PUT')
 
     def trigger(self, pipelines=True, fix_types=True, scan_headers=True):
         """ Run several triggers in a single call.
@@ -1418,15 +1430,15 @@ class Experiment(EObject):
                 options.append('pullDataFromHeaders=true')
 
             options = '?' + '&'.join(options)
-    
+
             self._intf._exec(self._uri + options, 'PUT')
 
 
 class Assessor(EObject):
     __metaclass__ = ElementType
 
-    def __init__(self,  uri, interface):
-        EObject.__init__(self,  uri, interface)
+    def __init__(self, uri, interface):
+        EObject.__init__(self, uri, interface)
 
         self.provenance = Provenance(self)
 
@@ -1437,7 +1449,7 @@ class Assessor(EObject):
             -------
             Collection object.
         """
-        return Projects(join_uri(self._uri, 'projects'), 
+        return Projects(join_uri(self._uri, 'projects'),
                         self._intf, id_filter)
 
     def share(self, project):
@@ -1463,17 +1475,17 @@ class Assessor(EObject):
 
     def set_param(self, key, value):
         self.attrs.set('%s/parameters/addParam[name=%s]/addField' \
-                           % (self.datatype(), key), 
+                           % (self.datatype(), key),
                        value
                        )
 
     def get_param(self, key):
         return self.xpath(
-            "//xnat:addParam[@name='%s']/child::text()" % key)[-1]     
+            "//xnat:addParam[@name='%s']/child::text()" % key)[-1]
 
     def get_params(self):
         return self.xpath("//xnat:addParam/child::text()")[1::2]
-    
+
     def params(self):
         return self.xpath('//xnat:addParam/attribute::*')
 
@@ -1481,13 +1493,13 @@ class Assessor(EObject):
 class Reconstruction(EObject):
     __metaclass__ = ElementType
 
-    def __init__(self,  uri, interface):
-        EObject.__init__(self,  uri, interface)
+    def __init__(self, uri, interface):
+        EObject.__init__(self, uri, interface)
 
         self.provenance = Provenance(self)
 
     def datatype(self):
-        return (super(Reconstruction, self).datatype() 
+        return (super(Reconstruction, self).datatype()
                 or 'xnat:reconstructedImageData'
                 )
 
@@ -1496,17 +1508,17 @@ class Scan(EObject):
 
     def set_param(self, key, value):
         self.attrs.set('%s/parameters/addParam[name=%s]/addField' \
-                           % (self.datatype(), key), 
+                           % (self.datatype(), key),
                        value
                        )
 
     def get_param(self, key):
         return self.xpath(
-            "//xnat:addParam[@name='%s']/child::text()" % key)[-1]     
+            "//xnat:addParam[@name='%s']/child::text()" % key)[-1]
 
     def get_params(self):
         return self.xpath("//xnat:addParam/child::text()")[1::2]
-    
+
     def params(self):
         return self.xpath('//xnat:addParam/attribute::*')
 
@@ -1546,22 +1558,22 @@ class Resource(EObject):
         if dest_dir is not None:
             self._intf._http.cache.preset(zip_location)
 
-        self._intf._exec(join_uri(self._uri, 'files')+'?format=zip')
+        self._intf._exec(join_uri(self._uri, 'files') + '?format=zip')
 
         fzip = zipfile.ZipFile(zip_location, 'r')
         fzip.extractall(path=dest_dir)
         fzip.close()
 
-        members = []            
+        members = []
 
         for member in fzip.namelist():
             old_path = os.path.join(dest_dir, member)
             print member
-            print member.split('files',1)
+            print member.split('files', 1)
             new_path = os.path.join(
-                dest_dir, 
+                dest_dir,
                 uri_last(self._uri)
-                
+
                 #, member.split('files', 1)[1].split(os.sep, 2)[2]
                 )
 
@@ -1586,7 +1598,7 @@ class Resource(EObject):
             arcprefix = os.path.commonprefix(members)
             arcroot = '/%s' % os.path.split(arcprefix.rstrip('/'))[1]
             for member in members:
-                fzip.write(member, os.path.join(arcroot, 
+                fzip.write(member, os.path.join(arcroot,
                                                 member.split(arcprefix)[1])
                            )
             fzip.close()
@@ -1607,7 +1619,7 @@ class Resource(EObject):
             the server.
         """
         zip_location = tempfile.mkstemp(suffix='.zip')[1]
-        
+
         arcprefix = os.path.commonprefix(sources)
         arcroot = '/%s' % os.path.split(arcprefix.rstrip('/'))[1]
 
@@ -1631,7 +1643,7 @@ class Resource(EObject):
 
         self.file(os.path.split(zip_location)[1] + '?extract=true'
                   ).put(zip_location)
-        
+
     def put_dir(self, src_dir, **datatypes):
         """ Finds recursively all the files in a folder and uploads
             them using `insert`.
@@ -1643,7 +1655,7 @@ class Resource(EObject):
     dir_insert = put_dir
 
     def datatype(self):
-        return (super(Reconstruction, self).datatype() 
+        return (super(Reconstruction, self).datatype()
                 or 'xnat:abstractResource'
                 )
 
@@ -1668,7 +1680,7 @@ class File(EObject):
     """
     __metaclass__ = ElementType
 
-    def __init__(self,  uri, interface):
+    def __init__(self, uri, interface):
         """ 
             Parameters
             ----------
@@ -1677,12 +1689,12 @@ class File(EObject):
             interface: Interface Object
         """
 
-        EObject.__init__(self,  uri, interface)
+        EObject.__init__(self, uri, interface)
         self._urn = file_path(uri)
-        self._absuri = None        
+        self._absuri = None
 
     def __repr__(self):
-        return '<%s Object> %s' % (self.__class__.__name__, 
+        return '<%s Object> %s' % (self.__class__.__name__,
                                    self._urn
                                    )
 
@@ -1701,7 +1713,7 @@ class File(EObject):
             dict : a dictionnary with the file attributes
         """
 
-        return self._getcells(['URI', 'Name', 'Size', 'path', 
+        return self._getcells(['URI', 'Name', 'Size', 'path',
                                'file_tags', 'file_format', 'file_content'])
 
     def get(self, dest=None, force_default=False):
@@ -1743,7 +1755,7 @@ class File(EObject):
                 self._intf._http.cache.get_diskpath(
                 '%s%s' % (self._intf._server, self._absuri)
                 )
-                
+
             self._intf._http.cache.preset(_location)
 
         self._intf._exec(self._uri, 'GET')
@@ -1771,7 +1783,7 @@ class File(EObject):
         if not dest:
             dest = os.path.join(self._intf._http.cache.cache, 'workspace',
                                 *self._absuri.strip('/').split('/')[1:])
-            
+
         if not os.path.exists(os.path.dirname(dest)):
             os.makedirs(os.path.dirname(dest))
 
@@ -1779,10 +1791,10 @@ class File(EObject):
 
         if src != dest:
             shutil.copy2(src, dest)
-            
+
         return dest
 
-    def put(self, src, format='U', content='U', tags='U', **datatypes):
+    def put(self, src, format='U', content='U', tags='U', overwrite=False, **datatypes):
         """ Uploads a file to XNAT.
 
             Parameters
@@ -1799,6 +1811,9 @@ class File(EObject):
             tags: string
                 Optional parameter to specify tags for the file. 
                 Defaults to 'U'.
+            overwrite: boolean
+                Optional parameter to specify if the file should be overwritten.
+                Defaults to False
         """
 
         format = urllib.quote(format)
@@ -1819,8 +1834,8 @@ class File(EObject):
 
         content_type = mimetypes.guess_type(path)[0] or \
             'application/octet-stream'
-            
-        body, content_type = httputil.file_message(src, content_type, 
+
+        body, content_type = httputil.file_message(src, content_type,
                                                    path, name
                                                    )
 
@@ -1832,15 +1847,17 @@ class File(EObject):
         resource_id = self._intf.select(guri).id()
 
         self._absuri = urllib.unquote(
-            re.sub('resources/.*?/', 
+            re.sub('resources/.*?/',
                    'resources/%s/' % resource_id, self._uri)
             )
 
         query_args = {
-            'format': format, 
-            'content': content, 
+            'format': format,
+            'content': content,
             'tags': tags,
             }
+        if overwrite:
+            query_args['overwrite'] = "true"
 
         if '?' in self._absuri:
             k, v = self._absuri.split('?')[1].split('=')
@@ -1849,13 +1866,14 @@ class File(EObject):
 
         put_uri = '%s?%s' % (
             self._absuri,
-            '&'.join('%s=%s' % (k,v) for k, v in query_args.items())
+            '&'.join('%s=%s' % (k, v) for k, v in query_args.items())
             )
-        
+
         # print 'INSERT FILE', os.path.exists(src)
+        # print "URI is: " + put_uri
 
         self._intf._exec(
-            put_uri, 'PUT', body, 
+            put_uri, 'PUT', body,
             headers={'content-type':content_type}
             )
 
@@ -1948,7 +1966,7 @@ class Subjects(CObject):
     def sharing(self, projects=[]):
         return Subjects([eobj for eobj in self
                          if set(projects).issubset(eobj.shares().get())
-                         ], 
+                         ],
                         self._intf
                         )
 
@@ -1966,7 +1984,7 @@ class Experiments(CObject):
     def sharing(self, projects=[]):
         return Experiments([eobj for eobj in self
                             if set(projects).issubset(eobj.shares().get())
-                            ], 
+                            ],
                            self._intf
                            )
 
@@ -1984,7 +2002,7 @@ class Assessors(CObject):
     def sharing(self, projects=[]):
         return Assessors([eobj for eobj in self
                           if set(projects).issubset(eobj.shares().get())
-                          ], 
+                          ],
                          self._intf
                          )
 
@@ -2001,9 +2019,9 @@ class Assessors(CObject):
         """
         A wrapper around :func:`downloadutils.download`
         """
-        return downloadutils.download(dest_dir, self, type, name, 
+        return downloadutils.download(dest_dir, self, type, name,
                                       extract, safe)
-        
+
 class Reconstructions(CObject):
     __metaclass__ = CollectionType
 
@@ -2012,9 +2030,9 @@ class Reconstructions(CObject):
         """
         A wrapper around :func:`downloadutils.download`
         """
-        return downloadutils.download(dest_dir, self, type, name, 
+        return downloadutils.download(dest_dir, self, type, name,
                                       extract, safe)
-        
+
 class Scans(CObject):
     __metaclass__ = CollectionType
 
@@ -2024,9 +2042,9 @@ class Scans(CObject):
         A wrapper around :func:`downloadutils.download`
 
         """
-        return downloadutils.download(dest_dir, self, type, name, 
+        return downloadutils.download(dest_dir, self, type, name,
                                       extract, safe)
-        
+
 class Resources(CObject):
     __metaclass__ = CollectionType
 
@@ -2060,17 +2078,17 @@ def _datatypes_from_query(query):
     return datatypes
 
 
-def query_with(interface, join_field, 
+def query_with(interface, join_field,
                common_field, return_values, _filter):
 
     _stm = (join_field.split('/')[0], return_values)
-    _cls = rewrite_query(interface, join_field, 
+    _cls = rewrite_query(interface, join_field,
                          common_field, _filter)
 
     return interface.select(*_stm).where(_cls)
 
 
-def rewrite_query(interface, join_field, 
+def rewrite_query(interface, join_field,
                   common_field, _filter):
 
     _new_filter = []
@@ -2085,7 +2103,7 @@ def rewrite_query(interface, join_field,
             _res = interface.select(
                 _datatype, ['%s/%s' % (_datatype, common_field)]
                 ).where([_f, 'AND'])
-            
+
             _new_f = [(join_field, '=', '%s' % sid)
                       for sid in _res['subject_id']
                       ]
