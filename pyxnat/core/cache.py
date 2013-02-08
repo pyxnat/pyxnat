@@ -19,21 +19,7 @@ DEBUG = False
 def md5name(key):
     """ Generates a unique path to store server responses.
     """
-
-    ext = re.findall('.*?(?=(\?format=.+?(?=\?|&|$)|'
-                     '\&format=.+?(?=\?|&|$)))', key)
-    
-    if ext != []:
-        last = key.split('?')[0].split('/')[-1]
-        key = key.replace(ext[0], '')
-        ext = ext[0].split('format')[1]
-        key += ext
-        last += ext
-    else:
-        last = key.split('/')[-1]
-
-    key, _ = os.path.split(key)
-    return '%s_%s' % (hashlib.md5(key).hexdigest(), last.replace('=', '.'))
+    return hashlib.md5(key).hexdigest()
 
 def bytes_to_human(size, unit):
     """ Returns a more human readable version of a size in bytes.
