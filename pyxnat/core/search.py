@@ -44,7 +44,7 @@ def build_search_document(root_element_name, columns, criteria_set,
     root_node.append(root_element_name_node)
 
     for i, column in enumerate(columns):
-        element_name, field_ID = column.split('/')
+        element_name, field_ID = column.split('/', 1)
 
         search_field_node = \
             etree.Element(etree.QName(search_nsmap['xdat'], 'search_field'),
@@ -708,12 +708,15 @@ class Search(object):
         headers_of_interest = []
 
         for column in self._columns:
-            headers_of_interest.append(
-                difflib.get_close_matches(
-                    column.split(self._row + '/')[0].lower() \
-                        or column.split(self._row + '/')[1].lower(),
-                    headers)[0]
-                )
+            try:
+                headers_of_interest.append(
+                    difflib.get_close_matches(
+                        column.split(self._row + '/')[0].lower() \
+                            or column.split(self._row + '/')[1].lower(),
+                        headers)[0]
+                    )
+            except IndexError:
+                headers_of_interest.append('unknown')
 
         if len(self._columns) != len(headers_of_interest):
             raise DataError('unvalid response headers')
