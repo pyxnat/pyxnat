@@ -1,0 +1,22 @@
+# vim ft=yaml
+#
+# travis-ci.org definition for pyxnat build (based on PyMVPA
+# configuration, which is based on nipype configuration
+# which in turn was based on nipy)
+#
+# We pretend to be erlang because we need can't use the python support in
+# travis-ci; it uses virtualenvs, they do not have numpy, scipy, matplotlib,
+# and it is impractical to build them
+language: erlang 
+env: 
+ global:
+    - PY=python PYSUF=''
+    # - PYTHON=python3 PYSUF=3 : enable later when all dependencies are avail
+ matrix:
+    - PYTHON=$PY 
+install:
+    - sudo apt-get install $PY-all
+    - sudo apt-get install $PY-lxml $PY-httplib2 $PY-simplejson $PY-nose
+script:
+    # Run tests excluding some known to fail
+    - $PY /usr/bin/nosetests -v --exclude="test_(del_provenance|attr_mset|subject._delete)" pyxnat
