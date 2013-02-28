@@ -6,7 +6,7 @@ from .resources import CObject
 
 
 class Tags(object):
-    """ Database tags sub-interface. 
+    """ Database tags sub-interface.
         It is meant to be an attribute of the main Interface class.
     """
 
@@ -52,7 +52,7 @@ class Tag(object):
         self._intf.manage.tags._init()
         self._file = self._intf.manage.tags._meta_project.subject(
             self._intf._user).resource('tags').file(name)
-        
+
     def __repr__(self):
         return '<Tag> %s'%self._name
 
@@ -75,7 +75,7 @@ class Tag(object):
 
     def delete(self):
         if self.exists():
-            self._file.delete()            
+            self._file.delete()
 
     def exists(self):
         return self._file.exists()
