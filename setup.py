@@ -52,6 +52,6 @@ setup(name='pyxnat',
           'Topic :: Internet :: WWW/HTTP',
       ],
 
-      platforms='any',
+      platforms='any', requires=['httplib2'],
       **extra_setuptools_args)
 

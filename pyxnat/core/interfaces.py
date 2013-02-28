@@ -5,9 +5,11 @@ import tempfile
 import email
 import getpass
 
+import socks
 import httplib2
 import json
 
+from urlparse import urlparse
 from .select import Select
 from .cache import CacheManager, HTCache
 from .help import Inspector, GraphData, PaintGraph, _DRAW_GRAPHS
@@ -23,15 +25,12 @@ from . import xpass
 
 DEBUG = False
 
+
 # main entry point
 class Interface(object):
     """ Main entry point to access a XNAT server.
 
-        >>> central = Interface(server='http://central.xnat.org:8080',
-                                user='login',
-                                password='pwd',
-                                cachedir='/tmp'
-                                )
+        >>> central = Interface(server='http://central.xnat.org:8080', user='login', password='pwd', cachedir='/tmp')
 
         Or with config file:
 
@@ -60,7 +59,7 @@ class Interface(object):
 
     def __init__(self, server=None, user=None, password=None, 
                  cachedir=tempfile.gettempdir(), config=None, 
-                 anonymous=False):
+                 anonymous=False, proxy=None):
         """ 
             Parameters
             ----------
@@ -83,13 +82,19 @@ class Interface(object):
                 If no path is provided, a platform dependent temp dir is 
                 used.
             config: string
-               Reads a config file in json to get the connection parameters.
-               If a config file is specified, it will be used regardless of
-               other parameters that might have been given.
+                Reads a config file in json to get the connection parameters.
+                If a config file is specified, it will be used regardless of
+                other parameters that might have been given.
             anonymous: boolean
-               Indicates an unauthenticated connection.  If True, user 
-               and password are ignored and a session is started with 
-               no credentials.
+                Indicates an unauthenticated connection.  If True, user
+                and password are ignored and a session is started with
+                no credentials.
+            proxy: string | None
+                Indicates the full URL for an HTTP proxy server to be used for
+                transactions with the specified XNAT server. If you need to specify
+                a username and password for proxy access, prepend them to the hostname:
+                http://user:pass@hostname:port
+
         """
 
         self._interactive = False
@@ -104,6 +109,11 @@ class Interface(object):
             else:
                 self._server = server
                 self._interactive = False
+
+            if proxy is None:
+                self._proxy = None
+            else:
+                self._proxy = urlparse(proxy)
 
             self._user = None
             self._pwd = None
@@ -139,6 +149,12 @@ class Interface(object):
                         )
                     )
 
+                proxy = connection_args['proxy']
+                if proxy is None:
+                    self._proxy = None
+                else:
+                    self._proxy = urlparse(proxy)
+
             elif config is not None:
                 self.load_config(config)
 
@@ -164,6 +180,11 @@ class Interface(object):
                             '/', '.').replace(':', '_')
                         )
                     )
+
+                if proxy is None:
+                    self._proxy = None
+                else:
+                    self._proxy = urlparse(proxy)
 
         self._callback = None
 
@@ -250,7 +271,19 @@ class Interface(object):
         
         kwargs['disable_ssl_certificate_validation'] = True
 
-        if DEBUG:   
+        # If a proxy was configured, then add that in.
+        if not self._proxy is None:
+            if self._proxy.username is None:
+                kwargs['proxy_info'] = httplib2.ProxyInfo(socks.PROXY_TYPE_HTTP, self._proxy.hostname, self._proxy.port)
+            else:
+                kwargs['proxy_info'] = httplib2.ProxyInfo(socks.PROXY_TYPE_HTTP,
+                                                          self._proxy.hostname,
+                                                          self._proxy.port,
+                                                          None,
+                                                          self._proxy.username,
+                                                          self._proxy.password)
+
+        if DEBUG:
             httplib2.debuglevel = 2
 
         # compatibility with httplib2 < 0.7
@@ -515,6 +548,13 @@ class Interface(object):
                         '/', '.').replace(':', '_')
                     )
                 )
+
+            proxy = str(config['cachedir'])
+            if proxy is None:
+                self._proxy = None
+            else:
+                self._proxy = urlparse(proxy)
+
         else:
             raise Exception('Configuration file does not exists.')
 
