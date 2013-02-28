@@ -274,8 +274,8 @@ class Select(object):
             Parameters
             ----------
             id_filter: string
-                Name pattern to filter the returned experiments (MUST BE XNAT ID's not labels).
-                
+                Name pattern to filter the returned experiments
+                (MUST BE XNAT ID's not labels).
         """
         self._intf._get_entry_point()
 

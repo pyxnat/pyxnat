@@ -1,3 +1,13 @@
+"""
+PyXNAT
+======
+
+pyxnat provides an API to access data on XNAT (see http://xnat.org)
+servers.
+
+Visit http://packages.python.org/pyxnat for more information.
+"""
+
 __version__ = '0.9.4'
 
 from .core import Interface

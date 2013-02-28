@@ -17,7 +17,7 @@ def unzip(fzip,
         ----------
         src: fzip
             zipfile
-        dest_dir: string   
+        dest_dir: string
             directory into which to extract the archive
         check: dict
             An dictionary that has the keys:
@@ -35,7 +35,7 @@ def unzip(fzip,
 
     fzip.extractall(path=dest_dir)
     return (True, map (lambda f: os.path.join(dest_dir,f),fzip.namelist()))
-    
+
 def download (dest_dir, instance=None,type="ALL",name=None, extract=False, safe=False):
     """
     Download all the files at this level that match the given constraint as a zip archive. Should not be called directly
@@ -83,7 +83,7 @@ def download (dest_dir, instance=None,type="ALL",name=None, extract=False, safe=
         ------
         A path to the zip archive if "extract" is False, and a list of extracted files if True.
     """
-    
+
     if instance is None:
         raise Exception('This function should be called directly but from an instance of a class that supports bulk downloading, eg. "Scans"')
     if dest_dir is None:
@@ -119,9 +119,9 @@ def download (dest_dir, instance=None,type="ALL",name=None, extract=False, safe=
 
     # Make the name of the zip file
     default_zip_name = lambda: '%s_%s_%s_%s_%s' % (
-        p, s, e, class_name(instance).lower(), '_'.join(types.values())) 
+        p, s, e, class_name(instance).lower(), '_'.join(types.values()))
 
-    zip_name = name if name != None else default_zip_name()    
+    zip_name = name if name != None else default_zip_name()
     zip_location = os.path.join(dest_dir, zip_name + '.zip')
 
     if safe:
@@ -132,12 +132,12 @@ def download (dest_dir, instance=None,type="ALL",name=None, extract=False, safe=
     instance._intf._http.cache.preset(zip_location)
     instance._intf._exec(uriutil.join_uri(
             instance._cbase,','.join(types.values())) + '/files?format=zip')
-    
+
     # Extract the archive
     fzip = zipfile.ZipFile(zip_location,'r')
     if extract:
         check = {'run': lambda f, d: not os.path.exists(os.path.join(dest_dir,f)),
-                 'desc': 'File does not exist in the parent directory'}                                     
+                 'desc': 'File does not exist in the parent directory'}
         safeUnzip = lambda: unzip(fzip, dest_dir, check) if safe else lambda:unzip(fzip,dest_dir)
         (unzipped, paths) = safeUnzip()()
         if not unzipped:
@@ -148,4 +148,4 @@ def download (dest_dir, instance=None,type="ALL",name=None, extract=False, safe=
     else:
         fzip.close()
         return zip_location
-        
+

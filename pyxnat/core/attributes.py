@@ -11,7 +11,7 @@ class EAttrs(object):
 
         Help to retrieve the attributes paths relevant to this element::
             >>> subject.attrs()
-            ['xnat:subjectData/sharing', 
+            ['xnat:subjectData/sharing',
              'xnat:subjectData/sharing/share',
              'xnat:subjectData/resources',
              ...
@@ -26,10 +26,10 @@ class EAttrs(object):
              >>> interface.manage.schemas.add('myschema/myschema.xsd')
     """
     def __init__(self, eobj):
-        """ 
+        """
             Parameters
             ----------
-            eobj: 
+            eobj:
                 :class:`EObject` Object
         """
         self._eobj = eobj
@@ -174,7 +174,7 @@ class EAttrs(object):
 
         results = []
 
-        # unfortunately the return headers do not always have the 
+        # unfortunately the return headers do not always have the
         # expected name
 
         for path in paths:

@@ -60,7 +60,7 @@ class HTCache(object):
                 The function used to generate the responses cache paths.
         """
         self._intf = interface
-        
+
         self.cache = cachedir
         self.safe = safe
 
@@ -75,7 +75,7 @@ class HTCache(object):
         _cachepath = os.path.join(self.cache, self.safe(key))
 
         if DEBUG:
-            print 'cache get:', key, 
+            print 'cache get:', key,
             print '\n\t', _cachepath
 
         try:
@@ -116,7 +116,7 @@ class HTCache(object):
                 f = file(_fakepath, "rb")
                 _altpath = f.read()
                 f.close()
-                
+
                 if _altpath != self._cachepath and os.path.exists(_altpath):
                     # remove old custom file if different location
                     os.remove(_altpath)
@@ -124,7 +124,7 @@ class HTCache(object):
             _cachepath = self._cachepath
 
             if DEBUG:
-                print 'cache set custom:', key 
+                print 'cache set custom:', key
                 print '\n\t', _cachepath
 
             f = open(_fakepath, 'w')
@@ -138,7 +138,7 @@ class HTCache(object):
                 f = file(_fakepath, "rb")
                 _altpath = f.read()
                 f.close()
-                
+
                 if _altpath != self._cachepath and os.path.exists(_altpath):
                     os.remove(_altpath) # remove actual file
 
@@ -210,7 +210,7 @@ class HTCache(object):
             os.remove(_headerpath)
 
     def get_diskpath(self, key, force_default=False):
-        """ Gets the disk path where the entry is stored (default path 
+        """ Gets the disk path where the entry is stored (default path
             or not)
         """
         _cachepath = os.path.join(self.cache, self.safe(key))
@@ -238,7 +238,7 @@ class CacheManager(object):
         """
             Parameters
             ----------
-            interface: 
+            interface:
                 :class:`Interface` Object
 
         """
@@ -256,7 +256,7 @@ class CacheManager(object):
             f = file(_fakepath, "rb")
             _altpath = f.read()
             f.close()
-            
+
             if os.path.exists(_altpath):
                 os.remove(_altpath)
 
@@ -305,8 +305,8 @@ class CacheManager(object):
 
             ctypes.windll.kernel32.GetDiskFreeSpaceExW(
                 ctypes.c_wchar_p(path),
-                None, 
-                None, 
+                None,
+                None,
                 ctypes.pointer(available))
 
             return bytes_to_human(available.value, unit)
@@ -337,7 +337,7 @@ class CacheManager(object):
 
             ctypes.windll.kernel32.GetDiskFreeSpaceExW(
                 ctypes.c_wchar_p(path),
-                None, 
+                None,
                 ctypes.pointer(total),
                 None,
                 )
