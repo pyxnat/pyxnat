@@ -68,6 +68,11 @@ Prerequisites
 
 		     apt-get install python-httplib2
 
+- *SocksiPy-branch* not required, v1.02 recommended, earlier versions may work:
+  This library is required only if you want to run pyxnat through a proxy. The
+  original *SocksiPy* dependency for *httplib2* is abandoned and unavailable
+  on PyPi, but seems to work. *SocksiPy-branch* is available on PyPi.
+
 - *python-nose* v0.10+ to run the unit tests
 
 - *networkx* and *matplotlib* are not mandatory:
