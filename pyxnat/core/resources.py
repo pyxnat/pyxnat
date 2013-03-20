@@ -1655,7 +1655,7 @@ class Resource(EObject):
     dir_insert = put_dir
 
     def datatype(self):
-        return (super(Reconstruction, self).datatype()
+        return (super(Resource, self).datatype()
                 or 'xnat:abstractResource'
                 )
 
