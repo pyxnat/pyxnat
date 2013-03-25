@@ -210,6 +210,14 @@ def test_last_modified():
 
     assert t1 != t2
 
+def test_subject1_parent():
+    project = central.select.project('nosetests')
+    assert subj_1.parent()._uri == project._uri
+
+def test_project_parent():
+    project = central.select.project('nosetests')
+    assert not project.parent()
+
 def test_subject1_delete():
     assert subj_1.exists()
     subj_1.delete()
@@ -229,6 +237,3 @@ def test_project_configuration():
     assert 'nosetests' in project.users()
     assert 'nosetests' in project.owners()
     assert project.user_role('nosetests') == 'owner'
-    
-
-    
