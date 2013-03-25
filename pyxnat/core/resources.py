@@ -419,9 +419,12 @@ class EObject(object):
 
     def parent(self):
         uri = uri_grandparent(self._uri)
-        Klass = globals()[uri_nextlast(uri).title().rsplit('s', 1)[0]]
-
-        return Klass(uri, self._intf)
+        klass = uri_nextlast(uri).title().rsplit('s',1)[0]
+        if klass:
+            Klass = globals()[klass]
+            return Klass(uri, self._intf)
+        else:
+            return None
 
     def children(self, show_names=True):
         """ Returns the children levels of this element.
@@ -1655,7 +1658,7 @@ class Resource(EObject):
     dir_insert = put_dir
 
     def datatype(self):
-        return (super(Reconstruction, self).datatype()
+        return (super(Resource, self).datatype()
                 or 'xnat:abstractResource'
                 )
 
