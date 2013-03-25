@@ -8,6 +8,12 @@ import getpass
 import httplib2
 import json
 
+try:
+    import socks
+except ImportError:
+    socks = None
+
+from urlparse import urlparse
 from .select import Select
 from .cache import CacheManager, HTCache
 from .help import Inspector, GraphData, PaintGraph, _DRAW_GRAPHS
@@ -23,6 +29,7 @@ from . import xpass
 
 DEBUG = False
 
+
 # main entry point
 class Interface(object):
     """ Main entry point to access a XNAT server.
@@ -30,8 +37,7 @@ class Interface(object):
         >>> central = Interface(server='http://central.xnat.org:8080',
                                 user='login',
                                 password='pwd',
-                                cachedir='/tmp'
-                                )
+                                cachedir='/tmp')
 
         Or with config file:
 
@@ -45,7 +51,7 @@ class Interface(object):
             The interactive mode is activated whenever an argument within
             server, user or password is missing. In interactive mode pyxnat
             tries to check the validity of the connection parameters.
-        
+
         Or anonymously (unauthenticated):
 
         >>> central = Interface('http://central.xnat.org', anonymous=True)
@@ -56,17 +62,22 @@ class Interface(object):
             Online or offline mode
         _memtimeout: float
             Lifespan of in-memory cache
+
+        .. note::
+            Proxy support requires the socks module be installed. This can be
+            installed via pip:
+            pip install SocksiPy-branch
     """
 
-    def __init__(self, server=None, user=None, password=None, 
-                 cachedir=tempfile.gettempdir(), config=None, 
-                 anonymous=False):
-        """ 
+    def __init__(self, server=None, user=None, password=None,
+                 cachedir=tempfile.gettempdir(), config=None,
+                 anonymous=False, proxy=None):
+        """
             Parameters
             ----------
             server: string | None
                 The server full URL (including port and XNAT instance name
-                if necessary) e.g. http://central.xnat.org, 
+                if necessary) e.g. http://central.xnat.org,
                 http://localhost:8080/xnat_db
                 Or a path to an existing config file. In that case the other
                 parameters (user etc..) are ignored if given.
@@ -78,18 +89,25 @@ class Interface(object):
                 The user's password.
                 If None the user will be prompted for it.
             cachedir: string
-                Path of the cache directory (for all queries and 
+                Path of the cache directory (for all queries and
                 downloaded files)
-                If no path is provided, a platform dependent temp dir is 
+                If no path is provided, a platform dependent temp dir is
                 used.
             config: string
-               Reads a config file in json to get the connection parameters.
-               If a config file is specified, it will be used regardless of
-               other parameters that might have been given.
+                Reads a config file in json to get the connection parameters.
+                If a config file is specified, it will be used regardless of
+                other parameters that might have been given.
             anonymous: boolean
-               Indicates an unauthenticated connection.  If True, user 
-               and password are ignored and a session is started with 
-               no credentials.
+                Indicates an unauthenticated connection.  If True, user
+                and password are ignored and a session is started with
+                no credentials.
+            proxy: string | None
+                Indicates the full URL for an HTTP proxy server to be used for
+                transactions with the specified XNAT server. If you need to
+                specify a username and password for proxy access, prepend them
+                to the hostname:
+                http://user:pass@hostname:port
+
         """
 
         self._interactive = False
@@ -105,39 +123,43 @@ class Interface(object):
                 self._server = server
                 self._interactive = False
 
+            self.__set_proxy(proxy)
+
             self._user = None
             self._pwd = None
 
             self._cachedir = os.path.join(
                 cachedir, 'anonymous@%s' % self._server.split('//')[1].replace(
-                        '/', '.').replace(':', '_')
-                )
-        
+                    '/', '.').replace(':', '_')
+            )
+
         else:
 
             if not all([server, user, password]) and not config:
                 self._interactive = True
 
             if all(arg is None
-                   for arg in [server, user, password, config]) \
-                   and os.path.exists(xpass.path()):
+                    for arg in [server, user, password, config]) \
+                    and os.path.exists(xpass.path()):
 
                 connection_args = xpass.read_xnat_pass(xpass.path())
 
                 if connection_args is None:
                     raise Exception('XNAT configuration file not found '
-                                    'or formated incorrectly.')
+                                    'or formatted incorrectly.')
 
                 self._server = connection_args['host']
                 self._user = connection_args['u']
                 self._pwd = connection_args['p']
                 self._cachedir = os.path.join(
                     cachedir, '%s@%s' % (
-                        self._user, 
+                        self._user,
                         self._server.split('//')[1].replace(
                             '/', '.').replace(':', '_')
-                        )
                     )
+                )
+
+                self.__set_proxy(connection_args['proxy'])
 
             elif config is not None:
                 self.load_config(config)
@@ -159,11 +181,13 @@ class Interface(object):
 
                 self._cachedir = os.path.join(
                     cachedir, '%s@%s' % (
-                        self._user, 
+                        self._user,
                         self._server.split('//')[1].replace(
                             '/', '.').replace(':', '_')
-                        )
                     )
+                )
+
+                self.__set_proxy(proxy)
 
         self._callback = None
 
@@ -186,7 +210,7 @@ class Interface(object):
         self.cache = CacheManager(self)
         self.manage = GlobalManager(self)
         self.xpath = XpathStore(self)
-        
+
         if _DRAW_GRAPHS:
             self._get_graph = GraphData(self)
             self.draw = PaintGraph(self)
@@ -202,25 +226,33 @@ class Interface(object):
 
     def __getstate__(self):
         return {
-            '_server': self._server, 
-            '_user': self._user, 
+            '_server': self._server,
+            '_user': self._user,
             '_pwd': self._pwd,
             '_cachedir': os.path.split(self._cachedir)[0],
             '_anonymous': self._anonymous,
-            }
+        }
 
-    def __setstate__(self, dict):
-        self.__dict__ = dict
+    def __setstate__(self, dictionary):
+        self.__dict__ = dictionary
         if self._anonymous:
             self.__init__(self._server, anonymous=True)
         else:
             self.__init__(self._server, self._user, self._pwd, self._cachedir)
 
+    def __set_proxy(self, proxy=None):
+        if proxy is None:
+            proxy = os.environ.get("http_proxy")
+        if proxy is None:
+            self._proxy_url = None
+        else:
+            self._proxy_url = urlparse(proxy)
+
     def _get_entry_point(self):
         if self._entry is None:
             # /REST for XNAT 1.4, /data if >=1.5
             self._entry = '/REST'
-            try:                
+            try:
                 self._jsession = 'JSESSIONID=' + self._exec('/data/JSESSION')
                 self._entry = '/data'
 
@@ -229,7 +261,7 @@ class Interface(object):
             except Exception, e:
                 if not '/data/JSESSION' in str(e):
                     raise e
-            
+
         return self._entry
 
     def _connect(self, **kwargs):
@@ -247,25 +279,39 @@ class Interface(object):
             self._connect_extras = kwargs
         else:
             kwargs = self._connect_extras
-        
+
         kwargs['disable_ssl_certificate_validation'] = True
 
-        if DEBUG:   
+        # If a proxy was configured, then add that in.
+        if not self._proxy_url is None:
+            if socks and self._proxy_url.username is None:
+                kwargs['proxy_info'] = httplib2.ProxyInfo(
+                    socks.PROXY_TYPE_HTTP,
+                    self._proxy_url.hostname,
+                    self._proxy_url.port)
+            else:
+                kwargs['proxy_info'] = httplib2.ProxyInfo(
+                    socks.PROXY_TYPE_HTTP,
+                    self._proxy_url.hostname,
+                    self._proxy_url.port,
+                    None,
+                    self._proxy_url.username,
+                    self._proxy_url.password)
+
+        if DEBUG:
             httplib2.debuglevel = 2
 
         # compatibility with httplib2 < 0.7
         try:
-            self._http = httplib2.Http(
-                HTCache(self._cachedir, self), 
-                **kwargs
-                )
+            self._http = httplib2.Http(HTCache(self._cachedir, self),
+                                       **kwargs)
         except:
             del kwargs['disable_ssl_certificate_validation']
             self._http = httplib2.Http(
-                HTCache(self._cachedir, self), 
+                HTCache(self._cachedir, self),
                 **kwargs
-                )
-            
+            )
+
         if not self._anonymous:
             self._http.add_credentials(self._user, self._pwd)
 
@@ -304,7 +350,12 @@ class Interface(object):
         # reset the memcache when client changes something on the server
         if method in ['PUT', 'DELETE']:
             self._memcache = {}
-        
+
+        # Initialize these to default values.
+        response = None
+        info = None
+        content = None
+
         if self._mode == 'online' and method == 'GET':
 
             if time.time() - self._memcache.get(uri, 0) < self._memtimeout:
@@ -315,9 +366,8 @@ class Interface(object):
                                                      ).split('\r\n\r\n', 1)
 
                 self._memcache[uri] = time.time()
-                response = None
             else:
-                response, content = self._http.request(uri, method, 
+                response, content = self._http.request(uri, method,
                                                        body, headers)
                 self._memcache[uri] = time.time()
 
@@ -329,12 +379,11 @@ class Interface(object):
                 if DEBUG:
                     print 'send: GET CACHE %s' % uri
                 info, content = cached_value.split('\r\n\r\n', 1)
-                response = None
             else:
                 try:
                     self._http.timeout = 10
 
-                    response, content = self._http.request(uri, method, 
+                    response, content = self._http.request(uri, method,
                                                            body, headers)
 
                     self._http.timeout = None
@@ -342,35 +391,35 @@ class Interface(object):
                 except Exception, e:
                     catch_error(e)
         else:
-            response, content = self._http.request(uri, method, 
+            response, content = self._http.request(uri, method,
                                                    body, headers)
 
         if DEBUG:
             if response is None:
                 response = httplib2.Response(email.message_from_string(info))
-                print 'reply: %s %s from cache' % (response.status, 
+                print 'reply: %s %s from cache' % (response.status,
                                                    response.reason
                                                    )
                 for key in response.keys():
                     print 'header: %s: %s' % (key.title(), response.get(key))
 
-        if response is not None and response.has_key('set-cookie'):
+        if response is not None and 'set-cookie' in response:
             cookies = response.get('set-cookie')
             jsessionid = re.findall(r'(JSESSIONID=[0-9A-F]+);', cookies)
             if len(jsessionid) > 0:
                 self._jsession = jsessionid[0]
 
         if response is not None and response.get('status') == '404':
-            r,_ = self._http.request(self._server)
+            r, _ = self._http.request(self._server)
 
-            if self._server.rstrip('/') != r.get('content-location', 
+            if self._server.rstrip('/') != r.get('content-location',
                                                  self._server).rstrip('/'):
-                
+
                 old_server = self._server
                 self._server = r.get('content-location').rstrip('/')
                 return self._exec(uri.replace(old_server, ''), method, body)
             else:
-                raise httplib2.HttpLib2Error('%s %s %s' % (uri, 
+                raise httplib2.HttpLib2Error('%s %s %s' % (uri,
                                                            response.status,
                                                            response.reason
                                                            )
@@ -384,12 +433,11 @@ class Interface(object):
 
         return content
 
-
     def _get_json(self, uri):
         """ Specific Interface._exec method to retrieve data.
-            It forces the data format to csv and then puts it back to a 
+            It forces the data format to csv and then puts it back to a
             json-like format.
-            
+
             Parameters
             ----------
             uri: string
@@ -408,7 +456,7 @@ class Interface(object):
                 uri += '?format=csv'
 
         content = self._exec(uri, 'GET')
-        
+
         if is_xnat_error(content):
             catch_error(content)
 
@@ -428,7 +476,7 @@ class Interface(object):
         if self._user:
             _nocache.add_credentials(self._user, self._pwd)
 
-        rheaders = {'cookie':self._jsession}
+        rheaders = {'cookie': self._jsession}
 
         try:
             head = _nocache.request(
@@ -456,7 +504,7 @@ class Interface(object):
                 is saved at a safe location with appropriate permissions.
 
             .. note::
-                This method raises NotImplementedError for an anonymous 
+                This method raises NotImplementedError for an anonymous
                 interface.
 
             Parameters
@@ -465,17 +513,17 @@ class Interface(object):
                 Destination config file.
         """
         if self._anonymous:
-            raise NotImplementedError, \
-                  'no save_config() for anonymous interfaces'
+            raise NotImplementedError(
+                'no save_config() for anonymous interfaces')
 
         if not os.path.exists(os.path.dirname(location)):
             os.makedirs(os.path.dirname(location))
 
         fp = open(location, 'w')
-        config = {'server':self._server, 
-                  'user':self._user, 
-                  'password':self._pwd,
-                  'cachedir':os.path.split(self._cachedir)[0],
+        config = {'server': self._server,
+                  'user': self._user,
+                  'password': self._pwd,
+                  'cachedir': os.path.split(self._cachedir)[0],
                   }
 
         json.dump(config, fp)
@@ -486,7 +534,7 @@ class Interface(object):
             parameters.
 
             .. note::
-                This method raises NotImplementedError for an anonymous 
+                This method raises NotImplementedError for an anonymous
                 interface.
 
             Parameters
@@ -495,8 +543,8 @@ class Interface(object):
                 Configuration file path.
         """
         if self._anonymous:
-            raise NotImplementedError, \
-                  'no load_config() for anonymous interfaces'
+            raise NotImplementedError(
+                'no load_config() for anonymous interfaces')
 
         if os.path.exists(location):
             fp = open(location, 'rb')
@@ -510,11 +558,14 @@ class Interface(object):
 
             self._cachedir = os.path.join(
                 self._cachedir, '%s@%s' % (
-                    self._user, 
+                    self._user,
                     self._server.split('//')[1].replace(
                         '/', '.').replace(':', '_')
-                    )
                 )
+            )
+
+            self.__set_proxy(str(config['cachedir']))
+
         else:
             raise Exception('Configuration file does not exists.')
 
@@ -525,10 +576,8 @@ class Interface(object):
         pass
 
     def disconnect(self):
-        """ 
+        """
             Tell XNAT to disconnect this session
         """
         self._exec('/data/JSESSION', method='DELETE')
         pass
-
-
