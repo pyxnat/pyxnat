@@ -15,11 +15,20 @@
 
 import os
 import socket
-import httplib
+try:
+    from httplib import HTTPConnection
+except ImportError:
+    from http.client import HTTPConnection
 import base64
-import urlparse
+try:
+    import urlparse
+except ImportError:
+    from urllib.parse import urlparse
 import tempfile
-import cStringIO as StringIO
+try:
+    import cStringIO as StringIO
+except ImportError:
+    from io import StringIO
 
 from distutils import log
 from distutils.command.upload import upload
@@ -95,11 +104,11 @@ class UploadDoc(upload):
             urlparse.urlparse(self.repository)
         assert not params and not query and not fragments
         if schema == 'http':
-            http = httplib.HTTPConnection(netloc)
+            http = HTTPConnection(netloc)
         elif schema == 'https':
-            http = httplib.HTTPSConnection(netloc)
+            http = HTTPSConnection(netloc)
         else:
-            raise AssertionError, "unsupported schema "+schema
+            raise AssertionError("unsupported schema "+schema)
 
         data = ''
         loglevel = log.INFO
@@ -112,7 +121,7 @@ class UploadDoc(upload):
             http.putheader('Authorization', auth)
             http.endheaders()
             http.send(body)
-        except socket.error, e:
+        except socket.error as e:
             self.announce(str(e), log.ERROR)
             return
 
@@ -130,7 +139,7 @@ class UploadDoc(upload):
             self.announce('Upload failed (%s): %s' % (response.status, response.reason),
                           log.ERROR)
         if self.show_response:
-            print '-'*75, response.read(), '-'*75
+            print('-'*75, response.read(), '-'*75)
 
     def run(self):
         zip_file = self.upload_file

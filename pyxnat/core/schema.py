@@ -52,7 +52,7 @@ json = {'projects':['ID', 'ID'],
 
 resources_singular = [key.rsplit('s', 1)[0] for key in resources_tree.keys()]
 resources_plural   = resources_tree.keys()
-resources_types    = resources_singular + resources_plural
+resources_types    = resources_singular + list(resources_plural)
 
 default_datatypes = {'projects':'xnat:projectData',
                      'subjects':'xnat:subjectData',
