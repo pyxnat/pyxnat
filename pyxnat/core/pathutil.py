@@ -17,7 +17,7 @@ def find_files(src):
                 files.extend(find_files(srcname))
             else:
                 files.append(srcname)
-        except (IOError, os.error), why:
+        except (IOError, os.error) as why:
             errors.append((srcname, str(why)))
 
     return files

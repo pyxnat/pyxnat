@@ -30,7 +30,7 @@ class ZipHelp(Command):
  
     def run(self):
         if not os.path.exists(DOC_BUILD_DIR):
-            raise OSError, 'Doc directory does not exist.'
+            raise OSError('Doc directory does not exist.')
         target_file = os.path.join('doc', 'documentation.zip')
         # ZIP_DEFLATED actually compresses the archive. However, there
         # will be a RuntimeError if zlib is not installed, so we check

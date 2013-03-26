@@ -204,9 +204,9 @@ class EObject(object):
         """
         try:
             return self.id() != None
-        except Exception, e:
+        except Exception as e:
             if DEBUG:
-                print e
+                print(e)
             return False
 
     def id(self):
@@ -360,11 +360,11 @@ class EObject(object):
 
             parent_datatype = params.get(uri_nextlast(parent_element._uri))
             if DEBUG:
-                print 'CREATE', parent_element, parent_datatype
+                print('CREATE', parent_element, parent_datatype)
             parent_element.create(**params)
 
         if DEBUG:
-            print 'PUT', create_uri
+            print('PUT', create_uri)
 
         output = self._intf._exec(create_uri, 'PUT')
 
@@ -379,7 +379,7 @@ class EObject(object):
                 paths.extend(path)
 
                 if DEBUG:
-                    print path, 'is required'
+                    print(path, 'is required')
 
             return paths
 
@@ -621,7 +621,7 @@ class CObject(object):
                 self._learn_from_table(_type, jtable, reqcache)
 
             return jtable
-        except Exception, e:
+        except Exception as e:
             if DEBUG:
                 raise e
             return []
@@ -1571,8 +1571,8 @@ class Resource(EObject):
 
         for member in fzip.namelist():
             old_path = os.path.join(dest_dir, member)
-            print member
-            print member.split('files', 1)
+            print(member)
+            print(member.split('files', 1))
             new_path = os.path.join(
                 dest_dir,
                 uri_last(self._uri)
