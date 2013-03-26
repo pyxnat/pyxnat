@@ -78,11 +78,21 @@ def catch_error(msg_or_exception):
 # Exceptions as defined in PEP-249, the module treats errors using thoses
 # classes following as closely as possible the original definitions.
 
-class Warning(StandardError):
-    pass
 
-class Error(StandardError):
-    pass
+# http://python3porting.com/differences.html#standarderror
+try:
+    class Warning(StandardError):
+        pass
+
+    class Error(StandardError):
+        pass
+except NameError:
+    class Warning(Exception):
+        pass
+
+    class Error(Exception):
+        pass
+
 
 class InterfaceError(Error):
     pass

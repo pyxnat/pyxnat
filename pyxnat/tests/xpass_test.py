@@ -1,7 +1,7 @@
 from .. import xpass
 
 def test_find_plus_line():
-    print "Testing find_plus_line"
+    print("Testing find_plus_line")
     test = ['hello', '+hello world', '']
     assert(xpass.find_plus_line(test) == 'hello world')
     test2 = ['','hello world']
@@ -10,13 +10,13 @@ def test_find_plus_line():
     assert(xpass.find_plus_line(test3) == None)
 
 def test_find_token():
-    print "Testing find_token"
+    print("Testing find_token")
     str = "hello,world"
     assert(xpass.find_token(',',str) == ('hello','world'))
     assert(xpass.find_token(' ',str) == None)
 
 def test_parse_xnat_pass():
-    print "Testing parse_xnat_pass"
+    print("Testing parse_xnat_pass")
     nothingLine = ""
     line = "+user@localhost:8080/xnat=password"
     lineWithSpaces="+user@localhost:8080/xnat=password     "

@@ -1,7 +1,10 @@
 import csv
 import copy
 from fnmatch import fnmatch
-from StringIO import StringIO
+try:
+    from StringIO import StringIO
+except ImportError:
+    from io import StringIO
 
 import json
 

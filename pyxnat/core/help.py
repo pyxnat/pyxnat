@@ -292,7 +292,7 @@ class Inspector(object):
         """
         def traverse(coll, lvl):
             for key in schema.resources_tree[coll]:
-                print '%s+%s' % (' ' * lvl, key.upper())
+                print('%s+%s') % (' ' * lvl, key.upper())
 
                 datatypes = set([
                         self._intf._struct[uri]
@@ -301,15 +301,15 @@ class Inspector(object):
                         ])
 
                 if datatypes != set():
-                    print '%s  %s' % (' ' * lvl, '-' * len(key))
+                    print('%s  %s') % (' ' * lvl, '-' * len(key))
 
                 for datatype in datatypes:
-                    print '%s- %s' % (' ' * lvl, datatype)
+                    print('%s- %s') % (' ' * lvl, datatype)
 
                 if schema.resources_tree.has_key(key):
                     traverse(key, lvl + 4)
 
-        print '- %s' % 'PROJECTS'
+        print('- %s') % 'PROJECTS'
         traverse('projects', 4)
 
     def _sub_experiment_values(self, sub_exp, project, experiment_type):
@@ -664,19 +664,19 @@ class SchemasInspector(object):
         self._intf.manage.schemas._init()
 
         for xsd in self._intf.manage.schemas():
-            print '-'*40
-            print xsd.upper()
-            print '-'*40
+            print('-'*40)
+            print(xsd.upper())
+            print('-'*40)
             print
 
             for datatype in schema.datatypes(
                 self._intf.manage.schemas._trees[xsd]):
-                print '[%s]'%datatype
+                print('[%s]' % datatype)
                 print
 
                 for path in schema.datatype_attributes(
                     self._intf.manage.schemas._trees[xsd], datatype):
-                    print path
+                    print(path)
 
                 print
 

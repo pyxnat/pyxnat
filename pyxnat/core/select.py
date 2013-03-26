@@ -334,7 +334,7 @@ class Select(object):
             try:
                 for path in compute(datatype_or_path):
                     if DEBUG:
-                        print 'path: %s' % path
+                        print('path: %s' % path)
 
                     pairs = zip(path.split('/')[1::2], path.split('/')[2::2])
 
@@ -360,9 +360,9 @@ class Select(object):
                 else:
                     return CObject(return_list, self._intf)
 
-            except Exception, e:
+            except Exception as e:
                 if DEBUG:
-                    print e
+                    print(e)
                 raise ProgrammingError('in %s' % datatype_or_path)
 
         else:

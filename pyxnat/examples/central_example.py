@@ -15,13 +15,13 @@ def bet(in_img, in_hdr): # Python wrapper on FSL BET, essentially a system call
     path, name = os.path.split(in_image)
     in_image = os.path.join(path, name.rsplit('.')[0])
     out_image = os.path.join(path, name.rsplit('.')[0] + '_brain')
-    print '==> %s' % in_image[-120:]
+    print('==> %s' % in_image[-120:])
     Popen('%s %s %s' % (BET, in_image, out_image),
           shell=True).communicate()
     return out_image
 
 def notify(message): # message to notify the end of a BET process
-    print '<== %s' % message[-120:]
+    print('<== %s' % message[-120:])
 
 pool = mp.Pool(processes=mp.cpu_count() * 2) # pool of concurrent workers
 images = {}

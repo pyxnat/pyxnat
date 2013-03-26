@@ -12,8 +12,10 @@ try:
     import socks
 except ImportError:
     socks = None
-
-from urlparse import urlparse
+try:
+    from urlparse import urlparse
+except ImportError:
+    from urllib.parse import urlparse
 from .select import Select
 from .cache import CacheManager, HTCache
 from .help import Inspector, GraphData, PaintGraph, _DRAW_GRAPHS
@@ -258,7 +260,7 @@ class Interface(object):
 
                 if is_xnat_error(self._jsession):
                     catch_error(self._jsession)
-            except Exception, e:
+            except Exception as e:
                 if not '/data/JSESSION' in str(e):
                     raise e
 
@@ -342,7 +344,7 @@ class Interface(object):
         uri = join_uri(self._server, uri)
 
         if DEBUG:
-            print uri
+            print(uri)
         # using session authentication
         headers['cookie'] = self._jsession
         headers['connection'] = 'keep-alive'
@@ -360,7 +362,7 @@ class Interface(object):
 
             if time.time() - self._memcache.get(uri, 0) < self._memtimeout:
                 if DEBUG:
-                    print 'send: GET CACHE %s' % uri
+                    print('send: GET CACHE %s' % uri)
 
                 info, content = self._http.cache.get(uri
                                                      ).split('\r\n\r\n', 1)
@@ -377,7 +379,7 @@ class Interface(object):
 
             if cached_value is not None:
                 if DEBUG:
-                    print 'send: GET CACHE %s' % uri
+                    print('send: GET CACHE %s' % uri)
                 info, content = cached_value.split('\r\n\r\n', 1)
             else:
                 try:
@@ -388,7 +390,7 @@ class Interface(object):
 
                     self._http.timeout = None
                     self._memcache[uri] = time.time()
-                except Exception, e:
+                except Exception as e:
                     catch_error(e)
         else:
             response, content = self._http.request(uri, method,
@@ -397,11 +399,11 @@ class Interface(object):
         if DEBUG:
             if response is None:
                 response = httplib2.Response(email.message_from_string(info))
-                print 'reply: %s %s from cache' % (response.status,
+                print('reply: %s %s from cache') % (response.status,
                                                    response.reason
                                                    )
                 for key in response.keys():
-                    print 'header: %s: %s' % (key.title(), response.get(key))
+                    print('header: %s: %s') % (key.title(), response.get(key))
 
         if response is not None and 'set-cookie' in response:
             cookies = response.get('set-cookie')
@@ -426,8 +428,8 @@ class Interface(object):
                                              )
 
         if is_xnat_error(content):
-            print response.keys()
-            print response.get("status")
+            print(response.keys())
+            print(response.get("status"))
 
             catch_error(content)
 
@@ -471,7 +473,7 @@ class Interface(object):
 
     def _get_head(self, uri):
         if DEBUG:
-            print 'GET HEAD'
+            print('GET HEAD')
         _nocache = httplib2.Http(**self._connect_extras)
         if self._user:
             _nocache.add_credentials(self._user, self._pwd)
