@@ -11,6 +11,7 @@ import time
 import urllib
 import codecs
 from fnmatch import fnmatch
+from itertools import islice
 
 import json
 from lxml import etree
@@ -810,6 +811,14 @@ class CObject(object):
             return eobj
 
     fetchone = first
+
+    def __getitem__(self, k):
+        """ Use itertools.islice() to support indexed access and slicing.
+        """
+        if isinstance(k, slice):
+            return islice(self, k.start, k.stop, k.step)
+        else:
+            return next(islice(self, k, k+1))
 
     def get(self, *args):
         """ Returns every element.
