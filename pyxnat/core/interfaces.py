@@ -566,7 +566,10 @@ class Interface(object):
                 )
             )
 
-            self.__set_proxy(str(config['cachedir']))
+            if 'proxy' in config:
+              self.__set_proxy(str(config['proxy']))
+            else:
+              self.__set_proxy(None)
 
         else:
             raise Exception('Configuration file does not exists.')
