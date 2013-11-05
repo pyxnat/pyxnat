@@ -1538,7 +1538,7 @@ class Resource(EObject):
                 is downloaded to avoid name clashes if several resources
                 are downloaded in the same folder. In order to be able to
                 download the data uploaded previously with the same
-                structure, pyxnat extracts the zip file, remove the exra
+                structure, pyxnat extracts the zip file, removes the extra
                 paths and if necessary re-zips it. Careful, it may take
                 time, and there is the problem of name clashes.
 
@@ -1571,13 +1571,13 @@ class Resource(EObject):
 
         for member in fzip.namelist():
             old_path = os.path.join(dest_dir, member)
-            print(member)
-            print(member.split('files', 1))
+            
+            #print(member)
+            #print(member.split('files', 1))
             new_path = os.path.join(
                 dest_dir,
-                uri_last(self._uri)
-
-                #, member.split('files', 1)[1].split(os.sep, 2)[2]
+                uri_last(self._uri),
+                member.split('files', 1)[1].split(os.sep, 1)[1]
                 )
 
             if not os.path.exists(os.path.dirname(new_path)):
@@ -1598,8 +1598,8 @@ class Resource(EObject):
 
         if not extract:
             fzip = zipfile.ZipFile(zip_location, 'w')
-            arcprefix = os.path.commonprefix(members)
-            arcroot = '/%s' % os.path.split(arcprefix.rstrip('/'))[1]
+            arcprefix = os.path.commonprefix(members).rpartition(os.sep)[0]
+            arcroot = '/%s' % os.path.split(arcprefix.rstrip(os.sep))[1]
             for member in members:
                 fzip.write(member, os.path.join(arcroot,
                                                 member.split(arcprefix)[1])
@@ -1623,8 +1623,9 @@ class Resource(EObject):
         """
         zip_location = tempfile.mkstemp(suffix='.zip')[1]
 
-        arcprefix = os.path.commonprefix(sources)
-        arcroot = '/%s' % os.path.split(arcprefix.rstrip('/'))[1]
+        #arcprefix = os.path.commonprefix(sources)
+        arcprefix = os.path.commonprefix(sources).rpartition(os.sep)[0]
+        arcroot = '/%s' % os.path.split(arcprefix.rstrip(os.sep))[1]
 
         fzip = zipfile.ZipFile(zip_location, 'w')
         for src in sources:
