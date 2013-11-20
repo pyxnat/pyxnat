@@ -1614,12 +1614,25 @@ class Resource(EObject):
 
         return zip_location if os.path.exists(zip_location) else members
 
-    def put(self, sources, **datatypes):
+    def put(self, sources, overwrite=False, extract=True, **datatypes):
         """ Insert a list of files in a single resource element.
 
             This method takes all the files an creates a zip with them
             which will be the element to be uploaded and then extracted on
             the server.
+
+            Parameters
+            ----------
+            sources: List of paths of files to upload.
+
+            overwrite: boolean
+                If True, overwrite the files that already exist under the given id.
+                If False, do not overwrite (Default)
+                
+            extract: boolean
+                If True, the uploaded zip file is extracted. (Default)
+                If False, the file is not extracted.
+            
         """
         zip_location = tempfile.mkstemp(suffix='.zip')[1]
 
@@ -1632,26 +1645,53 @@ class Resource(EObject):
 
         fzip.close()
 
-        self.put_zip(zip_location, **datatypes)
+        self.put_zip(zip_location, overwrite=overwrite, extract=extract, **datatypes)
         os.remove(zip_location)
 
-    def put_zip(self, zip_location, **datatypes):
+    def put_zip(self, zip_location, overwrite=False, extract=True, **datatypes):
         """ Uploads a zip or tgz file an then extracts it on the server.
 
             After the compressed file is extracted the individual 
             files are accessible separately, or as a whole using get_zip.
+            
+            Parameters
+            ----------
+            zip_location: Path to zip file for upload.
+
+            overwrite: boolean
+                If True, overwrite the files that already exist under the given id.
+                If False, do not overwrite (Default)
+                
+            extract: boolean
+                If True, the uploaded zip file is extracted. (Default)
+                If False, the file is not extracted.
         """
         if not self.exists():
             self.create(**datatypes)
+        if extract:
+            do_extract = '?extract=true'
+        else:
+            do_extract = ''
+        self.file(os.path.split(zip_location)[1] + do_extract
+                  ).put(zip_location, overwrite=overwrite)
 
-        self.file(os.path.split(zip_location)[1] + '?extract=true'
-                  ).put(zip_location)
-
-    def put_dir(self, src_dir, **datatypes):
+    def put_dir(self, src_dir, overwrite=False, extract=True, **datatypes):
         """ Finds recursively all the files in a folder and uploads
-            them using `insert`.
+            them using `insert`. Uses put_zip internally. 
+
+            Parameters
+            ----------
+            src_dir: Path to directory to upload.
+
+            overwrite: boolean
+                If True, overwrite the files that already exist under the given id.
+                If False, do not overwrite (Default)
+                
+            extract: boolean
+                If True, the uploaded zip file is extracted. (Default)
+                If False, the file is not extracted.
         """
-        self.put(find_files(src_dir), **datatypes)
+        self.put(find_files(src_dir), overwrite=overwrite, extract=extract, **datatypes)
 
     batch_insert = put
     zip_insert = put_zip
