@@ -97,7 +97,7 @@ class EAttrs(object):
                 principles as the single `set()` method.
         """
 
-        query_str = '?xsiType=%s' % (urllib.quote(self._get_datatype())) + '&'.join(['%s=%s' % (urllib.quote(path),
+        query_str = '?xsiType=%s' % (urllib.quote(self._get_datatype())) + ''.join(['&%s=%s' % (urllib.quote(path),
                                                urllib.quote(val)
                                                )
                                     for path, val in dict_attrs.items()
