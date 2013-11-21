@@ -11,6 +11,7 @@ import time
 import urllib
 import codecs
 from fnmatch import fnmatch
+from itertools import islice
 
 import json
 from lxml import etree
@@ -171,9 +172,8 @@ class EObject(object):
                        if col not in schema.json[self._urt] \
                            or col != 'URI'] + schema.json[self._urt]
                       )
-
         get_id = p_uri + '?format=json&columns=%s' % ','.join(columns)
-
+        
         for pattern in self._intf._struct.keys():
             if fnmatch(uri_segment(
                     self._uri.split(
@@ -182,7 +182,7 @@ class EObject(object):
                 reg_pat = self._intf._struct[pattern]
                 filters.setdefault('xsiType', set()).add(reg_pat)
 
-        if filters != {}:
+        if filters:
             get_id += '&' + \
                 '&'.join('%s=%s' % (item[0], item[1])
                          if isinstance(item[1], basestring)
@@ -342,7 +342,7 @@ class EObject(object):
 
                 create_uri += '&%s/ID=%s' % (datatype, uri_last(self._uri))
 
-            if local_params != []:
+            if local_params:
                 create_uri += '&' + '&'.join('%s=%s' % (key,
                                                         params.get(key)
                                                         )
@@ -467,7 +467,7 @@ class EObject(object):
         """
         tag = self._intf.manage.tags.get(name)
         tag.dereference(self._uri)
-        if tag.references().get() == []:
+        if not tag.references().get():
             tag.delete()
 
 
@@ -541,14 +541,14 @@ class CObject(object):
             self._ctype = 'cobjectcuri'
         elif isinstance(cbase, CObject):
             self._ctype = 'cobjectcobject'
-        elif isinstance(cbase, list) and cbase != []:
+        elif isinstance(cbase, list) and cbase:
             if isinstance(cbase[0], basestring):
                 self._ctype = 'cobjecteuris'
             if isinstance(cbase[0], EObject):
                 self._ctype = 'cobjecteobjects'
             if isinstance(cbase[0], CObject):
                 self._ctype = 'cobjectcobjects'
-        elif isinstance(cbase, list) and cbase == []:
+        elif isinstance(cbase, list) and not cbase:
             self._ctype = 'cobjectempty'
         else:
             raise Exception('Invalid collection accessor type: %s' % cbase)
@@ -603,7 +603,7 @@ class CObject(object):
             #         self._filters.setdefault('xsiType', set()
             #                                  ).add(struct[pattern])
 
-            if self._filters != {}:
+            if self._filters:
                 query_string += '&' + '&'.join(
                     '%s=%s' % (item[0], item[1])
                     if isinstance(item[1], (str, unicode))
@@ -811,6 +811,14 @@ class CObject(object):
 
     fetchone = first
 
+    def __getitem__(self, k):
+        """ Use itertools.islice() to support indexed access and slicing.
+        """
+        if isinstance(k, slice):
+            return islice(self, k.start, k.stop, k.step)
+        else:
+            return next(islice(self, k, k+1))
+
     def get(self, *args):
         """ Returns every element.
 
@@ -827,7 +835,7 @@ class CObject(object):
                   more than one is given, a list of tuple is returned
                   instead of a list.
         """
-        if args == ():
+        if not args:
             return [urllib.unquote(uri_last(eobj._uri)) for eobj in self]
         else:
             entries = []
@@ -853,6 +861,14 @@ class CObject(object):
 
     fetchall = get
 
+    def __nonzero__(self):
+        try:
+            self.__iter__().next()
+        except StopIteration:
+            return False
+        else:
+            return True
+
     def tag(self, name):
         """ Tag the collection.
         """
@@ -868,7 +884,7 @@ class CObject(object):
         """
         tag = self._intf.manage.tags.get(name)
         tag.dereference_many([eobj._uri for eobj in self])
-        if tag.references().get() == []:
+        if not tag.references().get():
             tag.delete()
 
     def where(self, constraints=None, template=None, query=None):
