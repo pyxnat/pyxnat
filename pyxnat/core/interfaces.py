@@ -161,7 +161,10 @@ class Interface(object):
                     )
                 )
 
-                self.__set_proxy(connection_args['proxy'])
+                if 'proxy' in connection_args:
+                    self.__set_proxy(connection_args['proxy'])
+                else:
+                    self.__set_proxy(None)
 
             elif config is not None:
                 self.load_config(config)
@@ -285,8 +288,8 @@ class Interface(object):
         kwargs['disable_ssl_certificate_validation'] = True
 
         # If a proxy was configured, then add that in.
-        if not self._proxy_url is None:
-            if socks and self._proxy_url.username is None:
+        if socks and self._proxy_url is not None:
+            if self._proxy_url.username is None:
                 kwargs['proxy_info'] = httplib2.ProxyInfo(
                     socks.PROXY_TYPE_HTTP,
                     self._proxy_url.hostname,
@@ -527,6 +530,8 @@ class Interface(object):
                   'password': self._pwd,
                   'cachedir': os.path.split(self._cachedir)[0],
                   }
+        if self._proxy_url:
+            config['proxy'] = self._proxy_url.geturl()
 
         json.dump(config, fp)
         fp.close()
@@ -566,10 +571,13 @@ class Interface(object):
                 )
             )
 
-            self.__set_proxy(str(config['cachedir']))
+            if 'proxy' in config:
+                self.__set_proxy(str(config['proxy']))
+            else:
+                self.__set_proxy(None)
 
         else:
-            raise Exception('Configuration file does not exists.')
+            raise Exception('Configuration file does not exist.')
 
     def version(self):
         return self._exec('/data/version')
