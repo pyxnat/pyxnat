@@ -1620,6 +1620,10 @@ class Resource(EObject):
             This method takes all the files an creates a zip with them
             which will be the element to be uploaded and then extracted on
             the server.
+            If the files have a common prefix directory, that directory name 
+            will be used.  If not, then "files" will be used as the zip name.
+
+            If avaiable, compression will be used on the zip file.
 
             Parameters
             ----------
@@ -1634,19 +1638,36 @@ class Resource(EObject):
                 If False, the file is not extracted.
             
         """
-        zip_location = tempfile.mkstemp(suffix='.zip')[1]
+        zip_location = tempfile.mkdtemp(suffix='pyxnat')
+        
+        #get the largest common directory.
+        arcprefix, _, _ = os.path.commonprefix(sources).rpartition(os.path.sep)
+        #get just the name of the largest common directory.
+        zip_name = os.path.split(arcprefix.rstrip(os.path.sep))[1]
+        arcroot = '/%s' % zip_name
+        
+        if not zip_name:
+            #if no common prefix, then use "files" as the zip file name.
+            #inside, each file will be directly under the zip root.
+            zip_name = "files"
+        
+        zip_name = os.path.join(zip_location, zip_name + ".zip")
+        fzip = None
+        try:
+            #use compression if avaiable. 
+            fzip = zipfile.ZipFile(zip_name, 'w', zipfile.ZIP_DEFLATED)
+        except RuntimeError:
+            print "Zip compression not supported for uploading files."
+            fzip = zipfile.ZipFile(zip_name, 'w')
 
-        arcprefix = os.path.commonprefix(sources)
-        arcroot = '/%s' % os.path.split(arcprefix.rstrip('/'))[1]
-
-        fzip = zipfile.ZipFile(zip_location, 'w')
         for src in sources:
             fzip.write(src, os.path.join(arcroot, src.split(arcprefix)[1]))
 
         fzip.close()
 
-        self.put_zip(zip_location, overwrite=overwrite, extract=extract, **datatypes)
-        os.remove(zip_location)
+        self.put_zip(zip_name, overwrite=overwrite, extract=extract, **datatypes)
+        os.remove(zip_name)
+        os.rmdir(zip_location)
 
     def put_zip(self, zip_location, overwrite=False, extract=True, **datatypes):
         """ Uploads a zip or tgz file an then extracts it on the server.
@@ -1668,10 +1689,12 @@ class Resource(EObject):
         """
         if not self.exists():
             self.create(**datatypes)
+        
         if extract:
             do_extract = '?extract=true'
         else:
             do_extract = ''
+        
         self.file(os.path.split(zip_location)[1] + do_extract
                   ).put(zip_location, overwrite=overwrite)
 
