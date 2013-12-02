@@ -1,6 +1,37 @@
 Latest changes
 ===============
 
+Release 0.9.5
+
+    * New Features
+        - Add __getitem__ to CObject for slice operations.
+
+
+    * Impovements
+        - Add toggle for overwriting files on the Resources object (put, put_dir, put_zip)
+        - Add toggle for not extracting the zip file on the Resources object (put, put_dir, put_zip)
+
+    * Bug fixes:
+        - fix proxy support
+        - mset attributes fixed
+        - fixed url separator issue on windows.
+
+
+Release 0.9.4
+
+    * New Features
+        - add proxy support to interface.
+        
+    * Impovements
+
+    * Bug fixes:
+        - python <2.7 compatability.
+        - project.parent() does not throw error.
+        - removed simplejson requirement
+        - md5 cache key
+
+
+
 Release 0.9.0
 -------------
 
