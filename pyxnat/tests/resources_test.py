@@ -210,6 +210,23 @@ def test_last_modified():
 
     assert t1 != t2
 
+def test_getitem_key():
+    projects = central.select.projects()
+    assert projects.first().id() == projects[0].id()
+    piter = projects.__iter__()
+    next(piter)
+    assert next(piter).id() == projects[1].id()
+
+def test_getitem_slice():
+    projects = central.select.projects()
+    assert projects.first().id() == next(projects[:1]).id()
+    piter = projects.__iter__()
+    next(piter)
+    next(piter)
+    next(piter)
+    for pobj in projects[3:6]:
+        assert next(piter).id() == pobj.id()
+
 def test_subject1_parent():
     project = central.select.project('nosetests')
     assert subj_1.parent()._uri == project._uri
