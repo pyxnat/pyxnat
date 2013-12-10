@@ -301,7 +301,10 @@ class EObject(object):
                 doc, 'text/xml', 'data.xml', 'data.xml')
 
             _uri = self._uri
-            _uri += '?allowDataDeletion=true'
+            if (params.has_key('allowDataDeletion') and params.get('allowDataDeletion') == False):
+                _uri += '?allowDataDeletion=false'
+            else:
+                _uri += '?allowDataDeletion=true'
 
             self._intf._exec(_uri,
                              method='PUT',
