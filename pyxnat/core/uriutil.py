@@ -67,7 +67,7 @@ def uri_segment(uri, start=None, end=None):
         return '/'+'/'.join(uri.split('/')[start:end])
 
 def uri_shape(uri):
-    
+
     kwid_map = dict(zip(uri.split('/')[1::2], uri.split('/')[2::2]))
     shapes = {}
 
@@ -84,18 +84,18 @@ def uri_shape(uri):
                     chunk = '*'
                 except:
                     pass
-        
+
                 chunks.append(chunk)
 
-            shapes[kw] = '?'.join(chunks) 
-    
+            shapes[kw] = '?'.join(chunks)
+
     return make_uri(shapes)
 
 def make_uri(_dict):
     uri = ''
 
-    kws = ['projects', 'subjects', 'experiments', 'assessors', 
-            'reconstructions', 'scans', 'resources', 'in_resources', 
+    kws = ['projects', 'subjects', 'experiments', 'assessors',
+            'reconstructions', 'scans', 'resources', 'in_resources',
                 'out_resources', 'files', 'in_files', 'out_files']
 
     for kw in kws:
@@ -119,11 +119,12 @@ def extract_uri(uri) :
     Returns None if any one of project,subject or experiment is unspecified in the URI and a
     (project,subject,experiment) triple otherwise.
     """
-    split = uri.split(os.sep)
+    # elements in URLs are always separated by /, regardless of client
+    split = uri.split('/')
     # a well qualified uri has a project subject, and experiment name
     # so when split the following items should be present:
     # ['', 'data', 'projects', 'project-name', 'subjects', 'subject-name', 'experiments', 'experiment-name', 'scans']
-    
+
     # Based on the above comment if there aren't 9 items in the split list the uri isn't well qualified
     if (len(split) != 9): return None
 

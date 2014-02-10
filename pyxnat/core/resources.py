@@ -11,6 +11,7 @@ import time
 import urllib
 import codecs
 from fnmatch import fnmatch
+from itertools import islice
 
 import json
 from lxml import etree
@@ -171,9 +172,8 @@ class EObject(object):
                        if col not in schema.json[self._urt] \
                            or col != 'URI'] + schema.json[self._urt]
                       )
-
         get_id = p_uri + '?format=json&columns=%s' % ','.join(columns)
-
+        
         for pattern in self._intf._struct.keys():
             if fnmatch(uri_segment(
                     self._uri.split(
@@ -182,7 +182,7 @@ class EObject(object):
                 reg_pat = self._intf._struct[pattern]
                 filters.setdefault('xsiType', set()).add(reg_pat)
 
-        if filters != {}:
+        if filters:
             get_id += '&' + \
                 '&'.join('%s=%s' % (item[0], item[1])
                          if isinstance(item[1], basestring)
@@ -345,7 +345,7 @@ class EObject(object):
 
                 create_uri += '&%s/ID=%s' % (datatype, uri_last(self._uri))
 
-            if local_params != []:
+            if local_params:
                 create_uri += '&' + '&'.join('%s=%s' % (key,
                                                         params.get(key)
                                                         )
@@ -470,7 +470,7 @@ class EObject(object):
         """
         tag = self._intf.manage.tags.get(name)
         tag.dereference(self._uri)
-        if tag.references().get() == []:
+        if not tag.references().get():
             tag.delete()
 
 
@@ -544,14 +544,14 @@ class CObject(object):
             self._ctype = 'cobjectcuri'
         elif isinstance(cbase, CObject):
             self._ctype = 'cobjectcobject'
-        elif isinstance(cbase, list) and cbase != []:
+        elif isinstance(cbase, list) and cbase:
             if isinstance(cbase[0], basestring):
                 self._ctype = 'cobjecteuris'
             if isinstance(cbase[0], EObject):
                 self._ctype = 'cobjecteobjects'
             if isinstance(cbase[0], CObject):
                 self._ctype = 'cobjectcobjects'
-        elif isinstance(cbase, list) and cbase == []:
+        elif isinstance(cbase, list) and not cbase:
             self._ctype = 'cobjectempty'
         else:
             raise Exception('Invalid collection accessor type: %s' % cbase)
@@ -606,7 +606,7 @@ class CObject(object):
             #         self._filters.setdefault('xsiType', set()
             #                                  ).add(struct[pattern])
 
-            if self._filters != {}:
+            if self._filters:
                 query_string += '&' + '&'.join(
                     '%s=%s' % (item[0], item[1])
                     if isinstance(item[1], (str, unicode))
@@ -814,6 +814,14 @@ class CObject(object):
 
     fetchone = first
 
+    def __getitem__(self, k):
+        """ Use itertools.islice() to support indexed access and slicing.
+        """
+        if isinstance(k, slice):
+            return islice(self, k.start, k.stop, k.step)
+        else:
+            return next(islice(self, k, k+1))
+
     def get(self, *args):
         """ Returns every element.
 
@@ -830,7 +838,7 @@ class CObject(object):
                   more than one is given, a list of tuple is returned
                   instead of a list.
         """
-        if args == ():
+        if not args:
             return [urllib.unquote(uri_last(eobj._uri)) for eobj in self]
         else:
             entries = []
@@ -856,6 +864,14 @@ class CObject(object):
 
     fetchall = get
 
+    def __nonzero__(self):
+        try:
+            self.__iter__().next()
+        except StopIteration:
+            return False
+        else:
+            return True
+
     def tag(self, name):
         """ Tag the collection.
         """
@@ -871,7 +887,7 @@ class CObject(object):
         """
         tag = self._intf.manage.tags.get(name)
         tag.dereference_many([eobj._uri for eobj in self])
-        if tag.references().get() == []:
+        if not tag.references().get():
             tag.delete()
 
     def where(self, constraints=None, template=None, query=None):
@@ -1574,9 +1590,8 @@ class Resource(EObject):
 
         for member in fzip.namelist():
             old_path = os.path.join(dest_dir, member)
-            
-            #print(member)
-            #print(member.split('files', 1))
+            print(member)
+            print(member.split('files', 1))
             new_path = os.path.join(
                 dest_dir,
                 uri_last(self._uri),
@@ -1617,45 +1632,107 @@ class Resource(EObject):
 
         return zip_location if os.path.exists(zip_location) else members
 
-    def put(self, sources, **datatypes):
+    def put(self, sources, overwrite=False, extract=True, **datatypes):
         """ Insert a list of files in a single resource element.
 
             This method takes all the files an creates a zip with them
             which will be the element to be uploaded and then extracted on
             the server.
+            If the files have a common prefix directory, that directory name 
+            will be used.  If not, then "files" will be used as the zip name.
+
+            If avaiable, compression will be used on the zip file.
+
+            Parameters
+            ----------
+            sources: List of paths of files to upload.
+
+            overwrite: boolean
+                If True, overwrite the files that already exist under the given id.
+                If False, do not overwrite (Default)
+                
+            extract: boolean
+                If True, the uploaded zip file is extracted. (Default)
+                If False, the file is not extracted.
+            
         """
-        zip_location = tempfile.mkstemp(suffix='.zip')[1]
+        zip_location = tempfile.mkdtemp(suffix='pyxnat')
+        
+        #get the largest common directory.
+        arcprefix, _, _ = os.path.commonprefix(sources).rpartition(os.path.sep)
+        #get just the name of the largest common directory.
+        zip_name = os.path.split(arcprefix.rstrip(os.path.sep))[1]
+        arcroot = '/%s' % zip_name
+        
+        if not zip_name:
+            #if no common prefix, then use "files" as the zip file name.
+            #inside, each file will be directly under the zip root.
+            zip_name = "files"
+        
+        zip_name = os.path.join(zip_location, zip_name + ".zip")
+        fzip = None
+        try:
+            #use compression if avaiable. 
+            fzip = zipfile.ZipFile(zip_name, 'w', zipfile.ZIP_DEFLATED)
+        except RuntimeError:
+            print "Zip compression not supported for uploading files."
+            fzip = zipfile.ZipFile(zip_name, 'w')
 
-        #arcprefix = os.path.commonprefix(sources)
-        arcprefix = os.path.commonprefix(sources).rpartition(os.sep)[0]
-        arcroot = '/%s' % os.path.split(arcprefix.rstrip(os.sep))[1]
-
-        fzip = zipfile.ZipFile(zip_location, 'w')
         for src in sources:
             fzip.write(src, os.path.join(arcroot, src.split(arcprefix)[1]))
 
         fzip.close()
 
-        self.put_zip(zip_location, **datatypes)
-        os.remove(zip_location)
+        self.put_zip(zip_name, overwrite=overwrite, extract=extract, **datatypes)
+        os.remove(zip_name)
+        os.rmdir(zip_location)
 
-    def put_zip(self, zip_location, **datatypes):
+    def put_zip(self, zip_location, overwrite=False, extract=True, **datatypes):
         """ Uploads a zip or tgz file an then extracts it on the server.
 
             After the compressed file is extracted the individual 
             files are accessible separately, or as a whole using get_zip.
+            
+            Parameters
+            ----------
+            zip_location: Path to zip file for upload.
+
+            overwrite: boolean
+                If True, overwrite the files that already exist under the given id.
+                If False, do not overwrite (Default)
+                
+            extract: boolean
+                If True, the uploaded zip file is extracted. (Default)
+                If False, the file is not extracted.
         """
         if not self.exists():
             self.create(**datatypes)
+        
+        if extract:
+            do_extract = '?extract=true'
+        else:
+            do_extract = ''
+        
+        self.file(os.path.split(zip_location)[1] + do_extract
+                  ).put(zip_location, overwrite=overwrite)
 
-        self.file(os.path.split(zip_location)[1] + '?extract=true'
-                  ).put(zip_location)
-
-    def put_dir(self, src_dir, **datatypes):
+    def put_dir(self, src_dir, overwrite=False, extract=True, **datatypes):
         """ Finds recursively all the files in a folder and uploads
-            them using `insert`.
+            them using `insert`. Uses put_zip internally. 
+
+            Parameters
+            ----------
+            src_dir: Path to directory to upload.
+
+            overwrite: boolean
+                If True, overwrite the files that already exist under the given id.
+                If False, do not overwrite (Default)
+                
+            extract: boolean
+                If True, the uploaded zip file is extracted. (Default)
+                If False, the file is not extracted.
         """
-        self.put(find_files(src_dir), **datatypes)
+        self.put(find_files(src_dir), overwrite=overwrite, extract=extract, **datatypes)
 
     batch_insert = put
     zip_insert = put_zip
