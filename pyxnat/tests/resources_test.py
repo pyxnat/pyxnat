@@ -253,4 +253,36 @@ def test_project_configuration():
     assert project.current_arc() == 'arc001'
     assert 'nosetests' in project.users()
     assert 'nosetests' in project.owners()
-    assert project.user_role('nosetests') == 'owner'
+    assert project.user_role('nosetests') == 'owner'                              
+                                              
+def test_put_zip():
+    local_path = os.path.join(_modulepath, 'hello_dir.zip')
+    assert os.path.exists(local_path)
+
+    # Upload and confirm proper extraction
+    r1 = subj_1.resource('test_zip_extract')
+    r1.put_zip(local_path, extract=True)
+    assert r1.exists()
+    assert r1.file('hello_dir/hello_xnat_dir.txt').exists()
+    assert r1.file('hello_dir/hello_dir2/hello_xnat_dir2.txt').exists()
+   
+    # Upload and confirm not extracted 
+    r2 = subj_1.resource('test_zip_no_extract')
+    r2.put_zip(local_path, extract=False)
+    assert r2.exists()
+    assert r2.file('hello_dir.zip').exists()
+                                                                                                
+def test_get_zip():
+    r = subj_1.resource('test_zip_extract')
+    local_dir = os.path.join(_modulepath, 'test_zip_download'+r.id())
+    file_list = [os.path.join(local_dir,'test_zip_extract/hello_dir'), 
+                 os.path.join(local_dir,'test_zip_extract/hello_dir/hello_xnat_dir.txt'),
+                 os.path.join(local_dir,'test_zip_extract/hello_dir/hello_dir2'),
+                 os.path.join(local_dir,'test_zip_extract/hello_dir/hello_dir2/hello_xnat_dir2.txt')]
+
+    if not os.path.exists(local_dir):
+        os.mkdir(local_dir)
+        
+    r.get(local_dir, extract=True)
+    for f in file_list:
+        assert os.path.exists(f)
