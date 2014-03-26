@@ -1,44 +1,54 @@
 import re
 
 import httplib2
+from lxml import etree
 
 # parsing functions
 
 def is_xnat_error(message):
+    
     return message.startswith('<!DOCTYPE') or message.startswith('<html>')
 
 def parse_error_message(message):
-
-    if message.startswith('<html>'):
-        error = message.split('<h3>')[1].split('</h3>')[0]
-
-    elif message.startswith('<!DOCTYPE'):
-        if 'Not Found' in message.split('<title>')[1].split('</title>')[0]:
-           error = message.split('<title>')[1].split('</title>')[0]
+    try:
+        if message.startswith('<html>'):
+            message_tree = etree.XML(message)
+            error_tag = message_tree.find('.//h3')
+            if error_tag:
+                error = error_tag.xpath("string()")
+        elif message.startswith('<!DOCTYPE'):
+            message_tree = etree.XML(message)
+            error_tag = message_tree.find('.//title')
+            if error_tag and 'Not Found' in error_tag.xpath("string()"):
+                error = error_tag.xpath("string()")
+            else:
+                error_tag = message_tree.find('.//h1')
+                if error_tag :
+                    error = error_tag.xpath("string()")
         else:
-            error = message.split('<h1>')[1].split('</h1>')[0]
+            error = message
 
-    else:
+    except Exception, e:
         error = message
-
-    return error
+    finally:
+        return error
 
 def parse_put_error_message(message):
-    if message.startswith('<html>'):
-        error = message.split('<h3>')[1].split('</h3>')[0]
+    error = parse_error_message(message)
 
     required_fields = []
 
-    for line in error.split('\n'):
+    if error:
+        for line in error.split('\n'):
 
-        try:
-            datatype_name = re.findall("\'.*?\'",line)[0].strip('\'')
-            element_name = re.findall("\'.*?\'",line
-                                      )[1].rsplit(':', 1)[1].strip('}\'')
+            try:
+                datatype_name = re.findall("\'.*?\'",line)[0].strip('\'')
+                element_name = re.findall("\'.*?\'",line
+                                          )[1].rsplit(':', 1)[1].strip('}\'')
 
-            required_fields.append((datatype_name, element_name))
-        except:
-            continue
+                required_fields.append((datatype_name, element_name))
+            except:
+                continue
 
     return required_fields
 
@@ -48,16 +58,7 @@ def catch_error(msg_or_exception):
     if isinstance(msg_or_exception, (str, unicode)):
         # parse the message
         msg = msg_or_exception
-        if msg.startswith('<html>'):
-            error = msg.split('<h3>')[1].split('</h3>')[0]
-
-        elif msg.startswith('<!DOCTYPE'):
-            if 'Not Found' in msg.split('<title>')[1].split('</title>')[0]:
-                error = msg.split('<title>')[1].split('</title>')[0]
-            else:
-                error = msg.split('<h1>')[1].split('</h1>')[0]
-        else:
-            error = msg
+        error = parse_error_message(msg)
             
         # choose the exception
         if error == 'The request requires user authentication':

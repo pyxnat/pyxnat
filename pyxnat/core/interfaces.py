@@ -414,25 +414,10 @@ class Interface(object):
             if len(jsessionid) > 0:
                 self._jsession = jsessionid[0]
 
-        if response is not None and response.get('status') == '404':
-            r, _ = self._http.request(self._server)
-
-            if self._server.rstrip('/') != r.get('content-location',
-                                                 self._server).rstrip('/'):
-
-                old_server = self._server
-                self._server = r.get('content-location').rstrip('/')
-                return self._exec(uri.replace(old_server, ''), method, body)
-            else:
-                raise httplib2.HttpLib2Error('%s %s %s' % (uri,
-                                                           response.status,
-                                                           response.reason
-                                                           )
-                                             )
-
-        if is_xnat_error(content):
-            print(response.keys())
-            print(response.get("status"))
+        if (response is not None and response.status == 404) or is_xnat_error(content):
+            if DEBUG:
+                print(response.keys())
+                print(response.get("status"))
 
             catch_error(content)
 
