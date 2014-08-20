@@ -1864,7 +1864,13 @@ class File(EObject):
             string : the copy location.
         """
 
+
         if not dest:
+            if not self._absuri:
+                self._absuri = self._getcell('URI')
+            if self._absuri is None:
+                raise DataError('Cannot get file: does not exists')
+
             dest = os.path.join(self._intf._http.cache.cache, 'workspace',
                                 *self._absuri.strip('/').split('/')[1:])
 
