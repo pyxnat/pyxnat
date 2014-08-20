@@ -1,6 +1,15 @@
 Latest changes
 ===============
 
+Release 0.9.5.2
+   * New Features
+
+   * Improvements
+
+   * Bug fixes:
+        - Ticket #50 404 error causes connection to be broken until end of object life.
+        - Tiekct #52 fix zip file downloading.
+
 Release 0.9.5
 
     * New Features
