@@ -16,15 +16,15 @@ def test_nested_object_listing():
 def test_nested_path_listing():
     assert isinstance(central.select('/projects/*OASIS*/subjects').get(), list)
 
-def test_nested_for_access():
-    stop = False
-    for subject in central.select('/projects/*OASIS*/subjects'):
-        for f in subject.experiments().scans().resources().files():
-            assert isinstance(f._uri, (str, unicode))
-            stop =True
-            break
-        if stop:
-            break
+# def test_nested_for_access():
+#     stop = False
+#     for subject in central.select('/projects/*OASIS*/subjects'):
+#         for f in subject.experiments().scans().resources().files():
+#             assert isinstance(f._uri, (str, unicode))
+#             stop =True
+#             break
+#         if stop:
+#             break
 
 def test_seach_access():
     constraints = [('xnat:subjectData/PROJECT', '=', 'CENTRAL_OASIS_CS'), 'AND']
