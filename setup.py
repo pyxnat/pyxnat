@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 from distutils.core import setup
-import sys
+import sys,os
 
 # For some commands, use setuptools
 if len(set(['develop', 'sdist', 'release', 'bdist_egg', 'bdist_rpm', 'bdist',
