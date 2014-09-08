@@ -8,7 +8,7 @@ servers.
 Visit http://packages.python.org/pyxnat for more information.
 """
 
-from .version import VERSION as__version__
+from .version import VERSION as __version__
 
 from .core import Interface
 from .core import SearchManager
