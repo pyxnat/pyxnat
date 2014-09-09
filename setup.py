@@ -1,9 +1,7 @@
 #!/usr/bin/env python
 
 from distutils.core import setup
-import sys
-
-import pyxnat
+import sys,os
 
 # For some commands, use setuptools
 if len(set(['develop', 'sdist', 'release', 'bdist_egg', 'bdist_rpm', 'bdist',
@@ -16,8 +14,26 @@ if len(set(['develop', 'sdist', 'release', 'bdist_egg', 'bdist_rpm', 'bdist',
 if not 'extra_setuptools_args' in globals():
     extra_setuptools_args = dict()
 
+def get_version():
+    basedir = os.path.dirname(__file__)
+    with open(os.path.join(basedir, 'pyxnat/version.py')) as f:
+        VERSION = None
+        exec(f.read())
+        return VERSION
+    raise RuntimeError("No version found")
+
+LONG_DESCRIPTION = """
+PyXNAT
+======
+
+pyxnat provides an API to access data on XNAT (see http://xnat.org)
+servers.
+
+Visit http://packages.python.org/pyxnat for more information.
+"""
+
 setup(name='pyxnat',
-      version=pyxnat.__version__,
+      version=get_version(),
       summary='XNAT in Python',
       author='Yannick Schwartz',
       author_email='yannick.schwartz@cea.fr',
@@ -33,7 +49,7 @@ setup(name='pyxnat',
                                '*.py'],
                     },
       description="""Xnat in Python""",
-      long_description=pyxnat.__doc__,
+      long_description=LONG_DESCRIPTION,
       license='BSD',
       classifiers=[
           'Development Status :: 4 - Beta',
