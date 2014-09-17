@@ -1,3 +1,4 @@
+import base64
 import os
 import re
 import time
@@ -350,6 +351,12 @@ class Interface(object):
             print(uri)
         # using session authentication
         headers['cookie'] = self._jsession
+
+        # This _jsession flag indicates we don't have a JSESSIONID yet. Set up preemptive auth so that this will work
+        # properly when run against open XNAT installations such as XNAT Central.
+        if self._jsession == 'authentication_by_credentials':
+            headers["Authorization"] = "Basic {0}".format(base64.b64encode("{0}:{1}".format(self._user, self._pwd)))
+
         headers['connection'] = 'keep-alive'
 
         # reset the memcache when client changes something on the server
