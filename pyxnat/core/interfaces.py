@@ -1,3 +1,4 @@
+import base64
 import os
 import re
 import time
@@ -258,7 +259,7 @@ class Interface(object):
             # /REST for XNAT 1.4, /data if >=1.5
             self._entry = '/REST'
             try:
-                self._jsession = 'JSESSIONID=' + self._exec('/data/JSESSION')
+                self._jsession = 'JSESSIONID=' + self._exec('/data/JSESSION', force_preemptive_auth=True)
                 self._entry = '/data'
 
                 if is_xnat_error(self._jsession):
@@ -320,7 +321,7 @@ class Interface(object):
         if not self._anonymous:
             self._http.add_credentials(self._user, self._pwd)
 
-    def _exec(self, uri, method='GET', body=None, headers=None):
+    def _exec(self, uri, method='GET', body=None, headers=None, force_preemptive_auth=False):
         """ A wrapper around a simple httplib2.request call that:
                 - avoids repeating the server url in the request
                 - deals with custom caching mechanisms
@@ -337,6 +338,8 @@ class Interface(object):
                 HTTP message body
             headers: dict
                 Additional headers for the HTTP request.
+            force_preemptive_auth: boolean
+                Indicates whether the request should include an Authorization header with basic auth credentials.
         """
 
         if headers is None:
@@ -350,6 +353,12 @@ class Interface(object):
             print(uri)
         # using session authentication
         headers['cookie'] = self._jsession
+
+        # Set up preemptive auth so that this will work properly when run against open
+        # XNAT installations such as XNAT Central.
+        if force_preemptive_auth:
+            headers["Authorization"] = "Basic {0}".format(base64.b64encode("{0}:{1}".format(self._user, self._pwd)))
+
         headers['connection'] = 'keep-alive'
 
         # reset the memcache when client changes something on the server
