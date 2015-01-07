@@ -356,7 +356,7 @@ class Interface(object):
             print(uri)
 
         # using session authentication
-        if force_preemptive_auth:
+        if force_preemptive_auth and not self._anonymous:
             # This is necessary to work around XNAT's lack of 401 response, which breaks httplib2 auth.
             headers["Authorization"] = "Basic {0}".format(base64.b64encode("{0}:{1}".format(self._user, self._pwd)))
         else:
