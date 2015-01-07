@@ -1,3 +1,4 @@
+import base64
 import os
 import re
 import time
@@ -258,7 +259,7 @@ class Interface(object):
             # /REST for XNAT 1.4, /data if >=1.5
             self._entry = '/REST'
             try:
-                self._jsession = 'JSESSIONID=' + self._exec('/data/JSESSION')
+                self._jsession = 'JSESSIONID=' + self._exec('/data/JSESSION', force_preemptive_auth=True)
                 self._entry = '/data'
 
                 if is_xnat_error(self._jsession):
@@ -317,10 +318,13 @@ class Interface(object):
                 **kwargs
             )
 
-        if not self._anonymous:
-            self._http.add_credentials(self._user, self._pwd)
+        # Turns out this doesn't work any more: XNAT doesn't do the 401 response that forces
+        # httplib2 to re-submit the request with credentials. See where the Authorization header
+        # is added manually in the _exec function.
+        # if not self._anonymous:
+        #    self._http.add_credentials(self._user, self._pwd)
 
-    def _exec(self, uri, method='GET', body=None, headers=None):
+    def _exec(self, uri, method='GET', body=None, headers=None, force_preemptive_auth=False):
         """ A wrapper around a simple httplib2.request call that:
                 - avoids repeating the server url in the request
                 - deals with custom caching mechanisms
@@ -337,6 +341,8 @@ class Interface(object):
                 HTTP message body
             headers: dict
                 Additional headers for the HTTP request.
+            force_preemptive_auth: boolean
+                Indicates whether the request should include an Authorization header with basic auth credentials.
         """
 
         if headers is None:
@@ -348,8 +354,14 @@ class Interface(object):
 
         if DEBUG:
             print(uri)
+
         # using session authentication
-        headers['cookie'] = self._jsession
+        if force_preemptive_auth:
+            # This is necessary to work around XNAT's lack of 401 response, which breaks httplib2 auth.
+            headers["Authorization"] = "Basic {0}".format(base64.b64encode("{0}:{1}".format(self._user, self._pwd)))
+        else:
+            headers['cookie'] = self._jsession
+
         headers['connection'] = 'keep-alive'
 
         # reset the memcache when client changes something on the server
