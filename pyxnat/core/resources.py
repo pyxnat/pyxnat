@@ -1590,8 +1590,9 @@ class Resource(EObject):
 
         for member in fzip.namelist():
             old_path = os.path.join(dest_dir, member)
-            print(member)
-            print(member.split('files', 1))
+            if DEBUG:
+                print(member)
+                print(member.split('files', 1))
             new_path = os.path.join(
                 dest_dir,
                 uri_last(self._uri),
