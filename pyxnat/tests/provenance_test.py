@@ -1,8 +1,9 @@
+import os
 from uuid import uuid1
 
 from .. import Interface
 
-central = Interface('https://central.xnat.org', 'nosetests', 'nosetests')
+central = Interface(config=os.path.join(os.path.dirname(os.path.abspath(__file__)), 'central.cfg'))
 project = central.select('/project/nosetests')
 
 prov = {

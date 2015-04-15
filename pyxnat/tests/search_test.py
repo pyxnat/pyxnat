@@ -1,9 +1,10 @@
+import os
 from uuid import uuid1
 
 from .. import Interface
 from .. import jsonutil
 
-central = Interface('https://central.xnat.org', 'nosetests', 'nosetests')
+central = Interface(config=os.path.join(os.path.dirname(os.path.abspath(__file__)), 'central.cfg'))
 search_name = uuid1().hex
 search_template_name = uuid1().hex
 

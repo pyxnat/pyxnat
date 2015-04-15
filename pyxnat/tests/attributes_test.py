@@ -5,7 +5,7 @@ from .. import Interface
 
 _modulepath = os.path.dirname(os.path.abspath(__file__))
 
-central = Interface('https://central.xnat.org', 'nosetests', 'nosetests')
+central = Interface(config=os.path.join(os.path.dirname(os.path.abspath(__file__)), 'central.cfg'))
 
 sid = uuid1().hex
 eid = uuid1().hex

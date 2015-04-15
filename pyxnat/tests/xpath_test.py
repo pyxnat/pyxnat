@@ -1,6 +1,7 @@
+import os
 from .. import Interface
 
-central = Interface('https://central.xnat.org', 'nosetests', 'nosetests')
+central = Interface(config=os.path.join(os.path.dirname(os.path.abspath(__file__)), 'central.cfg'))
 
 def test_xpath_checkout():
     central.xpath.checkout(subjects=['OAS1_0001', 'OAS1_0002'])
