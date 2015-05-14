@@ -1,7 +1,7 @@
-from uuid import uuid1
+import os
 from .. import Interface
 
-central = Interface('https://central.xnat.org', 'nosetests', 'nosetests')
+central = Interface(config=os.path.join(os.path.dirname(os.path.abspath(__file__)), 'central.cfg'))
 central_anon = Interface('https://central.xnat.org', anonymous=True)
 
 def test_simple_object_listing():

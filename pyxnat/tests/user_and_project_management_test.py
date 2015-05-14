@@ -1,6 +1,7 @@
+import os
 from .. import Interface
 
-central = Interface('https://central.xnat.org', 'nosetests', 'nosetests')
+central = Interface(config=os.path.join(os.path.dirname(os.path.abspath(__file__)), 'central.cfg'))
 
 def test_users():
     assert isinstance(central.manage.users(), list)
