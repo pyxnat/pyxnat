@@ -1,14 +1,11 @@
-import base64
 import os
-import re
 import time
 import tempfile
-import email
 import getpass
 
-import httplib2
 import json
 
+import requests
 try:
     import socks
 except ImportError:
@@ -18,7 +15,6 @@ try:
 except ImportError:
     from urllib.parse import urlparse
 from .select import Select
-from .cache import CacheManager, HTCache
 from .help import Inspector, GraphData, PaintGraph, _DRAW_GRAPHS
 from .manage import GlobalManager
 from .uriutil import join_uri, file_path, uri_last
@@ -213,7 +209,7 @@ class Interface(object):
         self.inspect = Inspector(self)
         self.select = Select(self)
         self.array = ArrayData(self)
-        self.cache = CacheManager(self)
+        # self.cache = CacheManager(self)
         self.manage = GlobalManager(self)
         self.xpath = XpathStore(self)
 
@@ -286,37 +282,13 @@ class Interface(object):
         else:
             kwargs = self._connect_extras
 
-        kwargs['disable_ssl_certificate_validation'] = True
+        self._http = requests.Session()
+        if not self._anonymous:
+            self._http.auth = (self._user, self._pwd)
 
-        # If a proxy was configured, then add that in.
-        if socks and self._proxy_url is not None:
-            if self._proxy_url.username is None:
-                kwargs['proxy_info'] = httplib2.ProxyInfo(
-                    socks.PROXY_TYPE_HTTP,
-                    self._proxy_url.hostname,
-                    self._proxy_url.port)
-            else:
-                kwargs['proxy_info'] = httplib2.ProxyInfo(
-                    socks.PROXY_TYPE_HTTP,
-                    self._proxy_url.hostname,
-                    self._proxy_url.port,
-                    None,
-                    self._proxy_url.username,
-                    self._proxy_url.password)
+        if self._proxy_url:
+            self._http.proxies = {'http': self._proxy_url.geturl()}
 
-        if DEBUG:
-            httplib2.debuglevel = 2
-
-        # compatibility with httplib2 < 0.7
-        try:
-            self._http = httplib2.Http(HTCache(self._cachedir, self),
-                                       **kwargs)
-        except:
-            del kwargs['disable_ssl_certificate_validation']
-            self._http = httplib2.Http(
-                HTCache(self._cachedir, self),
-                **kwargs
-            )
 
         # Turns out this doesn't work any more: XNAT doesn't do the 401 response that forces
         # httplib2 to re-submit the request with credentials. See where the Authorization header
@@ -355,85 +327,34 @@ class Interface(object):
         if DEBUG:
             print(uri)
 
-        # using session authentication
-        if force_preemptive_auth and not self._anonymous:
-            # This is necessary to work around XNAT's lack of 401 response, which breaks httplib2 auth.
-            headers["Authorization"] = "Basic {0}".format(base64.b64encode("{0}:{1}".format(self._user, self._pwd)))
-        else:
-            headers['cookie'] = self._jsession
-
-        headers['connection'] = 'keep-alive'
-
-        # reset the memcache when client changes something on the server
-        if method in ['PUT', 'DELETE']:
-            self._memcache = {}
-
-        # Initialize these to default values.
         response = None
-        info = None
-        content = None
 
-        if self._mode == 'online' and method == 'GET':
-
-            if time.time() - self._memcache.get(uri, 0) < self._memtimeout:
-                if DEBUG:
-                    print('send: GET CACHE %s' % uri)
-
-                info, content = self._http.cache.get(uri
-                                                     ).split('\r\n\r\n', 1)
-
-                self._memcache[uri] = time.time()
-            else:
-                response, content = self._http.request(uri, method,
-                                                       body, headers)
-                self._memcache[uri] = time.time()
-
-        elif self._mode == 'offline' and method == 'GET':
-
-            cached_value = self._http.cache.get(uri)
-
-            if cached_value is not None:
-                if DEBUG:
-                    print('send: GET CACHE %s' % uri)
-                info, content = cached_value.split('\r\n\r\n', 1)
-            else:
-                try:
-                    self._http.timeout = 10
-
-                    response, content = self._http.request(uri, method,
-                                                           body, headers)
-
-                    self._http.timeout = None
-                    self._memcache[uri] = time.time()
-                except Exception as e:
-                    catch_error(e)
+        if method is 'PUT':
+            response = self._http.put(uri, headers=headers, data=body)
+        elif method is 'GET':
+            response = self._http.get(uri, headers=headers, params=body)
+        elif method is 'POST':
+            response = self._http.post(uri, headers=headers, data=body)
+        elif method is 'DELETE':
+            response = self._http.delete(uri, headers=headers, data=body)
+        elif method is 'HEAD':
+            response = self._http.head(uri, headers=headers, data=body)
         else:
-            response, content = self._http.request(uri, method,
-                                                   body, headers)
+            print 'unsupported HTTP method'
 
-        if DEBUG:
-            if response is None:
-                response = httplib2.Response(email.message_from_string(info))
-                print('reply: %s %s from cache') % (response.status,
-                                                   response.reason
-                                                   )
-                for key in response.keys():
-                    print('header: %s: %s') % (key.title(), response.get(key))
-
-        if response is not None and 'set-cookie' in response:
-            cookies = response.get('set-cookie')
-            jsessionid = re.findall(r'(JSESSIONID=[0-9A-F]+);', cookies)
-            if len(jsessionid) > 0:
-                self._jsession = jsessionid[0]
-
-        if (response is not None and response.status == 404) or is_xnat_error(content):
+        if (response is not None and not response.ok) or is_xnat_error(response.content):
             if DEBUG:
                 print(response.keys())
                 print(response.get("status"))
 
-            catch_error(content)
+            catch_error(response.content, '''pyxnat._exec failure:
+    URI: {response.url}
+    status code: {response.status_code}
+    headers: {response.headers}
+    content: {response.content}
+'''.format(response=response))
 
-        return content
+        return response.content
 
     def _get_json(self, uri):
         """ Specific Interface._exec method to retrieve data.
@@ -474,29 +395,14 @@ class Interface(object):
     def _get_head(self, uri):
         if DEBUG:
             print('GET HEAD')
-        _nocache = httplib2.Http(**self._connect_extras)
-        if self._user:
-            _nocache.add_credentials(self._user, self._pwd)
 
-        rheaders = {'cookie': self._jsession}
+        response = self._http.head('{server}{uri}'.format(server=self._server, uri=uri))
 
-        try:
-            head = _nocache.request(
-                '%s%s' % (self._server, uri), 'HEAD', headers=rheaders)[0]
-        except:
+        if not response.ok:
             time.sleep(1)
-            head = _nocache.request(
-                '%s%s' % (self._server, uri), 'HEAD', headers=rheaders)[0]
+            self._http.head('{server}{uri}'.format(server=self._server, uri=uri))
 
-        info = email.Message.Message()
-
-        for key, value in head.iteritems():
-            if key == 'content-disposition':
-                info['content-location'] = '%s%s' % (self._server, uri)
-            if key not in ['set-cookie']:
-                info[key] = value
-
-        return info
+        return response.headers
 
     def save_config(self, location):
         """ Saves current configuration - including password - in a file.

@@ -1,13 +1,13 @@
 import re
 
-import httplib2
 from lxml import etree
 
 # parsing functions
 
+
 def is_xnat_error(message):
-    
     return message.startswith('<!DOCTYPE') or message.startswith('<html>')
+
 
 def parse_error_message(message):
     try:
@@ -23,15 +23,16 @@ def parse_error_message(message):
                 error = error_tag.xpath("string()")
             else:
                 error_tag = message_tree.find('.//h1')
-                if error_tag :
+                if error_tag:
                     error = error_tag.xpath("string()")
         else:
             error = message
 
-    except Exception, e:
+    except Exception:
         error = message
     finally:
         return error
+
 
 def parse_put_error_message(message):
     error = parse_error_message(message)
@@ -42,8 +43,8 @@ def parse_put_error_message(message):
         for line in error.split('\n'):
 
             try:
-                datatype_name = re.findall("\'.*?\'",line)[0].strip('\'')
-                element_name = re.findall("\'.*?\'",line
+                datatype_name = re.findall("\'.*?\'", line)[0].strip('\'')
+                element_name = re.findall("\'.*?\'", line
                                           )[1].rsplit(':', 1)[1].strip('}\'')
 
                 required_fields.append((datatype_name, element_name))
@@ -52,28 +53,29 @@ def parse_put_error_message(message):
 
     return required_fields
 
-def catch_error(msg_or_exception):
+
+def catch_error(msg_or_exception, full_response=None):
 
     # handle errors returned by the xnat server
     if isinstance(msg_or_exception, (str, unicode)):
         # parse the message
         msg = msg_or_exception
         error = parse_error_message(msg)
-            
+
         # choose the exception
         if error == 'The request requires user authentication':
             raise OperationalError('Authentication failed')
         elif 'Not Found' in error:
             raise OperationalError('Connection failed')
         else:
-            raise DatabaseError(error)
+            if full_response:
+                raise DatabaseError(full_response)
+            else:
+                raise DatabaseError(error)
 
     # handle other errors, raised for instance by the http layer
     else:
-        if isinstance(msg_or_exception, httplib2.ServerNotFoundError):
-            raise OperationalError('Connection failed')
-        else:
-            raise DatabaseError(str(msg_or_exception))
+        raise DatabaseError(str(msg_or_exception))
 
 
 # Exceptions as defined in PEP-249, the module treats errors using thoses
@@ -98,23 +100,30 @@ except NameError:
 class InterfaceError(Error):
     pass
 
+
 class DatabaseError(Error):
     pass
+
 
 class DataError(DatabaseError):
     pass
 
+
 class OperationalError(DatabaseError):
     pass
+
 
 class IntegrityError(DatabaseError):
     pass
 
+
 class InternalError(DatabaseError):
     pass
 
+
 class ProgrammingError(DatabaseError):
     pass
+
 
 class NotSupportedError(DatabaseError):
     pass
