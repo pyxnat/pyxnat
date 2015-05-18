@@ -1,5 +1,6 @@
 import os
 from uuid import uuid1
+import time
 
 from .. import Interface
 
@@ -34,7 +35,8 @@ def test_attr_get():
     assert experiment.attrs.get('xnat:mrSessionData/age') == '42.0'
 
 def test_attr_mget():
-    fields = ['xnat:subjectData/investigator/firstname', 
+    time.sleep(5)
+    fields = ['xnat:subjectData/investigator/firstname',
               'xnat:subjectData/investigator/lastname'
               ]
 
@@ -45,6 +47,7 @@ def test_attr_set():
     assert experiment.attrs.get('xnat:mrSessionData/age') == '26.0'
 
 def test_attr_mset():
+
     field_data = {'xnat:subjectData/investigator/firstname':'angus',
                   'xnat:subjectData/investigator/lastname':'young',
                   }

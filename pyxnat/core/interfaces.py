@@ -217,10 +217,6 @@ class Interface(object):
             self._get_graph = GraphData(self)
             self.draw = PaintGraph(self)
 
-        if self._anonymous:
-            response, content = self._http.request(self._server, 'GET')
-            self._jsession = response['set-cookie'][:44]
-
         if self._interactive:
             self._get_entry_point()
 
