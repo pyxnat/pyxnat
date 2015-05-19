@@ -67,5 +67,5 @@ setup(name='pyxnat',
 
       platforms='any', 
       requires=['requests'],
-      install_requires=['requests', 'lxml'],
+      install_requires=['requests', 'lxml', 'requests[security]'],
       **extra_setuptools_args)
