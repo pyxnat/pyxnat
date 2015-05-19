@@ -514,3 +514,51 @@ class Interface(object):
         """
         self._exec('/data/JSESSION', method='DELETE')
         pass
+
+    def get(self, uri, **kwargs):
+        '''
+        Wrapper around requests.get()
+        returns rquests.response object
+        '''
+        uri = join_uri(self._server, uri)
+        response = self._http.get(uri, **kwargs)
+        return response
+
+    def put(self, uri, **kwargs):
+        '''
+        Wrapper around requests.put()
+        returns rquests.response object
+        '''
+        uri = join_uri(self._server, uri)
+        response = self._http.put(uri, **kwargs)
+        return response
+
+    def post(self, uri, **kwargs):
+        '''
+        Wrapper around requests.post()
+        returns rquests.response object
+        '''
+        uri = join_uri(self._server, uri)
+        response = self._http.post(uri, **kwargs)
+        return response
+
+    def delete(self, uri, **kwargs):
+        '''
+        Wrapper around requests.delete()
+        returns rquests.response object
+        '''
+        uri = join_uri(self._server, uri)
+        response = self._http.delete(uri, **kwargs)
+        return response
+
+    def head(self, uri, **kwargs):
+        '''
+        Wrapper around requests.head()
+        returns rquests.response object
+        '''
+        uri = join_uri(self._server, uri)
+        response = self._http.head(uri, **kwargs)
+        return response
+
+
+

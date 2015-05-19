@@ -1566,6 +1566,8 @@ class Resource(EObject):
             ----------
             dest_dir: string
                 Destination directory for the resource data.
+                if dest_dir is None, then the user's Downloads directory is used 
+                as the default download location.
             extract: boolean
                 If True, the downloaded zip file is extracted.
                 If False, not extracted.
@@ -1579,12 +1581,22 @@ class Resource(EObject):
         zip_location = os.path.join(dest_dir, uri_last(self._uri) + '.zip')
 
         with open(zip_location, 'wb') as f:
+            response = self._intf.get(join_uri(self._uri, 'files') + '?format=zip', stream=True)
             try:
-                content = self._intf._exec(join_uri(self._uri, 'files') + '?format=zip')
-                f.write(content)
+                count = 0
+                for chunk in response.iter_content(chunk_size=1024): 
+                    if chunk: # filter out keep-alive new chunks
+                        f.write(chunk)
+                        count +=1
+                        if count % 10 == 0:
+                            #flush the buffer every once in a while.
+                            f.flush()
+                f.flush()  # and one last flush.
             except Exception, e:
                 sys.stderr.write(e)
-        
+            finally:
+                response.close()
+
         print zip_location
 
         fzip = zipfile.ZipFile(zip_location, 'r')
@@ -1816,10 +1828,13 @@ class File(EObject):
             Parameters
             ----------
             dest: string | None
-                - If None a default path in the cache folder is
-                  automatically computed. 
-                - Else the file is downloaded at the requested location.
+                - If dest is None, then the user's Downloads directory is used 
+                    as the default download location.  
+                - Else the file is downloaded at the requested location. 
+                    Path should include the file name.
+                    eg: /path/to/file.txt
             force_default: boolean
+                - Depricated with pyxnat-requests
                 - Has no effect if the file is downloaded for the first time
                 - If the file was previously download with a custom path,
                   calling get() will remember the custom location unless:
@@ -1830,7 +1845,6 @@ class File(EObject):
             Returns
             -------
             string : the file location.
-            http://stackoverflow.com/questions/16694907/how-to-download-large-file-in-python-with-requests-py
         """
 
 
@@ -1851,11 +1865,21 @@ class File(EObject):
             print "get_file:" ,dest 
 
         with open(dest, 'wb') as f:
+            response = self._intf.get(self._uri, stream=True)
             try:
-                content = self._intf._exec(self._uri, 'GET')
-                f.write(content)
+                count = 0
+                for chunk in response.iter_content(chunk_size=1024): 
+                    if chunk: # filter out keep-alive new chunks
+                        f.write(chunk)
+                        count +=1
+                        if count % 10 == 0:
+                            #flush the buffer every once in a while.
+                            f.flush()
+                f.flush()  # and one last flush.
             except Exception, e:
                 sys.stderr.write(e)
+            finally:
+                response.close()
         return dest
 
     def get_copy(self, dest=None):
