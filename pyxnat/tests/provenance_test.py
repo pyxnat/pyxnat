@@ -23,10 +23,11 @@ assessor = project.subject(sid).experiment(eid).assessor(
 
 
 def test_provenance():
+    assert assessor.exists()
     assessor.provenance.set(prov)
     _prov = assessor.provenance.get()[0]
 
-    assert prov['program'] == _prov['program']
+    assert prov['program'] == _prov['program'], "Subject: %s Study: %s Prov: %s" % (sid, eid, aid)
 
 # def test_del_provenance():
 #     assessor.provenance.delete()

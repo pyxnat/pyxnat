@@ -24,7 +24,7 @@ from .uriutil import uri_shape
 from .uriutil import file_path
 
 from .jsonutil import JsonTable, get_selection
-from .pathutil import find_files
+from .pathutil import find_files, ensure_dir_exists
 from .attributes import EAttrs
 from .search import build_search_document, rpn_contraints, query_from_xml
 from .errors import is_xnat_error, parse_put_error_message
@@ -1578,16 +1578,14 @@ class Resource(EObject):
         """
         zip_location = os.path.join(dest_dir, uri_last(self._uri) + '.zip')
 
-        content = self._intf._exec(join_uri(self._uri, 'files') + '?format=zip')
-
         with open(zip_location, 'wb') as f:
             try:
-                content = self._intf._exec(self._uri, 'GET')
+                content = self._intf._exec(join_uri(self._uri, 'files') + '?format=zip')
                 f.write(content)
             except Exception, e:
                 sys.stderr.write(e)
         
-
+        print zip_location
 
         fzip = zipfile.ZipFile(zip_location, 'r')
         fzip.extractall(path=dest_dir)
@@ -1843,9 +1841,12 @@ class File(EObject):
             raise DataError('Cannot get file: does not exists')
 
         if not dest:
-            #TODO: need to handle dir/file.txt ids
             dest = os.path.join(os.path.expanduser("~"), 'Downloads', self.id())
-        
+            if not ensure_dir_exists(os.path.dirname(dest)):
+                if DEBUG:
+                    print "File.get: failed to create dir"
+                raise DataError('Cannot create dir for file: %s' % (dest)) 
+
         if DEBUG:
             print "get_file:" ,dest 
 

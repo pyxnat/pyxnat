@@ -29,8 +29,9 @@ class XpathStore(object):
     
     def __init__(self, interface):
         self._intf = interface
-        self._tree = None
         self._nsmap = {}
+        self._tree = etree.Element('Store')
+        
 
     def __call__(self, xpath):
         if self._tree is None:
@@ -38,28 +39,24 @@ class XpathStore(object):
 
         return self._tree.xpath(xpath, namespaces=self._nsmap)
 
-    def _load(self):
-        roots = []
-        nsmap = {}
+    def _load(self, content):
+        if not content:
+            return
+        new_subject = etree.fromstring(content)
+        self._nsmap = new_subject.nsmap
+        subject_id = new_subject.xpath('@ID')[0]
+        old_subject = self.subject(subject_id)
+        if old_subject:
+            self._tree.replace(old_subject, new_subject)
+        else:
+            self._tree.append(new_subject)
 
-        for location in iglob('%s/*.xml' % self._intf._cachedir):
-            f = open(location, 'rb')
-            content = f.read()
-            f.close()
-
-            if get_subject_id is not None:
-                roots.append(etree.fromstring(content))
-                nsmap.update(roots[-1].nsmap)
-
-        self._tree = etree.Element('Store')
-        self._tree.extend(roots)
-        self._nsmap = nsmap
 
     def _last_modified(self):
         entry_point = self._intf._get_entry_point()
         uri = '%s/subjects?columns=last_modified' % entry_point
 
-        return dict(JsonTable(self._intf._get_json(uri), 
+        return dict(JsonTable(self._intf._get_json(uri),
                               order_by=['ID', 'last_modified']
                               ).select(['ID', 'last_modified']
                                        ).items()
@@ -68,23 +65,9 @@ class XpathStore(object):
     def update(self):
         """ Updates the xml files in the cachedir.
         """
-        last_modified = self._last_modified()
-        
-        for location in iglob('%s/*.xml' % self._intf._cachedir):
 
-            subject_id = get_subject_id(location)
-
-            if subject_id is not None:
-                local_time = path.getmtime(location)
-                local_time = datetime.fromtimestamp(local_time)
-
-                server_time = last_modified[subject_id].split('.')[0]
-                server_time = datetime.strptime(server_time, 
-                                                '%Y-%m-%d %H:%M:%S')
-
-                if local_time < server_time:
-                    self._exec('%s/subjects/%s' % (
-                            self._intf._get_entry_point(), subject_id))
+        self.checkout(subjects=self.subjects())
+            
 
     def checkout(self, project=None, subjects=None):
         """ Downloads all the subject XMLs for a project or a list
@@ -99,13 +82,20 @@ class XpathStore(object):
         """
         if project is not None and subjects is None:
             for s in self._intf.select('/project/%s/subjects' % project):
-                s.get()
+                self._load(s.get())
         elif subjects is not None:
             for sid in subjects:
-                self._intf._exec('%s/subjects/%s?format=xml' % (
-                        self._intf._get_entry_point(), sid))
+                self._load(self._intf._exec('%s/subjects/%s?format=xml' % (
+                          self._intf._get_entry_point(), sid))
+                          )
 
-        self._load()
+
+    def subject(self, subject_id):
+        tmp = self.__call__('//xnat:Subject[@ID="%s"]' % (subject_id))
+
+        if len(tmp) > 0:
+            return tmp[1]
+        return None
 
                     
     def subjects(self):

@@ -1,5 +1,6 @@
 import os
 
+
 def find_files(src):
     names = os.listdir(src)
 
@@ -21,3 +22,9 @@ def find_files(src):
             errors.append((srcname, str(why)))
 
     return files
+
+
+def ensure_dir_exists(dir_path):
+    if not os.path.exists(dir_path):
+        os.makedirs(dir_path)
+    return os.path.isdir(dir_path)

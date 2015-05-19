@@ -144,8 +144,6 @@ def test_put_file():
 def test_get_file():
     fh = subj_1.resource('test').file('hello.txt')
 
-    central.cache.set_usage(expiration=0)
-
     fpath = fh.get()
     assert os.path.exists(fpath)
     assert open(fpath, 'rb').read() == 'Hello XNAT!\n'
@@ -153,11 +151,9 @@ def test_get_file():
     custom = os.path.join(tempfile.gettempdir(), uuid1().hex)
     
     fh.get(custom)
-    assert os.path.exists(custom)
-    assert not os.path.exists(fpath)
-    fh.get()
-    assert os.path.exists(custom)
+    assert os.path.exists(custom), "fpath: %s custom: %s" % (fpath, custom)
     os.remove(custom)
+    os.remove(fpath)
 
 def test_put_dir_file():
     local_path = os.path.join(_modulepath, 'hello_again.txt')
@@ -169,8 +165,6 @@ def test_put_dir_file():
 def test_get_dir_file():
     fh = subj_1.resource('test').file('dir/hello.txt')
 
-    central.cache.set_usage(expiration=0)
-
     fpath = fh.get()
     assert os.path.exists(fpath)
     assert open(fpath, 'rb').read() == 'Hello again!\n'
@@ -178,11 +172,9 @@ def test_get_dir_file():
     custom = os.path.join(tempfile.gettempdir(), uuid1().hex)
     
     fh.get(custom)
-    assert os.path.exists(custom)
-    assert not os.path.exists(fpath)
-    fh.get()
-    assert os.path.exists(custom)
+    assert os.path.exists(custom), "fpath: %s custom: %s" % (fpath, custom)
     os.remove(custom)
+    os.remove(fpath)
 
 def test_get_copy_file():
     fpath = os.path.join(tempfile.gettempdir(), uuid1().hex)
@@ -193,7 +185,6 @@ def test_get_copy_file():
     fd.close()
     os.remove(fpath)
 
-    central.cache.set_usage(expiration=1)
 
 def test_file_last_modified():
     f = subj_1.resource('test').file('hello.txt')
