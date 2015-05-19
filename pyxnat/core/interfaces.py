@@ -292,7 +292,7 @@ class Interface(object):
         # if not self._anonymous:
         #    self._http.add_credentials(self._user, self._pwd)
 
-    def _exec(self, uri, method='GET', body=None, headers=None, force_preemptive_auth=False):
+    def _exec(self, uri, method='GET', body=None, headers=None, force_preemptive_auth=False, **kwargs):
         """ A wrapper around a simple httplib2.request call that:
                 - avoids repeating the server url in the request
                 - deals with custom caching mechanisms
@@ -326,15 +326,15 @@ class Interface(object):
         response = None
 
         if method is 'PUT':
-            response = self._http.put(uri, headers=headers, data=body)
+            response = self._http.put(uri, headers=headers, data=body, **kwargs)
         elif method is 'GET':
-            response = self._http.get(uri, headers=headers, params=body)
+            response = self._http.get(uri, headers=headers, params=body, **kwargs)
         elif method is 'POST':
-            response = self._http.post(uri, headers=headers, data=body)
+            response = self._http.post(uri, headers=headers, data=body, **kwargs)
         elif method is 'DELETE':
-            response = self._http.delete(uri, headers=headers, data=body)
+            response = self._http.delete(uri, headers=headers, data=body, **kwargs)
         elif method is 'HEAD':
-            response = self._http.head(uri, headers=headers, data=body)
+            response = self._http.head(uri, headers=headers, data=body, **kwargs)
         else:
             print 'unsupported HTTP method'
 

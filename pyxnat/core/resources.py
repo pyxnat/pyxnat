@@ -2,6 +2,7 @@ from __future__ import with_statement
 
 import lxml
 import os
+import sys
 import re
 import shutil
 import tempfile
@@ -36,7 +37,7 @@ from . import httputil
 from . import downloadutils
 
 
-DEBUG = False
+DEBUG = True
 
 # metaclasses
 
@@ -1577,10 +1578,16 @@ class Resource(EObject):
         """
         zip_location = os.path.join(dest_dir, uri_last(self._uri) + '.zip')
 
-        if dest_dir is not None:
-            self._intf._http.cache.preset(zip_location)
+        content = self._intf._exec(join_uri(self._uri, 'files') + '?format=zip')
 
-        self._intf._exec(join_uri(self._uri, 'files') + '?format=zip')
+        with open(zip_location, 'wb') as f:
+            try:
+                content = self._intf._exec(self._uri, 'GET')
+                f.write(content)
+            except Exception, e:
+                sys.stderr.write(e)
+        
+
 
         fzip = zipfile.ZipFile(zip_location, 'r')
         fzip.extractall(path=dest_dir)
@@ -1825,7 +1832,9 @@ class File(EObject):
             Returns
             -------
             string : the file location.
+            http://stackoverflow.com/questions/16694907/how-to-download-large-file-in-python-with-requests-py
         """
+
 
         if not self._absuri:
             self._absuri = self._getcell('URI')
@@ -1833,21 +1842,20 @@ class File(EObject):
         if self._absuri is None:
             raise DataError('Cannot get file: does not exists')
 
-        if dest is not None:
-            self._intf._http.cache.preset(dest)
-        elif not force_default:
-            _location = \
-                self._intf._http.cache.get_diskpath(
-                '%s%s' % (self._intf._server, self._absuri)
-                )
+        if not dest:
+            #TODO: need to handle dir/file.txt ids
+            dest = os.path.join(os.path.expanduser("~"), 'Downloads', self.id())
+        
+        if DEBUG:
+            print "get_file:" ,dest 
 
-            self._intf._http.cache.preset(_location)
-
-        self._intf._exec(self._uri, 'GET')
-
-        return self._intf._http.cache.get_diskpath(
-            '%s%s' % (self._intf._server, self._absuri)
-            )
+        with open(dest, 'wb') as f:
+            try:
+                content = self._intf._exec(self._uri, 'GET')
+                f.write(content)
+            except Exception, e:
+                sys.stderr.write(e)
+        return dest
 
     def get_copy(self, dest=None):
         """ Downloads the file to the cache directory but creates a copy at
@@ -1865,25 +1873,7 @@ class File(EObject):
             string : the copy location.
         """
 
-
-        if not dest:
-            if not self._absuri:
-                self._absuri = self._getcell('URI')
-            if self._absuri is None:
-                raise DataError('Cannot get file: does not exists')
-
-            dest = os.path.join(self._intf._http.cache.cache, 'workspace',
-                                *self._absuri.strip('/').split('/')[1:])
-
-        if not os.path.exists(os.path.dirname(dest)):
-            os.makedirs(os.path.dirname(dest))
-
-        src = self.get()
-
-        if src != dest:
-            shutil.copy2(src, dest)
-
-        return dest
+        return self.get(dest)
 
     def put(self, src, format='U', content='U', tags='U', overwrite=False, **datatypes):
         """ Uploads a file to XNAT.
