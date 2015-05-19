@@ -66,6 +66,11 @@ class Interface(object):
             Proxy support requires the socks module be installed. This can be
             installed via pip:
             pip install SocksiPy-branch
+
+        .. note:: 
+            Pyxnat-requests branch completely removes all of the caching 
+            functionality from pyxnat. The cache was causing more hassle than it was worth.
+
     """
 
     def __init__(self, server=None, user=None, password=None,
@@ -88,6 +93,10 @@ class Interface(object):
                 The user's password.
                 If None the user will be prompted for it.
             cachedir: string
+                .. note:: 
+                Pyxnat-requests branch completely removes all of the caching 
+                functionality from pyxnat.
+
                 Path of the cache directory (for all queries and
                 downloaded files)
                 If no path is provided, a platform dependent temp dir is
@@ -295,7 +304,7 @@ class Interface(object):
     def _exec(self, uri, method='GET', body=None, headers=None, force_preemptive_auth=False, **kwargs):
         """ A wrapper around a simple httplib2.request call that:
                 - avoids repeating the server url in the request
-                - deals with custom caching mechanisms
+                - deals with custom caching mechanisms :: Depricated
                 - manages a user session with cookies
                 - catches and broadcast specific XNAT errors
 
@@ -303,14 +312,28 @@ class Interface(object):
             ----------
             uri: string
                 URI of the resource to be accessed. e.g. /REST/projects
-            method: GET | PUT | POST | DELETE
+            method: GET | PUT | POST | DELETE | HEAD
                 HTTP method.
-            body: string
+            body: string | dict
                 HTTP message body
             headers: dict
                 Additional headers for the HTTP request.
             force_preemptive_auth: boolean
+                .. note:: Depricated with Pyxnat-requests
                 Indicates whether the request should include an Authorization header with basic auth credentials.
+            **kwargs: dictionary
+                Additional parameters to pass directly to the Requests HTTP call.
+
+            HTTP:GET
+            ----------
+                When calling with GET as method, the body parameter can be a key:value dictionary containing 
+                request parameters or a string of parameters. They will be url encoded and appended to the url.
+
+            HTTP:POST
+            ----------
+                When calling with POST as method, the body parameter can be a key:value dictionary containing 
+                request parameters they will be url encoded and appended to the url.
+
         """
 
         if headers is None:
@@ -337,6 +360,7 @@ class Interface(object):
             response = self._http.head(uri, headers=headers, data=body, **kwargs)
         else:
             print 'unsupported HTTP method'
+            return
 
         if (response is not None and not response.ok) or is_xnat_error(response.content):
             if DEBUG:
