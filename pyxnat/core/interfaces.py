@@ -136,11 +136,6 @@ class Interface(object):
             self._user = None
             self._pwd = None
 
-            self._cachedir = os.path.join(
-                cachedir, 'anonymous@%s' % self._server.split('//')[1].replace(
-                    '/', '.').replace(':', '_')
-            )
-
         else:
 
             if not all([server, user, password]) and not config:
@@ -159,13 +154,7 @@ class Interface(object):
                 self._server = connection_args['host']
                 self._user = connection_args['u']
                 self._pwd = connection_args['p']
-                self._cachedir = os.path.join(
-                    cachedir, '%s@%s' % (
-                        self._user,
-                        self._server.split('//')[1].replace(
-                            '/', '.').replace(':', '_')
-                    )
-                )
+                
 
                 if 'proxy' in connection_args:
                     self.__set_proxy(connection_args['proxy'])
@@ -189,14 +178,6 @@ class Interface(object):
 
                 self._user = user
                 self._pwd = password
-
-                self._cachedir = os.path.join(
-                    cachedir, '%s@%s' % (
-                        self._user,
-                        self._server.split('//')[1].replace(
-                            '/', '.').replace(':', '_')
-                    )
-                )
 
                 self.__set_proxy(proxy)
 
@@ -236,7 +217,6 @@ class Interface(object):
             '_server': self._server,
             '_user': self._user,
             '_pwd': self._pwd,
-            '_cachedir': os.path.split(self._cachedir)[0],
             '_anonymous': self._anonymous,
         }
 
@@ -245,7 +225,7 @@ class Interface(object):
         if self._anonymous:
             self.__init__(self._server, anonymous=True)
         else:
-            self.__init__(self._server, self._user, self._pwd, self._cachedir)
+            self.__init__(self._server, self._user, self._pwd)
 
     def __set_proxy(self, proxy=None):
         if proxy is None:
@@ -451,7 +431,6 @@ class Interface(object):
         config = {'server': self._server,
                   'user': self._user,
                   'password': self._pwd,
-                  'cachedir': os.path.split(self._cachedir)[0],
                   }
         if self._proxy_url:
             config['proxy'] = self._proxy_url.geturl()
@@ -484,16 +463,7 @@ class Interface(object):
             self._server = str(config['server'])
             self._user = str(config['user'])
             self._pwd = str(config['password'])
-            self._cachedir = str(config['cachedir'])
-
-            self._cachedir = os.path.join(
-                self._cachedir, '%s@%s' % (
-                    self._user,
-                    self._server.split('//')[1].replace(
-                        '/', '.').replace(':', '_')
-                )
-            )
-
+            
             if 'proxy' in config:
                 self.__set_proxy(str(config['proxy']))
             else:

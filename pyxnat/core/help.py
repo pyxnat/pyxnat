@@ -330,18 +330,8 @@ class Inspector(object):
         return list(set(values))
 
     def _resource_struct(self, name):
-        kbase = {}
-
-        for kfile in glob.iglob('%s/*.struct' % self._intf._cachedir):
-            kdata = json.load(open(kfile, 'rb'))
-            if kdata == {}:
-                continue
-            if name in kdata.keys()[0]:
-                kbase.update(kdata)
-
-        self._intf._struct.update(kbase)
-
-        return kbase
+        
+        return self._intf._struct
     
     def _resource_types(self, name):
         return list(set(self._resource_struct(name).values()))

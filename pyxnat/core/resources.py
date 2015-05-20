@@ -572,10 +572,7 @@ class CObject(object):
 
             request_shape = uri_shape(
                 '%s/0' % uri.split(self._intf._get_entry_point(), 1)[1])
-            reqcache = os.path.join(self._intf._cachedir,
-                                    '%s.struct' % md5name(request_shape)
-                                    ).replace('_*', '')
-
+            
             gather = uri.split('/')[-1] in ['experiments', 'assessors',
                                             'scans', 'reconstructions']
 
@@ -583,34 +580,10 @@ class CObject(object):
                 self._intf.inspect._tick == 0 and\
                 self._intf.inspect._auto
 
-            if (not os.path.exists(reqcache) and gather) \
-                    or (gather and tick):
-
-                columns += ['xsiType']
-
-                # struct = {}
-            # if self._intf._struct.has_key(reqcache):
-            #     struct = self._intf._struct[reqcache]
-            # else:
-            #     struct = json.load(open(reqcache, 'rb'))
-                # self._intf._struct[reqcache] = struct
+            
+            columns += ['xsiType']
 
             query_string = '?format=json&columns=%s' % ','.join(columns)
-
-            # struct = {}
-
-            # for pattern in struct.keys():
-            #     request_pat = uri_segment(
-            #         join_uri(uri, self._pattern).split('/REST')[1], -2
-            #         )
-
-            #     # print pattern, request_pat, fnmatch(pattern, request_pat)
-
-            #     if (fnmatch(pattern, request_pat)
-            #         and struct[pattern] is not None):
-
-            #         self._filters.setdefault('xsiType', set()
-            #                                  ).add(struct[pattern])
 
             if self._filters:
                 query_string += '&' + '&'.join(
@@ -621,13 +594,12 @@ class CObject(object):
                     for item in self._filters.items()
                     )
 
+            print uri + query_string
             jtable = self._intf._get_json(uri + query_string)
 
-            if (not os.path.exists(reqcache) and gather) \
-                    or (gather and tick):
-
-                _type = uri.split('/')[-1]
-                self._learn_from_table(_type, jtable, reqcache)
+            
+            _type = uri.split('/')[-1]
+            self._learn_from_table(_type, jtable, None)
 
             return jtable
         except Exception as e:
@@ -640,20 +612,17 @@ class CObject(object):
 
         for element in jtable:
             xsitype = element.get('xsiType')
-            uri = element.get('URI').split(self._intf._get_entry_point(), 1)[1]
-            uri = uri.replace(uri.split('/')[-2], _type)
-            shape = uri_shape(uri)
-
-            request_knowledge[shape] = xsitype
-
-        if os.path.exists(reqcache):
-            previous = json.load(open(reqcache, 'rb'))
-            previous.update(request_knowledge)
-            request_knowledge = previous
+            if xsitype:
+                #Only some of the xnat elements return xsiType like we asked them to.
+                #Projects and Subjects are two known offenders so we cannot update our
+                #knowledge of them.
+                uri = element.get('URI').split(self._intf._get_entry_point(), 1)[1]
+                uri = uri.replace(uri.split('/')[-2], _type)
+                shape = uri_shape(uri)
+                request_knowledge[shape] = xsitype
 
         self._intf._struct.update(request_knowledge)
-
-        json.dump(request_knowledge, open(reqcache, 'w'))
+        
 
     def __iter__(self):
         if self._ctype == 'cobjectcuri':
@@ -1826,11 +1795,7 @@ class File(EObject):
                                'file_tags', 'file_format', 'file_content'])
 
     def get(self, dest=None, force_default=False):
-        """ Downloads the file to the cache directory.
-
-            .. note::
-                The default cache path is computed like this:
-                ``path_to_cache/md5(uri + query_string)_filename``
+        """ Downloads the file.
 
             Parameters
             ----------
@@ -1988,30 +1953,7 @@ class File(EObject):
             headers={'content-type': content_type}
             )
 
-        # track the uploaded file as one of the cache
-
-        # print 'GET DISKPATH', os.path.exists(src)
-        # _cachepath = self._intf._http.cache.get_diskpath(
-        #     '%s%s' % (self._intf._server, self._absuri),
-        #     force_default=True
-        #     )
-
-        # _fakepath = '%s.alt' % _cachepath
-        # _headerpath = '%s.headers' % _cachepath
-
-        # print 'WRITE REFFILE', os.path.exists(src)
-
-        # reffile = open(_fakepath, 'wb')
-        # reffile.write(src)
-        # reffile.close()
-
-        # info_head = self._intf._get_head(self._absuri)
-
-        # print 'WRITE HEADER FILE', os.path.exists(src)
-
-        # headerfile = open(_headerpath, 'wb')
-        # headerfile.write(info_head.as_string())
-        # headerfile.close()
+        
 
     insert = put
     create = put

@@ -240,7 +240,7 @@ def test_subject2_delete():
 def test_project_configuration():
     project = central.select('/project/nosetests')
     assert project.quarantine_code() == 0
-    assert project.prearchive_code() == 0
+    assert project.prearchive_code() == 4, project.prearchive_code()
     assert project.current_arc() == 'arc001'
     assert 'nosetests' in project.users()
     assert 'nosetests' in project.owners()
