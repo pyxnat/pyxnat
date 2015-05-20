@@ -37,7 +37,7 @@ from . import httputil
 from . import downloadutils
 
 
-DEBUG = True
+DEBUG = False
 
 # metaclasses
 
@@ -594,7 +594,8 @@ class CObject(object):
                     for item in self._filters.items()
                     )
 
-            print uri + query_string
+            if DEBUG:
+                print uri + query_string
             jtable = self._intf._get_json(uri + query_string)
 
             
