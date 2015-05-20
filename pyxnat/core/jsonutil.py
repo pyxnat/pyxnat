@@ -127,7 +127,7 @@ class JsonTable(object):
                                       )
 
         return '<JsonTable %s:%s> %s' % (
-            len(self), len(self.headers()), _headers
+            len(self.data), len(self.headers()), _headers
             )
     
         # return ('[%s\n .\n .\n . \n%s]\n\n'
