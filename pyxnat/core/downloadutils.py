@@ -129,7 +129,6 @@ def download (dest_dir, instance=None,type="ALL",name=None, extract=False, safe=
             raise EnvironmentError("Unable to download to " + zip_location + " because this file already exists.")
 
     # Download from the server
-    instance._intf._http.cache.preset(zip_location)
     instance._intf._exec(uriutil.join_uri(
             instance._cbase,','.join(types.values())) + '/files?format=zip')
 
