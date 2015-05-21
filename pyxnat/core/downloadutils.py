@@ -1,14 +1,17 @@
 import os
 import zipfile
+import sys
 
 from .schema import class_name
 from . import uriutil
-from . import schema
+
+
+DEBUG = False
 
 
 def unzip(fzip,
           dest_dir,
-          check={'run':lambda z,d: True,'desc':""}):
+          check={'run': lambda z, d: True, 'desc': ""}):
     """
     Extracts the given zip file to the given directory, but only if all members of the
     archive pass the given check.
@@ -30,13 +33,14 @@ def unzip(fzip,
         of the failing member.
     """
     for member in fzip.namelist():
-        if not check['run'](member,dest_dir):
-            return (False,member)
+        if not check['run'](member, dest_dir):
+            return (False, member)
 
     fzip.extractall(path=dest_dir)
-    return (True, map (lambda f: os.path.join(dest_dir,f),fzip.namelist()))
+    return (True, map(lambda f: os.path.join(dest_dir, f), fzip.namelist()))
 
-def download (dest_dir, instance=None,type="ALL",name=None, extract=False, safe=False):
+
+def download(dest_dir, instance=None, type="ALL", name=None, extract=False, safe=False):
     """
     Download all the files at this level that match the given constraint as a zip archive. Should not be called directly
     but from a instance of class that supports bulk downloading eg. "Scans"
@@ -115,13 +119,13 @@ def download (dest_dir, instance=None,type="ALL",name=None, extract=False, safe=
     if len(types) > 1 and 'ALL' in types:
         raise ValueError('The \"ALL\" scan type constraint cannot be used with any other constraint')
 
-    (p,s,e) = pse
+    (p, s, e) = pse
 
     # Make the name of the zip file
     default_zip_name = lambda: '%s_%s_%s_%s_%s' % (
         p, s, e, class_name(instance).lower(), '_'.join(types.values()))
 
-    zip_name = name if name != None else default_zip_name()
+    zip_name = name if name is not None else default_zip_name()
     zip_location = os.path.join(dest_dir, zip_name + '.zip')
 
     if safe:
@@ -129,16 +133,35 @@ def download (dest_dir, instance=None,type="ALL",name=None, extract=False, safe=
             raise EnvironmentError("Unable to download to " + zip_location + " because this file already exists.")
 
     # Download from the server
-    instance._intf._http.cache.preset(zip_location)
-    instance._intf._exec(uriutil.join_uri(
-            instance._cbase,','.join(types.values())) + '/files?format=zip')
+    with open(zip_location, 'wb') as f:
+        response = instance._intf.get(uriutil.join_uri(
+            instance._cbase, ','.join(types.values())) + '/files?format=zip', stream=True)
+        try:
+            count = 0
+            for chunk in response.iter_content(chunk_size=1024):
+                if chunk:  # filter out keep-alive new chunks
+                    f.write(chunk)
+                    count += 1
+                    if count % 10 == 0:
+                        #flush the buffer every once in a while.
+                        f.flush()
+            f.flush()  # and one last flush.
+        except Exception, e:
+            sys.stderr.write(e)
+        finally:
+            response.close()
+
+    if DEBUG:
+        print zip_location
+
+    ##
 
     # Extract the archive
-    fzip = zipfile.ZipFile(zip_location,'r')
+    fzip = zipfile.ZipFile(zip_location, 'r')
     if extract:
-        check = {'run': lambda f, d: not os.path.exists(os.path.join(dest_dir,f)),
+        check = {'run': lambda f, d: not os.path.exists(os.path.join(dest_dir, f)),
                  'desc': 'File does not exist in the parent directory'}
-        safeUnzip = lambda: unzip(fzip, dest_dir, check) if safe else lambda:unzip(fzip,dest_dir)
+        safeUnzip = lambda: unzip(fzip, dest_dir, check) if safe else lambda: unzip(fzip, dest_dir)
         (unzipped, paths) = safeUnzip()()
         if not unzipped:
             fzip.close()
@@ -148,4 +171,3 @@ def download (dest_dir, instance=None,type="ALL",name=None, extract=False, safe=
     else:
         fzip.close()
         return zip_location
-
