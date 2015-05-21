@@ -5,7 +5,6 @@ import sys
 from .schema import class_name
 from . import uriutil
 
-
 DEBUG = False
 
 
