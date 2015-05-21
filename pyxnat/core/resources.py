@@ -1893,35 +1893,30 @@ class File(EObject):
                 Defaults to False
         """
 
-        format = urllib.quote(format)
-        content = urllib.quote(content)
-        tags = urllib.quote(tags)
+        #First make sure parents and grandparents exist.
 
-        try:
-            if os.path.exists(src):
-                path = src
-                name = os.path.basename(path).split('?')[0]
-                src = codecs.open(src).read()
-            else:
-                path = self._uri.split('/')[-1]
-                name = path
-        except:
-            path = self._uri.split('/')[-1]
-            name = path
-
-        content_type = mimetypes.guess_type(path)[0] or \
-            'application/octet-stream'
-
-        body, content_type = httputil.file_message(src, content_type,
-                                                   path, name
-                                                   )
-
+        #URI is in the form of data/.../something/files/me so
+        #guri = data/.../something
         guri = uri_grandparent(self._uri)
 
         if not self._intf.select(guri).exists():
             self._intf.select(guri).insert(**datatypes)
 
         resource_id = self._intf.select(guri).id()
+        isFile=False
+
+        #Cleanup the src and make sure it exists.
+        try:
+            if os.path.exists(src):
+                isFile=True
+                path = src
+                name = os.path.basename(path).split('?')[0]
+            else:
+                path = self._uri.split('/')[-1]
+                name = path
+        except:
+            path = self._uri.split('/')[-1]
+            name = path
 
         self._absuri = urllib.unquote(
             re.sub('resources/.*?/',
@@ -1932,29 +1927,40 @@ class File(EObject):
             'format': format,
             'content': content,
             'tags': tags,
+            'overwrite': 'true' if overwrite else 'false',
+            'inbody':'true'
             }
-        if overwrite:
-            query_args['overwrite'] = "true"
-
+        
         if '?' in self._absuri:
             k, v = self._absuri.split('?')[1].split('=')
             query_args[k] = v
             self._absuri = self._absuri.split('?')[0]
 
-        put_uri = '%s?%s' % (
-            self._absuri,
-            '&'.join('%s=%s' % (k, v) for k, v in query_args.items())
-            )
+        if DEBUG:
+            print 'INSERT FILE', os.path.exists(src)
+            print "URI is: " + self._absuri
 
-        # print 'INSERT FILE', os.path.exists(src)
-        # print "URI is: " + put_uri
+        response = None
+        if isFile:
+            #If src was a file, use inbody streaming to send the file
+            with open(src, 'rb') as f:
+                response = self._intf.post(self._absuri, params=query_args,  data=f)
+        else:
+            #If it wasn't a file we can just dump the src as data directly.
+            response = self._intf.post(self._absuri, params=query_args,  data=src)
 
-        self._intf._exec(
-            put_uri, 'PUT', body,
-            headers={'content-type': content_type}
-            )
+        #default error handling.
+        if (response is not None and not response.ok) or is_xnat_error(response.content):
+            if DEBUG:
+                print(response.keys())
+                print(response.get("status"))
 
-        
+            catch_error(response.content, '''pyxnat.file.put failure:
+    URI: {response.url}
+    status code: {response.status_code}
+    headers: {response.headers}
+    content: {response.content}
+'''.format(response=response))
 
     insert = put
     create = put
