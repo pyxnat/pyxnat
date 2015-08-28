@@ -75,7 +75,7 @@ class Interface(object):
 
     def __init__(self, server=None, user=None, password=None,
                  cachedir=tempfile.gettempdir(), config=None,
-                 anonymous=False, proxy=None):
+                 anonymous=False, proxy=None, verify=None):
         """
             Parameters
             ----------
@@ -115,12 +115,20 @@ class Interface(object):
                 specify a username and password for proxy access, prepend them
                 to the hostname:
                 http://user:pass@hostname:port
+                
+            verify: True, False, or path to file containing certificate for your site
+              Added to the requests Session, as documented here:
+              http://docs.python-requests.org/en/latest/user/advanced/#ssl-cert-verification
+              Simplifies handling self-certified sites, or sites where there is an issue
+              with certification
 
         """
 
         self._interactive = False
 
         self._anonymous = anonymous
+        
+        self._verify = verify 
 
         if self._anonymous:
 
@@ -268,6 +276,12 @@ class Interface(object):
             kwargs = self._connect_extras
 
         self._http = requests.Session()
+
+        # requests verify defaults to True, but can be set from environment variables
+        # Leave as-is unless user has explicitly overridden it
+        if self._verify is not None:
+          self._http.verify = self._verify
+
         if not self._anonymous:
             self._http.auth = (self._user, self._pwd)
 
