@@ -83,7 +83,7 @@ class Inspector(object):
         self._intf._get_entry_point()
 
         search_els = self._get_json('%s/search/elements?format=json' % 
-                                        self._intf._entry)
+                                        self._intf._get_entry_point())
 
         if not fields_pattern and ('*' in pattern or '?' in pattern):       
             return get_column(search_els , 'ELEMENT_NAME', pattern)
@@ -101,7 +101,7 @@ class Inspector(object):
         self._intf._get_entry_point()
 
         search_fds = self._get_json('%s/search/elements/%s?format=json'
-                                        % (self._intf._entry, datatype)
+                                        % (self._intf._get_entry_point(), datatype)
                                     )
 
         fields = get_column(search_fds, 'FIELD_ID', pattern)
@@ -206,9 +206,7 @@ class Inspector(object):
             Parameters
             ----------
             datatype: string
-                An experiment type.
-            project: string
-                Optional. Restrict operation to a project.
+                An experiment type. eg: xnat:mrsessiondata
             project: string
                 Optional. Restrict operation to a project.
         """
@@ -237,7 +235,7 @@ class Inspector(object):
             Parameters
             ----------
             datatype: string
-                An experiment type.
+                An experiment type. eg: xnat:mrsessiondata
             project: string
                 Optional. Restrict operation to a project.
         """
@@ -332,18 +330,8 @@ class Inspector(object):
         return list(set(values))
 
     def _resource_struct(self, name):
-        kbase = {}
-
-        for kfile in glob.iglob('%s/*.struct' % self._intf._cachedir):
-            kdata = json.load(open(kfile, 'rb'))
-            if kdata == {}:
-                continue
-            if name in kdata.keys()[0]:
-                kbase.update(kdata)
-
-        self._intf._struct.update(kbase)
-
-        return kbase
+        
+        return self._intf._struct
     
     def _resource_types(self, name):
         return list(set(self._resource_struct(name).values()))
@@ -501,7 +489,8 @@ class PaintGraph(object):
 
         nx.draw(graph, pos, labels=graph.labels, 
                 node_size=costs, node_color=costs,
-                font_size=13, font_color='orange', font_weight='bold'
+                font_size=13, font_color='orange', 
+                font_weight='bold', with_labels=True
                 )
     
         plt.axis('off')
@@ -567,7 +556,8 @@ class PaintGraph(object):
 
         nx.draw(graph, pos, 
                 node_size=node_size, node_color=node_color,
-                font_size=13, font_color='green', font_weight='bold'
+                font_size=13, font_color='green', font_weight='bold',
+                with_labels=True
                 )
     
         plt.axis('off')
@@ -591,7 +581,8 @@ class PaintGraph(object):
 
         nx.draw(graph, pos, 
                 node_size=costs, node_color=costs,
-                font_size=13, font_color='black', font_weight='bold'
+                font_size=13, font_color='black', 
+                font_weight='bold', with_labels=True
                 )
     
         plt.axis('off')

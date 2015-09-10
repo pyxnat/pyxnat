@@ -65,5 +65,7 @@ setup(name='pyxnat',
           'Topic :: Internet :: WWW/HTTP',
       ],
 
-      platforms='any', requires=['httplib2'],
+      platforms='any', 
+      requires=['requests'],
+      install_requires=['requests', 'lxml', 'requests[security]'],
       **extra_setuptools_args)

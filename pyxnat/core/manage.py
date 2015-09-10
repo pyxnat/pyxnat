@@ -100,24 +100,7 @@ class SchemaManager(object):
         self._intf = interface
         self._trees = {}
 
-    def _init(self):
-        if self._trees == {}:
-            cache_template = '%s/*.xsd.headers' % self._intf._cachedir
-
-            for entry in glob.iglob(cache_template):
-                hfp = open(entry, 'rb')
-                content = hfp.read()
-                hfp.close()
-
-                url = re.findall('(?<=content-location:\s%s)'
-                                 '.*?(?=\r{0,1}\n)' % self._intf._server, 
-                                 content)[0]
-
-                self._trees[url.split('/')[-1]] = \
-                    etree.fromstring(self._intf._exec(url))
-
     def __call__(self):
-        self._init()
         return self._trees.keys()
 
     def add(self, url):
@@ -133,7 +116,6 @@ class SchemaManager(object):
                     ``xnat.xsd``
 
         """
-        self._init()
         
         if not re.match('/?schemas/.*/.*\.xsd', url):
             if not 'schemas' in url and re.match('/?\w+/\w+[.]xsd', url):

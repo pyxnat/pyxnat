@@ -38,10 +38,10 @@ def test_project_user_role():
                                   ).user_role('nosetests') == 'owner'
 
 def test_add_remove_user():
-    central.select.project('nosetests').add_user('schwarty', 'collaborator')
-    assert 'schwarty' in central.select.project('nosetests').collaborators()
-    central.select.project('nosetests').remove_user('schwarty')
-    assert 'schwarty' not in central.select.project('nosetests'
+    central.select.project('nosetests').add_user('nosetests3', 'collaborator')
+    assert 'nosetests3' in central.select.project('nosetests').collaborators()
+    central.select.project('nosetests').remove_user('nosetests3')
+    assert 'nosetests3' not in central.select.project('nosetests'
                                                     ).collaborators()
 
 def test_project_accessibility():
