@@ -1,2 +1,2 @@
-httplib2==0.7.3
 lxml==2.3.2
+requests=2.1.0

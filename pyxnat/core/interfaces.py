@@ -67,9 +67,9 @@ class Interface(object):
             installed via pip:
             pip install SocksiPy-branch
 
-        .. note:: 
-            Pyxnat-requests branch completely removes all of the caching 
-            functionality from pyxnat. The cache was causing more hassle than it was worth.
+        .. note::
+            All caching functionality has been removed from pyxnat as of 1.0.0.0.
+            The cache was causing more hassle than it was worth.
 
     """
 
@@ -92,15 +92,8 @@ class Interface(object):
             password: string | None
                 The user's password.
                 If None the user will be prompted for it.
-            cachedir: string
-                .. note:: 
-                Pyxnat-requests branch completely removes all of the caching 
-                functionality from pyxnat.
+            cachedir: string  (Depricated)
 
-                Path of the cache directory (for all queries and
-                downloaded files)
-                If no path is provided, a platform dependent temp dir is
-                used.
             config: string
                 Reads a config file in json to get the connection parameters.
                 If a config file is specified, it will be used regardless of
@@ -115,7 +108,7 @@ class Interface(object):
                 specify a username and password for proxy access, prepend them
                 to the hostname:
                 http://user:pass@hostname:port
-                
+
             verify: True, False, or path to file containing certificate for your site
               Added to the requests Session, as documented here:
               http://docs.python-requests.org/en/latest/user/advanced/#ssl-cert-verification
@@ -127,8 +120,8 @@ class Interface(object):
         self._interactive = False
 
         self._anonymous = anonymous
-        
-        self._verify = verify 
+
+        self._verify = verify
 
         if self._anonymous:
 
@@ -162,7 +155,7 @@ class Interface(object):
                 self._server = connection_args['host']
                 self._user = connection_args['u']
                 self._pwd = connection_args['p']
-                
+
 
                 if 'proxy' in connection_args:
                     self.__set_proxy(connection_args['proxy'])
@@ -313,19 +306,19 @@ class Interface(object):
             headers: dict
                 Additional headers for the HTTP request.
             force_preemptive_auth: boolean
-                .. note:: Depricated with Pyxnat-requests
+                .. note:: Depricated as of 1.0.0.0
                 Indicates whether the request should include an Authorization header with basic auth credentials.
             **kwargs: dictionary
                 Additional parameters to pass directly to the Requests HTTP call.
 
             HTTP:GET
             ----------
-                When calling with GET as method, the body parameter can be a key:value dictionary containing 
+                When calling with GET as method, the body parameter can be a key:value dictionary containing
                 request parameters or a string of parameters. They will be url encoded and appended to the url.
 
             HTTP:POST
             ----------
-                When calling with POST as method, the body parameter can be a key:value dictionary containing 
+                When calling with POST as method, the body parameter can be a key:value dictionary containing
                 request parameters they will be url encoded and appended to the url.
 
         """
@@ -477,7 +470,7 @@ class Interface(object):
             self._server = str(config['server'])
             self._user = str(config['user'])
             self._pwd = str(config['password'])
-            
+
             if 'proxy' in config:
                 self.__set_proxy(str(config['proxy']))
             else:
@@ -543,6 +536,3 @@ class Interface(object):
         uri = join_uri(self._server, uri)
         response = self._http.head(uri, **kwargs)
         return response
-
-
-

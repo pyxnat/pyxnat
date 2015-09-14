@@ -572,7 +572,7 @@ class CObject(object):
 
             request_shape = uri_shape(
                 '%s/0' % uri.split(self._intf._get_entry_point(), 1)[1])
-            
+
             gather = uri.split('/')[-1] in ['experiments', 'assessors',
                                             'scans', 'reconstructions']
 
@@ -580,7 +580,7 @@ class CObject(object):
                 self._intf.inspect._tick == 0 and\
                 self._intf.inspect._auto
 
-            
+
             columns += ['xsiType']
 
             query_string = '?format=json&columns=%s' % ','.join(columns)
@@ -598,7 +598,7 @@ class CObject(object):
                 print uri + query_string
             jtable = self._intf._get_json(uri + query_string)
 
-            
+
             _type = uri.split('/')[-1]
             self._learn_from_table(_type, jtable, None)
 
@@ -623,7 +623,7 @@ class CObject(object):
                 request_knowledge[shape] = xsitype
 
         self._intf._struct.update(request_knowledge)
-        
+
 
     def __iter__(self):
         if self._ctype == 'cobjectcuri':
@@ -1807,7 +1807,7 @@ class File(EObject):
                     Path should include the file name.
                     eg: /path/to/file.txt
             force_default: boolean
-                - Depricated with pyxnat-requests
+                - Depricated as of 1.0.0.0
                 - Has no effect if the file is downloaded for the first time
                 - If the file was previously download with a custom path,
                   calling get() will remember the custom location unless:
@@ -1930,7 +1930,7 @@ class File(EObject):
             'overwrite': 'true' if overwrite else 'false',
             'inbody':'true'
             }
-        
+
         if '?' in self._absuri:
             k, v = self._absuri.split('?')[1].split('=')
             query_args[k] = v

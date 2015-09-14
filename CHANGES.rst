@@ -1,12 +1,28 @@
 Latest changes
 ===============
 
+Release 1.0.0.0
+
+    * New Features
+        - Convenience methods on interface: get, put, post, delete, head
+        - Verify option on interface for ssl-cert-verification
+
+    * Improvements
+        - More useful error messages when things go wrong
+        - streaming file upload
+        - streaming file download
+        - Use the requests library instead of httplib2 for REST calls
+
+    * Bug fixes:
+        - Removed custom httplib2 caching. 
+
 Release 0.9.5.2
-   * New Features
 
-   * Improvements
+    * New Features
 
-   * Bug fixes:
+    * Improvements
+
+    * Bug fixes:
         - Ticket #50 404 error causes connection to be broken until end of object life.
         - Tiekct #52 fix zip file downloading.
 
@@ -30,7 +46,7 @@ Release 0.9.4
 
     * New Features
         - add proxy support to interface.
-        
+
     * Impovements
 
     * Bug fixes:
@@ -49,7 +65,7 @@ Release 0.9.0
             - interface.array.experiments()
 	    - interface.array.search_experiments()
 	    - interface.array.scans()
-	       
+
         - Support for XNAT configuration file format
         - Batch function for downloading all files related to a scan or an assessor
         - Create element with an XML document
@@ -60,7 +76,7 @@ Release 0.9.0
         - Catching authentication errors
         - Toggle option for cache warnings
         - Description for search templates is displayed
-      
+
     * Bug fixes:
         - Config file
 
@@ -117,7 +133,7 @@ Release 0.7.0
 
     * Bug fix for HTTP sessions management.
 
-    * New `last_modified` method for project to get subjects last modified 
+    * New `last_modified` method for project to get subjects last modified
       date.
 
     * Resource elements are now fully configurable at creation.
@@ -127,7 +143,7 @@ Release 0.7.0
     * Added push and pull zip files at the resource level.
 
     * Added simple schema parsing capabilities.
-    
+
     * Add a global management interface to gather different managers.
 
     * Interface now follows redirections on the server url.
