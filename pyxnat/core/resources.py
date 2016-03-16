@@ -2079,37 +2079,37 @@ class Assessors(CObject):
             eobj.unshare(project)
 
     def download(self, dest_dir, type="ALL",
-                 name=None, extract=False, safe=False):
+                 name=None, extract=False, safe=False, removeZip=False):
         """
         A wrapper around :func:`downloadutils.download`
         """
         return downloadutils.download(dest_dir, self, type, name,
-                                      extract, safe)
+                                      extract, safe, removeZip)
 
 
 class Reconstructions(CObject):
     __metaclass__ = CollectionType
 
     def download(self, dest_dir, type="ALL",
-                 name=None, extract=False, safe=False):
+                 name=None, extract=False, safe=False, removeZip=False):
         """
         A wrapper around :func:`downloadutils.download`
         """
         return downloadutils.download(dest_dir, self, type, name,
-                                      extract, safe)
+                                      extract, safe, removeZip)
 
 
 class Scans(CObject):
     __metaclass__ = CollectionType
 
     def download(self, dest_dir, type="ALL",
-                 name=None, extract=False, safe=False):
+                 name=None, extract=False, safe=False, removeZip=False):
         """
         A wrapper around :func:`downloadutils.download`
 
         """
         return downloadutils.download(dest_dir, self, type, name,
-                                      extract, safe)
+                                      extract, safe, removeZip)
 
 
 class Resources(CObject):
