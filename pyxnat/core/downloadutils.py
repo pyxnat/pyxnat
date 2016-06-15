@@ -39,7 +39,7 @@ def unzip(fzip,
     return (True, map(lambda f: os.path.join(dest_dir, f), fzip.namelist()))
 
 
-def download(dest_dir, instance=None, type="ALL", name=None, extract=False, safe=False):
+def download(dest_dir, instance=None, type="ALL", name=None, extract=False, safe=False, removeZip=False):
     """
     Download all the files at this level that match the given constraint as a zip archive. Should not be called directly
     but from a instance of class that supports bulk downloading eg. "Scans"
@@ -166,6 +166,9 @@ def download(dest_dir, instance=None, type="ALL", name=None, extract=False, safe
             fzip.close()
             raise EnvironmentError("Unable to extract " + zip_location + " because file " + paths + " failed the following test: " + check['desc'])
         else:
+            if removeZip:
+                      fzip.close()
+                      os.remove(zip_location)
             return paths
     else:
         fzip.close()
