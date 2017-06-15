@@ -75,7 +75,8 @@ class Interface(object):
 
     def __init__(self, server=None, user=None, password=None,
                  cachedir=tempfile.gettempdir(), config=None,
-                 anonymous=False, proxy=None, verify=None):
+                 anonymous=False, proxy=None, verify=None,
+                 cr=False):
         """
             Parameters
             ----------
@@ -93,6 +94,7 @@ class Interface(object):
                 The user's password.
                 If None the user will be prompted for it.
             cachedir: string  (Depricated)
+            cr: if the host is a XNAT CR instance
 
             config: string
                 Reads a config file in json to get the connection parameters.
@@ -122,6 +124,8 @@ class Interface(object):
         self._anonymous = anonymous
 
         self._verify = verify
+
+        self.cr = cr
 
         if self._anonymous:
 
@@ -288,7 +292,17 @@ class Interface(object):
         # if not self._anonymous:
         #    self._http.add_credentials(self._user, self._pwd)
 
-    def _exec(self, uri, method='GET', body=None, headers=None, force_preemptive_auth=False, **kwargs):
+    def justified_uri_for_cr(self, uri):
+        """ If CR set for the interface, add the event_reason for the uri"""
+        if self.cr:
+            if '?' in uri:
+                _sep = '&'
+            else:
+                _sep = '?'
+            uri = '{}{}event_reason=RestCallsPyxnat'.format(uri, _sep)
+        return uri
+
+    def _exec(self, uri, method='GET', body=None, headers=None,force_preemptive_auth=False, **kwargs):
         """ A wrapper around a simple httplib2.request call that:
                 - avoids repeating the server url in the request
                 - deals with custom caching mechanisms :: Depricated
@@ -336,12 +350,15 @@ class Interface(object):
         response = None
 
         if method is 'PUT':
+            uri = self.justified_uri_for_cr(uri)
             response = self._http.put(uri, headers=headers, data=body, **kwargs)
         elif method is 'GET':
             response = self._http.get(uri, headers=headers, params=body, **kwargs)
         elif method is 'POST':
+            uri = self.justified_uri_for_cr(uri)
             response = self._http.post(uri, headers=headers, data=body, **kwargs)
         elif method is 'DELETE':
+            uri = self.justified_uri_for_cr(uri)
             response = self._http.delete(uri, headers=headers, data=body, **kwargs)
         elif method is 'HEAD':
             response = self._http.head(uri, headers=headers, data=body, **kwargs)
@@ -506,7 +523,7 @@ class Interface(object):
         Wrapper around requests.put()
         returns rquests.response object
         '''
-        uri = join_uri(self._server, uri)
+        uri = self.justified_uri_for_cr(join_uri(self._server, uri))
         response = self._http.put(uri, **kwargs)
         return response
 
@@ -515,7 +532,7 @@ class Interface(object):
         Wrapper around requests.post()
         returns rquests.response object
         '''
-        uri = join_uri(self._server, uri)
+        uri = self.justified_uri_for_cr(join_uri(self._server, uri))
         response = self._http.post(uri, **kwargs)
         return response
 
@@ -524,7 +541,7 @@ class Interface(object):
         Wrapper around requests.delete()
         returns rquests.response object
         '''
-        uri = join_uri(self._server, uri)
+        uri = self.justified_uri_for_cr(join_uri(self._server, uri))
         response = self._http.delete(uri, **kwargs)
         return response
 
