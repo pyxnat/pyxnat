@@ -1,7 +1,19 @@
 Latest changes
 ===============
 
+Release 1.0.1.0
+---------------
+
+    * New Features
+
+    * Improvements
+        - Pass keyword arguments on some put/create methods, to allow passing event_reason.
+
+    * Bug fixes:
+
+
 Release 1.0.0.0
+---------------
 
     * New Features
         - Convenience methods on interface: get, put, post, delete, head
@@ -14,9 +26,10 @@ Release 1.0.0.0
         - Use the requests library instead of httplib2 for REST calls
 
     * Bug fixes:
-        - Removed custom httplib2 caching. 
+        - Removed custom httplib2 caching.
 
 Release 0.9.5.2
+-------------
 
     * New Features
 
@@ -27,6 +40,7 @@ Release 0.9.5.2
         - Tiekct #52 fix zip file downloading.
 
 Release 0.9.5
+-------------
 
     * New Features
         - Add __getitem__ to CObject for slice operations.
@@ -43,6 +57,7 @@ Release 0.9.5
 
 
 Release 0.9.4
+-------------
 
     * New Features
         - add proxy support to interface.

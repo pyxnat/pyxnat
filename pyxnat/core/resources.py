@@ -375,7 +375,7 @@ class EObject(object):
         if DEBUG:
             print('PUT', create_uri)
 
-        output = self._intf._exec(create_uri, 'PUT')
+        output = self._intf._exec(create_uri, 'PUT', **params)
 
         if is_xnat_error(output):
             paths = []
@@ -1706,7 +1706,7 @@ class Resource(EObject):
             do_extract = ''
 
         self.file(os.path.split(zip_location)[1] + do_extract
-                  ).put(zip_location, overwrite=overwrite)
+                  ).put(zip_location, overwrite=overwrite, **datatypes)
 
     def put_dir(self, src_dir, overwrite=False, extract=True, **datatypes):
         """ Finds recursively all the files in a folder and uploads
