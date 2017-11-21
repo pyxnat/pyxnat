@@ -1931,6 +1931,9 @@ class File(EObject):
             'inbody':'true'
             }
 
+        if 'params' in datatypes:
+            query_args.update(datatypes['params']) # Pass on params such as event_reason
+
         if '?' in self._absuri:
             k, v = self._absuri.split('?')[1].split('=')
             query_args[k] = v
