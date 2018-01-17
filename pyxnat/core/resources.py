@@ -375,7 +375,12 @@ class EObject(object):
         if DEBUG:
             print('PUT', create_uri)
 
-        output = self._intf._exec(create_uri, 'PUT', **params)
+        if 'params' in params and 'event_reason' in params['params']:
+            if DEBUG: print('Have event_reason')
+            output = self._intf._exec(create_uri, 'PUT', **params)
+        else:
+            if DEBUG: print('Not have event_reason')
+            output = self._intf._exec(create_uri, 'PUT')
 
         if is_xnat_error(output):
             paths = []
