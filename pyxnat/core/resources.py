@@ -375,7 +375,12 @@ class EObject(object):
         if DEBUG:
             print('PUT', create_uri)
 
-        output = self._intf._exec(create_uri, 'PUT')
+        if 'params' in params and 'event_reason' in params['params']:
+            if DEBUG: print('Have event_reason')
+            output = self._intf._exec(create_uri, 'PUT', **params)
+        else:
+            if DEBUG: print('Not have event_reason')
+            output = self._intf._exec(create_uri, 'PUT')
 
         if is_xnat_error(output):
             paths = []
@@ -1706,7 +1711,7 @@ class Resource(EObject):
             do_extract = ''
 
         self.file(os.path.split(zip_location)[1] + do_extract
-                  ).put(zip_location, overwrite=overwrite)
+                  ).put(zip_location, overwrite=overwrite, **datatypes)
 
     def put_dir(self, src_dir, overwrite=False, extract=True, **datatypes):
         """ Finds recursively all the files in a folder and uploads
@@ -1930,6 +1935,9 @@ class File(EObject):
             'overwrite': 'true' if overwrite else 'false',
             'inbody':'true'
             }
+
+        if 'params' in datatypes:
+            query_args.update(datatypes['params']) # Pass on params such as event_reason
 
         if '?' in self._absuri:
             k, v = self._absuri.split('?')[1].split('=')

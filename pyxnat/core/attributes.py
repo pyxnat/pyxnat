@@ -58,7 +58,7 @@ class EAttrs(object):
 
         return self._id
 
-    def set(self, path, value):
+    def set(self, path, value, **kwargs):
         """ Set an attribute.
 
             Parameters
@@ -80,9 +80,9 @@ class EAttrs(object):
                                                          , urllib.quote(value)
                                               )
 
-        self._intf._exec(put_uri, 'PUT')
+        self._intf._exec(put_uri, 'PUT', **kwargs)
 
-    def mset(self, dict_attrs):
+    def mset(self, dict_attrs, **kwargs):
         """ Set multiple attributes at once.
 
             It is more efficient to use this method instead of
@@ -106,7 +106,7 @@ class EAttrs(object):
 
         put_uri = self._eobj._uri + query_str
 
-        self._intf._exec(put_uri, 'PUT')
+        self._intf._exec(put_uri, 'PUT', **kwargs)
 
     def get(self, path):
         """ Get an attribute value.
