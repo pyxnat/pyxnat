@@ -10,7 +10,9 @@ Release 1.0.1.0
         - Pass keyword arguments on some put/create methods, to allow passing event_reason.
 
     * Bug fixes:
-
+        - Minor docs inconsistencies that generated sphinx warnings
+        - Clean up deprecated references in sphinx autogenerate extension
+        - Remove deprecated sphinx plugin pngmath in favor of imgmath
 
 Release 1.0.0.0
 ---------------
@@ -29,7 +31,7 @@ Release 1.0.0.0
         - Removed custom httplib2 caching.
 
 Release 0.9.5.2
--------------
+---------------
 
     * New Features
 

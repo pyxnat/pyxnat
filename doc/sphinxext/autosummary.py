@@ -17,7 +17,7 @@ The autosummary directive has the form::
     .. autosummary::
        :nosignatures:
        :toctree: generated/
-       
+
        module.function_1
        module.function_2
        ...
@@ -67,7 +67,7 @@ def setup(app):
                       toctree=directives.unchanged,
                       nosignatures=directives.flag)
     app.add_role('autolink', autolink_role)
-    
+
     app.add_node(autosummary_toc,
                  html=(autosummary_toc_visit_html, autosummary_toc_depart_noop),
                  latex=(autosummary_toc_visit_latex, autosummary_toc_depart_noop))
@@ -136,7 +136,7 @@ def autosummary_directive(dirname, arguments, options, content, lineno,
     node = table
 
     env = state.document.settings.env
-    suffix = env.config.source_suffix
+    suffix = env.config.source_suffix[0]
     all_docnames = env.found_docs.copy()
     dirname = posixpath.dirname(env.docname)
 
@@ -160,7 +160,7 @@ def autosummary_directive(dirname, arguments, options, content, lineno,
         tocnode['includefiles'] = docnames
         tocnode['maxdepth'] = -1
         tocnode['glob'] = None
-        tocnode['entries'] = [] 
+        tocnode['entries'] = []
 
         tocnode = autosummary_toc('', '', tocnode)
         return warnings + [node] + [tocnode]
@@ -177,15 +177,15 @@ def get_autosummary(names, state, no_signatures=False):
         Names of Python objects to be imported and added to the table.
     document : document
         Docutils document object
-    
+
     """
     document = state.document
-    
+
     real_names = {}
     warnings = []
 
     prefixes = ['']
-    prefixes.insert(0, document.settings.env.currmodule)
+    prefixes.insert(0, document.settings.env.ref_context.get('py:module'))
 
     table = nodes.table('')
     group = nodes.tgroup('', cols=2)
@@ -222,7 +222,7 @@ def get_autosummary(names, state, no_signatures=False):
             title = " ".join(doc['Summary'])
         else:
             title = ""
-        
+
         col1 = ":obj:`%s <%s>`" % (name, real_name)
         if doc['Signature']:
             sig = re.sub('^[a-zA-Z_0-9.-]*', '', doc['Signature'])
@@ -260,7 +260,7 @@ def import_by_name(name, prefixes=[None]):
         The imported object
     name
         Name of the imported object (useful if `prefixes` was used)
-    
+
     """
     for prefix in prefixes:
         try:
@@ -284,7 +284,7 @@ def _import_by_name(name):
             return getattr(sys.modules[modname], name_parts[-1])
         except (ImportError, IndexError, AttributeError):
             pass
-       
+
         # ... then as MODNAME, MODNAME.OBJ1, MODNAME.OBJ1.OBJ2, ...
         last_j = 0
         modname = None
