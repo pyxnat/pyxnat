@@ -154,11 +154,11 @@ on the database::
 
 For more details check the reference documentation.
 
-.. note:: 
+.. note::
     With ``networkx`` and ``matplotlib`` installed, a ``draw``
     subinterface will be made available to display some data from the
     inspect subinterface as a graph::
-    
+
     >>> central.draw.experiments()
     >>> central.draw.assessors()
     >>> central.draw.scans()
@@ -200,7 +200,7 @@ Almost the same interface is available for collection objects::
 
 
 Search templates
----------------
+----------------
 
 PyXNAT is also able to define templates to use with XNAT search engine.
 They work basically the same way as usual searches but instead of defining
@@ -216,20 +216,20 @@ with the actual values::
                        ]
                       ]
     >>> columns = ['xnat:subjectData/PROJECT', 'xnat:subjectData/SUBJECT_ID']
-    >>> interface.manage.search.save_template('name', 
+    >>> interface.manage.search.save_template('name',
                                                'xnat:subjectData',
 					       columns,
 					       criteria,
 					       sharing='public',
 					       description='my first template'
 					       )
-    >>>	interface.manage.search.use_template('name', 
+    >>>	interface.manage.search.use_template('name',
                                              {'subject_id':'%',
 					      'project_id':'my_project',
 					      'age':'42'
 					      }
 					     )
-    >>> interface.select(...).where(template=('name', 
+    >>> interface.select(...).where(template=('name',
                                               {'subject_id':'%',
 					      'project_id':'my_project',
 					      'age':'42'}
@@ -243,23 +243,23 @@ data selection which still changes:
      >>> interface.select(...).where(query='saved_name')
 
 Provenance definition
---------------------
+---------------------
 
-PyXNAT 0.8 introduces a way to store provenance i.e. to describe the steps 
+PyXNAT 0.8 introduces a way to store provenance i.e. to describe the steps
 that were performed on an initial data to produce this one. Reconstructions
 and assessors only can be annotated with provenace information:
 
     >>> prov = {'program':'young',
-                'timestamp':'2011-03-01T12:01:01.897987', 
-                'user':'angus', 
-                'machine':'war', 
+                'timestamp':'2011-03-01T12:01:01.897987',
+                'user':'angus',
+                'machine':'war',
                 'platform':'linux',
                 }
     >>> element.provenance.attach(prov)
     >>> element.provenance.get()
     >>> element.dettach()
 
-The provenance attach method adds new steps with each call, unless the overwrite 
+The provenance attach method adds new steps with each call, unless the overwrite
 parameter is set to True. The following keywords for the provenance dictionnay are available:
 
     - program
