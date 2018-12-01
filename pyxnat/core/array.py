@@ -38,7 +38,7 @@ class ArrayData(object):
         uri += query_string
 
         if constraints != {}:
-            uri += ',' + ','.join(constraints.keys())
+            uri += ',' + ','.join(list(constraints.keys()))
 
         if columns is not None:
             uri += ',' + ','.join(columns)
@@ -46,7 +46,7 @@ class ArrayData(object):
         c = {}
 
         [c.setdefault(key.lower(), value)
-         for key, value in constraints.items()
+         for key, value in list(constraints.items())
          ]
 
         return JsonTable(self._intf._get_json(uri)).where(**c)

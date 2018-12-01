@@ -56,10 +56,10 @@ class XpathStore(object):
         entry_point = self._intf._get_entry_point()
         uri = '%s/subjects?columns=last_modified' % entry_point
 
-        return dict(JsonTable(self._intf._get_json(uri),
+        return dict(list(JsonTable(self._intf._get_json(uri),
                               order_by=['ID', 'last_modified']
                               ).select(['ID', 'last_modified']
-                                       ).items()
+                                       ).items())
                     )
 
     def update(self):
@@ -151,7 +151,7 @@ class XpathStore(object):
         keys = set()
 
         for element in self.__call__('//%s' % name):
-            for element_key in element.keys():
+            for element_key in list(element.keys()):
                 keys.add(element_key)
         
         return list(keys)

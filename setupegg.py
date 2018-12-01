@@ -92,7 +92,7 @@ extra_setuptools_args = dict(
 
 
 if __name__ == '__main__':
-    execfile('setup.py', dict(__name__='__main__', 
+    exec(compile(open('setup.py').read(), 'setup.py', 'exec'), dict(__name__='__main__', 
                           extra_setuptools_args=extra_setuptools_args))
 
 

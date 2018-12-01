@@ -57,7 +57,7 @@ def parse_put_error_message(message):
 def catch_error(msg_or_exception, full_response=None):
 
     # handle errors returned by the xnat server
-    if isinstance(msg_or_exception, (str, unicode)):
+    if isinstance(msg_or_exception, str):
         # parse the message
         msg = msg_or_exception
         error = parse_error_message(msg)
@@ -84,10 +84,10 @@ def catch_error(msg_or_exception, full_response=None):
 
 # http://python3porting.com/differences.html#standarderror
 try:
-    class Warning(StandardError):
+    class Warning(Exception):
         pass
 
-    class Error(StandardError):
+    class Error(Exception):
         pass
 except NameError:
     class Warning(Exception):

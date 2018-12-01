@@ -12,7 +12,7 @@ def test_elements():
     assert 'fs:region' in central.xpath.elements()
 
 def test_keys():
-    assert 'ID' in central.xpath.keys()
+    assert 'ID' in list(central.xpath.keys())
 
 def test_values():
     assert 'OAS1_0002' in central.xpath.values('ID')

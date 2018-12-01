@@ -7,3 +7,4 @@ dist/
 .project
 .pydevproject
 .idea
+.coverage

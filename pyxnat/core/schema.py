@@ -50,8 +50,8 @@ json = {'projects':['ID', 'ID'],
         'files':['path', 'path'],
         }
 
-resources_singular = [key.rsplit('s', 1)[0] for key in resources_tree.keys()]
-resources_plural   = resources_tree.keys()
+resources_singular = [key.rsplit('s', 1)[0] for key in list(resources_tree.keys())]
+resources_plural   = list(resources_tree.keys())
 resources_types    = resources_singular + list(resources_plural)
 
 default_datatypes = {'projects':'xnat:projectData',
@@ -70,18 +70,18 @@ def datatype_attributes(root, datatype):
         elements = []
 
         for child in node.iterchildren():
-            if isinstance(child.tag, basestring) \
+            if isinstance(child.tag, str) \
                 and child.tag.split('}')[1] == 'element':
                     elements.append('%s/%s'%(pathsofar, child.get('name')))
                     elements.extend(_iterchildren(child, '%s/%s'%
                                         (pathsofar, child.get('name')))
                                     )
 
-            elif isinstance(child.tag, basestring) \
+            elif isinstance(child.tag, str) \
                 and child.tag.split('}')[1] == 'attribute':
                     elements.append('%s/%s'%(pathsofar, child.get('name')))
 
-            elif isinstance(child.tag, basestring) \
+            elif isinstance(child.tag, str) \
                     and child.tag.split('}')[1] == 'extension':
                 
                 ct_xpath = "/xs:schema/xs:complexType[@name='%s']"% \

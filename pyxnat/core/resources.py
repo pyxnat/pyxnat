@@ -1,4 +1,4 @@
-from __future__ import with_statement
+
 
 import lxml
 import os
@@ -9,7 +9,7 @@ import tempfile
 import mimetypes
 import zipfile
 import time
-import urllib
+import urllib.request, urllib.parse, urllib.error
 import codecs
 from fnmatch import fnmatch
 from itertools import islice
@@ -141,8 +141,8 @@ class EObject(object):
             interface: :class:`Interface`
                 Main interface reference.
         """
-        self._uri = urllib.quote(translate_uri(uri))
-        self._urn = urllib.unquote(uri_last(self._uri))
+        self._uri = urllib.parse.quote(translate_uri(uri))
+        self._urn = urllib.parse.unquote(uri_last(self._uri))
         self._urt = uri_nextlast(self._uri)
         self._intf = interface
         self.attrs = EAttrs(self)
@@ -158,7 +158,7 @@ class EObject(object):
 
     def __repr__(self):
         return '<%s Object> %s' % (self.__class__.__name__,
-                                   urllib.unquote(uri_last(self._uri))
+                                   urllib.parse.unquote(uri_last(self._uri))
                                    )
 
     def _getcell(self, col):
@@ -180,7 +180,7 @@ class EObject(object):
                       )
         get_id = p_uri + '?format=json&columns=%s' % ','.join(columns)
 
-        for pattern in self._intf._struct.keys():
+        for pattern in list(self._intf._struct.keys()):
             if fnmatch(uri_segment(
                     self._uri.split(
                         self._intf._get_entry_point(), 1)[1], -2), pattern):
@@ -191,11 +191,11 @@ class EObject(object):
         if filters:
             get_id += '&' + \
                 '&'.join('%s=%s' % (item[0], item[1])
-                         if isinstance(item[1], basestring)
+                         if isinstance(item[1], str)
                          else '%s=%s' % (item[0],
                                          ','.join([val for val in item[1]])
                                          )
-                         for item in filters.items()
+                         for item in list(filters.items())
                          )
 
         for res in self._intf._get_json(get_id):
@@ -324,7 +324,7 @@ class EObject(object):
         struct = self._intf._struct
 
         if datatype is None:
-            for uri_pattern in struct.keys():
+            for uri_pattern in list(struct.keys()):
                 if fnmatch(
                     self._uri.split(
                         self._intf._get_entry_point(), 1)[1], uri_pattern):
@@ -369,11 +369,11 @@ class EObject(object):
 
             parent_datatype = params.get(uri_nextlast(parent_element._uri))
             if DEBUG:
-                print('CREATE', parent_element, parent_datatype)
+                print(('CREATE', parent_element, parent_datatype))
             parent_element.create(**params)
 
         if DEBUG:
-            print('PUT', create_uri)
+            print(('PUT', create_uri))
 
         if 'params' in params and 'event_reason' in params['params']:
             if DEBUG: print('Have event_reason')
@@ -393,7 +393,7 @@ class EObject(object):
                 paths.extend(path)
 
                 if DEBUG:
-                    print(path, 'is required')
+                    print((path, 'is required'))
 
             return paths
 
@@ -551,12 +551,12 @@ class CObject(object):
         self._filters = filters
         self._nested = nested
 
-        if isinstance(cbase, basestring):
+        if isinstance(cbase, str):
             self._ctype = 'cobjectcuri'
         elif isinstance(cbase, CObject):
             self._ctype = 'cobjectcobject'
         elif isinstance(cbase, list) and cbase:
-            if isinstance(cbase[0], basestring):
+            if isinstance(cbase[0], str):
                 self._ctype = 'cobjecteuris'
             if isinstance(cbase[0], EObject):
                 self._ctype = 'cobjecteobjects'
@@ -573,7 +573,7 @@ class CObject(object):
     def _call(self, columns):
         try:
             uri = translate_uri(self._cbase)
-            uri = urllib.quote(uri)
+            uri = urllib.parse.quote(uri)
 
             request_shape = uri_shape(
                 '%s/0' % uri.split(self._intf._get_entry_point(), 1)[1])
@@ -593,14 +593,14 @@ class CObject(object):
             if self._filters:
                 query_string += '&' + '&'.join(
                     '%s=%s' % (item[0], item[1])
-                    if isinstance(item[1], (str, unicode))
+                    if isinstance(item[1], str)
                     else '%s=%s' % (
                         item[0], ','.join([val for val in item[1]]))
-                    for item in self._filters.items()
+                    for item in list(self._filters.items())
                     )
 
             if DEBUG:
-                print uri + query_string
+                print(uri + query_string)
             jtable = self._intf._get_json(uri + query_string)
 
 
@@ -641,7 +641,7 @@ class CObject(object):
 
             for res in self._call([id_header] + self._columns):
                 try:
-                    eid = urllib.unquote(res[id_header])
+                    eid = urllib.parse.unquote(res[id_header])
                     if fnmatch(eid, self._pattern):
                         klass_name = uri_last(self._cbase
                                               ).rstrip('s').title()
@@ -820,7 +820,7 @@ class CObject(object):
                   instead of a list.
         """
         if not args:
-            return [urllib.unquote(uri_last(eobj._uri)) for eobj in self]
+            return [urllib.parse.unquote(uri_last(eobj._uri)) for eobj in self]
         else:
             entries = []
 
@@ -829,10 +829,10 @@ class CObject(object):
                 for arg in args:
                     if arg == 'id':
                         self._id_header = 'ID'
-                        entry += (urllib.unquote(uri_last(eobj._uri)),)
+                        entry += (urllib.parse.unquote(uri_last(eobj._uri)),)
                     elif arg == 'label':
                         self._id_header = 'label'
-                        entry += (urllib.unquote(uri_last(eobj._uri)),)
+                        entry += (urllib.parse.unquote(uri_last(eobj._uri)),)
                     else:
                         entry += (eobj,)
 
@@ -845,9 +845,9 @@ class CObject(object):
 
     fetchall = get
 
-    def __nonzero__(self):
+    def __bool__(self):
         try:
-            self.__iter__().next()
+            next(self.__iter__())
         except StopIteration:
             return False
         else:
@@ -900,14 +900,14 @@ class CObject(object):
             search.Search()
         """
 
-        if isinstance(constraints, (str, unicode)):
+        if isinstance(constraints, str):
             constraints = rpn_contraints(constraints)
         elif isinstance(template, (tuple)):
             tmp_bundle = self._intf.manage.search.get_template(
                 template[0], True)
             tmp_bundle = tmp_bundle % template[1]
             constraints = query_from_xml(tmp_bundle)['constraints']
-        elif isinstance(query, (str, unicode)):
+        elif isinstance(query, str):
             tmp_bundle = self._intf.manage.search.get(query, 'xml')
             constraints = query_from_xml(tmp_bundle)['constraints']
         elif isinstance(constraints, list):
@@ -981,9 +981,7 @@ class CObject(object):
 # specialized classes
 
 
-class Project(EObject):
-    __metaclass__ = ElementType
-
+class Project(EObject, metaclass=ElementType):
     def __init__(self, uri, interface):
         """
             Parameters
@@ -1183,10 +1181,10 @@ class Project(EObject):
         """
         uri = '%s/subjects?columns=last_modified' % self._uri
 
-        return dict(JsonTable(self._intf._get_json(uri),
+        return dict(list(JsonTable(self._intf._get_json(uri),
                               order_by=['ID', 'last_modified']
                               ).select(['ID', 'last_modified']
-                                       ).items()
+                                       ).items())
                     )
 
     def add_custom_variables(self, custom_variables, allow_data_deletion=False):
@@ -1208,7 +1206,7 @@ class Project(EObject):
         tree = lxml.etree.fromstring(self.get())
         update = False
 
-        for protocol, value in custom_variables.items():
+        for protocol, value in list(custom_variables.items()):
             try:
                 protocol_element = tree.xpath(
                     "//xnat:studyProtocol[@name='%s']" % protocol,
@@ -1230,7 +1228,7 @@ class Project(EObject):
                     )
                 protocol_element.append(definitions_element)
 
-            for group, fields in value.items():
+            for group, fields in list(value.items()):
                 try:
                     group_element = definitions_element.xpath(
                         "xnat:definition[@ID='%s']" % group,
@@ -1257,7 +1255,7 @@ class Project(EObject):
                         )
                     group_element.append(fields_element)
 
-                for field, datatype in fields.items():
+                for field, datatype in list(fields.items()):
                     try:
                         field_element = fields_element.xpath(
                             "xnat:field[@name='%s']" % field,
@@ -1324,9 +1322,7 @@ class Project(EObject):
         return custom_variables
 
 
-class Subject(EObject):
-    __metaclass__ = ElementType
-
+class Subject(EObject, metaclass=ElementType):
     def datatype(self):
         return 'xnat:subjectData'
 
@@ -1361,9 +1357,7 @@ class Subject(EObject):
         self._intf._exec(join_uri(self._uri, 'projects', project), 'DELETE')
 
 
-class Experiment(EObject):
-    __metaclass__ = ElementType
-
+class Experiment(EObject, metaclass=ElementType):
     def shares(self, id_filter='*'):
         """ Returns the projects sharing this experiment.
 
@@ -1436,9 +1430,7 @@ class Experiment(EObject):
             self._intf._exec(self._uri + options, 'PUT')
 
 
-class Assessor(EObject):
-    __metaclass__ = ElementType
-
+class Assessor(EObject, metaclass=ElementType):
     def __init__(self, uri, interface):
         EObject.__init__(self, uri, interface)
 
@@ -1491,9 +1483,7 @@ class Assessor(EObject):
         return self.xpath('//xnat:addParam/attribute::*')
 
 
-class Reconstruction(EObject):
-    __metaclass__ = ElementType
-
+class Reconstruction(EObject, metaclass=ElementType):
     def __init__(self, uri, interface):
         EObject.__init__(self, uri, interface)
 
@@ -1505,9 +1495,7 @@ class Reconstruction(EObject):
                 )
 
 
-class Scan(EObject):
-    __metaclass__ = ElementType
-
+class Scan(EObject, metaclass=ElementType):
     def set_param(self, key, value):
         self.attrs.set('%s/parameters/addParam[name=%s]/addField'
                        % (self.datatype(), key),
@@ -1525,9 +1513,7 @@ class Scan(EObject):
         return self.xpath('//xnat:addParam/attribute::*')
 
 
-class Resource(EObject):
-    __metaclass__ = ElementType
-
+class Resource(EObject, metaclass=ElementType):
     def get(self, dest_dir, extract=False):
         """ Downloads all the files within a resource.
 
@@ -1570,13 +1556,13 @@ class Resource(EObject):
                             #flush the buffer every once in a while.
                             f.flush()
                 f.flush()  # and one last flush.
-            except Exception, e:
+            except Exception as e:
                 sys.stderr.write(e)
             finally:
                 response.close()
 
         if DEBUG:
-            print zip_location
+            print(zip_location)
 
         fzip = zipfile.ZipFile(zip_location, 'r')
         fzip.extractall(path=dest_dir)
@@ -1588,7 +1574,7 @@ class Resource(EObject):
             old_path = os.path.join(dest_dir, member)
             if DEBUG:
                 print(member)
-                print(member.split('files', 1))
+                print((member.split('files', 1)))
             new_path = os.path.join(
                 dest_dir,
                 uri_last(self._uri),
@@ -1672,7 +1658,7 @@ class Resource(EObject):
             #use compression if avaiable.
             fzip = zipfile.ZipFile(zip_name, 'w', zipfile.ZIP_DEFLATED)
         except RuntimeError:
-            print "Zip compression not supported for uploading files."
+            print("Zip compression not supported for uploading files.")
             fzip = zipfile.ZipFile(zip_name, 'w')
 
         for src in sources:
@@ -1741,28 +1727,23 @@ class Resource(EObject):
                 )
 
 
-class In_Resource(Resource):
-    __metaclass__ = ElementType
-
+class In_Resource(Resource, metaclass=ElementType):
     def parent(self):
         uri = uri_grandparent(self._uri)
         Klass = globals()[uri.split('/')[-3].title().rsplit('s', 1)[0]]
         return Klass(uri_parent(uri), self._intf)
 
 
-class Out_Resource(Resource):
-    __metaclass__ = ElementType
-
+class Out_Resource(Resource, metaclass=ElementType):
     def parent(self):
         uri = uri_grandparent(self._uri)
         Klass = globals()[uri.split('/')[-3].title().rsplit('s', 1)[0]]
         return Klass(uri_parent(uri), self._intf)
 
 
-class File(EObject):
+class File(EObject, metaclass=ElementType):
     """ EObject for files stored in XNAT.
     """
-    __metaclass__ = ElementType
 
     def __init__(self, uri, interface):
         """
@@ -1834,11 +1815,11 @@ class File(EObject):
             dest = os.path.join(os.path.expanduser("~"), 'Downloads', self.id())
             if not ensure_dir_exists(os.path.dirname(dest)):
                 if DEBUG:
-                    print "File.get: failed to create dir"
+                    print("File.get: failed to create dir")
                 raise DataError('Cannot create dir for file: %s' % (dest))
 
         if DEBUG:
-            print "get_file:", dest
+            print("get_file:", dest)
 
         with open(dest, 'wb') as f:
             response = self._intf.get(self._uri, stream=True)
@@ -1852,7 +1833,7 @@ class File(EObject):
                             #flush the buffer every once in a while.
                             f.flush()
                 f.flush()  # and one last flush.
-            except Exception, e:
+            except Exception as e:
                 sys.stderr.write(e)
             finally:
                 response.close()
@@ -1923,7 +1904,7 @@ class File(EObject):
             path = self._uri.split('/')[-1]
             name = path
 
-        self._absuri = urllib.unquote(
+        self._absuri = urllib.parse.unquote(
             re.sub('resources/.*?/',
                    'resources/%s/' % resource_id, self._uri)
             )
@@ -1945,8 +1926,8 @@ class File(EObject):
             self._absuri = self._absuri.split('?')[0]
 
         if DEBUG:
-            print 'INSERT FILE', os.path.exists(src)
-            print "URI is: " + self._absuri
+            print('INSERT FILE', os.path.exists(src))
+            print("URI is: " + self._absuri)
 
         response = None
         if isFile:
@@ -1960,8 +1941,8 @@ class File(EObject):
         #default error handling.
         if (response is not None and not response.ok) or is_xnat_error(response.content):
             if DEBUG:
-                print(response.keys())
-                print(response.get("status"))
+                print((list(response.keys())))
+                print((response.get("status")))
 
             catch_error(response.content, '''pyxnat.file.put failure:
     URI: {response.url}
@@ -2018,21 +1999,19 @@ class File(EObject):
         return info['last-modified']
 
 
-class In_File(File):
-    __metaclass__ = ElementType
+class In_File(File, metaclass=ElementType):
+    pass
 
 
-class Out_File(File):
-    __metaclass__ = ElementType
+class Out_File(File, metaclass=ElementType):
+    pass
 
 
-class Projects(CObject):
-    __metaclass__ = CollectionType
+class Projects(CObject, metaclass=CollectionType):
+    pass
 
 
-class Subjects(CObject):
-    __metaclass__ = CollectionType
-
+class Subjects(CObject, metaclass=CollectionType):
     def sharing(self, projects=[]):
         return Subjects([eobj for eobj in self
                          if set(projects).issubset(eobj.shares().get())
@@ -2049,9 +2028,7 @@ class Subjects(CObject):
             eobj.unshare(project)
 
 
-class Experiments(CObject):
-    __metaclass__ = CollectionType
-
+class Experiments(CObject, metaclass=CollectionType):
     def sharing(self, projects=[]):
         return Experiments([eobj for eobj in self
                             if set(projects).issubset(eobj.shares().get())
@@ -2068,9 +2045,7 @@ class Experiments(CObject):
             eobj.unshare(project)
 
 
-class Assessors(CObject):
-    __metaclass__ = CollectionType
-
+class Assessors(CObject, metaclass=CollectionType):
     def sharing(self, projects=[]):
         return Assessors([eobj for eobj in self
                           if set(projects).issubset(eobj.shares().get())
@@ -2095,9 +2070,7 @@ class Assessors(CObject):
                                       extract, safe, removeZip)
 
 
-class Reconstructions(CObject):
-    __metaclass__ = CollectionType
-
+class Reconstructions(CObject, metaclass=CollectionType):
     def download(self, dest_dir, type="ALL",
                  name=None, extract=False, safe=False, removeZip=False):
         """
@@ -2107,9 +2080,7 @@ class Reconstructions(CObject):
                                       extract, safe, removeZip)
 
 
-class Scans(CObject):
-    __metaclass__ = CollectionType
-
+class Scans(CObject, metaclass=CollectionType):
     def download(self, dest_dir, type="ALL",
                  name=None, extract=False, safe=False, removeZip=False):
         """
@@ -2120,28 +2091,28 @@ class Scans(CObject):
                                       extract, safe, removeZip)
 
 
-class Resources(CObject):
-    __metaclass__ = CollectionType
+class Resources(CObject, metaclass=CollectionType):
+    pass
 
 
-class In_Resources(Resources):
-    __metaclass__ = CollectionType
+class In_Resources(Resources, metaclass=CollectionType):
+    pass
 
 
-class Out_Resources(Resources):
-    __metaclass__ = CollectionType
+class Out_Resources(Resources, metaclass=CollectionType):
+    pass
 
 
-class Files(CObject):
-    __metaclass__ = CollectionType
+class Files(CObject, metaclass=CollectionType):
+    pass
 
 
-class In_Files(Files):
-    __metaclass__ = CollectionType
+class In_Files(Files, metaclass=CollectionType):
+    pass
 
 
-class Out_Files(Files):
-    __metaclass__ = CollectionType
+class Out_Files(Files, metaclass=CollectionType):
+    pass
 
 ## Utility functions for downloading and extracting zip archives
 
@@ -2191,7 +2162,7 @@ def rewrite_query(interface, join_field,
             _new_f.append('OR')
             _new_filter.append(_new_f)
 
-        elif isinstance(_f, (str, unicode)):
+        elif isinstance(_f, str):
             _new_filter.append(_f)
 
         else:

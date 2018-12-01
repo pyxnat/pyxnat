@@ -68,8 +68,8 @@ def provenance_parameters(process_steps):
 
     for step in process_steps:
 
-        if not set(_required).issubset(step.keys()):
-            missing = list(set(_required).difference(step.keys()))
+        if not set(_required).issubset(list(step.keys())):
+            missing = list(set(_required).difference(list(step.keys())))
 
             raise Exception(('Following attributes are '
                              'required to define provenance: %s' % missing
@@ -87,10 +87,10 @@ def process_step_xml(**kwargs):
     program_node = Element(QName(_nsmap['prov'], 'program'), nsmap=_nsmap)
     program_node.text = kwargs['program']
 
-    if kwargs.has_key('program_version'):
+    if 'program_version' in kwargs:
         program_node.set('version', kwargs['program_version'])
 
-    if kwargs.has_key('program_arguments'):
+    if 'program_arguments' in kwargs:
         program_node.set('arguments', kwargs['program_arguments'])
 
     step_node.append(program_node)
@@ -102,7 +102,7 @@ def process_step_xml(**kwargs):
 
     step_node.append(timestamp_node)
 
-    if kwargs.has_key('cvs'):
+    if 'cvs' in kwargs:
         cvs_node = Element(QName(_nsmap['prov'], 'cvs'), nsmap=_nsmap)
         cvs_node.text = kwargs['cvs']
         
@@ -121,29 +121,29 @@ def process_step_xml(**kwargs):
     platform_node = Element(QName(_nsmap['prov'], 'platform'), nsmap=_nsmap)
     platform_node.text = kwargs['platform']
 
-    if kwargs.has_key('platform_version'):
+    if 'platform_version' in kwargs:
         platform_node.set('version', kwargs['platform_version'])
 
     step_node.append(platform_node)
 
-    if kwargs.has_key('compiler'):
+    if 'compiler' in kwargs:
         compiler_node = Element(QName(_nsmap['prov'], 'compiler'), 
                                 nsmap=_nsmap
                                 )
         compiler_node.text = kwargs['compiler']
 
-        if kwargs.has_key('compiler_version'):
+        if 'compiler_version' in kwargs:
             compiler_node.set('version', kwargs['compiler_version'])
 
         step_node.append(compiler_node)
 
-    if kwargs.has_key('library'):
+    if 'library' in kwargs:
         library_node = Element(QName(_nsmap['prov'], 'library'), 
                                 nsmap=_nsmap
                                 )
         library_node.text = kwargs['library']
 
-        if kwargs.has_key('library_version'):
+        if 'library_version' in kwargs:
             library_node.set('version', kwargs['library_version'])
 
         step_node.append(library_node)
@@ -219,14 +219,14 @@ class Provenance(object):
                                        time.localtime()
                                        )
             
-            if not process_step.has_key('machine'):
+            if 'machine' not in process_step:
                 process_step['machine'] = _machine
-            if not process_step.has_key('platform'):
+            if 'platform' not in process_step:
                 process_step['platform'] = _platform_name
                 process_step['platform_version'] = _platform_version
-            if not process_step.has_key('timestamp'):
+            if 'timestamp' not in process_step:
                 process_step['timestamp'] = _timestamp
-            if not process_step.has_key('user'):
+            if 'user' not in process_step:
                 process_step['user'] = self._intf._user
 
         doc = provenance_document(self._eobject, process_steps, overwrite)
@@ -272,7 +272,7 @@ class Provenance(object):
 
         for step in table.where(**{id_header:self._eobject.id()}):
             step_dict = {}
-            for key in step.keys():
+            for key in list(step.keys()):
                 if 'processstep' in key:
                     step_dict[key.split('processstep/')[1]] = step[key]
 

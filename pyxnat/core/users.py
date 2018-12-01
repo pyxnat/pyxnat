@@ -79,5 +79,5 @@ class Users(object):
         """
         self._intf._get_entry_point()
 
-        print(self._intf._get_json(
-            '%s/user/cache/resources' % self._intf._entry))
+        print((self._intf._get_json(
+            '%s/user/cache/resources' % self._intf._entry)))

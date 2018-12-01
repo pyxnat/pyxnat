@@ -2,7 +2,7 @@ import sys
 import os
 import json
 import datetime
-import urllib2
+import urllib.request, urllib.error, urllib.parse
 import smtplib
 from copy import deepcopy
 import email.mime.text

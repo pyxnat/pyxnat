@@ -1,5 +1,5 @@
 import difflib
-import urllib
+import urllib.request, urllib.parse, urllib.error
 
 from .jsonutil import JsonTable
 from .uriutil import uri_parent
@@ -42,7 +42,7 @@ class EAttrs(object):
         """
         paths = []
         self._intf.manage.schemas._init()
-        for root in self._intf.manage.schemas._trees.values():
+        for root in list(self._intf.manage.schemas._trees.values()):
             paths.extend(datatype_attributes(root, self._get_datatype()))
         return paths
 
@@ -75,9 +75,9 @@ class EAttrs(object):
                     standard representation for dates and times
                     established by the W3C.
         """
-        put_uri = self._eobj._uri + '?xsiType=%s&%s=%s' % (urllib.quote(self._get_datatype())
-                                                         , urllib.quote(path)
-                                                         , urllib.quote(value)
+        put_uri = self._eobj._uri + '?xsiType=%s&%s=%s' % (urllib.parse.quote(self._get_datatype())
+                                                         , urllib.parse.quote(path)
+                                                         , urllib.parse.quote(value)
                                               )
 
         self._intf._exec(put_uri, 'PUT', **kwargs)
@@ -97,10 +97,10 @@ class EAttrs(object):
                 principles as the single `set()` method.
         """
 
-        query_str = '?xsiType=%s' % (urllib.quote(self._get_datatype())) + ''.join(['&%s=%s' % (urllib.quote(path),
-                                               urllib.quote(val)
+        query_str = '?xsiType=%s' % (urllib.parse.quote(self._get_datatype())) + ''.join(['&%s=%s' % (urllib.parse.quote(path),
+                                               urllib.parse.quote(val)
                                                )
-                                    for path, val in dict_attrs.items()
+                                    for path, val in list(dict_attrs.items())
                                     ]
                                    )
 
@@ -143,7 +143,7 @@ class EAttrs(object):
 
         replaceSlashS = lambda x : x.replace('\s', ' ')
         if type(jdata.get(header)) == list:
-            return map(replaceSlashS, jdata.get(header))
+            return list(map(replaceSlashS, jdata.get(header)))
         else:
             return jdata.get(header).replace('\s', ' ')
 

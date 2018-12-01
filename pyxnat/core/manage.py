@@ -1,6 +1,6 @@
 import re
 import glob
-import urllib
+import urllib.request, urllib.parse, urllib.error
 
 from lxml import etree
 
@@ -101,7 +101,7 @@ class SchemaManager(object):
         self._trees = {}
 
     def __call__(self):
-        return self._trees.keys()
+        return list(self._trees.keys())
 
     def add(self, url):
         """ Loads an additional schema.
@@ -132,7 +132,7 @@ class SchemaManager(object):
     def remove(self, name):
         """ Removes a schema.
         """
-        if self._trees.has_key(name):
+        if name in self._trees:
             del self._trees[name]
 
 """
@@ -248,14 +248,14 @@ class PreArchive(object):
        new_project - The name of the project to which to move the sessions.
     """
     def move (self, uris, new_project):
-        add_src = lambda u: urllib.urlencode({'src':u})
+        add_src = lambda u: urllib.parse.urlencode({'src':u})
 
         async = len(uris) > 1 and 'true' or 'false'
         print(async)
 
-        post_body = '&'.join ((map(add_src,uris))
-                            + [urllib.urlencode({'newProject':new_project})]
-                            + [urllib.urlencode({'async':async})])
+        post_body = '&'.join ((list(map(add_src,uris)))
+                            + [urllib.parse.urlencode({'newProject':new_project})]
+                            + [urllib.parse.urlencode({'async':async})])
 
         request_uri = '/data/services/prearchive/move?format=csv'
         return self._intf._exec(request_uri ,'POST', post_body,

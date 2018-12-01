@@ -138,7 +138,7 @@ def test_put_file():
     local_path = os.path.join(_modulepath, 'hello_xnat.txt')
     subj_1.resource('test').file('hello.txt').put(local_path)
     assert subj_1.resource('test').file('hello.txt').exists()
-    assert long(subj_1.resource('test').file('hello.txt').size()) == \
+    assert int(subj_1.resource('test').file('hello.txt').size()) == \
                                                 os.stat(local_path).st_size
 
 def test_get_file():
@@ -159,7 +159,7 @@ def test_put_dir_file():
     local_path = os.path.join(_modulepath, 'hello_again.txt')
     subj_1.resource('test').file('dir/hello.txt').put(local_path)
     assert subj_1.resource('test').file('dir/hello.txt').exists()
-    assert long(subj_1.resource('test').file('dir/hello.txt').size()) == \
+    assert int(subj_1.resource('test').file('dir/hello.txt').size()) == \
                                                 os.stat(local_path).st_size
 
 def test_get_dir_file():
@@ -188,7 +188,7 @@ def test_get_copy_file():
 
 def test_file_last_modified():
     f = subj_1.resource('test').file('hello.txt')
-    assert isinstance(f.last_modified(), basestring)
+    assert isinstance(f.last_modified(), str)
     assert len(f.last_modified()) > 0
 
 def test_last_modified():

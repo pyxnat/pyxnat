@@ -36,7 +36,7 @@ def unzip(fzip,
             return (False, member)
 
     fzip.extractall(path=dest_dir)
-    return (True, map(lambda f: os.path.join(dest_dir, f), fzip.namelist()))
+    return (True, [os.path.join(dest_dir, f) for f in fzip.namelist()])
 
 
 def download(dest_dir, instance=None, type="ALL", name=None, extract=False, safe=False, removeZip=False):
@@ -122,7 +122,7 @@ def download(dest_dir, instance=None, type="ALL", name=None, extract=False, safe
 
     # Make the name of the zip file
     default_zip_name = lambda: '%s_%s_%s_%s_%s' % (
-        p, s, e, class_name(instance).lower(), '_'.join(types.values()))
+        p, s, e, class_name(instance).lower(), '_'.join(list(types.values())))
 
     zip_name = name if name is not None else default_zip_name()
     zip_location = os.path.join(dest_dir, zip_name + '.zip')
@@ -134,7 +134,7 @@ def download(dest_dir, instance=None, type="ALL", name=None, extract=False, safe
     # Download from the server
     with open(zip_location, 'wb') as f:
         response = instance._intf.get(uriutil.join_uri(
-            instance._cbase, ','.join(types.values())) + '/files?format=zip', stream=True)
+            instance._cbase, ','.join(list(types.values()))) + '/files?format=zip', stream=True)
         try:
             count = 0
             for chunk in response.iter_content(chunk_size=1024):
@@ -145,13 +145,13 @@ def download(dest_dir, instance=None, type="ALL", name=None, extract=False, safe
                         #flush the buffer every once in a while.
                         f.flush()
             f.flush()  # and one last flush.
-        except Exception, e:
+        except Exception as e:
             sys.stderr.write(e)
         finally:
             response.close()
 
     if DEBUG:
-        print zip_location
+        print(zip_location)
 
     ##
 

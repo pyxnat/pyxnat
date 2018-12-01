@@ -166,7 +166,7 @@ class Inspector(object):
 
         return list(set([val
                          for entry in search_tbl.where(criteria)
-                         for val in entry.values()
+                         for val in list(entry.values())
                          ])
                     )
 
@@ -290,24 +290,24 @@ class Inspector(object):
         """
         def traverse(coll, lvl):
             for key in schema.resources_tree[coll]:
-                print('%s+%s') % (' ' * lvl, key.upper())
+                print(('%s+%s') % (' ' * lvl, key.upper()))
 
                 datatypes = set([
                         self._intf._struct[uri]
-                        for uri in self._intf._struct.keys()
+                        for uri in list(self._intf._struct.keys())
                         if uri.split('/')[-2] == key
                         ])
 
                 if datatypes != set():
-                    print('%s  %s') % (' ' * lvl, '-' * len(key))
+                    print(('%s  %s') % (' ' * lvl, '-' * len(key)))
 
                 for datatype in datatypes:
-                    print('%s- %s') % (' ' * lvl, datatype)
+                    print(('%s- %s') % (' ' * lvl, datatype))
 
-                if schema.resources_tree.has_key(key):
+                if key in schema.resources_tree:
                     traverse(key, lvl + 4)
 
-        print('- %s') % 'PROJECTS'
+        print(('- %s') % 'PROJECTS')
         traverse('projects', 4)
 
     def _sub_experiment_values(self, sub_exp, project, experiment_type):
@@ -422,7 +422,7 @@ class GraphData(object):
         dist = {}
 
         for entry in search_tbl.where(criteria):
-            for val in entry.values():
+            for val in list(entry.values()):
                 dist.setdefault(val, 1.0)
                 dist[val] += 1
 
@@ -431,7 +431,7 @@ class GraphData(object):
         graph.weights = dist
         graph.weights[field_name] = 100.0
 
-        for val in dist.keys():
+        for val in list(dist.keys()):
             graph.add_edge(field_name, val)
 
         return graph
@@ -452,7 +452,7 @@ class GraphData(object):
                 graph.weights[as_key] = weight
 
                 if with_datatypes:
-                    for uri in self._struct.keys():
+                    for uri in list(self._struct.keys()):
                         if uri.split('/')[-2] == key:
                             datatype = self._struct[uri]
                             graph.add_edge(as_key, datatype)
@@ -655,28 +655,28 @@ class SchemasInspector(object):
         self._intf.manage.schemas._init()
 
         for xsd in self._intf.manage.schemas():
-            print('-'*40)
-            print(xsd.upper())
-            print('-'*40)
-            print
+            print(('-'*40))
+            print((xsd.upper()))
+            print(('-'*40))
+            print()
 
             for datatype in schema.datatypes(
                 self._intf.manage.schemas._trees[xsd]):
-                print('[%s]' % datatype)
-                print
+                print(('[%s]' % datatype))
+                print()
 
                 for path in schema.datatype_attributes(
                     self._intf.manage.schemas._trees[xsd], datatype):
                     print(path)
 
-                print
+                print()
 
     def look_for(self, element_name, datatype_name=None):
         paths = []
         self._intf.manage.schemas._init()
 
         if ':' in element_name:
-            for root in self._intf.manage.schemas._trees.values():
+            for root in list(self._intf.manage.schemas._trees.values()):
                 paths.extend(schema.datatype_attributes(root, element_name))
             return paths
 

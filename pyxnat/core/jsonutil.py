@@ -2,7 +2,7 @@ import csv
 import copy
 from fnmatch import fnmatch
 try:
-    from StringIO import StringIO
+    from io import StringIO
 except ImportError:
     from io import StringIO
 
@@ -21,7 +21,7 @@ def join_tables(join_column, jdata, *jtables):
         indexes.append(index)
 
     merged_jdata = []
-    for join_id in indexes[0].keys():
+    for join_id in list(indexes[0].keys()):
         for index in indexes[1:]:
             indexes[0][join_id].update(index[join_id])
             merged_jdata.append(indexes[0][join_id])
@@ -33,7 +33,7 @@ def get_column(jdata, col, val_pattern='*'):
         jdata = [jdata]
 
     if val_pattern == '*':
-        return [entry[col] for entry in jdata if entry.has_key(col)]
+        return [entry[col] for entry in jdata if col in entry]
     else:
         return [entry[col] for entry in jdata 
                 if fnmatch(entry.get(col), val_pattern)
@@ -46,12 +46,12 @@ def get_where(jdata, *args, **kwargs):
     match = []
 
     for entry in jdata:
-        match_args = all([arg in entry.keys() or arg in entry.values() 
+        match_args = all([arg in list(entry.keys()) or arg in list(entry.values()) 
                           for arg in args
                           ])
 
         match_kwargs = all([entry[key] == kwargs[key] 
-                            for key in kwargs.keys()
+                            for key in list(kwargs.keys())
                             ])
 
         if match_args and match_kwargs:
@@ -66,12 +66,12 @@ def get_where_not(jdata, *args, **kwargs):
     match = []
 
     for entry in jdata:
-        match_args = all([arg in entry.keys() or arg in entry.values() 
+        match_args = all([arg in list(entry.keys()) or arg in list(entry.values()) 
                           for arg in args
                           ])
 
         match_kwargs = all([entry[key] == kwargs[key] 
-                            for key in kwargs.keys()
+                            for key in list(kwargs.keys())
                             ])
 
         if not match_args and not match_kwargs:
@@ -82,7 +82,7 @@ def get_where_not(jdata, *args, **kwargs):
 def get_headers(jdata):
     if isinstance(jdata, dict):
         jdata = [jdata]
-    return [] if jdata == [] else jdata[0].keys()
+    return [] if jdata == [] else list(jdata[0].keys())
 
 def get_selection(jdata, columns):
     if isinstance(jdata, dict):
@@ -94,16 +94,16 @@ def get_selection(jdata, columns):
 
     for entry in sub_table:
         for col in rmcols:
-            if entry.has_key(col):
+            if col in entry:
                 del entry[col]
 
     return sub_table
 
 def csv_to_json(csv_str):
     csv_reader = csv.reader(StringIO(csv_str), delimiter=',', quotechar='"')
-    headers = csv_reader.next()
+    headers = next(csv_reader)
 
-    return [dict(zip(headers, entry)) for entry in csv_reader]
+    return [dict(list(zip(headers, entry))) for entry in csv_reader]
 
 
 class JsonTable(object):
@@ -151,7 +151,7 @@ class JsonTable(object):
         return iter(self.data)
 
     def __getitem__(self, name):
-        if isinstance(name, (str, unicode)):
+        if isinstance(name, str):
             return self.get(name)
         elif isinstance(name, int):
             return self.__class__([self.data[name]], self.order_by)
@@ -300,7 +300,7 @@ class JsonTable(object):
         for entry in self.data:
             row = []
             for header in self.order_by:
-                if entry.has_key(header):
+                if header in entry:
                     row.append(entry.get(header))
             for header in self.headers():
                 if header not in self.order_by:
@@ -315,7 +315,7 @@ class JsonTable(object):
         for entry in self.data:
             row = ()
             for header in self.order_by:
-                if entry.has_key(header):
+                if header in entry:
                     row += (entry.get(header), )
             for header in self.headers():
                 if header not in self.order_by:

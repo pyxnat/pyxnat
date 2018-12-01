@@ -52,7 +52,7 @@ def chain(ops, initEnv, initState, update_statef):
         
 # [str] -> str | None
 def find_plus_line(lines):
-    plusLines = filter (lambda x: x.startswith('+'), lines)
+    plusLines = [x for x in lines if x.startswith('+')]
     if len(plusLines) == 0:
         return None
     else:
@@ -60,7 +60,7 @@ def find_plus_line(lines):
 
 # char -> str -> (str,str) | None
 def find_token(tok,line):
-    splitString = map(lambda x: x.strip(), line.split(tok))
+    splitString = [x.strip() for x in line.split(tok)]
     if len(splitString) == 0 or len(splitString) == 1 or splitString[0] == '':
         return None
     else:

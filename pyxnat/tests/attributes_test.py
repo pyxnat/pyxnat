@@ -54,10 +54,10 @@ def test_attr_mset():
                   }
 
     subject.attrs.mset(field_data)
-    returned = subject.attrs.mget(field_data.keys())
+    returned = subject.attrs.mget(list(field_data.keys()))
 
     assert set(returned) == \
-        set(field_data.values()), '''set: %s returned: %s ''' %(field_data.values(), returned)
+        set(field_data.values()), '''set: %s returned: %s ''' %(list(field_data.values()), returned)
 
 def test_cleanup():
     subject.delete()

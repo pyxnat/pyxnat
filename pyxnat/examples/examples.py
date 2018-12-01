@@ -4,7 +4,9 @@ from multiprocessing import Pool
 
 import pyxnat
 
-url = 'https://imagen.cea.fr/imagen_database'
+url = 'http://mivbox.di.uminho.pt/xnat_di/'
+login = 'rogerio'
+password = 'Rglm210696'
 
 interface = pyxnat.Interface(url, login, password)
 
@@ -13,7 +15,7 @@ def bet(in_image):
     in_image = os.path.join(path, name.rsplit('.')[0])
     out_image = os.path.join(path, name.rsplit('.')[0] + '_brain')
 
-    print('==> %s' % in_image[-120:])
+    print(('==> %s' % in_image[-120:]))
 
     Popen('bet2 %s %s -f 0.5 -g 0 ' % (in_image, out_image),
           shell=True).communicate()
@@ -21,7 +23,7 @@ def bet(in_image):
     return out_image
 
 def notify(message):
-    print('<== %s' % message[-120:])
+    print(('<== %s' % message[-120:]))
 
 pool = Pool(processes=8)
 

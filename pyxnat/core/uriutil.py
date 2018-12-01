@@ -6,16 +6,16 @@ from .schema import rest_translation
 
 def translate_uri(uri):
     segs = uri.split('/')
-    for key in rest_translation.keys():
+    for key in list(rest_translation.keys()):
         if key in segs[-2:]:
             uri = uri.replace(key, rest_translation[key])
 
     return uri
 
 def inv_translate_uri(uri):
-    inv_table = dict(zip(rest_translation.values(), rest_translation.keys()))
+    inv_table = dict(list(zip(list(rest_translation.values()), list(rest_translation.keys()))))
 
-    for key in inv_table.keys():
+    for key in list(inv_table.keys()):
             uri = uri.replace('/%s' % key, '/%s' % inv_table[key])
 
     return uri
@@ -68,7 +68,7 @@ def uri_segment(uri, start=None, end=None):
 
 def uri_shape(uri):
 
-    kwid_map = dict(zip(uri.split('/')[1::2], uri.split('/')[2::2]))
+    kwid_map = dict(list(zip(uri.split('/')[1::2], uri.split('/')[2::2])))
     shapes = {}
 
     for kw in kwid_map:
@@ -99,7 +99,7 @@ def make_uri(_dict):
                 'out_resources', 'files', 'in_files', 'out_files']
 
     for kw in kws:
-        if _dict.has_key(kw):
+        if kw in _dict:
             uri += '/%s/%s' % (kw, _dict.get(kw))
 
     return uri
