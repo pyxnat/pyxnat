@@ -36,3 +36,8 @@ def test_anonymous_access():
     projects = central_anon.select.projects().get()
     assert isinstance(projects, list)
     assert list
+
+def test_close_jsession():
+    config_file = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'central.cfg')
+    with Interface(config=config_file) as central:
+        assert central.select.project('nosetests').exists()
