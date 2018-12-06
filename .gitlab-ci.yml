@@ -1,0 +1,9 @@
+image: python:2.7-onbuild
+
+test:
+  script:
+     - pip install --quiet requests dateparser nose coverage pandas lxml
+     - ./pyxnat/tests/fetch_config.py $XNAT_HOST --user $XNAT_USER --password $XNAT_PASSWORD
+     - nosetests pyxnat/tests --nologcapture --with-coverage --cover-inclusive --cover-erase --cover-package .
+     - coverage report -m
+  coverage: '/TOTAL.+ ([0-9]{1,3}%)/'
