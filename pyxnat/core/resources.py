@@ -40,11 +40,10 @@ from .errors import is_xnat_error, parse_put_error_message
 from .errors import DataError, ProgrammingError, catch_error
 from .cache import md5name
 from .provenance import Provenance
-# from .pipelines import Pipelines
+from .pipelines import Pipelines, Pipeline
 from . import schema
 from . import httputil
 from . import downloadutils
-
 
 DEBUG = False
 
@@ -1003,7 +1002,7 @@ class Project(EObject):
         """
 
         EObject.__init__(self, uri, interface)
-        # self.pipelines = Pipelines(self.id(), self._intf)
+        self.pipelines = Pipelines(self.id(), self._intf)
 
     def prearchive_code(self):
         """ Gets project prearchive code.
@@ -1462,6 +1461,38 @@ class Experiment(EObject):
 
             self._intf._exec(self._uri + options, 'PUT')
 
+    def run(self, pipeline, params=None):
+        '''
+        Runs a pipeline for a specific experiment.
+
+        Parameters
+        ----------
+        pipeline: string
+            Identifier of the (project-enabled) pipeline.
+
+        Returns
+        -------
+        A Pipeline object.
+        '''
+
+        columns = ['xnat:imageSessionData/project',
+            'xnat:imageSessionData/session_type']
+        exp = self._intf.array.experiments(experiment_id=self.id(),
+            columns=columns)[0]
+        project = exp['session_project']
+
+        project_pip = self._intf.select.project(project).pipelines.get()
+        if DEBUG:
+            print([e['Name'] for e in project_pip])
+            print(pipeline)
+        if not pipeline in [e['Name'] for e in project_pip]:
+            raise Exception('Pipeline %s not in project %s'%(pipeline, project))
+
+        URL = '/data/archive/projects/%s/pipelines/%s/experiments/%s'\
+              %(project, pipeline, self.id())
+        response = self._intf.post(URL, params=params)
+
+        return Pipeline(pipeline, self._intf)
 
 @add_metaclass(ElementType)
 class Assessor(EObject):
