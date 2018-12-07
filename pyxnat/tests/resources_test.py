@@ -8,7 +8,7 @@ from .. import Interface
 
 _modulepath = os.path.dirname(os.path.abspath(__file__))
 
-central = Interface(config=os.path.join(os.path.dirname(os.path.abspath(__file__)), 'central.cfg'))
+central = Interface(config='.xnat.cfg')
 
 _id_set1 = {
     'sid':uuid1().hex,
@@ -57,9 +57,9 @@ def test_reconstruction_create():
     reco_1.create()
     assert reco_1.exists()
 
-def test_provenance():
-    reco_1.provenance.set({'program':'nosetests'})
-    assert reco_1.provenance.get()[0]['program'] == 'nosetests'
+# def test_provenance():
+#     reco_1.provenance.set({'program':'nosetests'})
+#     assert reco_1.provenance.get()[0]['program'] == 'nosetests'
 
 def test_multi_create():
     asse_2 = central.select('/projects/nosetests/subjects/%(sid)s'
@@ -72,7 +72,7 @@ def test_multi_create():
                             )
 
     assert not asse_2.exists()
-    asse_2.create(experiments='xnat:petSessionData',                
+    asse_2.create(experiments='xnat:petSessionData',
                   assessors='xnat:petAssessorData')
     assert asse_2.exists()
 
@@ -149,7 +149,7 @@ def test_get_file():
     assert open(fpath, 'rb').read() == 'Hello XNAT!%s' % os.linesep
 
     custom = os.path.join(tempfile.gettempdir(), uuid1().hex)
-    
+
     fh.get(custom)
     assert os.path.exists(custom), "fpath: %s custom: %s" % (fpath, custom)
     os.remove(custom)
@@ -170,7 +170,7 @@ def test_get_dir_file():
     assert open(fpath, 'rb').read() == 'Hello again!%s' % os.linesep
 
     custom = os.path.join(tempfile.gettempdir(), uuid1().hex)
-    
+
     fh.get(custom)
     assert os.path.exists(custom), "fpath: %s custom: %s" % (fpath, custom)
     os.remove(custom)
@@ -244,8 +244,8 @@ def test_project_configuration():
     assert project.current_arc() == 'arc001'
     assert 'nosetests' in project.users()
     assert 'nosetests' in project.owners()
-    assert project.user_role('nosetests') == 'owner'                              
-                                              
+    assert project.user_role('nosetests') == 'owner'
+
 def test_put_zip():
     local_path = os.path.join(_modulepath, 'hello_dir.zip')
     assert os.path.exists(local_path)
@@ -256,24 +256,24 @@ def test_put_zip():
     assert r1.exists()
     assert r1.file('hello_dir/hello_xnat_dir.txt').exists()
     assert r1.file('hello_dir/hello_dir2/hello_xnat_dir2.txt').exists()
-   
-    # Upload and confirm not extracted 
+
+    # Upload and confirm not extracted
     r2 = subj_1.resource('test_zip_no_extract')
     r2.put_zip(local_path, extract=False)
     assert r2.exists()
     assert r2.file('hello_dir.zip').exists()
-                                                                                                
+
 def test_get_zip():
     r = subj_1.resource('test_zip_extract')
     local_dir = os.path.join(_modulepath, 'test_zip_download'+r.id())
-    file_list = [os.path.join(local_dir,'test_zip_extract/hello_dir'), 
+    file_list = [os.path.join(local_dir,'test_zip_extract/hello_dir'),
                  os.path.join(local_dir,'test_zip_extract/hello_dir/hello_xnat_dir.txt'),
                  os.path.join(local_dir,'test_zip_extract/hello_dir/hello_dir2'),
                  os.path.join(local_dir,'test_zip_extract/hello_dir/hello_dir2/hello_xnat_dir2.txt')]
 
     if not os.path.exists(local_dir):
         os.mkdir(local_dir)
-        
+
     r.get(local_dir, extract=True)
     for f in file_list:
         assert os.path.exists(f)
