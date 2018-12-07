@@ -351,8 +351,8 @@ class Interface(object):
 
         if (response is not None and not response.ok) or is_xnat_error(response.content):
             if DEBUG:
-                print(response.keys())
-                print(response.get("status"))
+                print(response.content)
+                print(response.status_code)
 
             catch_error(response.content, '''pyxnat._exec failure:
     URI: {response.url}
