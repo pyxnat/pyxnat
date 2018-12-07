@@ -1,7 +1,7 @@
 import os
 from .. import Interface
 
-central = Interface(config=os.path.join(os.path.dirname(os.path.abspath(__file__)), 'central.cfg'))
+central = Interface(config='.xnat.cfg')
 
 def test_users():
     assert isinstance(central.manage.users(), list)
@@ -17,7 +17,7 @@ def test_user_email():
         'yannick.schwartz@gmail.com'
 
 def test_user_id():
-    assert central.manage.users.id('nosetests') == '204'
+    assert central.manage.users.id('nosetests') == '11'
 
 def test_project_users():
     assert isinstance(central.select.project('nosetests').users(), list)
@@ -29,7 +29,7 @@ def test_project_members():
     assert isinstance(central.select.project('nosetests').members(), list)
 
 def test_project_collaborators():
-    assert isinstance(central.select.project('nosetests').collaborators(), 
+    assert isinstance(central.select.project('nosetests').collaborators(),
                       list
                       )
 
