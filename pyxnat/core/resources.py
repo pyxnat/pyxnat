@@ -1323,6 +1323,24 @@ class Project(EObject):
 
         return custom_variables
 
+    def aliases(self):
+        """Returns the aliases for this project.
+
+           Returns
+           -------
+           List of aliases
+        """
+
+        uri = '/data/projects'
+        options = {'columns': 'alias', 'format':'csv'}
+        data = self._intf.get(uri, params=options).text
+        from jsonutil import csv_to_json
+        data = csv_to_json(data)
+
+        # parse the results
+        return [item['alias'] for item in data if item['alias'] and \
+            item['ID'] == self._urn]
+
 
 class Subject(EObject):
     __metaclass__ = ElementType
