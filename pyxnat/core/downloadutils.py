@@ -145,13 +145,13 @@ def download(dest_dir, instance=None, type="ALL", name=None, extract=False, safe
                         #flush the buffer every once in a while.
                         f.flush()
             f.flush()  # and one last flush.
-        except Exception, e:
+        except Exception as e:
             sys.stderr.write(e)
         finally:
             response.close()
 
     if DEBUG:
-        print zip_location
+        print(zip_location)
 
     ##
 

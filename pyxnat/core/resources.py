@@ -600,7 +600,7 @@ class CObject(object):
                     )
 
             if DEBUG:
-                print uri + query_string
+                print(uri + query_string)
             jtable = self._intf._get_json(uri + query_string)
 
 
@@ -1570,13 +1570,13 @@ class Resource(EObject):
                             #flush the buffer every once in a while.
                             f.flush()
                 f.flush()  # and one last flush.
-            except Exception, e:
+            except Exception as e:
                 sys.stderr.write(e)
             finally:
                 response.close()
 
         if DEBUG:
-            print zip_location
+            print(zip_location)
 
         fzip = zipfile.ZipFile(zip_location, 'r')
         fzip.extractall(path=dest_dir)
@@ -1672,7 +1672,7 @@ class Resource(EObject):
             #use compression if avaiable.
             fzip = zipfile.ZipFile(zip_name, 'w', zipfile.ZIP_DEFLATED)
         except RuntimeError:
-            print "Zip compression not supported for uploading files."
+            print("Zip compression not supported for uploading files.")
             fzip = zipfile.ZipFile(zip_name, 'w')
 
         for src in sources:
@@ -1834,11 +1834,11 @@ class File(EObject):
             dest = os.path.join(os.path.expanduser("~"), 'Downloads', self.id())
             if not ensure_dir_exists(os.path.dirname(dest)):
                 if DEBUG:
-                    print "File.get: failed to create dir"
+                    print("File.get: failed to create dir")
                 raise DataError('Cannot create dir for file: %s' % (dest))
 
         if DEBUG:
-            print "get_file:", dest
+            print(("get_file:", dest))
 
         with open(dest, 'wb') as f:
             response = self._intf.get(self._uri, stream=True)
@@ -1852,7 +1852,7 @@ class File(EObject):
                             #flush the buffer every once in a while.
                             f.flush()
                 f.flush()  # and one last flush.
-            except Exception, e:
+            except Exception as e:
                 sys.stderr.write(e)
             finally:
                 response.close()
@@ -1945,8 +1945,8 @@ class File(EObject):
             self._absuri = self._absuri.split('?')[0]
 
         if DEBUG:
-            print 'INSERT FILE', os.path.exists(src)
-            print "URI is: " + self._absuri
+            print(('INSERT FILE', os.path.exists(src)))
+            print("URI is: " + self._absuri)
 
         response = None
         if isFile:
