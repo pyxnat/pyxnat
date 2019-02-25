@@ -146,7 +146,7 @@ def test_get_file():
 
     fpath = fh.get()
     assert os.path.exists(fpath)
-    assert open(fpath, 'rb').read() == 'Hello XNAT!\n'
+    assert open(fpath, 'rb').read() == 'Hello XNAT!%s' % os.linesep
 
     custom = os.path.join(tempfile.gettempdir(), uuid1().hex)
     
@@ -167,7 +167,7 @@ def test_get_dir_file():
 
     fpath = fh.get()
     assert os.path.exists(fpath)
-    assert open(fpath, 'rb').read() == 'Hello again!\n'
+    assert open(fpath, 'rb').read() == 'Hello again!%s' % os.linesep
 
     custom = os.path.join(tempfile.gettempdir(), uuid1().hex)
     
@@ -181,7 +181,7 @@ def test_get_copy_file():
     fpath = subj_1.resource('test').file('hello.txt').get_copy(fpath)
     assert os.path.exists(fpath)
     fd = open(fpath, 'rb')
-    assert fd.read() == 'Hello XNAT!\n'
+    assert fd.read() == 'Hello XNAT!%s' % os.linesep
     fd.close()
     os.remove(fpath)
 
