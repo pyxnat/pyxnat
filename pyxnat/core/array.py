@@ -159,12 +159,14 @@ class ArrayData(object):
         query_string = '&columns=ID,project,%s/subject_id,%s/ID' % (
             experiment_type, scan_type)
 
-        return self._get_array(query_string, project_id,
+        array = self._get_array(query_string, project_id,
                                subject_id, subject_label,
                                experiment_id, experiment_label,
                                experiment_type, columns, constraints
                                )
-        
+        id_key = ('%s/ID' % scan_type).lower()
+        return JsonTable([i for i in array if i[id_key]])
+
     def mrscans(self, project_id=None, subject_id=None, subject_label=None,
                 experiment_id=None, experiment_label=None,
                 columns=None,
@@ -207,7 +209,7 @@ class ArrayData(object):
                            constraints=None
                            ):
 
-        """ Returns a list of all visible experiment IDs of the 
+        """ Returns a list of all visible experiment IDs of the
             specified type, filtered by optional constraints. This
             function is a shortcut using the search engine.
 
@@ -220,7 +222,7 @@ class ArrayData(object):
             subject_label: string
                 Name pattern to filter by subject ID.
             experiment_type: string
-                xsi path type must be a leaf session type. 
+                xsi path type must be a leaf session type.
                 defaults to 'xnat:mrSessionData'
             columns: List[string]
                 list of xsi paths for names of columns to return.
