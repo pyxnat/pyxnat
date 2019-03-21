@@ -439,6 +439,8 @@ class Interface(object):
                   'user': self._user,
                   'password': self._pwd,
                   }
+        if self._verify:
+            config['verify'] = self._verify
         if self._proxy_url:
             config['proxy'] = self._proxy_url.geturl()
 
@@ -471,6 +473,8 @@ class Interface(object):
             self._user = str(config['user'])
             self._pwd = str(config['password'])
 
+            if 'verify' in config:
+                self._verify = bool(config['verify'])
             if 'proxy' in config:
                 self.__set_proxy(str(config['proxy']))
             else:
