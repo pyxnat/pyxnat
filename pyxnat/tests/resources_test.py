@@ -277,3 +277,7 @@ def test_get_zip():
     r.get(local_dir, extract=True)
     for f in file_list:
         assert os.path.exists(f)
+
+def test_project_aliases():
+    project = central.select('/project/nosetests')
+    assert project.aliases() == ['nosetests2']
