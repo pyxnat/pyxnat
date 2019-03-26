@@ -193,7 +193,7 @@ class Interface(object):
         self._last_memtimeout = 1.0
         self._last_mode = 'online'
 
-        self._jsession = 'authentication_by_credentials'
+        self._jsession = None #'authentication_by_credentials'
         self._connect_extras = {}
         self._connect()
 
@@ -540,3 +540,25 @@ class Interface(object):
         uri = join_uri(self._server, uri)
         response = self._http.head(uri, **kwargs)
         return response
+
+    def __enter__(self):
+
+        return self
+
+    def close_jsession(self):
+        '''
+        Closes the session with XNAT server and consumes the JSESSIONID token
+        '''
+        uri = '/data/JSESSION'
+        response = self.delete(uri)
+
+        if response.status_code != requests.codes.ok:
+            raise XNATException('HTTP response: #%s%s%s' \
+                % (response.status_code, os.linesep, response.content))
+
+        self._jsession = None
+
+    def __exit__(self, type, value, traceback):
+
+        if self._jsession:
+            self.close_jsession()
