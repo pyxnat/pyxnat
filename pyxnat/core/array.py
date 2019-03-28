@@ -8,7 +8,7 @@ class ArrayData(object):
     def _get_array(self, query_string, project_id=None,
                    subject_id=None, subject_label=None,
                    experiment_id=None, experiment_label=None,
-                   experiment_type='xnat:imageSessionData',
+                   experiment_type='xnat:subjectAssessorData',
                    columns=None, constraints=None
                    ):
 
@@ -53,7 +53,7 @@ class ArrayData(object):
 
     def experiments(self, project_id=None, subject_id=None, subject_label=None,
               experiment_id=None, experiment_label=None,
-              experiment_type='xnat:mrSessionData',
+              experiment_type='xnat:subjectAssessorData',
               columns=None,
               constraints=None
               ):
@@ -90,10 +90,42 @@ class ArrayData(object):
                                experiment_type, columns, constraints
                                )
 
+    def mrsessions(self, project_id=None, subject_id=None, subject_label=None,
+              experiment_id=None, experiment_label=None,
+              columns=None,
+              constraints=None
+              ):
+
+        """ Returns a list of all MR sessions, filtered by optional constraints.
+
+            Parameters
+            ----------
+            project_id: string
+                Name pattern to filter by project ID.
+            subject_id: string
+                Name pattern to filter by subject ID.
+            subject_label: string
+                Name pattern to filter by subject ID.
+            experiment_id: string
+                Name pattern to filter by experiment ID.
+            experiment_label: string
+                Name pattern to filter by experiment ID.
+            columns: list
+                Values to return.
+            constraints: dict
+                Dictionary of xsi_type (key--) and parameter (--value)
+                pairs by which to filter.
+            """
+
+        return self.experiments(project_id, subject_id, subject_label,
+                                experiment_id, experiment_label,
+                                'xnat:mrSessionData', columns, constraints
+                                )
+
     def scans(self, project_id=None, subject_id=None, subject_label=None,
               experiment_id=None, experiment_label=None,
-              experiment_type='xnat:mrSessionData',
-              scan_type='xnat:mrScanData',
+              experiment_type='xnat:imageSessionData',
+              scan_type='xnat:imageScanData',
               columns=None,
               constraints=None
               ):
@@ -127,22 +159,57 @@ class ArrayData(object):
         query_string = '&columns=ID,project,%s/subject_id,%s/ID' % (
             experiment_type, scan_type)
 
-        return self._get_array(query_string, project_id,
+        array = self._get_array(query_string, project_id,
                                subject_id, subject_label,
                                experiment_id, experiment_label,
                                experiment_type, columns, constraints
                                )
+        id_key = ('%s/ID' % scan_type).lower()
+        return JsonTable([i for i in array if i[id_key]])
+
+    def mrscans(self, project_id=None, subject_id=None, subject_label=None,
+                experiment_id=None, experiment_label=None,
+                columns=None,
+                constraints=None
+                ):
+
+        """ Returns a list of all MR scans, filtered by optional constraints.
+
+            Parameters
+            ----------
+            project_id: string
+                Name pattern to filter by project ID.
+            subject_id: string
+                Name pattern to filter by subject ID.
+            subject_label: string
+                Name pattern to filter by subject ID.
+            experiment_id: string
+                Name pattern to filter by experiment ID.
+            experiment_label: string
+                Name pattern to filter by experiment ID.
+            columns: list
+                Values to return.
+            constraints: dict
+                Dictionary of xsi_type (key--) and parameter (--value)
+                pairs by which to filter.
+            """
+
+        return self.scans(project_id, subject_id, subject_label,
+                          experiment_id, experiment_label,
+                          'xnat:mrSessionData', 'xnat:mrScanData',
+                          columns, constraints
+                          )
 
     def search_experiments(self,
                            project_id=None,
                            subject_id=None,
                            subject_label=None,
-                           experiment_type='xnat:mrSessionData',
+                           experiment_type='xnat:subjectAssessorData',
                            columns=None,
                            constraints=None
                            ):
 
-        """ Returns a list of all visible experiment IDs of the 
+        """ Returns a list of all visible experiment IDs of the
             specified type, filtered by optional constraints. This
             function is a shortcut using the search engine.
 
@@ -155,7 +222,7 @@ class ArrayData(object):
             subject_label: string
                 Name pattern to filter by subject ID.
             experiment_type: string
-                xsi path type must be a leaf session type. 
+                xsi path type must be a leaf session type.
                 defaults to 'xnat:mrSessionData'
             columns: List[string]
                 list of xsi paths for names of columns to return.
