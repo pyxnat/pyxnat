@@ -1,0 +1,7 @@
+[run]
+omit =
+  ./setup.py
+  ./setupegg.py
+  ./sphinx_pypi_upload.py
+  ./doc/*
+  /home/travis/virtualenv/*
