@@ -253,9 +253,9 @@ def test_project_configuration():
     assert project.quarantine_code() == 0
     assert project.prearchive_code() == 4, project.prearchive_code()
     assert project.current_arc() == b'arc001'
-    assert 'nosetests' in project.users()
-    assert 'nosetests' in project.owners()
-    assert project.user_role('nosetests') == 'owner'
+    assert 'admin' in project.users()
+    assert 'admin' in project.owners()
+    assert project.user_role('admin') == 'owner'
 
 def test_put_zip():
     local_path = os.path.join(_modulepath, 'hello_dir.zip')
@@ -291,4 +291,5 @@ def test_get_zip():
 
 def test_project_aliases():
     project = central.select('/project/nosetests')
+    print(project.aliases())
     assert project.aliases() == ['nosetests2']
