@@ -19,10 +19,10 @@ class Inspector(object):
     """
 
     def __init__(self, interface):
-        """ 
+        """
             Parameters
             ----------
-            interface: 
+            interface:
                 :class:`Interface` Object
         """
         self._intf = interface
@@ -72,26 +72,26 @@ class Inspector(object):
             pattern: string
                 Pattern for the datatype. May include wildcards.
             fields_pattern: string
-                - Pattern for the datafields -- may include wildcards. 
+                - Pattern for the datafields -- may include wildcards.
                 - If specified, datafields will be returned instead of
                   datatypes.
-                
+
             Returns
             -------
             list : datatypes or datafields depending on the argument usage.
         """
         self._intf._get_entry_point()
 
-        search_els = self._get_json('%s/search/elements?format=json' % 
+        search_els = self._get_json('%s/search/elements?format=json' %
                                         self._intf._get_entry_point())
 
-        if not fields_pattern and ('*' in pattern or '?' in pattern):       
+        if not fields_pattern and ('*' in pattern or '?' in pattern):
             return get_column(search_els , 'ELEMENT_NAME', pattern)
 
         else:
             fields = []
             for datatype in get_column(search_els , 'ELEMENT_NAME', pattern):
-                fields.extend(self._datafields(datatype, 
+                fields.extend(self._datafields(datatype,
                                                fields_pattern or '*', True)
                               )
 
@@ -106,16 +106,16 @@ class Inspector(object):
 
         fields = get_column(search_fds, 'FIELD_ID', pattern)
 
-        return ['%s/%s' % (datatype, field) 
+        return ['%s/%s' % (datatype, field)
                 if prepend_type else field
-                for field in fields 
+                for field in fields
                 if '=' not in field and 'SHARINGSHAREPROJECT' not in field
                 ]
 
     def experiment_types(self):
-        """ Returns the datatypes used at the experiment level in this 
+        """ Returns the datatypes used at the experiment level in this
             database.
-            
+
             See Also
             --------
             Inspector.set_autolearn()
@@ -123,9 +123,9 @@ class Inspector(object):
         return self._resource_types('experiment')
 
     def assessor_types(self):
-        """ Returns the datatypes used at the assessor level in this 
+        """ Returns the datatypes used at the assessor level in this
             database.
-            
+
             See Also
             --------
             Inspector.set_autolearn()
@@ -133,9 +133,9 @@ class Inspector(object):
         return self._resource_types('assessor')
 
     def reconstruction_types(self):
-        """ Returns the datatypes used at the reconstruction level in this 
+        """ Returns the datatypes used at the reconstruction level in this
             database.
-            
+
             See Also
             --------
             Inspector.set_autolearn()
@@ -143,9 +143,9 @@ class Inspector(object):
         return self._resource_types('reconstruction')
 
     def scan_types(self):
-        """ Returns the datatypes used at the scan level in this 
+        """ Returns the datatypes used at the scan level in this
             database.
-            
+
             See Also
             --------
             Inspector.set_autolearn()
@@ -154,11 +154,11 @@ class Inspector(object):
 
 
     def field_values(self, field_name):
-        """ Look for the values a specific datafield takes in the database. 
+        """ Look for the values a specific datafield takes in the database.
         """
         self._intf._get_entry_point()
 
-        search_tbl = Search(field_name.split('/')[0], 
+        search_tbl = Search(field_name.split('/')[0],
                             [field_name], self._intf
                             )
 
@@ -200,7 +200,7 @@ class Inspector(object):
         """ Look for the values a the experiment level for a given datatype
             in the database.
 
-            .. note:: 
+            .. note::
                 The  datatype should be one of Inspector.experiment_types()
 
             Parameters
@@ -225,7 +225,7 @@ class Inspector(object):
             type in the database.
 
             .. note::
-               The experiment type should be one of 
+               The experiment type should be one of
                Inspector.experiment_types()
 
             .. warning::
@@ -239,7 +239,7 @@ class Inspector(object):
             project: string
                 Optional. Restrict operation to a project.
         """
-        return self._sub_experiment_values('assessor', 
+        return self._sub_experiment_values('assessor',
                                            project, experiment_type)
 
     def scan_values(self, experiment_type, project=None):
@@ -247,7 +247,7 @@ class Inspector(object):
             type in the database.
 
             .. note::
-               The experiment type should be one of 
+               The experiment type should be one of
                Inspector.experiment_types()
 
             .. warning::
@@ -264,11 +264,11 @@ class Inspector(object):
         return self._sub_experiment_values('scan', project, experiment_type)
 
     def reconstruction_values(self, experiment_type, project=None):
-        """ Look for the values at the reconstruction level for a given 
+        """ Look for the values at the reconstruction level for a given
             experiment type in the database.
 
             .. note::
-               The experiment type should be one of 
+               The experiment type should be one of
                Inspector.experiment_types()
 
             .. warning::
@@ -282,7 +282,7 @@ class Inspector(object):
             project: string
                 Optional. Restrict operation to a project.
         """
-        return self._sub_experiment_values('reconstruction', 
+        return self._sub_experiment_values('reconstruction',
                                            project, experiment_type)
 
     def structure(self):
@@ -304,7 +304,7 @@ class Inspector(object):
                 for datatype in datatypes:
                     print('%s- %s') % (' ' * lvl, datatype)
 
-                if schema.resources_tree.has_key(key):
+                if key in schema.resources_tree.keys():
                     traverse(key, lvl + 4)
 
         print('- %s') % 'PROJECTS'
@@ -317,8 +317,8 @@ class Inspector(object):
 
         column = '%s/%ss/%s/id' % \
             (experiment_type.lower(), sub_exp, sub_exp)
-        
-        sub_exps = '%s/experiments?columns=ID,%s' % (self._intf._entry, 
+
+        sub_exps = '%s/experiments?columns=ID,%s' % (self._intf._entry,
                                                      column
                                                      )
 
@@ -330,9 +330,9 @@ class Inspector(object):
         return list(set(values))
 
     def _resource_struct(self, name):
-        
+
         return self._intf._struct
-    
+
     def _resource_types(self, name):
         return list(set(self._resource_struct(name).values()))
 
@@ -343,8 +343,8 @@ class GraphData(object):
         self._struct = interface._struct
 
     # def link(self, subjects, fields):
-        
-    #     criteria = [('xnat:subjectData/SUBJECT_ID', '=', _id) 
+
+    #     criteria = [('xnat:subjectData/SUBJECT_ID', '=', _id)
     #                 for _id in subjects
     #                 ]
     #     criteria += ['OR']
@@ -354,7 +354,7 @@ class GraphData(object):
 
     #     for field in fields:
 
-    #         field_tbl = self._intf.select('xnat:subjectData', 
+    #         field_tbl = self._intf.select('xnat:subjectData',
     #                                       [subject_id, field]
     #                                       ).where(criteria)
     #         head = field_tbl.headers()
@@ -363,7 +363,7 @@ class GraphData(object):
     #         possible = set(field_tbl.get(head))
 
     #         groups = {}
-            
+
     #         for val in possible:
     #             groups[val] = field_tbl.where(**{head:val}
     #                                             ).select('subject_id')
@@ -375,10 +375,10 @@ class GraphData(object):
         graph.add_node('datatypes')
         graph.labels = {'datatypes':'datatypes'}
         graph.weights = {'datatypes':100.0}
-        
+
         datatypes = self._intf.inspect.datatypes(pattern)
         namespaces = set([dat.split(':')[0] for dat in datatypes])
-        
+
         for ns in namespaces:
             graph.add_edge('datatypes', ns)
             graph.weights[ns] = 70.0
@@ -397,9 +397,9 @@ class GraphData(object):
         graph.add_node(name)
         graph.labels = {name:name}
         graph.weights = {name:100.0}
-        
+
         namespaces = set([exp.split(':')[0] for exp in resource_types])
-        
+
         for ns in namespaces:
             graph.add_edge(name, ns)
             graph.weights[ns] = 70.0
@@ -412,8 +412,8 @@ class GraphData(object):
         return graph
 
     def field_values(self, field_name):
-        
-        search_tbl = Search(field_name.split('/')[0], 
+
+        search_tbl = Search(field_name.split('/')[0],
                             [field_name], self._intf
                             )
 
@@ -487,12 +487,12 @@ class PaintGraph(object):
 
         costs = norm_costs([cost(v) for v in graph], 10000)
 
-        nx.draw(graph, pos, labels=graph.labels, 
+        nx.draw(graph, pos, labels=graph.labels,
                 node_size=costs, node_color=costs,
-                font_size=13, font_color='orange', 
+                font_size=13, font_color='orange',
                 font_weight='bold', with_labels=True
                 )
-    
+
         plt.axis('off')
 
         if save is not None:
@@ -528,18 +528,18 @@ class PaintGraph(object):
         # node_color = [float(graph.degree(v)) for v in graph]
         node_color = [cost(v) for v in graph]
 
-        nx.draw(graph, pos, 
+        nx.draw(graph, pos,
                 node_size=node_size, node_color=node_color,
                 font_size=13, font_color='green', font_weight='bold'
                 )
-    
+
         plt.axis('off')
 
         if save is not None:
             plt.savefig(save)
 
         plt.show()
-        
+
     def datatypes(self, pattern='*', save=None):
         graph = self.get_graph.datatypes(pattern)
 
@@ -554,12 +554,12 @@ class PaintGraph(object):
         # node_color = [float(graph.degree(v)) for v in graph]
         node_color = [cost(v) for v in graph]
 
-        nx.draw(graph, pos, 
+        nx.draw(graph, pos,
                 node_size=node_size, node_color=node_color,
                 font_size=13, font_color='green', font_weight='bold',
                 with_labels=True
                 )
-    
+
         plt.axis('off')
 
         if save is not None:
@@ -579,12 +579,12 @@ class PaintGraph(object):
 
         costs = norm_costs([cost(v) for v in graph], 10000)
 
-        nx.draw(graph, pos, 
+        nx.draw(graph, pos,
                 node_size=costs, node_color=costs,
-                font_size=13, font_color='black', 
+                font_size=13, font_color='black',
                 font_weight='bold', with_labels=True
                 )
-    
+
         plt.axis('off')
 
         if save is not None:
@@ -598,7 +598,7 @@ def norm_costs(costs, norm=1000):
 
     return [ (cost / max_cost) * norm for cost in costs]
 
-    
+
 # class GraphDrawer(object):
 #     def __init__(self, interface):
 #         self._intf = interface
@@ -620,26 +620,26 @@ def norm_costs(costs, norm=1000):
 
 #         pos = nx.graphviz_layout(g, prog='twopi', args='')
 
-#         nx.draw_networkx_nodes(g, pos, 
-#                                nodelist=[project], 
-#                                node_color='green', alpha=0.7, 
+#         nx.draw_networkx_nodes(g, pos,
+#                                nodelist=[project],
+#                                node_color='green', alpha=0.7,
 #                                node_size=2500, node_shape='s')
 
-#         nx.draw_networkx_nodes(g, pos, 
-#                                nodelist=['Experiments'], 
-#                                node_color='blue', alpha=0.7, 
+#         nx.draw_networkx_nodes(g, pos,
+#                                nodelist=['Experiments'],
+#                                node_color='blue', alpha=0.7,
 #                                node_size=2000, node_shape='p')
 
-#         nx.draw_networkx_nodes(g, pos, 
-#                                nodelist=experiments_types, 
-#                                node_color='red', alpha=0.7, 
+#         nx.draw_networkx_nodes(g, pos,
+#                                nodelist=experiments_types,
+#                                node_color='red', alpha=0.7,
 #                                node_size=1500, node_shape='o')
 
-#         nx.draw_networkx_edges(g, pos, width=2, alpha=0.5, 
+#         nx.draw_networkx_edges(g, pos, width=2, alpha=0.5,
 #                                edge_color='black')
 
 #         nx.draw_networkx_labels(g, pos, labels,
-#                                 alpha=0.9, font_size=8, 
+#                                 alpha=0.9, font_size=8,
 #                                 font_color='black', font_weight='bold')
 
 #         plt.axis('off')
@@ -680,7 +680,7 @@ class SchemasInspector(object):
                 paths.extend(schema.datatype_attributes(root, element_name))
             return paths
 
-        for xsd in self._intf.manage.schemas(): 
+        for xsd in self._intf.manage.schemas():
             # nsmap = self._intf.manage.schemas._trees[xsd].nsmap
 
             if datatype_name is not None:
@@ -697,4 +697,3 @@ class SchemasInspector(object):
                         paths.append(path)
 
         return paths
-

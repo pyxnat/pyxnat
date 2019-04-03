@@ -15,20 +15,20 @@ _nsmap = {'xnat':'http://nrg.wustl.edu/xnat',
           }
 
 _required = ['program', 'timestamp', 'user', 'machine', 'platform']
-_optional = ['program_version', 'program_arguments', 
-             'cvs', 
-             'platform_version', 
-             'compiler', 'compiler_version', 
+_optional = ['program_version', 'program_arguments',
+             'cvs',
+             'platform_version',
+             'compiler', 'compiler_version',
              'library', 'library_version'
              ]
 
 _all = ['program', 'program_version', 'program_arguments',
         'timestamp',
-        'cvs', 
+        'cvs',
         'user',
         'machine',
-        'platform', 'platform_version', 
-        'compiler', 'compiler_version', 
+        'platform', 'platform_version',
+        'compiler', 'compiler_version',
         # 'library', 'library_version'
         ]
 
@@ -53,7 +53,7 @@ def provenance_document(eobj, process_steps, overwrite):
         if existing_prov is not None and overwrite:
             root_node.remove(existing_prov)
 
-        prov_node = Element(QName(_nsmap['xnat'], 'provenance'), 
+        prov_node = Element(QName(_nsmap['xnat'], 'provenance'),
                             nsmap=_nsmap
                             )
         root_node.insert(0, prov_node)
@@ -81,31 +81,31 @@ def provenance_parameters(process_steps):
     return prov
 
 def process_step_xml(**kwargs):
-    
+
     step_node = Element(QName(_nsmap['prov'], 'processStep'), nsmap=_nsmap)
 
     program_node = Element(QName(_nsmap['prov'], 'program'), nsmap=_nsmap)
     program_node.text = kwargs['program']
 
-    if kwargs.has_key('program_version'):
+    if 'program_version' in kwargs.keys():
         program_node.set('version', kwargs['program_version'])
 
-    if kwargs.has_key('program_arguments'):
+    if 'program_arguments' in kwargs.keys():
         program_node.set('arguments', kwargs['program_arguments'])
 
     step_node.append(program_node)
 
-    timestamp_node = Element(QName(_nsmap['prov'], 'timestamp'), 
+    timestamp_node = Element(QName(_nsmap['prov'], 'timestamp'),
                              nsmap=_nsmap
                              )
     timestamp_node.text = kwargs['timestamp']
 
     step_node.append(timestamp_node)
 
-    if kwargs.has_key('cvs'):
+    if 'cvs' in kwargs.keys():
         cvs_node = Element(QName(_nsmap['prov'], 'cvs'), nsmap=_nsmap)
         cvs_node.text = kwargs['cvs']
-        
+
         step_node.append(cvs_node)
 
     user_node = Element(QName(_nsmap['prov'], 'user'), nsmap=_nsmap)
@@ -121,29 +121,29 @@ def process_step_xml(**kwargs):
     platform_node = Element(QName(_nsmap['prov'], 'platform'), nsmap=_nsmap)
     platform_node.text = kwargs['platform']
 
-    if kwargs.has_key('platform_version'):
+    if 'platform_version' in kwargs.keys():
         platform_node.set('version', kwargs['platform_version'])
 
     step_node.append(platform_node)
 
-    if kwargs.has_key('compiler'):
-        compiler_node = Element(QName(_nsmap['prov'], 'compiler'), 
+    if 'compiler' in kwargs.keys():
+        compiler_node = Element(QName(_nsmap['prov'], 'compiler'),
                                 nsmap=_nsmap
                                 )
         compiler_node.text = kwargs['compiler']
 
-        if kwargs.has_key('compiler_version'):
+        if 'compiler_version' in kwargs.keys():
             compiler_node.set('version', kwargs['compiler_version'])
 
         step_node.append(compiler_node)
 
-    if kwargs.has_key('library'):
-        library_node = Element(QName(_nsmap['prov'], 'library'), 
+    if 'library' in kwargs.keys():
+        library_node = Element(QName(_nsmap['prov'], 'library'),
                                 nsmap=_nsmap
                                 )
         library_node.text = kwargs['library']
 
-        if kwargs.has_key('library_version'):
+        if 'library_version' in kwargs.keys():
             library_node.set('version', kwargs['library_version'])
 
         step_node.append(library_node)
@@ -165,13 +165,13 @@ class Provenance(object):
             - platform_version
             - compiler
             - compiler_version
-        
+
         Examples
         --------
             >>> prov = {'program':'young',
-                        'timestamp':'2011-03-01T12:01:01.897987', 
-                        'user':'angus', 
-                        'machine':'war', 
+                        'timestamp':'2011-03-01T12:01:01.897987',
+                        'user':'angus',
+                        'machine':'war',
                         'platform':'linux',
                         }
             >>> element.provenance.set(prov)
@@ -197,7 +197,7 @@ class Provenance(object):
                     - user
 
             .. warning::
-                overwrite option doesn't work because of a bug with the 
+                overwrite option doesn't work because of a bug with the
                 allowDataDeletion flag in XNAT
 
             Parameters
@@ -215,21 +215,21 @@ class Provenance(object):
             process_steps = [process_steps]
 
         for process_step in process_steps:
-            _timestamp = time.strftime('%Y-%m-%dT%H:%M:%S', 
+            _timestamp = time.strftime('%Y-%m-%dT%H:%M:%S',
                                        time.localtime()
                                        )
-            
-            if not process_step.has_key('machine'):
+
+            if not 'machine' in process_step.keys():
                 process_step['machine'] = _machine
-            if not process_step.has_key('platform'):
+            if not 'platform' in process_step.keys():
                 process_step['platform'] = _platform_name
                 process_step['platform_version'] = _platform_version
-            if not process_step.has_key('timestamp'):
+            if not 'timestamp' in process_step.keys():
                 process_step['timestamp'] = _timestamp
-            if not process_step.has_key('user'):
+            if not 'user' in process_step.keys():
                 process_step['user'] = self._intf._user
 
-        doc = provenance_document(self._eobject, process_steps, overwrite)
+        doc = provenance_document(self._eobject, process_steps, overwrite).decode('utf-8')
 
         body, content_type = httputil.file_message(
             doc, 'text/xml', 'prov.xml', 'prov.xml')
@@ -239,8 +239,8 @@ class Provenance(object):
         if overwrite:
             prov_uri += '?allowDataDeletion=true'
 
-        self._intf._exec(prov_uri, 
-                         method='PUT', 
+        self._intf._exec(prov_uri,
+                         method='PUT',
                          body=body,
                          headers={'content-type':content_type}
                          )
@@ -257,7 +257,7 @@ class Provenance(object):
         columns = ['%s/ID' % datatype] + [
             '%s/provenance/processStep/%s' % (datatype, field)
             for field in _all
-            ]       
+            ]
 
         prov_uri = uri_parent(self._eobject._uri)
         prov_uri += '?columns='
@@ -302,9 +302,8 @@ class Provenance(object):
                 doc, 'text/xml', 'prov.xml', 'prov.xml')
 
             self._intf._exec(
-                '%s?allowDataDeletion=true' % self._eobject._uri, 
-                method='PUT', 
+                '%s?allowDataDeletion=true' % self._eobject._uri,
+                method='PUT',
                 body=body,
                 headers={'content-type':content_type}
                 )
-            

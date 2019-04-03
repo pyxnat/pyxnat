@@ -21,7 +21,7 @@ def parse_xnat_pass(lines):
     u = ('u',partial(find_token,'@'),True)
     host = ('host',partial(find_token,'='),True)
     p = ('p',partial(lambda x : (x,x)),True)
-    
+
     def update_state(x,k,state):
         state[k] = x
         return state
@@ -49,20 +49,21 @@ def chain(ops, initEnv, initState, update_statef):
             env = rest
             state = update_statef(v,k,state)
     return state
-        
+
 # [str] -> str | None
 def find_plus_line(lines):
-    plusLines = filter (lambda x: x.startswith('+'), lines)
-    if len(plusLines) == 0:
+    plusLines = list(filter (lambda x: x.startswith('+'), lines))
+
+    if not plusLines:
         return None
     else:
-        return plusLines[0][1:]
+        return ''.join(plusLines[0])[1:]
 
 # char -> str -> (str,str) | None
 def find_token(tok,line):
-    splitString = map(lambda x: x.strip(), line.split(tok))
-    if len(splitString) == 0 or len(splitString) == 1 or splitString[0] == '':
+    splitString = list(map(lambda x: x.strip(), line.split(tok)))
+    print([line, tok, splitString])
+    if splitString is None or len(splitString) == 0 or len(splitString) == 1 or splitString[0] == '':
         return None
     else:
         return (splitString[0],splitString[1])
-

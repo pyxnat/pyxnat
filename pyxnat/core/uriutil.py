@@ -21,8 +21,8 @@ def inv_translate_uri(uri):
     return uri
 
 def join_uri(uri, *segments):
-    return '/'.join(uri.split('/') + \
-                        [seg.lstrip('/') for seg in segments]).rstrip('/')
+    part1 = [seg.lstrip('/') for seg in segments]
+    return '/'.join(uri.split('/') + part1).rstrip('/')
 
 def uri_last(uri):
     # return uri.split(uri_parent(uri))[1].strip('/')
@@ -76,9 +76,10 @@ def uri_shape(uri):
 
         for char in re.findall('[a-zA-Z0-9]', seps):
             seps = seps.replace(char, '')
-
             chunks = []
-            for chunk in re.split('|'.join(seps), kwid_map[kw]):
+            p = '|'.join(seps)
+            s = re.split(p, kwid_map[kw]) if p != '' else kwid_map[kw]
+            for chunk in s:
                 try:
                     float(chunk)
                     chunk = '*'
@@ -99,7 +100,7 @@ def make_uri(_dict):
                 'out_resources', 'files', 'in_files', 'out_files']
 
     for kw in kws:
-        if _dict.has_key(kw):
+        if kw in _dict.keys():
             uri += '/%s/%s' % (kw, _dict.get(kw))
 
     return uri
@@ -142,4 +143,3 @@ def file_path(uri):
     raises ValueError (through .index()) if '/files/' is not in the URI
     """
     return uri[7+uri.index('/files/'):]
-

@@ -7,6 +7,11 @@ try:
     from StringIO import StringIO
 except ImportError:
     from io import StringIO
+try:
+    unicode
+except NameError:
+    unicode = str
+from six import string_types
 
 from lxml import etree
 import json
@@ -126,7 +131,7 @@ def build_search_document(root_element_name, columns, criteria_set,
 def build_criteria_set(container_node, criteria_set):
 
     for criteria in criteria_set:
-        if isinstance(criteria, basestring):
+        if isinstance(criteria, string_types):
             container_node.set('method', criteria)
 
         if isinstance(criteria, (list)):
@@ -428,9 +433,9 @@ class SearchManager(object):
             '%s/search/saved/%s/results?format=csv' % (self._intf._entry,
                                                        search_id), 'GET')
 
-        results = csv.reader(StringIO(content), delimiter=',', quotechar='"')
+        results = csv.reader(StringIO(content.decode('utf-8')), delimiter=',', quotechar='"')
 
-        headers = results.next()
+        headers = next(results)
 
         return JsonTable([dict(zip(headers, res))
                           for res in results
@@ -705,8 +710,8 @@ class Search(object):
         if is_xnat_error(content):
             catch_error(content)
 
-        results = csv.reader(StringIO(content), delimiter=',', quotechar='"')
-        headers = results.next()
+        results = csv.reader(StringIO(content.decode('utf-8')), delimiter=',', quotechar='"')
+        headers = next(results)
 
         headers_of_interest = []
 
@@ -729,4 +734,3 @@ class Search(object):
 
     def all(self):
         return self.where([(self._row + '/ID', 'LIKE', '%'), 'AND'])
-
