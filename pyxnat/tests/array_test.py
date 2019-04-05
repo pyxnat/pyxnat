@@ -8,7 +8,7 @@ class ArrayTests(unittest.TestCase):
     ''' Resource-related XNAT connectivity test cases '''
 
     def setUp(self):
-        self._interface = Interface(config='.xnat.cfg')
+        self._interface = Interface(config='.central.cfg')
 
     def test_array_experiments(self):
         '''
@@ -17,7 +17,7 @@ class ArrayTests(unittest.TestCase):
         them all.
         '''
 
-        e = self._interface.array.experiments(subject_id='BBRCDEV_S00245').data
+        e = self._interface.array.experiments(subject_id='CENTRAL_S06242').data
         self.assertGreaterEqual(len(e),3)
 
     def test_array_mrsessions(self):
@@ -27,8 +27,8 @@ class ArrayTests(unittest.TestCase):
         type 'xnat:mrSessionData'
         '''
 
-        mris = self._interface.array.mrsessions(subject_id='BBRCDEV_S00245').data
-        exps = self._interface.array.experiments(subject_id='BBRCDEV_S00245',
+        mris = self._interface.array.mrsessions(subject_id='CENTRAL_S06242').data
+        exps = self._interface.array.experiments(subject_id='CENTRAL_S06242',
                                                  experiment_type='xnat:mrSessionData'
                                                  ).data
         self.assertListEqual(mris,exps)
@@ -39,8 +39,8 @@ class ArrayTests(unittest.TestCase):
         of scans (i.e. PETScans and CTScans) and assert it gathers them all.
         '''
 
-        s = self._interface.array.scans(experiment_id='BBRCDEV_E00745').data
-        self.assertEqual(len(s),3)
+        s = self._interface.array.scans(experiment_id='CENTRAL_E72012').data
+        self.assertEqual(len(s),16)
 
     def test_array_mrscans(self):
         '''
@@ -49,8 +49,8 @@ class ArrayTests(unittest.TestCase):
         assert its length matches the list of scans filtered by type 'xnat:mrScanData'
         '''
 
-        mris = self._interface.array.mrscans(experiment_id='BBRCDEV_E00398').data
-        exps = self._interface.array.scans(experiment_id='BBRCDEV_E00398',
+        mris = self._interface.array.mrscans(experiment_id='CENTRAL_E72012').data
+        exps = self._interface.array.scans(experiment_id='CENTRAL_E72012',
                                            scan_type='xnat:mrScanData'
                                            ).data
         self.assertListEqual([i['xnat:mrscandata/id'] for i in mris],
