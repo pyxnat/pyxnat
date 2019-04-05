@@ -1,3 +1,14 @@
+.. image:: https://img.shields.io/travis/pyxnat/pyxnat.svg
+    :target: https://travis-ci.org/pyxnat/pyxnat
+.. image:: https://coveralls.io/repos/github/pyxnat/pyxnat/badge.svg?branch=master
+    :target: https://coveralls.io/github/pyxnat/pyxnat?branch=master
+.. image:: https://img.shields.io/pypi/dm/pyxnat.svg
+    :target: https://pypi.org/project/pyxnat/
+.. image:: https://img.shields.io/pypi/pyversions/pyxnat.svg
+    :target: https://pypi.org/project/pyxnat
+.. image:: https://img.shields.io/pypi/v/pyxnat.svg
+    :target: https://pypi.org/project/pyxnat
+
 The homepage of pyxnat with user documentation is located on:
 
 http://packages.python.org/pyxnat/
@@ -48,7 +59,7 @@ from the root of the project.
 Building the docs
 =========================
 
-To build the docs you need to have setuptools and sphinx (>=0.5) installed. 
+To build the docs you need to have setuptools and sphinx (>=0.5) installed.
 Run the command::
 
     python setup.py build_sphinx
@@ -91,15 +102,15 @@ pyxnat is **BSD-licenced** (3 clause):
     Redistribution and use in source and binary forms, with or without
     modification, are permitted provided that the following conditions are met:
 
-    * Redistributions of source code must retain the above copyright notice, 
+    * Redistributions of source code must retain the above copyright notice,
       this list of conditions and the following disclaimer.
 
     * Redistributions in binary form must reproduce the above copyright notice,
       this list of conditions and the following disclaimer in the documentation
       and/or other materials provided with the distribution.
 
-    * Neither the name of Yannick Schwartz. nor the names of other pyxnat 
-      contributors may be used to endorse or promote products derived from 
+    * Neither the name of Yannick Schwartz. nor the names of other pyxnat
+      contributors may be used to endorse or promote products derived from
       this software without specific prior written permission.
 
     **This software is provided by the copyright holders and contributors
@@ -114,6 +125,3 @@ pyxnat is **BSD-licenced** (3 clause):
     (including negligence or otherwise) arising in any way out of the use
     of this software, even if advised of the possibility of such
     damage.**
-
-
-
