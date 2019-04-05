@@ -1,12 +1,13 @@
 import os
+import os.path as op
 from uuid import uuid1
 import time
 
 from .. import Interface
 
-_modulepath = os.path.dirname(os.path.abspath(__file__))
+_modulepath = op.dirname(op.abspath(__file__))
 
-central = Interface(config=os.path.join(os.path.dirname(os.path.abspath(__file__)), 'central.cfg'))
+central = Interface(config=op.join(op.dirname(op.abspath(__file__)), 'central.cfg'))
 
 sid = uuid1().hex
 eid = uuid1().hex

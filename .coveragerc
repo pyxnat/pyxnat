@@ -4,3 +4,4 @@ omit =
   ./setupegg.py
   ./sphinx_pypi_upload.py
   ./doc/*
+  /home/travis/virtualenv/*
