@@ -1,9 +1,13 @@
 .. image:: https://img.shields.io/travis/pyxnat/pyxnat.svg
-    :target: https://gitlab.com/pyxnat/pyxnat/commits/master
-.. image:: https://gitlab.com/xgrg/pyxnat/badges/gitlab/coverage.svg
-    :target: https://gitlab.com/xgrg/pyxnat/commits/gitlab
+    :target: https://travis-ci.org/pyxnat/pyxnat
+.. image:: https://coveralls.io/repos/github/pyxnat/pyxnat/badge.svg?branch=master
+    :target: https://coveralls.io/github/pyxnat/pyxnat?branch=master
 .. image:: https://img.shields.io/pypi/dm/pyxnat.svg
     :target: https://pypi.org/project/pyxnat/
+.. image:: https://img.shields.io/pypi/pyversions/pyxnat.svg
+    :target: https://pypi.org/project/pyxnat
+.. image:: https://img.shields.io/pypi/v/pyxnat.svg
+    :target: https://pypi.org/project/pyxnat
 
 The homepage of pyxnat with user documentation is located on:
 

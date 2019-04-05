@@ -44,3 +44,6 @@ script:
     - python pyxnat/tests/setup_xnat.py
     - "nosetests pyxnat/tests --nologcapture --with-coverage --cover-inclusive --cover-erase --cover-package ."
     - "coverage report -m"
+
+after_success:
+  - coveralls
