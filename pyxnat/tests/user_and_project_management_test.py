@@ -39,18 +39,22 @@ def test_project_user_role():
 
 def test_add_remove_user():
     central.select.project('nosetests').add_user('nosetests3', 'collaborator')
+    print(central.select.project('nosetests').collaborators())
     assert 'nosetests3' in central.select.project('nosetests').collaborators()
     central.select.project('nosetests').remove_user('nosetests3')
+    print(central.select.project('nosetests').collaborators())
+
     assert 'nosetests3' not in central.select.project('nosetests'
                                                     ).collaborators()
 
 def test_project_accessibility():
     assert central.select.project('nosetests').accessibility() in \
-                                        ['public', 'protected', 'private']
+                                        [b'public', b'protected', b'private']
     central.select.project('nosetests').set_accessibility('private')
-    assert central.select.project('nosetests').accessibility() == 'private'
+    assert central.select.project('nosetests').accessibility() == b'private'
     central.select.project('nosetests').set_accessibility('protected')
-    assert central.select.project('nosetests').accessibility() == 'protected'
+    print(central.select.project('nosetests').accessibility())
+    assert central.select.project('nosetests').accessibility() == b'protected'
 
 def test_project_prearchive_code():
     pass

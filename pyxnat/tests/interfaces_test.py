@@ -1,5 +1,9 @@
 import os
 from .. import Interface
+try:
+    unicode
+except NameError:
+    unicode = str
 
 central = Interface(config=os.path.join(os.path.dirname(os.path.abspath(__file__)), 'central.cfg'))
 central_anon = Interface('https://central.xnat.org', anonymous=True)

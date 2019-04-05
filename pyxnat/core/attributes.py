@@ -1,5 +1,8 @@
 import difflib
-import urllib
+try:
+    from urllib.parse import quote
+except ImportError:
+    from urllib import quote
 
 from .jsonutil import JsonTable
 from .uriutil import uri_parent
@@ -75,9 +78,12 @@ class EAttrs(object):
                     standard representation for dates and times
                     established by the W3C.
         """
-        put_uri = self._eobj._uri + '?xsiType=%s&%s=%s' % (urllib.quote(self._get_datatype())
-                                                         , urllib.quote(path)
-                                                         , urllib.quote(value)
+        dt = self._get_datatype()
+        if dt is None:
+            dt = ''
+        put_uri = self._eobj._uri + '?xsiType=%s&%s=%s' % (quote(dt)
+                                                         , quote(path)
+                                                         , quote(value)
                                               )
 
         self._intf._exec(put_uri, 'PUT', **kwargs)
@@ -97,8 +103,8 @@ class EAttrs(object):
                 principles as the single `set()` method.
         """
 
-        query_str = '?xsiType=%s' % (urllib.quote(self._get_datatype())) + ''.join(['&%s=%s' % (urllib.quote(path),
-                                               urllib.quote(val)
+        query_str = '?xsiType=%s' % (quote(self._get_datatype())) + ''.join(['&%s=%s' % (quote(path),
+                                               quote(val)
                                                )
                                     for path, val in dict_attrs.items()
                                     ]
@@ -136,6 +142,7 @@ class EAttrs(object):
         header = difflib.get_close_matches(path.split('/')[-1],
                                            jdata.headers()
                                            )
+
         if header == []:
             header = difflib.get_close_matches(path, jdata.headers())[0]
         else:

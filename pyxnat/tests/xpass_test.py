@@ -30,4 +30,3 @@ def test_parse_xnat_pass():
     assert(xpass.parse_xnat_pass([lineWithoutUser]) == None)
     assert(xpass.parse_xnat_pass([lineWithoutHost]) == None)
     assert(xpass.parse_xnat_pass([lineWithoutPass]) == None)
-

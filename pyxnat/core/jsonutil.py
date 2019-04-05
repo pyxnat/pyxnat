@@ -4,9 +4,13 @@ from fnmatch import fnmatch
 try:
     from StringIO import StringIO
 except ImportError:
-    from io import StringIO
+    from io import StringIO, BytesIO
 
 import json
+try:
+    unicode
+except NameError:
+    unicode = str
 
 # jdata is a list of dicts
 
@@ -33,9 +37,9 @@ def get_column(jdata, col, val_pattern='*'):
         jdata = [jdata]
 
     if val_pattern == '*':
-        return [entry[col] for entry in jdata if entry.has_key(col)]
+        return [entry[col] for entry in jdata if col in entry]
     else:
-        return [entry[col] for entry in jdata 
+        return [entry[col] for entry in jdata
                 if fnmatch(entry.get(col), val_pattern)
                 ]
 
@@ -46,11 +50,11 @@ def get_where(jdata, *args, **kwargs):
     match = []
 
     for entry in jdata:
-        match_args = all([arg in entry.keys() or arg in entry.values() 
+        match_args = all([arg in entry.keys() or arg in entry.values()
                           for arg in args
                           ])
 
-        match_kwargs = all([entry[key] == kwargs[key] 
+        match_kwargs = all([entry[key] == kwargs[key]
                             for key in kwargs.keys()
                             ])
 
@@ -66,11 +70,11 @@ def get_where_not(jdata, *args, **kwargs):
     match = []
 
     for entry in jdata:
-        match_args = all([arg in entry.keys() or arg in entry.values() 
+        match_args = all([arg in entry.keys() or arg in entry.values()
                           for arg in args
                           ])
 
-        match_kwargs = all([entry[key] == kwargs[key] 
+        match_kwargs = all([entry[key] == kwargs[key]
                             for key in kwargs.keys()
                             ])
 
@@ -94,16 +98,26 @@ def get_selection(jdata, columns):
 
     for entry in sub_table:
         for col in rmcols:
-            if entry.has_key(col):
+            if col in entry.keys():
                 del entry[col]
 
     return sub_table
 
-def csv_to_json(csv_str):
-    csv_reader = csv.reader(StringIO(csv_str), delimiter=',', quotechar='"')
-    headers = csv_reader.next()
 
-    return [dict(zip(headers, entry)) for entry in csv_reader]
+def csv_to_json(csv_str):
+
+    import csv
+    import six
+    if six.PY2:
+        csv_reader = csv.reader(StringIO(csv_str), delimiter=',', quotechar='"')
+    elif six.PY3:
+        try:
+            csv_reader = csv.reader(StringIO(csv_str), delimiter=',', quotechar='"')
+        except TypeError:
+            csv_reader = csv.reader(StringIO(csv_str.decode('utf-8')), delimiter=',', quotechar='"')
+    headers = next(csv_reader)
+    ans = [dict(zip(headers, entry)) for entry in csv_reader]
+    return ans
 
 
 class JsonTable(object):
@@ -118,27 +132,27 @@ class JsonTable(object):
         #     return '[]'
         # elif len(self.data) == 1:
         #     return str(self.data[0])
-        
+
         if len(self.headers()) <= 5:
-            _headers = ','.join(self.headers())
+            _headers = ','.join(list(self.headers()))
         else:
-            _headers = '%s ... %s' % (','.join(self.headers()[:2]), 
-                                      ','.join(self.headers()[-2:])
+            _headers = '%s ... %s' % (','.join(list(self.headers())[:2]),
+                                      ','.join(list(self.headers())[-2:])
                                       )
 
         return '<JsonTable %s:%s> %s' % (
             len(self.data), len(self.headers()), _headers
             )
-    
+
         # return ('[%s\n .\n .\n . \n%s]\n\n'
         #         '------------\n'
         #         '%s rows\n'
         #         '%s columns\n'
-        #         '%s characters') % (str(self.data[0]), 
+        #         '%s characters') % (str(self.data[0]),
         #                             str(self.data[-1]),
-        #                             len(self), 
+        #                             len(self),
         #                             len(self.headers()),
-        #                             len(self.dumps_csv()) 
+        #                             len(self.dumps_csv())
         #                             )
 
     def __str__(self):
@@ -172,7 +186,7 @@ class JsonTable(object):
                 Other  jtables.
         """
         return self.__class__(
-            join_tables(join_column, self.data, 
+            join_tables(join_column, self.data,
                         *[jtable.data for jtable in jtables]),
             self.order_by
             )
@@ -209,7 +223,7 @@ class JsonTable(object):
 
     def where(self, *args, **kwargs):
         """ Filters the object.
-        
+
             Paramaters
             ----------
             args:
@@ -221,17 +235,17 @@ class JsonTable(object):
             -------
             A :class:`JsonTable` containing the matches.
         """
-        return self.__class__(get_where(self.data, *args, **kwargs), 
+        return self.__class__(get_where(self.data, *args, **kwargs),
                               self.order_by
                               )
 
     def where_not(self, *args, **kwargs):
         """ Filters the object. Conditions must not be matched.
-        
+
             Paramaters
             ----------
             args:
-                Value must not be matched in the key or the value of an 
+                Value must not be matched in the key or the value of an
                 entry.
             kwargs:
                 Value for a specific key must not be matched in an entry.
@@ -240,7 +254,7 @@ class JsonTable(object):
             -------
             A :class:`JsonTable` containing the not matches.
         """
-        return self.__class__(get_where_not(self.data, *args, **kwargs), 
+        return self.__class__(get_where_not(self.data, *args, **kwargs),
                               self.order_by
                               )
 
@@ -251,7 +265,7 @@ class JsonTable(object):
             -------
             A :class:`JsonTable` with the selected columns.
         """
-        return self.__class__(get_selection(self.data, columns), 
+        return self.__class__(get_selection(self.data, columns),
                               self.order_by
                               )
 
@@ -271,11 +285,11 @@ class JsonTable(object):
 
     def dumps_csv(self, delimiter=','):
         str_buffer = StringIO()
-        csv_writer = csv.writer(str_buffer, delimiter=delimiter, 
+        csv_writer = csv.writer(str_buffer, delimiter=delimiter,
                                 quotechar='"', quoting=csv.QUOTE_MINIMAL)
 
         for entry in self.as_list():
-            csv_writer.writerow(entry)
+            csv_writer.writerow(unicode(entry))
 
         return str_buffer.getvalue()
 
@@ -300,27 +314,26 @@ class JsonTable(object):
         for entry in self.data:
             row = []
             for header in self.order_by:
-                if entry.has_key(header):
+                if header in entry.keys():
                     row.append(entry.get(header))
             for header in self.headers():
                 if header not in self.order_by:
                     row.append(entry.get(header))
             table.append(row)
-        
+
         return table
 
     def items(self):
         table = []
-    
+
         for entry in self.data:
             row = ()
             for header in self.order_by:
-                if entry.has_key(header):
+                if header in entry.keys():
                     row += (entry.get(header), )
             for header in self.headers():
                 if header not in self.order_by:
                     row += (entry.get(header), )
             table.append(row)
-        
-        return table
 
+        return table

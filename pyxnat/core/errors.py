@@ -1,12 +1,22 @@
 import re
 
 from lxml import etree
+try:
+    unicode
+except NameError:
+    unicode = str
 
 # parsing functions
 
 
 def is_xnat_error(message):
-    return message.startswith('<!DOCTYPE') or message.startswith('<html>')
+    a = ['<!DOCTYPE', '<html>']
+    try:
+        return message.startswith(a[0]) or message.startswith(a[1])
+    except TypeError:
+        if isinstance(message, bytes):
+            a = [bytes(e, 'utf-8') for e in a]
+        return message.startswith(a[0]) or message.startswith(a[1])
 
 
 def parse_error_message(message):
