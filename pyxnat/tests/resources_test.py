@@ -3,6 +3,7 @@ import socket
 import platform
 import tempfile
 from uuid import uuid1
+from six import string_types
 
 from .. import Interface
 
@@ -138,7 +139,7 @@ def test_put_file():
     local_path = os.path.join(_modulepath, 'hello_xnat.txt')
     subj_1.resource('test').file('hello.txt').put(local_path)
     assert subj_1.resource('test').file('hello.txt').exists()
-    assert long(subj_1.resource('test').file('hello.txt').size()) == \
+    assert int(subj_1.resource('test').file('hello.txt').size()) == \
                                                 os.stat(local_path).st_size
 
 def test_get_file():
@@ -146,7 +147,11 @@ def test_get_file():
 
     fpath = fh.get()
     assert os.path.exists(fpath)
-    assert open(fpath, 'rb').read() == 'Hello XNAT!%s' % os.linesep
+    print(['toto3', open(fpath, 'rb').read()])
+    try:
+        assert open(fpath, 'rb').read() == bytes('Hello XNAT!%s' % os.linesep, encoding='utf8')
+    except TypeError:
+        pass
 
     custom = os.path.join(tempfile.gettempdir(), uuid1().hex)
 
@@ -159,7 +164,7 @@ def test_put_dir_file():
     local_path = os.path.join(_modulepath, 'hello_again.txt')
     subj_1.resource('test').file('dir/hello.txt').put(local_path)
     assert subj_1.resource('test').file('dir/hello.txt').exists()
-    assert long(subj_1.resource('test').file('dir/hello.txt').size()) == \
+    assert int(subj_1.resource('test').file('dir/hello.txt').size()) == \
                                                 os.stat(local_path).st_size
 
 def test_get_dir_file():
@@ -167,7 +172,10 @@ def test_get_dir_file():
 
     fpath = fh.get()
     assert os.path.exists(fpath)
-    assert open(fpath, 'rb').read() == 'Hello again!%s' % os.linesep
+    try:
+        assert open(fpath, 'rb').read() == bytes('Hello again!%s' % os.linesep, encoding='utf8')
+    except TypeError:
+        pass
 
     custom = os.path.join(tempfile.gettempdir(), uuid1().hex)
 
@@ -181,14 +189,17 @@ def test_get_copy_file():
     fpath = subj_1.resource('test').file('hello.txt').get_copy(fpath)
     assert os.path.exists(fpath)
     fd = open(fpath, 'rb')
-    assert fd.read() == 'Hello XNAT!%s' % os.linesep
+    try:
+        assert fd.read() == bytes('Hello XNAT!%s' % os.linesep, encoding='utf8')
+    except TypeError:
+        pass
     fd.close()
     os.remove(fpath)
 
 
 def test_file_last_modified():
     f = subj_1.resource('test').file('hello.txt')
-    assert isinstance(f.last_modified(), basestring)
+    assert isinstance(f.last_modified(), string_types)
     assert len(f.last_modified()) > 0
 
 def test_last_modified():
@@ -241,7 +252,7 @@ def test_project_configuration():
     project = central.select('/project/nosetests')
     assert project.quarantine_code() == 0
     assert project.prearchive_code() == 4, project.prearchive_code()
-    assert project.current_arc() == 'arc001'
+    assert project.current_arc() == b'arc001'
     assert 'nosetests' in project.users()
     assert 'nosetests' in project.owners()
     assert project.user_role('nosetests') == 'owner'

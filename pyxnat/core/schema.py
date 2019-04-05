@@ -1,4 +1,4 @@
-
+from six import string_types
 # REST collection resources tree
 resources_tree = {
     'projects'        :['subjects', 'resources'],
@@ -24,7 +24,7 @@ extra_resources_tree = {'projects':['assessors', 'scans', 'reconstructions'],
                         'subjects':['assessors', 'scans', 'reconstructions'],
                         }
 
-# REST <Python to URI> translation table 
+# REST <Python to URI> translation table
 rest_translation = {'in_resources':'in/resources',
                     'in_files':'in/files',
                     'out_resources':'out/resources',
@@ -70,20 +70,20 @@ def datatype_attributes(root, datatype):
         elements = []
 
         for child in node.iterchildren():
-            if isinstance(child.tag, basestring) \
+            if isinstance(child.tag, string_types) \
                 and child.tag.split('}')[1] == 'element':
                     elements.append('%s/%s'%(pathsofar, child.get('name')))
                     elements.extend(_iterchildren(child, '%s/%s'%
                                         (pathsofar, child.get('name')))
                                     )
 
-            elif isinstance(child.tag, basestring) \
+            elif isinstance(child.tag, string_types) \
                 and child.tag.split('}')[1] == 'attribute':
                     elements.append('%s/%s'%(pathsofar, child.get('name')))
 
-            elif isinstance(child.tag, basestring) \
+            elif isinstance(child.tag, string_types) \
                     and child.tag.split('}')[1] == 'extension':
-                
+
                 ct_xpath = "/xs:schema/xs:complexType[@name='%s']"% \
                     child.get('base').split(':')[1]
 
@@ -99,7 +99,7 @@ def datatype_attributes(root, datatype):
                             break
 
                     if not same:
-                        elements.extend(_iterchildren(complex_type, 
+                        elements.extend(_iterchildren(complex_type,
                                                       pathsofar)
                                         )
 
@@ -116,7 +116,7 @@ def datatype_attributes(root, datatype):
     attributes = []
 
     for complex_type in root.xpath(ct_xpath, namespaces=root.nsmap):
-        for child in complex_type.iterchildren():                
+        for child in complex_type.iterchildren():
             attributes.extend(_iterchildren(child, datatype))
 
     return attributes
@@ -125,7 +125,7 @@ def datatypes(root):
     nsmap = get_nsmap(root)
 
     return [element.get('type')
-            for element in root.xpath('/xs:schema/xs:element', 
+            for element in root.xpath('/xs:schema/xs:element',
                                       namespaces=nsmap)
             ]
 

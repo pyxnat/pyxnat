@@ -163,7 +163,7 @@ def group_paths(paths):
 
                 if alt_rsc[-1].strip('/') in \
                         ['files', 'file', 'resources', 'resource'] + \
-                        schema.rest_translation.keys():
+                        list(schema.rest_translation.keys()):
 
                     groups.setdefault(alt_rsc[-2] + alt_rsc[-1], set()
                                       ).add(alt_path)
@@ -370,4 +370,3 @@ class Select(object):
                 columns = self._intf.inspect.datatypes(datatype_or_path)
 
             return Search(datatype_or_path, columns, self._intf)
-
