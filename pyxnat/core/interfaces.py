@@ -555,11 +555,7 @@ class Interface(object):
         '''
         uri = '/data/JSESSION'
         response = self.delete(uri)
-
-        if response.status_code != requests.codes.ok:
-            raise XNATException('HTTP response: #%s%s%s' \
-                % (response.status_code, os.linesep, response.content))
-
+        response.raise_for_status()
         self._jsession = None
 
     def __exit__(self, type, value, traceback):
