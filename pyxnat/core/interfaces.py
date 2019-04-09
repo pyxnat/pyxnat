@@ -470,9 +470,8 @@ class Interface(object):
                 'no load_config() for anonymous interfaces')
 
         if os.path.exists(location):
-            fp = open(location, 'rb')
-            config = json.load(open(location))
-            fp.close()
+            with open(location, 'rb') as fp:
+                config = json.load(open(location))
 
             self._server = str(config['server'])
             self._user = str(config['user'])
