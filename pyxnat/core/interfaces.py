@@ -10,9 +10,10 @@ try:
     import socks
 except ImportError:
     socks = None
-try:
+import six
+if six.PY2:
     from urlparse import urlparse
-except ImportError:
+elif six.PY3:
     from urllib.parse import urlparse
 from .select import Select
 from .help import Inspector, GraphData, PaintGraph, _DRAW_GRAPHS
