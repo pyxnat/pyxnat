@@ -290,6 +290,5 @@ def test_get_zip():
         assert os.path.exists(f)
 
 def test_project_aliases():
-    project = central.select('/project/nosetests')
-    print(project.aliases())
+    project = central.select('/project/nosetests')    
     assert project.aliases() == ['nosetests2']

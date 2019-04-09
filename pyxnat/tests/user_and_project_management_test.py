@@ -40,11 +40,8 @@ def test_project_user_role():
 def test_add_remove_user():
     central.select.project('nosetests').remove_user('admin')
     central.select.project('nosetests').add_user('admin', 'collaborator')
-    print(central.select.project('nosetests').collaborators())
     assert 'admin' in central.select.project('nosetests').collaborators()
     central.select.project('nosetests').remove_user('admin')
-    print(central.select.project('nosetests').collaborators())
-
     assert 'admin' not in central.select.project('nosetests'
                                                     ).collaborators()
     central.select.project('nosetests').add_user('admin', 'owner')
