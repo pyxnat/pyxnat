@@ -13,18 +13,17 @@ import urllib
 import codecs
 from fnmatch import fnmatch
 from itertools import islice
-try:
+import six
+from six import string_types, add_metaclass
+if six.PY2:
     from urllib import quote, unquote  # Python 2.X
-except ImportError:
+elif six.PY3:
     from urllib.parse import quote, unquote
-try:
-    unicode
-except NameError:
     unicode = str
 
 import json
 from lxml import etree
-from six import string_types, add_metaclass
+
 
 
 from .uriutil import join_uri, translate_uri, uri_segment
