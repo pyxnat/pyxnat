@@ -471,7 +471,7 @@ class Interface(object):
 
         if os.path.exists(location):
             with open(location, 'rb') as fp:
-                config = json.load(open(location))
+                config = json.load(fp)
 
             self._server = str(config['server'])
             self._user = str(config['user'])
