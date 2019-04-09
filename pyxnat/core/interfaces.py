@@ -11,6 +11,7 @@ try:
 except ImportError:
     socks = None
 import six
+
 if six.PY2:
     from urlparse import urlparse
 elif six.PY3:

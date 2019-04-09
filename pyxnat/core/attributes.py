@@ -1,8 +1,8 @@
 import difflib
 import six
-if six.PY2:
+if six.PY3:
     from urllib.parse import quote
-elif six.PY3:
+elif six.PY2:
     from urllib import quote
 
 from .jsonutil import JsonTable
