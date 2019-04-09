@@ -1,9 +1,8 @@
 import re
 
 from lxml import etree
-try:
-    unicode
-except NameError:
+import six
+if six.PY3:
     unicode = str
 
 # parsing functions

@@ -1,7 +1,8 @@
 import difflib
-try:
+import six
+if six.PY2:
     from urllib.parse import quote
-except ImportError:
+elif six.PY3:
     from urllib import quote
 
 from .jsonutil import JsonTable

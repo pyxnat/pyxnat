@@ -1,16 +1,14 @@
 import csv
 import copy
 from fnmatch import fnmatch
-try:
-    from StringIO import StringIO
-except ImportError:
-    from io import StringIO, BytesIO
-
 import json
-try:
-    unicode
-except NameError:
+
+import six
+if six.PY2:
+    from StringIO import StringIO
+elif six.PY3:
     unicode = str
+    from io import StringIO, BytesIO
 
 # jdata is a list of dicts
 
