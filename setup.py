@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 from distutils.core import setup
-import sys,os
+import sys, os
 
 # For some commands, use setuptools
 if len(set(['develop', 'sdist', 'release', 'bdist_egg', 'bdist_rpm', 'bdist',
@@ -42,16 +42,8 @@ setup(name='pyxnat',
       author_email='yannick.schwartz@cea.fr',
       url='http://packages.python.org/pyxnat/',
       packages=['pyxnat'],
-      package_data={'pyxnat': ['externals/*.py',
-                               'externals/httplib2/*.py',
-                               'externals/simplejson/*.py',
-                               'tests/*.py',
-                               'tests/*.txt',
-                               'tests/*.csv',
-                               'core/*.py',
-                               '*.py'],
-                    },
-      description="""Xnat in Python""",
+      package_data={'pyxnat': ['core/*.py', '*.py'], },
+      description="""XNAT in Python""",
       long_description=LONG_DESCRIPTION,
       license='BSD',
       classifiers=[
@@ -68,7 +60,6 @@ setup(name='pyxnat',
           'Topic :: Internet :: WWW/HTTP',
       ],
 
-      platforms='any', 
-      requires=['requests'],
-      install_requires=['requests', 'lxml', 'requests[security]'],
+      platforms='any',
+      install_requires=['lxml>=4.3', 'requests>=2.20', 'requests[security]'],
       **extra_setuptools_args)
