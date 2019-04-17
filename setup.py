@@ -15,8 +15,15 @@ if not 'extra_setuptools_args' in globals():
     extra_setuptools_args = dict()
 
 def get_version():
-    from pyxnat import version
-    return version.VERSION
+    try:
+        import re
+        import os.path as op
+        fp = op.join(op.dirname(__file__), 'pyxnat', 'version.py')
+        s = re.search(r'{}\s*=\s*[\'"]([^\'"]*)[\'"]'.format('VERSION'),
+            open(fp).read())
+        return s.group(1)
+    except:
+        raise RuntimeError("No version found")
 
 LONG_DESCRIPTION = """
 PyXNAT
