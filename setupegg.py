@@ -66,9 +66,7 @@ class GenerateHelp(Command):
         ]
  
     def run(self):
-        os.system('%s doc/sphinxext/autosummary_generate.py -o doc/generated/ doc/*.rst'
-                  % sys.executable)
-
+        os.system('sphinx-autogen -o doc/generated/ doc/*.rst')
 
     def initialize_options(self):
         pass
