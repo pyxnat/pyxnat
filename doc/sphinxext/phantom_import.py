@@ -14,7 +14,9 @@ without needing to rebuild the documented module.
 .. [1] http://code.google.com/p/pydocweb
 
 """
-import imp, sys, compiler, types, os, inspect, re
+from __future__ import division, absolute_import, print_function
+
+import imp, sys, types, os, inspect, re
 
 def setup(app):
     app.connect('builder-inited', initialize)
@@ -23,7 +25,7 @@ def setup(app):
 def initialize(app):
     fn = app.config.phantom_import_file
     if (fn and os.path.isfile(fn)):
-        print "[numpydoc] Phantom importing modules from", fn, "..."
+        print("[numpydoc] Phantom importing modules from", fn, "...")
         import_phantom_module(fn)
 
 #------------------------------------------------------------------------------
@@ -46,7 +48,7 @@ def import_phantom_module(xml_file):
     ----------
     xml_file : str
         Name of an XML file to read
-    
+
     """
     import lxml.etree as etree
 
@@ -59,7 +61,7 @@ def import_phantom_module(xml_file):
     # - Base classes come before classes inherited from them
     # - Modules come before their contents
     all_nodes = dict([(n.attrib['id'], n) for n in root])
-    
+
     def _get_bases(node, recurse=False):
         bases = [x.attrib['ref'] for x in node.findall('base')]
         if recurse:
@@ -74,7 +76,7 @@ def import_phantom_module(xml_file):
         return bases
 
     type_index = ['module', 'class', 'callable', 'object']
-    
+
     def base_cmp(a, b):
         x = cmp(type_index.index(a.tag), type_index.index(b.tag))
         if x != 0: return x
@@ -86,7 +88,7 @@ def import_phantom_module(xml_file):
             if x != 0: return x
             if a.attrib['id'] in b_bases: return -1
             if b.attrib['id'] in a_bases: return 1
-        
+
         return cmp(a.attrib['id'].count('.'), b.attrib['id'].count('.'))
 
     nodes = root.getchildren()
@@ -129,7 +131,10 @@ def import_phantom_module(xml_file):
                 doc = "%s%s\n\n%s" % (funcname, argspec, doc)
             obj = lambda: 0
             obj.__argspec_is_invalid_ = True
-            obj.func_name = funcname
+            if sys.version_info[0] >= 3:
+                obj.__name__ = funcname
+            else:
+                obj.func_name = funcname
             obj.__name__ = name
             obj.__doc__ = doc
             if inspect.isclass(object_cache[parent]):
