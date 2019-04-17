@@ -33,7 +33,7 @@ extensions = [ 'sphinx.ext.autodoc',
                'sphinx.ext.imgmath',
                'numpydoc',
                'phantom_import',
-               'autosummary',
+               'sphinx.ext.autosummary',
                'sphinx.ext.coverage'
              ]
 
@@ -50,8 +50,8 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 # General information about the project.
-project = u'pyxnat'
-copyright = u'2010, Yannick Schwartz'
+project = 'pyxnat'
+copyright = '2010, Yannick Schwartz'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -181,8 +181,8 @@ htmlhelp_basename = 'pyxnatdoc'
 # Grouping the document tree into LaTeX files. List of tuples
 # (source start file, target name, title, author, document class [howto/manual]).
 latex_documents = [
-  ('index', 'pyxnat.tex', ur'pyxnat Documentation',
-   ur'Yannick Schwartz', 'manual'),
+  ('index', 'pyxnat.tex', r'pyxnat Documentation',
+   r'Yannick Schwartz', 'manual'),
 ]
 
 # The name of an image file (relative to this directory) to place at the top of
