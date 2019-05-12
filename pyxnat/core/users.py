@@ -6,8 +6,8 @@ class Users(object):
         on users registered on a server.
 
         .. note::
-        
-            At the moment user creation and deletion is not supported through 
+
+            At the moment user creation and deletion is not supported through
             the REST API but it will be at some point.
 
         Examples
@@ -19,13 +19,13 @@ class Users(object):
 
         See Also
         --------
-        Project.users()
-        Project.add_user()
-        Project.remove_user()
+        :func:`Project.users`
+        :func:`Project.add_user`
+        :func:`Project.remove_user`
     """
 
     def __init__(self, interface):
-        """ 
+        """
             Parameters
             ----------
             interface: :class:`Interface`

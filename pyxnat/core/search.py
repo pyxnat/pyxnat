@@ -365,7 +365,7 @@ class SearchManager(object):
 
             See Also
             --------
-            Search.where
+            :func:`Search.where`
         """
         self._save_search(row, columns, constraints,
                           name, description, sharing)

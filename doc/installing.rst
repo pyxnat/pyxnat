@@ -1,87 +1,41 @@
-Installing pyxnat
-===================
+Installation
+============
 
 
-Platforms
----------
+Python version support
+----------------------
 
-OS Independent.
+Officially Python 2.7, 3.6, and 3.7.
 
-It was tested under:
-    - Ubuntu 10.04 with python 2.6
-    - Ubuntu 11.04 with python 2.7
-    - Debian Squeeze with python 2.6
-    - Windows XP with python 2.7
-    - Mac OS X untested but should work with python >= 2.6
+
+Installing from PyPI
+--------------------
+
+:mod:`pyxnat` can be installed via pip from
+`PyPI <https://pypi.org/project/pyxnat>`__.
+
+::
+
+    pip install pyxnat
 
 Prerequisites
 -------------
 
-- *python* v2.6+
+- *python* v2.7+
+- `*requests* <https://2.python-requests.org/en/master/>` v2.20
+- `*python-lxml* <https://lxml.de/>` v4.3.2+ recommended, earlier versions may work.
 
-- *python-lxml* v1.3.6+ recommanded, earlier versions may work:
-  Lxml may be installed using standard Python distribution tools, here are the 
-  recommanded ones. For more details on installing procedures please see the 
-  sections following this one.
+For development purposes:
 
-        #. easy_install: lxml may be installed via easy_install under 
-           Unix and Windows
+- *python-nose* v1.2.1+ to run the unit tests
+- *coverage* v3.6+
+- *numpydoc* to build documentation
 
-        #. Windows only: installers are provided 
-	   `here <http://pypi.python.org/pypi/lxml/2.2.8>`_, select the .exe for
-	   your python version and install.
-
-	#. Most linux distributions provide a package for lxml. e.g. for debian
-	   or debian-based distributions:
-
-	   .. code-block:: none
-	   
-	      apt-get install python-lxml
-
-        #. Mac OS X: a macport of lxml is available, see lxml site for further information. 
-                     Alternatively, you can compile the package from sources by following 
-                     the instructions. If the recommanded command on the site fails:
-
-		     .. code-block:: none
-
-                        python setup.py build --static-deps
-
-                     Try forcing an older version of libxml2:
-
-		     .. code-block:: none
-
-                        python setup.py build --static-deps --libxml2-version=2.7.3
-
-                     Do not forget to add lxml to your PYTHONPATH afterwards.
-
-- python-httplib2 v0.6+, a version above 0.7 is however recommanded:
-
-  #. On all platforms:
-
-     .. code-block:: none
-
-		     easy_install httplib2
-
-  #. Or with the packaging system on linux e.g. for debian:
-
-     .. code-block:: none
-
-		     apt-get install python-httplib2
-
-- *SocksiPy-branch* not required, v1.02 recommended, earlier versions may work:
-  This library is required only if you want to run pyxnat through a proxy. The
-  original *SocksiPy* dependency for *httplib2* is abandoned and unavailable
-  on PyPi, but seems to work. *SocksiPy-branch* is available on PyPi.
-
-- *python-nose* v0.10+ to run the unit tests
-
-- *networkx* and *matplotlib* are not mandatory:
-    These libraries are used to make some graphical representations.
 
 The `easy_install` way
 -----------------------
 
-The easiest way to install pyxnat is (provided that you have `setuptools`
+The easiest way to install :mod:`pyxnat` is (provided that you have `setuptools`
 installed) to run::
 
     easy_install pyxnat
@@ -103,14 +57,14 @@ managed by the system:
 The manual way
 ---------------
 
-To install pyxnat first download the latest tarball (follow the link on
+To install :mod:`pyxnat` first download the latest tarball (follow the link on
 the bottom of http://pypi.python.org/pypi/pyxnat) and expand it.
 
 Installing in a local environment
 ..................................
 
 If you don't need to install for all users, we strongly suggest that you
-create a local environment and install `pyxnat` in it. One of the pros of
+create a local environment and install :mod:`pyxnat` in it. One of the pros of
 this method is that you never have to become administrator, and thus all
 the changes are local to your account and easy to clean up.
 
@@ -131,7 +85,7 @@ the changes are local to your account and easy to clean up.
 
     #. In the directory created by expanding the `pyxnat` tarball, run the
        following command::
-    
+
 	python setup.py install --prefix ~/usr
 
        You should not be required to become administrator, if you have
@@ -156,5 +110,3 @@ Testing
 .......
 
 Go in the directory 'pyxnat/tests' and run the `nosetests` command.
-
-

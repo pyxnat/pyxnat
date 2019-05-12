@@ -1,6 +1,29 @@
 Latest changes
 ===============
 
+Release 1.1.0.0
+---------------
+
+    * New Features
+
+      - Python 3 compatibility
+
+    * Improvements
+
+       - Get aliases from a project
+       - CI tests may now (partially) run within a Docker container
+       - `ArrayData` class makes no more assumption on data type and use
+       broader/generic types (avoids missing results from other types)
+       - Specific methods added for MRSessions and MRScans
+       - Added certification verification to configuration file
+       - Added test coverage
+
+    * Bug fixes
+
+       - CI tests run again (partially)
+       - Fixed vulnerability (upgraded `requests` package version)
+       - Replaced '\n' newline chars by an OS-agnostic alternative
+
 Release 1.0.1.0
 ---------------
 
@@ -9,7 +32,7 @@ Release 1.0.1.0
     * Improvements
         - Pass keyword arguments on some put/create methods, to allow passing event_reason.
 
-    * Bug fixes:
+    * Bug fixes
         - Minor docs inconsistencies that generated sphinx warnings
         - Clean up deprecated references in sphinx autogenerate extension
         - Remove deprecated sphinx plugin pngmath in favor of imgmath
@@ -27,7 +50,7 @@ Release 1.0.0.0
         - streaming file download
         - Use the requests library instead of httplib2 for REST calls
 
-    * Bug fixes:
+    * Bug fixes
         - Removed custom httplib2 caching.
 
 Release 0.9.5.2
@@ -37,7 +60,7 @@ Release 0.9.5.2
 
     * Improvements
 
-    * Bug fixes:
+    * Bug fixes
         - Ticket #50 404 error causes connection to be broken until end of object life.
         - Tiekct #52 fix zip file downloading.
 
@@ -52,7 +75,7 @@ Release 0.9.5
         - Add toggle for overwriting files on the Resources object (put, put_dir, put_zip)
         - Add toggle for not extracting the zip file on the Resources object (put, put_dir, put_zip)
 
-    * Bug fixes:
+    * Bug fixes
         - fix proxy support
         - mset attributes fixed
         - fixed url separator issue on windows.
@@ -66,7 +89,7 @@ Release 0.9.4
 
     * Impovements
 
-    * Bug fixes:
+    * Bug fixes
         - python <2.7 compatability.
         - project.parent() does not throw error.
         - removed simplejson requirement
@@ -77,7 +100,7 @@ Release 0.9.4
 Release 0.9.0
 -------------
 
-    * New features:
+    * New features
         - Global listing functions:
             - interface.array.experiments()
 	    - interface.array.search_experiments()
@@ -89,12 +112,12 @@ Release 0.9.0
         - New xpath function for EObjects
         - xpath store facility to query cached subject XMLs with xpath
 
-    * Improvements:
+    * Improvements
         - Catching authentication errors
         - Toggle option for cache warnings
         - Description for search templates is displayed
 
-    * Bug fixes:
+    * Bug fixes
         - Config file
 
 Release 0.8.0
@@ -102,17 +125,17 @@ Release 0.8.0
 
     * Compatible with XNAT 1.5
 
-    * New features:
+    * New features
         - provenance annotation on assessors and recontructions
 	- search templates
 	- callback system to monitor data streams to and from the server
 
-    * Improvements:
+    * Improvements
         - support for proxies in the Interface object
 	- a description can be added when a search is saved on the server
 	- python strings can be uploaded and saved just like files
 
-    * Bug fixes including:
+    * Bug fixes including
         - improved unicode support for uploaded files
 	- solved cache issue on Windows
 	- a major bug in the Collection.where method

@@ -296,9 +296,9 @@ class EObject(object):
 
             See Also
             --------
-            EObject.id
-            EObject.label
-            EObject.datatype
+            :func:`EObject.id`
+            :func:`EObject.label`
+            :func:`EObject.datatype`
         """
         if 'xml' in params and os.path.exists(params.get('xml')):
 
@@ -906,7 +906,7 @@ class CObject(object):
 
             See Also
             --------
-            search.Search()
+            :func:`search.Search`
         """
 
         if isinstance(constraints, (str, unicode)):
