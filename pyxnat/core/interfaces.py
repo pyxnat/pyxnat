@@ -445,8 +445,10 @@ class Interface(object):
         config = {'server': self._server,
                   'user': self._user,
                   'password': self._pwd,
-                  'verify': self._verify
                   }
+        if self._verify:
+            config['verify'] = self._verify
+
         if self._proxy_url:
             config['proxy'] = self._proxy_url.geturl()
 
