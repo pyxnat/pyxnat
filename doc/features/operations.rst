@@ -21,7 +21,7 @@ deletion and existence checking.
     >>> subject.exists()
     False
 
-.. note:: previous versions of **pyxnat** documentation mentionned 
+.. note:: previous versions of **pyxnat** documentation mentionned
    :func:`~pyxnat.EObject.create` instead of :func:`~pyxnat.EObject.insert`
    to create new resources. :func:`~pyxnat.EObject.create` still exists and
    will probably never be deprecated.
@@ -29,7 +29,7 @@ deletion and existence checking.
 Custom datatypes
 ~~~~~~~~~~~~~~~~
 
-REST resources are given a default type when they are created but it's
+REST resources are given a default type when they are created but it is
 possible to customize it with a type defined in the XNAT XML Schema(s).
 
 .. code-block:: python
@@ -50,12 +50,12 @@ parent resources first. For example:
     False
     >>> experiment = subject.experiment('EXP')
     >>> experiment.exists()
-    False    
+    False
     >>> experiment.insert()
     >>> subject.exists()
     True
     >>> experiment.exists()
-    True    
+    True
 
 Specifiy the datatype on multiple elements in a single statement:
 
@@ -78,18 +78,18 @@ Custom ID example:
 
 .. code-block:: python
 
-    >>> experiment.insert(experiments='xnat:mrSessionData', 
+    >>> experiment.insert(experiments='xnat:mrSessionData',
                           ID='my_custom_ID'
-                          ) 
+                          )
 
 With additional fields:
 
 .. code-block:: python
 
-    >>> experiment.inert(**{'experiments':'xnat:mrSessionData', 
-                            'ID':'mr_custom_ID', 
+    >>> experiment.insert(**{'experiments':'xnat:mrSessionData',
+                            'ID':'mr_custom_ID',
 			    'xnat:mrSessionData/age':'42'}
-			 ) 
+			 )
 
 .. warning:: When using xpath syntax to declare fields, it is
    mandatory to pass the arguments using a dictionnary because of
@@ -104,11 +104,10 @@ you could have specified:
 .. code-block:: python
 
     >>> experiment.insert(
-    ...		**{'experiments':'xnat:mrSessionData', 
+    ...		**{'experiments':'xnat:mrSessionData',
     ...            'ID':'mr_custom_ID',
-    ...            'xnat:mrSessionData/age':'42', 
-    ...            'xnat:subjectData/investigator/lastname':'doe', 
+    ...            'xnat:mrSessionData/age':'42',
+    ...            'xnat:subjectData/investigator/lastname':'doe',
     ...	           'xnat:subjectData/investigator/firstname':'john',
     ...	           'xnat:subjectData/ID':'subj_custom_ID'
     ...		  })
-

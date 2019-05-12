@@ -8,12 +8,12 @@ pyxnat: XNAT in Python
 Overview
 --------
 
-**pyxnat** is a Python library to communicate with 
-`XNAT <http://www.xnat.org>`_ which is an extensible database system
-for imaging and related data. pyxnat uses the RESTful Web Services
-provided by XNAT and aims to ease communications with an XNAT server
-to plug-in external tools or python scripts by exposing a simple and
-consistent API.
+:mod:`pyxnat` is an open source, BSD-licenced library providing a programmatic
+interface with `XNAT <http://www.xnat.org>`_ which is an extensible management system
+for imaging data (and related). :mod:`pyxnat` uses the RESTful Web services
+provided by XNAT and allows easier interaction with an XNAT server through a
+simple and consistent API using the `Python <https://www.python.org/>`_
+programming language.
 
 :doc:`installing`
 	Instructions on how to get the distribution.
@@ -74,7 +74,7 @@ Short examples
 .. code-block:: python
 
    >>> table = interface.select(
-       	       'xnat:subjectData', 
+       	       'xnat:subjectData',
 	       ['xnat:subjectData/PROJECT', 'xnat:subjectData/SUBJECT_ID']
 	       ).where([('xnat:subjectData/SUBJECT_ID','LIKE','%'),
                         ('xnat:subjectData/PROJECT', '=', 'my_project'),
@@ -87,7 +87,7 @@ Module contents
 
 .. currentmodule :: pyxnat
 
-.. autosummary:: 
+.. autosummary::
    :toctree: generated/
 
     Interface

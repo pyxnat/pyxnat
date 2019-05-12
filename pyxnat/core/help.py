@@ -57,7 +57,7 @@ class Inspector(object):
 
             See Also
             --------
-            EObject.insert()
+            :func:`EObject.insert`
         """
         if auto is not None:
             self._auto = auto
@@ -118,7 +118,7 @@ class Inspector(object):
 
             See Also
             --------
-            Inspector.set_autolearn()
+            :func:`Inspector.set_autolearn`
         """
         return self._resource_types('experiment')
 
@@ -128,7 +128,7 @@ class Inspector(object):
 
             See Also
             --------
-            Inspector.set_autolearn()
+            :func:`Inspector.set_autolearn`
         """
         return self._resource_types('assessor')
 
@@ -138,7 +138,7 @@ class Inspector(object):
 
             See Also
             --------
-            Inspector.set_autolearn()
+            :func:`Inspector.set_autolearn`
         """
         return self._resource_types('reconstruction')
 
@@ -148,7 +148,7 @@ class Inspector(object):
 
             See Also
             --------
-            Inspector.set_autolearn()
+            :func:`Inspector.set_autolearn`
         """
         return self._resource_types('scan')
 

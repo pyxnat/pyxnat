@@ -27,6 +27,7 @@ def get_version():
         raise RuntimeError("No version found")
 
 sys.path.append(os.path.abspath('./sphinxext'))
+sys.path.append(os.path.abspath('..'))
 
 # If your extensions (or modules documented by autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
@@ -116,7 +117,7 @@ pygments_style = 'sphinx'
 
 # The theme to use for HTML and HTML Help pages.  Major themes that come with
 # Sphinx are currently 'default' and 'sphinxdoc'.
-html_theme = 'nature'
+html_theme = 'bizstyle'
 
 # The name for this set of Sphinx documents.  If None, it defaults to
 # "<project> v<release> documentation".

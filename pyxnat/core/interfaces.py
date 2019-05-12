@@ -37,7 +37,7 @@ DEBUG = False
 
 # main entry point
 class Interface(object):
-    """ Main entry point to access a XNAT server.
+    """ Main entry point to access an XNAT server.
 
         >>> central = Interface(server='http://central.xnat.org:8080',
                                 user='login',
@@ -86,11 +86,9 @@ class Interface(object):
             Parameters
             ----------
             server: string | None
-                The server full URL (including port and XNAT instance name
+                The server's full URL (including port and XNAT instance name
                 if necessary) e.g. http://central.xnat.org,
                 http://localhost:8080/xnat_db
-                Or a path to an existing config file. In that case the other
-                parameters (user etc..) are ignored if given.
                 If None the user will be prompted for it.
             user: string | None
                 A valid login registered through the XNAT web interface.
@@ -98,7 +96,7 @@ class Interface(object):
             password: string | None
                 The user's password.
                 If None the user will be prompted for it.
-            cachedir: string  (Depricated)
+            cachedir: string  (Deprecated)
 
             config: string
                 Reads a config file in json to get the connection parameters.
