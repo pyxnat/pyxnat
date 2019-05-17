@@ -473,8 +473,9 @@ class Interface(object):
                 'no load_config() for anonymous interfaces')
 
         if os.path.exists(location):
-            with open(location, 'rb') as fp:
-                config = json.load(fp)
+            fp = open(location, 'rb')
+            config = json.load(fp)
+            fp.close()
 
             self._server = str(config['server'])
             self._user = str(config['user'])
@@ -500,7 +501,8 @@ class Interface(object):
             Tell XNAT to disconnect this session
         """
         self._exec('/data/JSESSION', method='DELETE')
-        pass
+        self._http.close()
+
 
     def get(self, uri, **kwargs):
         '''
@@ -564,3 +566,4 @@ class Interface(object):
 
         if self._jsession:
             self.close_jsession()
+        self._http.close()
