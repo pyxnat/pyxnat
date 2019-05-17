@@ -441,7 +441,6 @@ class Interface(object):
         if not os.path.exists(os.path.dirname(location)):
             os.makedirs(os.path.dirname(location))
 
-        fp = open(location, 'w')
         config = {'server': self._server,
                   'user': self._user,
                   'password': self._pwd,
@@ -452,8 +451,9 @@ class Interface(object):
         if self._proxy_url:
             config['proxy'] = self._proxy_url.geturl()
 
-        json.dump(config, fp)
-        fp.close()
+        with open(location, 'w') as fp:
+            json.dump(config, fp)
+
 
     def load_config(self, location):
         """ Loads a configuration file and replaces current connection
@@ -473,9 +473,9 @@ class Interface(object):
                 'no load_config() for anonymous interfaces')
 
         if os.path.exists(location):
-            fp = open(location, 'rb')
-            config = json.load(fp)
-            fp.close()
+            with open(location, 'rb') as fp:
+                config = json.load(fp)
+
 
             self._server = str(config['server'])
             self._user = str(config['user'])
