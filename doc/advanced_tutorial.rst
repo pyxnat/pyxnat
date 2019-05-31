@@ -1,11 +1,13 @@
+.. module:: pyxnat
+
 ==============================
 Advanced Tutorial
 ==============================
 
 .. currentmodule:: pyxnat
 
-This advanced tutorial is not much more complicated than the starters
-one. It just goes over parts of the API that may be less used (not
+This advanced tutorial is not much more complicated than the one for beginners.
+It only reviews parts of the API that may be less used (not
 that they are less useful!) and that are more likely to change in
 future releases.
 
@@ -63,7 +65,7 @@ To known what values fields can take in the database::
 REST hierarchy
 ~~~~~~~~~~~~~~
 
-pyxnat does not support all the REST resources. The reasons for this
+:mod:`pyxnat` does not support all the REST resources. The reasons for this
 is that, some of these resources are still experimental, or do not
 work exactly the same way which would make it difficult to provide a
 consistent interface at the Python level. However support for these
@@ -202,7 +204,7 @@ Almost the same interface is available for collection objects::
 Search templates
 ----------------
 
-PyXNAT is also able to define templates to use with XNAT search engine.
+:mod:`pyxnat` is also able to define templates to use with XNAT search engine.
 They work basically the same way as usual searches but instead of defining
 values to filter the data, one need to define keywords to replace them later
 with the actual values::
@@ -236,8 +238,8 @@ with the actual values::
 					      )
 		                    )
 
-And now it is also possible to re-use saved searches in the where clause in the
-same way as the templates. It means that you re-use the contraints but not the
+And now it is also possible to reuse saved searches in the where clause in the
+same way as the templates. It means that you reuse the constraints but not the
 data selection which still changes:
 
      >>> interface.select(...).where(query='saved_name')
@@ -245,9 +247,9 @@ data selection which still changes:
 Provenance definition
 ---------------------
 
-PyXNAT 0.8 introduces a way to store provenance i.e. to describe the steps
+:mod:`pyxnat` 0.8 introduces a way to store provenance i.e. to describe the steps
 that were performed on an initial data to produce this one. Reconstructions
-and assessors only can be annotated with provenace information:
+and assessors only can be annotated with provenance information:
 
     >>> prov = {'program':'young',
                 'timestamp':'2011-03-01T12:01:01.897987',
@@ -259,8 +261,9 @@ and assessors only can be annotated with provenace information:
     >>> element.provenance.get()
     >>> element.dettach()
 
-The provenance attach method adds new steps with each call, unless the overwrite
-parameter is set to True. The following keywords for the provenance dictionnay are available:
+The provenance :meth:`Provenance.attach` method adds new steps with each call, unless the `overwrite`
+parameter is set to `True`. The following keywords for the provenance dictionary
+are available:
 
     - program
     - program_version

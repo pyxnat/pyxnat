@@ -41,8 +41,7 @@ class Interface(object):
 
         >>> central = Interface(server='http://central.xnat.org:8080',
                                 user='login',
-                                password='pwd',
-                                cachedir='/tmp')
+                                password='pwd')
 
         Or with config file:
 
@@ -53,9 +52,15 @@ class Interface(object):
         >>> central = Interface('http://central.xnat.org')
 
         .. note::
-            The interactive mode is activated whenever an argument within
-            server, user or password is missing. In interactive mode pyxnat
-            tries to check the validity of the connection parameters.
+            The interactive mode is triggered whenever an argument (between
+            server, user or password) is missing. In interactive mode pyxnat
+            will check that connection settings are valid.
+
+        .. note::
+            Proxy support requires the socks module be installed. This can be
+            installed via pip::
+
+            pip install SocksiPy-branch
 
         Or anonymously (unauthenticated):
 
@@ -65,22 +70,13 @@ class Interface(object):
         ----------
         _mode: online | offline
             Online or offline mode
-        _memtimeout: float
-            Lifespan of in-memory cache
 
-        .. note::
-            Proxy support requires the socks module be installed. This can be
-            installed via pip:
-            pip install SocksiPy-branch
 
-        .. note::
-            All caching functionality has been removed from pyxnat as of 1.0.0.0.
-            The cache was causing more hassle than it was worth.
+
 
     """
 
-    def __init__(self, server=None, user=None, password=None,
-                 cachedir=tempfile.gettempdir(), config=None,
+    def __init__(self, server=None, user=None, password=None, config=None,
                  anonymous=False, proxy=None, verify=None):
         """
             Parameters
@@ -96,7 +92,6 @@ class Interface(object):
             password: string | None
                 The user's password.
                 If None the user will be prompted for it.
-            cachedir: string  (Deprecated)
 
             config: string
                 Reads a config file in json to get the connection parameters.

@@ -1,3 +1,5 @@
+.. module:: pyxnat
+
 ==============================
 Starters Tutorial
 ==============================
@@ -12,47 +14,31 @@ account on the XNAT central repository, where you will have limited
 access to a number of projects and full access to the projects you
 own.
 
-.. note:: 
-    XNAT Central is a public XNAT repository managed by the XNAT team
+.. note::
+    `XNAT Central <http://central.xnat.org>`_ is a public XNAT repository managed by the XNAT team
     and updated regularly with the latest improvements of the
     development branch.
-    
-_____
 
-.. [#]  http://central.xnat.org
 
 Getting started
 ---------------
 
-Connecting to a XNAT server requires valid credentials so you might want to
-start by requesting those on the Web interface of your server. 
+Connecting to an XNAT server requires valid credentials so you might want to
+start by requesting those on the web interface of your server.
 
 >>> from pyxnat import Interface
 >>> central = Interface(
     	       server='http://central.xnat.org:8080',
                user='my_login',
-               password='my_pass',
-               cachedir=os.path.join(os.path.expanduser('~'), '.store')
-               )
-
-The cachedir argument specifies where the local disk-cache will be
-stored.  Every query and downloaded file will be stored here so choose
-a location with sufficient free space. If the datastore argument if
-not given, a temporary location is picked automatically but it may be
-flushed at every reboot of the machine. Here the cachedir argument is
-set to a `.store` directory in the user's home directory in a cross
-platform manner. If the `cachedir` starts getting full, a warning will
-be printed in the stdout.
+               password='my_pass')
 
 It is also possible to define an :class:`Interface` object without
-specifying all the connection parameters. Pyxnat switches to
-interactive mode and prompts the user for the missing information. In
-that case the object checks that the parameters are correct by
-connecting to the server.
+specifying all the connection settings. In that case :mod:`pyxnat` switches to
+interactive mode and prompts the user for the missing information.
 
 >>> central = Interface(server='http://central.xnat.org:8080')
 >>> User:my_login
->>> Password: 
+>>> Password:
 
 You can also use a configuration file. The best way to create the file
 is to use the ``save_config()`` method on an existing interface.
@@ -61,9 +47,9 @@ is to use the ``save_config()`` method on an existing interface.
 >>> central2 = Interface(config='central.cfg')
 
 .. warning::
-    Depending on the server configuration, you may have to include the port 
-    in the server url, as well as the name of the XNAT tomcat application. 
-    So you might end up with something like:
+    Depending on the server configuration, you may have to include the port
+    in the server URL, as well as the name of the XNAT `tomcat` application.
+    You might end up with something like:
     http://server_ip:port/xnat
 
 The main interface class is now divided into logical subinterfaces:
@@ -78,15 +64,15 @@ Data selection
 
 Now that we have an `Interface` object, we can start browsing the
 server with the ``select`` subinterface which can be used, either with
-expicit Python objects and methods, or through a ``path`` describing
+explicit Python objects and methods, or through a ``path`` describing
 the data.
 
 Simple requests::
 
     >>> interface.select.projects().get()
-    [..., u'CENTRAL_OASIS_CS', u'CENTRAL_OASIS_LONG', ...]
+    [..., 'CENTRAL_OASIS_CS', 'CENTRAL_OASIS_LONG', ...]
     >>> interface.select('/projects').get()
-    [..., u'CENTRAL_OASIS_CS', u'CENTRAL_OASIS_LONG', ...]
+    [..., 'CENTRAL_OASIS_CS', 'CENTRAL_OASIS_LONG', ...]
 
 Nested requests::
 
@@ -100,16 +86,16 @@ Filtered requests::
 
     >>> interface.select.projects('*OASIS_CS*').get()
     >>> interface.select('/projects/*OASIS_CS*').get()
-    [u'CENTRAL_OASIS_CS']
-    
+    ['CENTRAL_OASIS_CS']
+
     >>> interface.select.project('IMAGEN').subjects('*55*42*').get()
     >>> interface.select('/projects/IMAGEN/subjects/*55*42*').get()
     ['IMAGEN_000055203542', 'IMAGEN_000055982442', 'IMAGEN_000097555742']
 
-Resources paths
+Resource paths
 ---------------
 
-The resources paths that can be passed as an argument to ``select`` is
+The resource paths that can be passed as an argument to ``select`` is
 a powerful tool but can easily generate thousands of queries so one
 has to be careful when using it.
 
@@ -153,15 +139,15 @@ That can instead be written::
 
 To have all the experiments from a specific project::
 
-   /project/IMAGEN//experiments 
+   /project/IMAGEN//experiments
    EQUALS
    /project/IMAGEN/subjects/*/experiments
 
 The double slash syntax can be used anywhere in the path and any
 number of time::
 
-       //subjects//assessors 
-       EQUALS 
+       //subjects//assessors
+       EQUALS
        /projects/*/subjects/*/experiments/*/assessors/*
 
 Sometimes, a path will generate more than one path because it can be
@@ -195,7 +181,7 @@ Resources operations
 --------------------
 
 Several operations are accessible for every resource level. The most
-importants are responsible for creating new resources, deleting
+important are for creating new resources, deleting
 existing ones and testing whether a given resource exists or not::
 
     >>> my_project = central.select.project('my_project')
@@ -245,16 +231,16 @@ in this case is generated automatically).
 
 Custom ID example::
 
-    >>> experiment.create(experiments='xnat:mrSessionData', 
+    >>> experiment.create(experiments='xnat:mrSessionData',
                           ID='my_custom_ID'
-                         ) 
+                         )
 
 With additional fields::
 
-    >>> experiment.create(**{'experiments':'xnat:mrSessionData', 
-                             'ID':'mr_custom_ID', 
+    >>> experiment.create(**{'experiments':'xnat:mrSessionData',
+                             'ID':'mr_custom_ID',
 			     'xnat:mrSessionData/age':'42'}
-			  ) 
+			  )
 
 .. warning:: When using xpath syntax to declare fields, it is
 	mandatory to pass the arguments using a dictionnary because of
@@ -267,14 +253,14 @@ call. For example if the subject for that experiment was not created,
 you could have specified::
 
     >>> experiment.create(
-		**{'experiments':'xnat:mrSessionData', 
+		**{'experiments':'xnat:mrSessionData',
                    'ID':'mr_custom_ID',
-                   'xnat:mrSessionData/age':'42', 
-                   'xnat:subjectData/investigator/lastname':'doe', 
+                   'xnat:mrSessionData/age':'42',
+                   'xnat:subjectData/investigator/lastname':'doe',
 	           'xnat:subjectData/investigator/firstname':'john',
 	           'xnat:subjectData/ID':'subj_custom_ID'
 		  })
-			  
+
 
 File support
 ------------
@@ -284,10 +270,10 @@ It is possible to upload and then download files at every REST resource level::
     >>> my_project.files()
     []
     >>> my_project.file('image.nii').put('/tmp/image.nii')
-    >>> # you can add any of the following arguments to give additional 
+    >>> # you can add any of the following arguments to give additional
     >>> # information on the file you are uploading
-    >>> my_project.file('image.nii').put( '/tmp/image.nii', 
-                                          content='T1', 
+    >>> my_project.file('image.nii').put( '/tmp/image.nii',
+                                          content='T1',
                                           format='NIFTI'
                                           tags='image test'
                                         )
@@ -342,7 +328,7 @@ type in the XNAT schema.
 _____
 
 .. [#] http://www.xnat.org/XNAT+REST+XML+Path+Shortcuts
-    
+
 
 The search engine
 ------------------
@@ -382,16 +368,16 @@ method::
      ...]
 
 
-.. tip:: 
+.. tip::
    How to get all the results in a query?
-       >>> interface.select('xnat:subjectData', 
-       	   			['xnat:subjectData/SUBJECT_ID', 
+       >>> interface.select('xnat:subjectData',
+       	   			['xnat:subjectData/SUBJECT_ID',
        		                 'xnat:subjectData/AGE']).all()
 
-.. tip:: 
+.. tip::
    How to get all the columns from a datatype?
        >>> table = interface.select('xnat:subjectData').where(...)
 
-.. tip:: 
+.. tip::
    Then to get everything:
    	>>> table = interface.select('xnat:subjectData').all()

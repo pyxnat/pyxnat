@@ -1,3 +1,5 @@
+.. module:: pyxnat
+
 About
 =====
 
@@ -44,5 +46,6 @@ Funding
 * PyXNAT workshop that took place at Washington University in 2011 was
   generously funded by the `INCF <http://www.incf.org/>`_
   and the XNAT team:
+	
 		- http://nrg.wustl.edu/events/nrg-to-host-2011-pyxnat-workshop/
     - http://datasharing.incf.org/ni/PyXNAT_Workshop

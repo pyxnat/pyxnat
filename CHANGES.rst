@@ -12,8 +12,7 @@ Release 1.1.0.0
 
        - Get aliases from a project
        - CI tests may now (partially) run within a Docker container
-       - `ArrayData` class makes no more assumption on data type and use
-       broader/generic types (avoids missing results from other types)
+       - `ArrayData` class makes no more assumption on data type and use broader/generic types (avoids missing results from other types)
        - Specific methods added for MRSessions and MRScans
        - Added certification verification to configuration file
        - Added test coverage

@@ -2,8 +2,18 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
+.. module:: pyxnat
+
 pyxnat: XNAT in Python
 ======================
+
+**Date**: |today| **Version**: |version|
+
+**Useful links**:
+`Binary Installers <https://pypi.org/project/pyxnat>`__ |
+`Source Repository <https://github.com/pyxnat/pyxnat>`__ |
+`Issues & Ideas <https://github.com/pyxnat/pyxnat/issues>`__
+
 
 Overview
 --------
@@ -15,52 +25,36 @@ provided by XNAT and allows easier interaction with an XNAT server through a
 simple and consistent API using the `Python <https://www.python.org/>`_
 programming language.
 
-:doc:`installing`
-	Instructions on how to get the distribution.
 
-:doc:`tutorial`
-	Start here for a quick overview.
+* :doc:`installing`
+* :doc:`tutorial`
+* :doc:`starters_tutorial`
+* :doc:`advanced_tutorial`
+* :doc:`features/index`
+* :doc:`reference_documentation`
+* :doc:`external_resources`
+* :doc:`about`
+* :doc:`CHANGES`
 
-:doc:`features/index`
-	Detailed documentation and examples.
-
-:doc:`external_resources`
-	References to related projects and external resources.
-
-:doc:`about`
-	Contributors and funding.
-
-:doc:`CHANGES`
-	See changes from the latest version.
-
-Links
-"""""
-
-#. Documentation: http://packages.python.org/pyxnat/
-#. Download: http://pypi.python.org/pypi/pyxnat#downloads
-#. Sources: http://github.com/pyxnat/pyxnat
 
 Short examples
 """"""""""""""
 
-**Setup the connection**
+**Setup a connection**
 
 .. code-block:: python
 
    >>> from pyxnat import Interface
-   >>> interface = Interface(
-       		 server='https://central.xnat.org',
-                 user='login',
-                 password='pass',
-                 cachedir='/tmp'
-                 )
+   >>> interface = Interface(server='https://central.xnat.org',
+                             user='login',
+                             password='pass')
 
 **Traverse the resource tree**
 
 .. code-block:: python
 
-   >>> interface.select.projects().get()
-   [u'CENTRAL_OASIS_CS', u'CENTRAL_OASIS_LONG', ...]
+   >>> list(interface.select.projects())
+   ['CENTRAL_OASIS_CS', 'CENTRAL_OASIS_LONG', ...]
 
 **Operate the database**
 

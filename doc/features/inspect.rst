@@ -3,9 +3,9 @@ XNAT Introspection
 
 Prior knowledge is needed to traverse an XNAT database, general knowledge
 on XNAT, such as the REST hierarchy, a knowledge specific to a database
-such as datatypes and values of variables.  The idea of this features 
+such as datatypes and values of variables.  The idea of this features
 is to help users find their way around an XNAT server by making it easier
-to gather intformation.
+to gather information.
 
 The REST hierarchy
 ~~~~~~~~~~~~~~~~~~
@@ -46,7 +46,7 @@ Searchable datatypes and fields
 
 To write queries for the search engine, or just to have a better insight
 of the data within an XNAT instance users have to know about datatypes
-and data values. There are a few methods in the 
+and data values. There are a few methods in the
 :class:`~pyxnat.Interface.inspect` sub-interface to get this information.
 
 Get the datatypes:
@@ -94,9 +94,9 @@ Get the field values in an XNAT instance:
 Resources organization
 ~~~~~~~~~~~~~~~~~~~~~~
 
-It is also useful to have a preview, even  incomplete, of the resources 
+It is also useful to have a preview, even  incomplete, of the resources
 names and values in the REST tree. The REST resources map to datatypes
-defined in the schema. It's not possible to guess the mapping but 
+defined in the schema. It's not possible to guess the mapping but
 **pyxnat** provides methods to retrieve it:
 
 .. code-block:: python
@@ -118,7 +118,7 @@ on the database:
 
 The mappings can also be used to create a resource by guessing its type.
 For example all the resources at the experiment level named ``Session_*``
-are ``xnat:mrSessionData`` so the following line will create an 
+are ``xnat:mrSessionData`` so the following line will create an
 ``xnat:mrSessionData``:
 
 .. code-block:: python
@@ -127,8 +127,8 @@ are ``xnat:mrSessionData`` so the following line will create an
     >>> exp.datatype()
     'xnat:mrSessionData'
 
-When a mapping is available, re-running the 
-:func:`~pyxnat.Interface.inspect.structure` method will display additional 
+When a mapping is available, re-running the
+:func:`~pyxnat.Interface.inspect.structure` method will display additional
 information such as:
 
 .. code-block:: python
@@ -148,13 +148,12 @@ information such as:
    projects, that maps to XNAT datatypes. A new feature introduced in
    0.6 and improved in 0.7 is to be able to define a mapping so that
    specific name patterns can be used to cast a resource when creating a
-   new one. In the 0.7, it is no longer up to the user to manually save 
-   and load the mapping file. Files are created automatically and the 
-   mappings are discovered on the fly when queries are issued on the 
-   server. Files are loaded at the :class:`~pyxnat:Interface` creation 
+   new one. In the 0.7, it is no longer up to the user to manually save
+   and load the mapping file. Files are created automatically and the
+   mappings are discovered on the fly when queries are issued on the
+   server. Files are loaded at the :class:`~pyxnat:Interface` creation
    and the mappings are updated regularly. A small example:
 
    .. code-block:: python
 
       {'/projects/my_project/subjects/*/experiments/SessionA_*':'xnat:mrSessionData'}
-

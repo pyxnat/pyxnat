@@ -1,18 +1,17 @@
 User Manager
 ------------
 
-The REST API currently offers a limited number of functionalities to
-manage users. It will be improved in future releases. The class 
-:class:`~pyxnat.Interface.manage.users` contains methods to retrieve
-information on the users registered on the server.
+The REST API currently offers a limited number of features to
+manage users. The class :class:`~pyxnat.Interface.manage.users` may be used to
+know about registered users on the server.
 
-To list all the users:
+To list all existing users:
 
 .. code-block:: python
 
    >>> central.interface.manage.users()
 
-To get information on a specific user:
+On a specific user:
 
 .. code-block:: python
 
@@ -21,6 +20,7 @@ To get information on a specific user:
    >>> central.interface.manage.users.id('username')
    >>> central.interface.manage.users.email('username')
 
-.. note:: In the future, it will be possible to create and delete users
-   on an XNAT instance from the REST API. To add users to a project
-   with a role see the documentation on the permission model of XNAT.
+To assign users with specific roles (owner/member/collaborator) in a project:
+
+.. code-block:: python
+   >>> central.select.project('project').add_user('admin', 'collaborator')
