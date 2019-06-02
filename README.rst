@@ -9,9 +9,9 @@
 .. image:: https://img.shields.io/pypi/v/pyxnat.svg
     :target: https://pypi.org/project/pyxnat
 
-The homepage of pyxnat with user documentation is located on:
+The homepage of **pyxnat** with user documentation is located on:
 
-http://packages.python.org/pyxnat/
+https://pyxnat.readthedocs.io/en/latest/
 
 Getting the latest code
 =========================
@@ -20,78 +20,96 @@ To get the latest code using git, simply type::
 
     git clone git://github.com/pyxnat/pyxnat.git
 
-If you don't have git installed, you can download a zip or tarball
+You can download a zip or tarball
 of the latest code: http://github.com/pyxnat/pyxnat/archives/master
 
-Or the lastest stable version: http://pypi.python.org/pypi/pyxnat
+Or the latest stable version: http://pypi.python.org/pypi/pyxnat
 
 Installing
 =========================
 
-As any Python packages, to install pyxnat, simply do::
+**pyxnat** can be installed via pip from
+`PyPI <https://pypi.org/project/pyxnat>`__.
+
+::
+
+    pip install pyxnat
+
+
+Or as any Python package, to install **pyxnat** from source code, simply do::
 
     python setup.py install
 
 in the source code directory.
 
-Workflow to contribute
+Contribute to **pyxnat**
 =========================
 
-To contribute to pyxnat, first create an account on `github
+To contribute to **pyxnat**, first create an account on `GitHub
 <http://github.com/>`_. Once this is done, fork the `pyxnat repository
 <http://github.com/pyxnat/pyxnat>`_ to have you own repository,
 clone it using 'git clone' on the computers where you want to work. Make
-your changes in your clone, push them to your github account, test them
-on several computer, and when you are happy with them, send a pull
-request to the main repository.
+changes in your clone, push them to your GitHub fork, test them
+on several computers and when you are happy with them, send a `pull
+request <https://github.com/pyxnat/pyxnat/issues>`_ to the main repository.
 
 Running the test suite
 =========================
 
-To run the test suite, you need nosetests and the coverage modules.
-Run the test suite using::
+Until v1.1 tests were exclusively performed on `XNAT Central <http://central.xnat.org>`_
+using a dedicated user account (``nosetests``). Yet some tests were not allowed to
+run due to restricted permissions.
+In v1.1, tests were restructured and were directed to two independent XNAT
+instances based on permission level. Hence `XNAT Central <http://central.xnat.org>`_
+is still used for most tests with read access whereas other tests requiring
+write permissions are run on a local XNAT instance in a Docker container.
 
-    nosetests
+Consequently, running the test suite now requires the following:
+  - *python-nose* v1.2.1+
+  - *coverage* v3.6+
+  - *docker* v18+
 
-from the root of the project.
+Setting up a local Docker-powered XNAT instance may be achieved easily using
+``docker-compose`` and any available recipe. We recommend the one from the
+`following repository <https://github.com/NrgXnat/xnat-docker-compose>`_
+(maintained by the XNAT team). Once the repository cloned, run the following
+command (possibly as ``sudo``) ::
+
+  docker-compose up -d
+
+After a couple of minutes, the XNAT instance should be up and running locally.
+You may check it out visiting http://localhost.
+
+The script ``tests/setup_xnat.py`` may then be executed to populate the local
+instance before running the tests.
+
+Finally run the tests with the following command (from the root of the project)::
+
+    nosetests pyxnat/tests
+
+The file ``.travis.yml`` (used for CI) features these described steps and may be
+referred to for further information.
 
 
 Building the docs
 =========================
 
-To build the docs you need to have setuptools and sphinx (>=0.5) installed.
-Run the command::
+
+ Building the docs requires to have `setuptools <https://pypi.org/project/setuptools/>`_
+ and `sphinx <http://www.sphinx-doc.org/en/master/>`_ (v2.0+) installed.
+You will also need the `numpydoc <https://pypi.org/project/numpydoc/>`_ package.
+Then run the command::
 
     python setup.py build_sphinx
 
-The docs are built in the build/sphinx/html directory.
+The docs are built in the ``build/sphinx/html`` folder.
 
 
-Making a source tarball
-=========================
-
-To create a source tarball, eg for packaging or distributing, run the
-following command::
-
-    python setup.py sdist
-
-The tarball will be created in the `dist` directory. This command will
-compile the docs, and the resulting tarball can be installed with
-no extra dependencies than the Python standard library. You will need
-setuptool and sphinx.
-
-Making a release and uploading it to PyPI
-==================================================
-
-This command is only run by project manager, to make a release, and
-upload in to PyPI::
-
-    python setup.py sdist bdist_egg register upload
 
 Licensing
-----------
+=========
 
-pyxnat is **BSD-licenced** (3 clause):
+**pyxnat** is **BSD-licenced** (3 clause):
 
     This software is OSI Certified Open Source Software.
     OSI Certified is a certification mark of the Open Source Initiative.
