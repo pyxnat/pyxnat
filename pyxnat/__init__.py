@@ -2,10 +2,10 @@
 PyXNAT
 ======
 
-pyxnat provides an API to access data on XNAT (see http://xnat.org)
-servers.
+:mod:`pyxnat` provides an API to access data on XNAT servers
+(see http://xnat.org).
 
-Visit http://packages.python.org/pyxnat for more information.
+Visit https://pyxnat.readthedocs.io/en/latest/ for more information.
 """
 
 from .version import VERSION as __version__
