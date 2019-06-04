@@ -1,6 +1,18 @@
 Latest changes
 ===============
 
+Release 1.1.0.1
+---------------
+
+      * Improvements
+
+         - Refreshing documentation
+
+      * Bug fixes
+
+         - If verify not defined, don't store it
+         - Closing requests session on disconnection
+
 Release 1.1.0.0
 ---------------
 
