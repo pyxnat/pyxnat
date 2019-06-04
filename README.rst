@@ -1,3 +1,7 @@
+=======
+pyxnat
+=======
+
 .. image:: https://img.shields.io/travis/pyxnat/pyxnat.svg
     :target: https://travis-ci.org/pyxnat/pyxnat
 .. image:: https://coveralls.io/repos/github/pyxnat/pyxnat/badge.svg?branch=master
@@ -18,11 +22,9 @@ https://github.com/pyxnat/pyxnat
 
 Binary installers for the latest released version are available at the `Python
 package index <https://pypi.org/project/pyxnat>`_. **pyxnat** can be installed
-using ``pip`` with the following command:
+using ``pip`` with the following command::
 
-```sh
-pip install pyxnat
-```
+    pip install pyxnat
 
 Dependencies
 ============
@@ -110,7 +112,7 @@ Contribute to **pyxnat**
 To contribute to **pyxnat**, first create an account on `GitHub
 <http://github.com/>`_. Once this is done, fork the `pyxnat repository
 <http://github.com/pyxnat/pyxnat>`_ to have you own repository,
-clone it using 'git clone' on the computers where you want to work. Make
+clone it using ``git clone`` on the computers where you want to work. Make
 changes in your clone, push them to your GitHub fork, test them
 on several computers and when you are happy with them, send a `pull
 request <https://github.com/pyxnat/pyxnat/issues>`_ to the main repository.
