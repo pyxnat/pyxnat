@@ -29,7 +29,7 @@ LONG_DESCRIPTION = """
 PyXNAT
 ======
 
-pyxnat provides an API to access data on XNAT (see http://xnat.org)
+**pyxnat** provides an API to access data on XNAT (see http://xnat.org)
 servers.
 
 Visit https://pyxnat.readthedocs.io/en/latest/ for more information.
@@ -54,10 +54,12 @@ setup(name='pyxnat',
           'Intended Audience :: Education',
           'License :: OSI Approved :: BSD License',
           'Operating System :: OS Independent',
-          'Programming Language :: Python',
           'Topic :: Scientific/Engineering',
           'Topic :: Utilities',
           'Topic :: Internet :: WWW/HTTP',
+          'Programming Language :: Python :: 3.6',
+          'Programming Language :: Python :: 3.7',
+          'Programming Language :: Python :: 2.7',
       ],
 
       platforms='any',
