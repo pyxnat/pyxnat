@@ -3,14 +3,15 @@ from uuid import uuid1
 
 from .. import Interface
 
-central = Interface(config=os.path.join(os.path.dirname(os.path.abspath(__file__)), 'central.cfg'))
-project = central.select('/project/nosetests')
+#central = Interface(config=os.path.join(os.path.dirname(os.path.abspath(__file__)), 'central.cfg'))
+central = Interface(config='.xnat.cfg')
+project = central.select.project('nosetests')
 
 prov = {
     'program':'young',
-    'timestamp':'2011-03-01T12:01:01.897987', 
-    'user':'angus', 
-    'machine':'war', 
+    'timestamp':'2011-03-01T12:01:01.897987',
+    'user':'angus',
+    'machine':'war',
     'platform':'linux',
     }
 

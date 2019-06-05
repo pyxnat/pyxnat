@@ -3,8 +3,9 @@ from uuid import uuid1
 
 from .. import Interface
 
-central = Interface(config=os.path.join(os.path.dirname(os.path.abspath(__file__)), 'central.cfg'))
-project = central.select('/project/nosetests')
+#central = Interface(config=os.path.join(os.path.dirname(os.path.abspath(__file__)), 'central.cfg'))
+central = Interface(config='.xnat.cfg')
+project = central.select.project('nosetests')
 
 variables = {'Subjects' : {'newgroup' : {'foo' : 'string', 'bar' : 'int'}}}
 
@@ -21,12 +22,12 @@ scan = project.subject(sid).experiment(eid).scan(cid).insert(use_label=True)
 #     assert project.get_custom_variables() == variables
 
 def test_set_param():
-    
+
     scan.set_param('foo', 'foostring')
     scan.set_param('bar', '1')
 
     assert scan.params() == ['foo', 'bar']
-    
+
 def test_get_params():
     assert scan.get_params() == ['foostring', '1']
 
