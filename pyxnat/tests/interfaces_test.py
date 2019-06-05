@@ -4,8 +4,8 @@ try:
     unicode
 except NameError:
     unicode = str
-
-central = Interface(config=os.path.join(os.path.dirname(os.path.abspath(__file__)), 'central.cfg'))
+fp = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'central.cfg')
+central = Interface(config=fp)
 central_anon = Interface('https://central.xnat.org', anonymous=True)
 
 def test_simple_object_listing():
@@ -30,11 +30,17 @@ def test_nested_path_listing():
 #         if stop:
 #             break
 
-def test_seach_access():
+def test_search_access():
     constraints = [('xnat:subjectData/PROJECT', '=', 'CENTRAL_OASIS_CS'), 'AND']
 
     for subject in central.select('//subjects').where(constraints):
         assert '/projects/CENTRAL_OASIS_CS' in subject._uri
+
+def test_connection_with_explicit_parameters():
+    import json
+    cfg = json.load(open(fp))
+    x = Interface(server=cfg['server'], user=cfg['user'],
+        password=cfg['password'])
 
 def test_anonymous_access():
     projects = central_anon.select.projects().get()
