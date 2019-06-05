@@ -23,6 +23,7 @@ def test_dump_methods():
                  psytool_audit_parentdata_audit10='2')
 
     jtable.where('5154')
+    jtable.where_not('5154')
 
     assert True
 
