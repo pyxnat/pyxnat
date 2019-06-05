@@ -51,3 +51,6 @@ def test_close_jsession():
     config_file = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'central.cfg')
     with Interface(config=config_file) as central:
         assert central.select.project('nosetests').exists()
+
+def test_save_config():
+    central.save_config('/tmp/.xnat.cfg')
