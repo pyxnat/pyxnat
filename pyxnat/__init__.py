@@ -21,6 +21,7 @@ from .core import cache
 from .core import help
 from .core import interfaces
 from .core import resources
+from .core import manage
 from .core import schema
 from .core import select
 from .core import users

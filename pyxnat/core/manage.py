@@ -63,9 +63,10 @@ class ProjectManager(object):
     """
 
     def __init__(self, project_id, interface):
-        self._intf._get_entry_point()
 
         self._intf = interface
+        self._intf._get_entry_point()
+
         project = Project('%s/projects/%s' % (self._intf._entry,
                                               project_id
                                               ),
