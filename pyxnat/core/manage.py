@@ -112,20 +112,19 @@ class SchemaManager(object):
             url: str
                 url of the schema relative to the server.
                     e.g. for
-                    http://central.xnat.org/schemas/xnat/xnat.xsd give
-                    ``schemas/xnat/xnat.xsd`` or even only
-                    ``xnat.xsd``
+                    http://central.xnat.org/xapi/schemas/xnat give
+                    ``/xapi/schemas/xnat``
 
         """
 
-        if not re.match('/?schemas/.*/.*\.xsd', url):
-            if not 'schemas' in url and re.match('/?\w+/\w+[.]xsd', url):
-                url = join_uri('/schemas', url)
-
-            elif not re.match('^[^/].xsd', url):
-                url = '/schemas/%s/%s'%(url.split('.xsd')[0], url)
-            else:
-                raise NotImplementedError
+        #if not re.match('/?schemas/.*/.*\.xsd', url):
+        #    if not 'schemas' in url and re.match('/?\w+/\w+[.]xsd', url):
+        #        url = join_uri('/schemas', url)
+        #
+        #    elif not re.match('^[^/].xsd', url):
+        #        url = '/schemas/%s/%s'%(url.split('.xsd')[0], url)
+        #    else:
+        #        raise NotImplementedError
 
         self._trees[url.split('/')[-1]] = \
             etree.fromstring(self._intf._exec(url))
