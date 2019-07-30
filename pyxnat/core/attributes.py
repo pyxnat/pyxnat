@@ -45,7 +45,6 @@ class EAttrs(object):
         """ List the attributes paths relevant to this element.
         """
         paths = []
-        self._intf.manage.schemas._init()
         for root in self._intf.manage.schemas._trees.values():
             paths.extend(datatype_attributes(root, self._get_datatype()))
         return paths
