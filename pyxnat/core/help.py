@@ -2,6 +2,7 @@ import glob
 
 try:
     import networkx as nx
+    from networkx.drawing.nx_agraph import graphviz_layout
     import matplotlib.pyplot as plt
     _DRAW_GRAPHS = True
 except:
@@ -475,7 +476,7 @@ class PaintGraph(object):
         graph = self.get_graph.architecture(with_datatypes)
 
         plt.figure(figsize=(8,8))
-        pos = nx.graphviz_layout(graph, prog='twopi', args='')
+        pos = graphviz_layout(graph, prog='twopi', args='')
 
         # node_size = [(float(graph.degree(v)) * 5)**3 for v in graph]
         # node_size = [graph.weights[v] ** 2 for v in graph]
@@ -518,7 +519,7 @@ class PaintGraph(object):
 
     def _draw_rest_resource(self, graph, save=None):
         plt.figure(figsize=(8,8))
-        pos = nx.graphviz_layout(graph, prog='twopi', args='')
+        pos = graphviz_layout(graph, prog='twopi', args='')
 
         cost = lambda v: float(graph.degree(v)) ** 3 + \
             graph.weights[v] ** 2
@@ -544,7 +545,7 @@ class PaintGraph(object):
         graph = self.get_graph.datatypes(pattern)
 
         plt.figure(figsize=(8,8))
-        pos = nx.graphviz_layout(graph, prog='twopi', args='')
+        pos = graphviz_layout(graph, prog='twopi', args='')
 
         cost = lambda v: float(graph.degree(v)) ** 3 + \
             graph.weights[v] ** 2
@@ -571,7 +572,7 @@ class PaintGraph(object):
         graph = self.get_graph.field_values(field_name)
 
         plt.figure(figsize=(8,8))
-        pos = nx.graphviz_layout(graph, prog='twopi', args='')
+        pos = graphviz_layout(graph, prog='twopi', args='')
 
         cost = lambda v: graph.weights[v]
 
