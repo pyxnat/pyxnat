@@ -20,3 +20,7 @@ def test_unregister_callback():
     central.manage.unregister_callback()
     assert central._callback is None
 
+def test_add_schema():
+    assert(len(central.manage.schemas()) == 0)
+    central.manage.schemas.add(url='/xapi/schemas/xnat')
+    assert(list(central.manage.schemas()) == ['xnat'])
