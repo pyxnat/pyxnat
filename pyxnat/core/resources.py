@@ -386,10 +386,10 @@ class EObject(object):
             print('PUT', create_uri)
 
         if 'params' in params and 'event_reason' in params['params']:
-            if DEBUG: print('Have event_reason')
+            if DEBUG: print('Found event_reason')
             output = self._intf._exec(create_uri, 'PUT', **params)
         else:
-            if DEBUG: print('Not have event_reason')
+            if DEBUG: print('event_reason not found')
             output = self._intf._exec(create_uri, 'PUT')
 
         if is_xnat_error(output):
