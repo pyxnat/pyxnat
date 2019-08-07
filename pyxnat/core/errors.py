@@ -65,6 +65,9 @@ def parse_put_error_message(message):
 
 def catch_error(msg_or_exception, full_response=None):
 
+    if isinstance(msg_or_exception, bytes):
+        msg_or_exception = msg_or_exception.decode()
+
     # handle errors returned by the xnat server
     if isinstance(msg_or_exception, (str, unicode)):
         # parse the message
