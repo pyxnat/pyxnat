@@ -346,7 +346,7 @@ class Interface(object):
         elif method is 'HEAD':
             response = self._http.head(uri, headers=headers, data=body, **kwargs)
         else:
-            print('unsupported HTTP method')
+            print('Unsupported HTTP method (%s)'%method)
             return
 
         if (response is not None and not response.ok) or is_xnat_error(response.content):
@@ -355,11 +355,11 @@ class Interface(object):
                 print(response.status_code)
 
             catch_error(response.content, '''pyxnat._exec failure:
-    URI: {response.url}
-    status code: {response.status_code}
-    headers: {response.headers}
-    content: {response.content}
-'''.format(response=response))
+                    URI: {response.url}
+                    status code: {response.status_code}
+                    headers: {response.headers}
+                    content: {response.content}
+                '''.format(response=response))
 
         return response.content
 
