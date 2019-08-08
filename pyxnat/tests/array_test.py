@@ -1,5 +1,5 @@
 import unittest
-import os.path as op 
+import os.path as op
 from pyxnat import Interface
 
 import logging as log
@@ -19,7 +19,7 @@ class ArrayTests(unittest.TestCase):
         '''
 
         e = self._interface.array.experiments(subject_id='CENTRAL_S06242').data
-        self.assertGreaterEqual(len(e),3)
+        self.assertGreaterEqual(len(e), 3)
 
     def test_array_mrsessions(self):
         '''
@@ -32,7 +32,7 @@ class ArrayTests(unittest.TestCase):
         exps = self._interface.array.experiments(subject_id='CENTRAL_S06242',
                                                  experiment_type='xnat:mrSessionData'
                                                  ).data
-        self.assertListEqual(mris,exps)
+        self.assertListEqual(mris, exps)
 
     def test_array_scans(self):
         '''
@@ -56,3 +56,8 @@ class ArrayTests(unittest.TestCase):
                                            ).data
         self.assertListEqual([i['xnat:mrscandata/id'] for i in mris],
                              [i['xnat:mrscandata/id'] for i in exps])
+
+    def test_search_experiments(self):
+        res = self._interface.array.search_experiments(project_id='nosetests3',
+            experiment_type='xnat:subjectData').data
+        self.assertGreaterEqual(len(res), 1)
