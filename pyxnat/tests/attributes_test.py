@@ -2,7 +2,8 @@ import os
 import os.path as op
 from uuid import uuid1
 import time
-
+from . import PYXNAT_SKIP_NETWORK_TESTS
+from nose import SkipTest
 from .. import Interface
 
 _modulepath = op.dirname(op.abspath(__file__))
@@ -19,6 +20,9 @@ experiment = subject.experiment(eid)
 
 
 def test_fancy_resource_create():
+    if PYXNAT_SKIP_NETWORK_TESTS:
+        raise SkipTest('No network. Skipping test.')
+
     field_data = {'experiment':'xnat:mrSessionData',
                   'ID':'TEST_%s' % eid,
                   'xnat:mrSessionData/age':'42',
@@ -35,10 +39,15 @@ def test_fancy_resource_create():
     globals()['experiment'] = experiment
 
 def test_attr_get():
+    if PYXNAT_SKIP_NETWORK_TESTS:
+        raise SkipTest('No network. Skipping test.')
 
     assert experiment.attrs.get('xnat:mrSessionData/age') == '42.0'
 
 def test_attr_mget():
+    if PYXNAT_SKIP_NETWORK_TESTS:
+        raise SkipTest('No network. Skipping test.')
+
     time.sleep(5)
     fields = ['xnat:subjectData/investigator/firstname',
               'xnat:subjectData/investigator/lastname'
@@ -47,6 +56,9 @@ def test_attr_mget():
     assert subject.attrs.mget(fields) == ['john', 'doe']
 
 def test_attr_set():
+    if PYXNAT_SKIP_NETWORK_TESTS:
+        raise SkipTest('No network. Skipping test.')
+
     experiment.attrs.set('xnat:mrSessionData/age', '26')
     assert experiment.attrs.get('xnat:mrSessionData/age') == '26.0'
 
@@ -64,10 +76,16 @@ def test_attr_set():
 #         set(field_data.values()), '''set: %s returned: %s ''' %(field_data.values(), returned)
 
 def test_cleanup():
+    if PYXNAT_SKIP_NETWORK_TESTS:
+        raise SkipTest('No network. Skipping test.')
+
     subject.delete()
     assert not subject.exists()
 
 def test_list_project_attrs():
+    if PYXNAT_SKIP_NETWORK_TESTS:
+        raise SkipTest('No network. Skipping test.')
+
     project_attributes = ['xnat:projectData/name',
                           'xnat:projectData/type',
                           'xnat:projectData/description',

@@ -1,16 +1,15 @@
-import os
 import socket
 import platform
 import tempfile
 from uuid import uuid1
 from six import string_types
 import os.path as op
-from nose import SkipTest
-
-
+import os
 from .. import Interface
+from nose import SkipTest
+from . import PYXNAT_SKIP_NETWORK_TESTS
 
-_modulepath = os.path.dirname(os.path.abspath(__file__))
+_modulepath = op.dirname(op.abspath(__file__))
 
 central = Interface(config=op.join(op.dirname(op.abspath(__file__)), 'central.cfg'))
 from pyxnat.core import interfaces
@@ -38,26 +37,45 @@ scan_1 = expe_1.scan(_id_set1['cid'])
 reco_1 = expe_1.reconstruction(_id_set1['rid'])
 
 def test_subject_create():
+    if PYXNAT_SKIP_NETWORK_TESTS:
+        raise SkipTest('No network. Skipping test.')
+
     assert not subj_1.exists()
     subj_1.create()
     assert subj_1.exists()
 
+
 def test_experiment_create():
+    if PYXNAT_SKIP_NETWORK_TESTS:
+        raise SkipTest('No network. Skipping test.')
+
     assert not expe_1.exists()
     expe_1.create()
     assert expe_1.exists()
 
+
 def test_assessor_create():
+    if PYXNAT_SKIP_NETWORK_TESTS:
+        raise SkipTest('No network. Skipping test.')
+
     assert not asse_1.exists()
     asse_1.create()
     assert asse_1.exists()
 
+
 def test_scan_create():
+    if PYXNAT_SKIP_NETWORK_TESTS:
+        raise SkipTest('No network. Skipping test.')
+
     assert not scan_1.exists()
     scan_1.create()
     assert scan_1.exists()
 
+
 def test_reconstruction_create():
+    if PYXNAT_SKIP_NETWORK_TESTS:
+        raise SkipTest('No network. Skipping test.')
+
     assert not reco_1.exists()
     reco_1.create()
     assert reco_1.exists()
@@ -66,7 +84,11 @@ def test_reconstruction_create():
 #     reco_1.provenance.set({'program':'nosetests3'})
 #     assert reco_1.provenance.get()[0]['program'] == 'nosetests3'
 
+
 def test_multi_create():
+    if PYXNAT_SKIP_NETWORK_TESTS:
+        raise SkipTest('No network. Skipping test.')
+
     asse_2 = central.select('/projects/nosetests3/subjects/%(sid)s'
                             '/experiments/%(eid)s'
                             '/assessors/%(aid)s' % _id_set2
@@ -139,8 +161,12 @@ def test_multi_create():
 #                              ).exists()
 #    assert subj_1.shares().get() == ['nosetests3']
 
+
 def test_put_file():
-    local_path = os.path.join(_modulepath, 'hello_xnat.txt')
+    if PYXNAT_SKIP_NETWORK_TESTS:
+        raise SkipTest('No network. Skipping test.')
+
+    local_path = op.join(_modulepath, 'hello_xnat.txt')
     f = subj_1.resource('test').file('hello.txt')
     subj_1.resource('test').file('hello.txt').put(local_path)
     subj_1.resource('test').put([local_path])
@@ -149,51 +175,65 @@ def test_put_file():
                                                 os.stat(local_path).st_size
 
 def test_get_file():
+    if PYXNAT_SKIP_NETWORK_TESTS:
+        raise SkipTest('No network. Skipping test.')
+
     fh = subj_1.resource('test').file('hello.txt')
 
     fpath = fh.get()
-    assert os.path.exists(fpath)
+    assert op.exists(fpath)
     print(['toto3', open(fpath, 'rb').read()])
     try:
         assert open(fpath, 'rb').read() == bytes('Hello XNAT!%s' % os.linesep, encoding='utf8')
     except TypeError:
         pass
 
-    custom = os.path.join(tempfile.gettempdir(), uuid1().hex)
+    custom = op.join(tempfile.gettempdir(), uuid1().hex)
 
     fh.get(custom)
-    assert os.path.exists(custom), "fpath: %s custom: %s" % (fpath, custom)
+    assert op.exists(custom), "fpath: %s custom: %s" % (fpath, custom)
     os.remove(custom)
     os.remove(fpath)
 
+
 def test_put_dir_file():
-    local_path = os.path.join(_modulepath, 'hello_again.txt')
+    if PYXNAT_SKIP_NETWORK_TESTS:
+        raise SkipTest('No network. Skipping test.')
+
+    local_path = op.join(_modulepath, 'hello_again.txt')
     subj_1.resource('test').file('dir/hello.txt').put(local_path)
     assert subj_1.resource('test').file('dir/hello.txt').exists()
     assert int(subj_1.resource('test').file('dir/hello.txt').size()) == \
                                                 os.stat(local_path).st_size
 
 def test_get_dir_file():
+    if PYXNAT_SKIP_NETWORK_TESTS:
+        raise SkipTest('No network. Skipping test.')
+
     fh = subj_1.resource('test').file('dir/hello.txt')
 
     fpath = fh.get()
-    assert os.path.exists(fpath)
+    assert op.exists(fpath)
     try:
         assert open(fpath, 'rb').read() == bytes('Hello again!%s' % os.linesep, encoding='utf8')
     except TypeError:
         pass
 
-    custom = os.path.join(tempfile.gettempdir(), uuid1().hex)
+    custom = op.join(tempfile.gettempdir(), uuid1().hex)
 
     fh.get(custom)
-    assert os.path.exists(custom), "fpath: %s custom: %s" % (fpath, custom)
+    assert op.exists(custom), "fpath: %s custom: %s" % (fpath, custom)
     os.remove(custom)
     os.remove(fpath)
 
+
 def test_get_copy_file():
-    fpath = os.path.join(tempfile.gettempdir(), uuid1().hex)
+    if PYXNAT_SKIP_NETWORK_TESTS:
+        raise SkipTest('No network. Skipping test.')
+
+    fpath = op.join(tempfile.gettempdir(), uuid1().hex)
     fpath = subj_1.resource('test').file('hello.txt').get_copy(fpath)
-    assert os.path.exists(fpath)
+    assert op.exists(fpath)
     fd = open(fpath, 'rb')
     try:
         assert fd.read() == bytes('Hello XNAT!%s' % os.linesep, encoding='utf8')
@@ -204,11 +244,18 @@ def test_get_copy_file():
 
 
 def test_file_last_modified():
+    if PYXNAT_SKIP_NETWORK_TESTS:
+        raise SkipTest('No network. Skipping test.')
+
     f = subj_1.resource('test').file('hello.txt')
     assert isinstance(f.last_modified(), string_types)
     assert len(f.last_modified()) > 0
 
+
 def test_last_modified():
+    if PYXNAT_SKIP_NETWORK_TESTS:
+        raise SkipTest('No network. Skipping test.')
+
     sid = subj_1.id()
 
     t1 = central.select('/project/nosetests3').last_modified()[sid]
@@ -218,14 +265,22 @@ def test_last_modified():
 
     assert t1 != t2
 
+
 def test_getitem_key():
+    if PYXNAT_SKIP_NETWORK_TESTS:
+        raise SkipTest('No network. Skipping test.')
+
     projects = central.select.projects()
     assert projects.first().id() == projects[0].id()
     piter = projects.__iter__()
     next(piter)
     assert next(piter).id() == projects[1].id()
 
+
 def test_getitem_slice():
+    if PYXNAT_SKIP_NETWORK_TESTS:
+        raise SkipTest('No network. Skipping test.')
+
     projects = central.select.projects()
     assert projects.first().id() == next(projects[:1]).id()
     piter = projects.__iter__()
@@ -243,18 +298,30 @@ def test_project_parent():
     project = central.select.project('nosetests3')
     assert not project.parent()
 
+
 def test_subject1_delete():
+    if PYXNAT_SKIP_NETWORK_TESTS:
+        raise SkipTest('No network. Skipping test.')
+
     assert subj_1.exists()
     subj_1.delete()
     assert not subj_1.exists()
 
+
 def test_subject2_delete():
+    if PYXNAT_SKIP_NETWORK_TESTS:
+        raise SkipTest('No network. Skipping test.')
+
     subj_2 = central.select('/projects/nosetests3/subjects/%(sid)s'%_id_set2)
     assert subj_2.exists()
     subj_2.delete()
     assert not subj_2.exists()
 
+
 def test_project_configuration():
+    if PYXNAT_SKIP_NETWORK_TESTS:
+        raise SkipTest('No network. Skipping test.')
+
     project = central.select('/project/nosetests3')
     version = central.version()
     from pyxnat.core.errors import DatabaseError
@@ -280,9 +347,13 @@ def test_project_configuration():
     assert 'nosetests' in project.owners()
     assert project.user_role('nosetests') == 'owner'
 
+
 def test_put_zip():
-    local_path = os.path.join(_modulepath, 'hello_dir.zip')
-    assert os.path.exists(local_path)
+    if PYXNAT_SKIP_NETWORK_TESTS:
+        raise SkipTest('No network. Skipping test.')
+
+    local_path = op.join(_modulepath, 'hello_dir.zip')
+    assert op.exists(local_path)
 
     # Upload and confirm proper extraction
     r1 = subj_1.resource('test_zip_extract')
@@ -297,28 +368,39 @@ def test_put_zip():
     assert r2.exists()
     assert r2.file('hello_dir.zip').exists()
 
-def test_get_zip():
-    r = subj_1.resource('test_zip_extract')
-    local_dir = os.path.join(_modulepath, 'test_zip_download'+r.id())
-    file_list = [os.path.join(local_dir,'test_zip_extract/hello_dir'),
-                 os.path.join(local_dir,'test_zip_extract/hello_dir/hello_xnat_dir.txt'),
-                 os.path.join(local_dir,'test_zip_extract/hello_dir/hello_dir2'),
-                 os.path.join(local_dir,'test_zip_extract/hello_dir/hello_dir2/hello_xnat_dir2.txt')]
 
-    if not os.path.exists(local_dir):
+def test_get_zip():
+    if PYXNAT_SKIP_NETWORK_TESTS:
+        raise SkipTest('No network. Skipping test.')
+
+    r = subj_1.resource('test_zip_extract')
+    local_dir = op.join(_modulepath, 'test_zip_download'+r.id())
+    file_list = [op.join(local_dir,'test_zip_extract/hello_dir'),
+                 op.join(local_dir,'test_zip_extract/hello_dir/hello_xnat_dir.txt'),
+                 op.join(local_dir,'test_zip_extract/hello_dir/hello_dir2'),
+                 op.join(local_dir,'test_zip_extract/hello_dir/hello_dir2/hello_xnat_dir2.txt')]
+
+    if not op.exists(local_dir):
         os.mkdir(local_dir)
 
     r.get(local_dir, extract=True)
     for f in file_list:
-        assert os.path.exists(f)
+        assert op.exists(f)
     r.get(local_dir, extract=False)
 
 
 def test_project_aliases():
+    if PYXNAT_SKIP_NETWORK_TESTS:
+        raise SkipTest('No network. Skipping test.')
+
     project = central.select('/project/nosetests3')
     assert project.aliases() == ['nosetests32']
 
+
 def test_project():
+    if PYXNAT_SKIP_NETWORK_TESTS:
+        raise SkipTest('No network. Skipping test.')
+
     project = central.select.project('nosetests3')
     project.datatype()
     project.experiments()

@@ -1,9 +1,9 @@
-import os
+import os.path as op
 import tempfile
 
 from .. import jsonutil
 
-_csv_example = os.path.join(os.path.dirname(os.path.abspath(__file__)),
+_csv_example = op.join(op.dirname(op.abspath(__file__)),
                             'results.csv')
 _list_of_dirs = jsonutil.csv_to_json(open(_csv_example, 'r').read())
 

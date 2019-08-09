@@ -1,8 +1,8 @@
 import os
 from uuid import uuid1
-
+from . import PYXNAT_SKIP_NETWORK_TESTS
 from .. import Interface
-
+from nose import SkipTest
 
 import os.path as op
 central = Interface(config=op.join(op.dirname(op.abspath(__file__)), 'central.cfg'))
@@ -15,7 +15,8 @@ sid = uuid1().hex
 eid = uuid1().hex
 cid = uuid1().hex
 
-scan = project.subject(sid).experiment(eid).scan(cid).insert(use_label=True)
+if not PYXNAT_SKIP_NETWORK_TESTS:
+    scan = project.subject(sid).experiment(eid).scan(cid).insert(use_label=True)
 
 # def test_add_custom_variables():
 #     project.add_custom_variables(variables)
@@ -24,6 +25,8 @@ scan = project.subject(sid).experiment(eid).scan(cid).insert(use_label=True)
 #     assert project.get_custom_variables() == variables
 
 def test_set_param():
+    if PYXNAT_SKIP_NETWORK_TESTS:
+        raise SkipTest('No network. Skipping test.')
 
     scan.set_param('foo', 'foostring')
     scan.set_param('bar', '1')
@@ -31,8 +34,14 @@ def test_set_param():
     assert scan.params() == ['foo', 'bar']
 
 def test_get_params():
+    if PYXNAT_SKIP_NETWORK_TESTS:
+        raise SkipTest('No network. Skipping test.')
+
     assert scan.get_params() == ['foostring', '1']
 
 def test_params_cleanup():
+    if PYXNAT_SKIP_NETWORK_TESTS:
+        raise SkipTest('No network. Skipping test.')
+
     project.subject(sid).delete()
     assert not project.subject(sid).exists()
