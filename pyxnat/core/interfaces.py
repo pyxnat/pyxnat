@@ -14,8 +14,10 @@ import six
 
 if six.PY2:
     from urlparse import urlparse
+    input = raw_input
 elif six.PY3:
     from urllib.parse import urlparse
+
 from .select import Select
 from .help import Inspector, GraphData, PaintGraph, _DRAW_GRAPHS
 from .manage import GlobalManager
@@ -26,11 +28,6 @@ from .errors import catch_error
 from .array import ArrayData
 from .xpath_store import XpathStore
 from . import xpass
-
-try:
-    input = raw_input
-except NameError:
-    pass
 
 DEBUG = False
 
