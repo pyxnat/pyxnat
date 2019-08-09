@@ -59,6 +59,10 @@ def test_project_accessibility():
     print(x.select.project('nosetests3').accessibility())
     assert x.select.project('nosetests3').accessibility() == b'protected'
 
+@docker_available
+def test_create_xml():
+    p = x.select.project('nosetests')
+    p.create(xml='/tmp/sess.xml')
 
 def test_project_users():
     x = Interface(config=fp)
