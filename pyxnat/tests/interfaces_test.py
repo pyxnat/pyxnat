@@ -54,3 +54,7 @@ def test_close_jsession():
 
 def test_save_config():
     central.save_config('/tmp/.xnat.cfg')
+
+def test_version():
+    v = central.version()
+    assert(v['tag'] == '1.7.5.1')
