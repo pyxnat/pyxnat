@@ -41,7 +41,7 @@ script:
     - sleep 120
     - sudo docker-compose logs --tail=20 xnat-web
     - "cd -"
-    - python pyxnat/tests/setup_xnat.py
+    - python setup_docker_xnat.py
     - "nosetests pyxnat/tests --nologcapture --with-coverage --cover-inclusive --cover-erase --cover-package ."
     - "coverage report -m"
 after_success:
