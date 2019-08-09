@@ -60,17 +60,6 @@ def test_project_accessibility():
     assert x.select.project('nosetests3').accessibility() == b'protected'
 
 
-def test_project_prearchive_code():
-    pass
-
-def test_project_quarantine_code():
-    pass
-
-def test_current_arc():
-    pass
-
-
-
 def test_project_users():
     x = Interface(config=fp)
     assert isinstance(x.select.project('nosetests3').users(), list)
