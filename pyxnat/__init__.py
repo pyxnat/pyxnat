@@ -12,12 +12,10 @@ from .version import VERSION as __version__
 
 from .core import Interface
 from .core import SearchManager
-from .core import CacheManager
 from .core import Select
 from .core import Inspector
 from .core import Users
 from .core import attributes
-from .core import cache
 from .core import help
 from .core import interfaces
 from .core import resources

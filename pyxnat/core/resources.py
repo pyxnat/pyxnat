@@ -38,7 +38,6 @@ from .attributes import EAttrs
 from .search import rpn_contraints, query_from_xml
 from .errors import is_xnat_error, parse_put_error_message
 from .errors import DataError, ProgrammingError, catch_error
-from .cache import md5name
 from .provenance import Provenance
 # from .pipelines import Pipelines
 from . import schema
