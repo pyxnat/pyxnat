@@ -313,7 +313,7 @@ class EObject(object):
                 pass
 
             body, content_type = httputil.file_message(
-                doc, 'text/xml', 'data.xml', 'data.xml')
+                doc.decode(), 'text/xml', 'data.xml', 'data.xml')
 
             _uri = self._uri
             if ('allowDataDeletion' in params and params.get('allowDataDeletion') is False):
