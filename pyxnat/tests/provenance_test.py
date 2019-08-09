@@ -2,10 +2,12 @@ import os
 from uuid import uuid1
 
 from .. import Interface
+import os.path as op
 
-#central = Interface(config=os.path.join(os.path.dirname(os.path.abspath(__file__)), 'central.cfg'))
-central = Interface(config='.xnat.cfg')
-project = central.select.project('nosetests')
+central = Interface(config=op.join(op.dirname(op.abspath(__file__)), 'central.cfg'))
+
+#central = Interface(config='.xnat.cfg')
+project = central.select.project('nosetests3')
 
 prov = {
     'program':'young',
