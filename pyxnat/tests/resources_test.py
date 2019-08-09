@@ -4,12 +4,14 @@ import platform
 import tempfile
 from uuid import uuid1
 from six import string_types
+import os.path as op
 
 from .. import Interface
 
 _modulepath = os.path.dirname(os.path.abspath(__file__))
 
-central = Interface(config='.xnat.cfg')
+central = Interface(config=op.join(op.dirname(op.abspath(__file__)), 'central.cfg'))
+#central = Interface(config='.xnat.cfg')
 
 _id_set1 = {
     'sid':uuid1().hex,
@@ -26,8 +28,7 @@ _id_set2 = {
     'cid':uuid1().hex,
     'rid':uuid1().hex,
     }
-
-subj_1 = central.select.project('nosetests').subject(_id_set1['sid'])
+subj_1 = central.select.project('nosetests3').subject(_id_set1['sid'])
 expe_1 = subj_1.experiment(_id_set1['eid'])
 asse_1 = expe_1.assessor(_id_set1['aid'])
 scan_1 = expe_1.scan(_id_set1['cid'])
@@ -59,16 +60,16 @@ def test_reconstruction_create():
     assert reco_1.exists()
 
 # def test_provenance():
-#     reco_1.provenance.set({'program':'nosetests'})
-#     assert reco_1.provenance.get()[0]['program'] == 'nosetests'
+#     reco_1.provenance.set({'program':'nosetests3'})
+#     assert reco_1.provenance.get()[0]['program'] == 'nosetests3'
 
 def test_multi_create():
-    asse_2 = central.select('/projects/nosetests/subjects/%(sid)s'
+    asse_2 = central.select('/projects/nosetests3/subjects/%(sid)s'
                             '/experiments/%(eid)s'
                             '/assessors/%(aid)s' % _id_set2
                             )
 
-    expe_2 = central.select('/projects/nosetests/subjects/%(sid)s'
+    expe_2 = central.select('/projects/nosetests3/subjects/%(sid)s'
                             '/experiments/%(eid)s'%_id_set2
                             )
 
@@ -80,63 +81,64 @@ def test_multi_create():
     assert asse_2.datatype() == 'xnat:petAssessorData'
     assert expe_2.datatype() == 'xnat:petSessionData'
 
-    scan_2 = central.select('/projects/nosetests/subjects/%(sid)s'
+    scan_2 = central.select('/projects/nosetests3/subjects/%(sid)s'
                             '/experiments/%(eid)s/scans/%(cid)s' % _id_set2
                             ).create()
 
     assert scan_2.datatype() == 'xnat:mrScanData'
 
 #def test_share_subject():
-#    assert not central.select('/projects/nosetests2'
+#    assert not central.select('/projects/nosetests32'
 #                              '/subjects/%(sid)s' % _id_set1
 #                              ).exists()
-#    subj_1.share('nosetests2')
-#    assert central.select('/projects/nosetests2/subjects/%(sid)s'%_id_set1
+#    subj_1.share('nosetests32')
+#    assert central.select('/projects/nosetests32/subjects/%(sid)s'%_id_set1
 #                              ).exists()
-#    assert set(subj_1.shares().get()) == set(['nosetests', 'nosetests2'])
+#    assert set(subj_1.shares().get()) == set(['nosetests3', 'nosetests32'])
 
 #def test_share_experiment():
-#    assert not central.select('/projects/nosetests2/subjects/%(sid)s'
+#    assert not central.select('/projects/nosetests32/subjects/%(sid)s'
 #                          '/experiments/%(eid)s'%_id_set1
 #                          ).exists()
-#    expe_1.share('nosetests2')
-#    assert central.select('/projects/nosetests2/subjects/%(sid)s'
+#    expe_1.share('nosetests32')
+#    assert central.select('/projects/nosetests32/subjects/%(sid)s'
 #                          '/experiments/%(eid)s'%_id_set1
 #                          ).exists()
-#    assert set(expe_1.shares().get()) == set(['nosetests', 'nosetests2'])
+#    assert set(expe_1.shares().get()) == set(['nosetests3', 'nosetests32'])
 
 #def test_share_assessor():
-#    assert not central.select('/projects/nosetests2/subjects/%(sid)s'
+#    assert not central.select('/projects/nosetests32/subjects/%(sid)s'
 #                              '/experiments/%(eid)s/assessors/%(aid)s'%_id_set1
 #                              ).exists()
-#    asse_1.share('nosetests2')
-#    assert central.select('/projects/nosetests2/subjects/%(sid)s'
+#    asse_1.share('nosetests32')
+#    assert central.select('/projects/nosetests32/subjects/%(sid)s'
 #                          '/experiments/%(eid)s/assessors/%(aid)s'%_id_set1
 #                          ).exists()
-#    assert set(asse_1.shares().get()) == set(['nosetests', 'nosetests2'])
+#    assert set(asse_1.shares().get()) == set(['nosetests3', 'nosetests32'])
 
 #def test_unshare_assessor():
-#    asse_1.unshare('nosetests2')
-#    assert not central.select('/projects/nosetests2/subjects/%(sid)s'
+#    asse_1.unshare('nosetests32')
+#    assert not central.select('/projects/nosetests32/subjects/%(sid)s'
 #                              '/experiments/%(eid)s/assessors/%(aid)s'%_id_set1
 #                              ).exists()
-#    assert asse_1.shares().get() == ['nosetests']
+#    assert asse_1.shares().get() == ['nosetests3']
 
 #def test_unshare_experiment():
-#    expe_1.unshare('nosetests2')
-#    assert not central.select('/projects/nosetests2/subjects/%(sid)s'
+#    expe_1.unshare('nosetests32')
+#    assert not central.select('/projects/nosetests32/subjects/%(sid)s'
 #                          '/experiments/%(eid)s'%_id_set1
 #                          ).exists()
-#    assert expe_1.shares().get() == ['nosetests']
+#    assert expe_1.shares().get() == ['nosetests3']
 
 #def test_unshare_subject():
-#    subj_1.unshare('nosetests2')
-#    assert not central.select('/projects/nosetests2/subjects/%(sid)s'%_id_set1
+#    subj_1.unshare('nosetests32')
+#    assert not central.select('/projects/nosetests32/subjects/%(sid)s'%_id_set1
 #                              ).exists()
-#    assert subj_1.shares().get() == ['nosetests']
+#    assert subj_1.shares().get() == ['nosetests3']
 
 def test_put_file():
     local_path = os.path.join(_modulepath, 'hello_xnat.txt')
+    f = subj_1.resource('test').file('hello.txt')
     subj_1.resource('test').file('hello.txt').put(local_path)
     assert subj_1.resource('test').file('hello.txt').exists()
     assert int(subj_1.resource('test').file('hello.txt').size()) == \
@@ -205,10 +207,10 @@ def test_file_last_modified():
 def test_last_modified():
     sid = subj_1.id()
 
-    t1 = central.select('/project/nosetests').last_modified()[sid]
+    t1 = central.select('/project/nosetests3').last_modified()[sid]
     subj_1.attrs.set('age', '26')
     assert subj_1.attrs.get('age') == '26'
-    t2 = central.select('/project/nosetests').last_modified()[sid]
+    t2 = central.select('/project/nosetests3').last_modified()[sid]
 
     assert t1 != t2
 
@@ -230,11 +232,11 @@ def test_getitem_slice():
         assert next(piter).id() == pobj.id()
 
 def test_subject1_parent():
-    project = central.select.project('nosetests')
+    project = central.select.project('nosetests3')
     assert subj_1.parent()._uri == project._uri
 
 def test_project_parent():
-    project = central.select.project('nosetests')
+    project = central.select.project('nosetests3')
     assert not project.parent()
 
 def test_subject1_delete():
@@ -243,19 +245,19 @@ def test_subject1_delete():
     assert not subj_1.exists()
 
 def test_subject2_delete():
-    subj_2 = central.select('/projects/nosetests/subjects/%(sid)s'%_id_set2)
+    subj_2 = central.select('/projects/nosetests3/subjects/%(sid)s'%_id_set2)
     assert subj_2.exists()
     subj_2.delete()
     assert not subj_2.exists()
 
 def test_project_configuration():
-    project = central.select('/project/nosetests')
+    project = central.select('/project/nosetests3')
     assert project.quarantine_code() == 0
     assert project.prearchive_code() == 4, project.prearchive_code()
     assert project.current_arc() == b'arc001'
-    assert 'admin' in project.users()
-    assert 'admin' in project.owners()
-    assert project.user_role('admin') == 'owner'
+    assert 'nosetests' in project.users()
+    assert 'nosetests' in project.owners()
+    assert project.user_role('nosetests') == 'owner'
 
 def test_put_zip():
     local_path = os.path.join(_modulepath, 'hello_dir.zip')
@@ -290,11 +292,11 @@ def test_get_zip():
         assert os.path.exists(f)
 
 def test_project_aliases():
-    project = central.select('/project/nosetests')
-    assert project.aliases() == ['nosetests2']
+    project = central.select('/project/nosetests3')
+    assert project.aliases() == ['nosetests32']
 
 def test_project():
-    project = central.select.project('nosetests')
+    project = central.select.project('nosetests3')
     project.datatype()
     project.experiments()
     project.experiment('nose')

@@ -7,14 +7,15 @@ from .. import Interface
 
 _modulepath = op.dirname(op.abspath(__file__))
 
-#central = Interface(config=op.join(op.dirname(op.abspath(__file__)), 'central.cfg'))
-central = Interface(config='.xnat.cfg')
+central = Interface(config=op.join(op.dirname(op.abspath(__file__)), 'central.cfg'))
+#central = Interface(config='.xnat.cfg')
 
 sid = uuid1().hex
 eid = uuid1().hex
 
-subject = central.select.project('nosetests').subject(sid)
+subject = central.select.project('nosetests3').subject(sid)
 experiment = subject.experiment(eid)
+
 
 def test_fancy_resource_create():
     field_data = {'experiment':'xnat:mrSessionData',
@@ -26,7 +27,6 @@ def test_fancy_resource_create():
                   }
 
     experiment.create(**field_data)
-
     assert subject.exists()
     assert experiment.exists()
 
@@ -34,6 +34,7 @@ def test_fancy_resource_create():
     globals()['experiment'] = experiment
 
 def test_attr_get():
+
     assert experiment.attrs.get('xnat:mrSessionData/age') == '42.0'
 
 def test_attr_mget():
@@ -91,5 +92,3 @@ def test_list_project_attrs():
     central.manage.schemas.add('xapi/schemas/xnat')
     p = central.select.project('nosetests')
     assert (p.attrs() == project_attributes)
-
-
