@@ -8,7 +8,8 @@ from .. import Interface
 _modulepath = op.dirname(op.abspath(__file__))
 
 central = Interface(config=op.join(op.dirname(op.abspath(__file__)), 'central.cfg'))
-#central = Interface(config='.xnat.cfg')
+from pyxnat.core import interfaces
+interfaces.STUBBORN = True
 
 sid = uuid1().hex
 eid = uuid1().hex

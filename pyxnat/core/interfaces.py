@@ -30,6 +30,7 @@ from .xpath_store import XpathStore
 from . import xpass
 
 DEBUG = False
+STUBBORN = False
 
 
 # main entry point
@@ -332,19 +333,36 @@ class Interface(object):
 
         response = None
 
-        if method is 'PUT':
-            response = self._http.put(uri, headers=headers, data=body, **kwargs)
-        elif method is 'GET':
-            response = self._http.get(uri, headers=headers, params=body, **kwargs)
-        elif method is 'POST':
-            response = self._http.post(uri, headers=headers, data=body, **kwargs)
-        elif method is 'DELETE':
-            response = self._http.delete(uri, headers=headers, data=body, **kwargs)
-        elif method is 'HEAD':
-            response = self._http.head(uri, headers=headers, data=body, **kwargs)
-        else:
-            print('Unsupported HTTP method (%s)'%method)
+        def query(method, uri, headers, body, kwargs):
+            if method is 'PUT':
+                response = self._http.put(uri, headers=headers, data=body,
+                    **kwargs)
+            elif method is 'GET':
+                response = self._http.get(uri, headers=headers, params=body,
+                    **kwargs)
+            elif method is 'POST':
+                response = self._http.post(uri, headers=headers, data=body,
+                    **kwargs)
+            elif method is 'DELETE':
+                response = self._http.delete(uri, headers=headers, data=body,
+                    **kwargs)
+            elif method is 'HEAD':
+                response = self._http.head(uri, headers=headers, data=body,
+                    **kwargs)
+            else:
+                print('Unsupported HTTP method (%s)'%method)
+                return
+            return response
+
+        response = query(method, uri, headers, body, kwargs)
+        if response is None:
             return
+
+        # Dirty trick to help Travis CI tests on CENTRAL: consider fixing it
+        if STUBBORN:
+            if (response is not None and response.status_code == 500):
+                print('Retrying query... %s'%uri)
+                response = query(method, uri, headers, body, kwargs)
 
         if (response is not None and not response.ok) or is_xnat_error(response.content):
             if DEBUG:
