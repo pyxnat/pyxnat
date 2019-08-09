@@ -11,7 +11,8 @@ from .. import Interface
 _modulepath = os.path.dirname(os.path.abspath(__file__))
 
 central = Interface(config=op.join(op.dirname(op.abspath(__file__)), 'central.cfg'))
-#central = Interface(config='.xnat.cfg')
+from pyxnat.core import interfaces
+interfaces.STUBBORN = True
 
 _id_set1 = {
     'sid':uuid1().hex,
