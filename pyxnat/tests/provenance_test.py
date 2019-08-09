@@ -1,6 +1,6 @@
-import os
 from uuid import uuid1
-
+from . import PYXNAT_SKIP_NETWORK_TESTS
+from nose import SkipTest
 from .. import Interface
 import os.path as op
 
@@ -20,12 +20,14 @@ prov = {
 sid = uuid1().hex
 eid = uuid1().hex
 aid = uuid1().hex
-
-assessor = project.subject(sid).experiment(eid).assessor(
-    aid).insert(use_label=True)
+if not PYXNAT_SKIP_NETWORK_TESTS:
+    assessor = project.subject(sid).experiment(eid).assessor(
+        aid).insert(use_label=True)
 
 
 def test_provenance():
+    if PYXNAT_SKIP_NETWORK_TESTS:
+        raise SkipTest('No network. Skipping test.')
     assert assessor.exists()
     assessor.provenance.set(prov)
     _prov = assessor.provenance.get()[0]
@@ -38,5 +40,7 @@ def test_provenance():
 #     assert assessor.provenance.get()[0] == []
 
 def test_provenance_cleanup():
+    if PYXNAT_SKIP_NETWORK_TESTS:
+        raise SkipTest('No network. Skipping test.')
     project.subject(sid).delete()
     assert not project.subject(sid).exists()

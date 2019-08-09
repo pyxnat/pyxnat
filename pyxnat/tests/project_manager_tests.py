@@ -1,6 +1,4 @@
-import os
 from uuid import uuid1
-
 from .. import manage
 from .. import Interface
 import os.path as op
