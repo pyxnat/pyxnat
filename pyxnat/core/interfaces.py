@@ -484,7 +484,11 @@ class Interface(object):
             raise Exception('Configuration file does not exist.')
 
     def version(self):
-        return self._exec('/data/version')
+        from pyxnat.core.errors import DatabaseError
+        try:
+            return self._exec('/data/version')
+        except DatabaseError:
+            return json.loads(self._exec('/xapi/siteConfig/buildInfo').decode())
 
     def set_logging(self, level=0):
         pass
