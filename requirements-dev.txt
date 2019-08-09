@@ -4,3 +4,5 @@ coveralls
 numpydoc
 lxml>=4.3.2
 requests>=2.20
+networkx>=2.2
+matplotlib>=2.2
