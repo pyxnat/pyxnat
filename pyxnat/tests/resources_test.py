@@ -6,8 +6,7 @@ from six import string_types
 import os.path as op
 import os
 from .. import Interface
-from nose import SkipTest
-from . import PYXNAT_SKIP_NETWORK_TESTS
+from . import skip_if_no_network
 
 _modulepath = op.dirname(op.abspath(__file__))
 
@@ -36,46 +35,32 @@ asse_1 = expe_1.assessor(_id_set1['aid'])
 scan_1 = expe_1.scan(_id_set1['cid'])
 reco_1 = expe_1.reconstruction(_id_set1['rid'])
 
-def test_subject_create():
-    if PYXNAT_SKIP_NETWORK_TESTS:
-        raise SkipTest('No network. Skipping test.')
-
+@skip_if_no_network
+def test_01_subject_create():
     assert not subj_1.exists()
     subj_1.create()
     assert subj_1.exists()
 
-
-def test_experiment_create():
-    if PYXNAT_SKIP_NETWORK_TESTS:
-        raise SkipTest('No network. Skipping test.')
-
+@skip_if_no_network
+def test_02_experiment_create():
     assert not expe_1.exists()
     expe_1.create()
     assert expe_1.exists()
 
-
-def test_assessor_create():
-    if PYXNAT_SKIP_NETWORK_TESTS:
-        raise SkipTest('No network. Skipping test.')
-
+@skip_if_no_network
+def test_03_assessor_create():
     assert not asse_1.exists()
     asse_1.create()
     assert asse_1.exists()
 
-
-def test_scan_create():
-    if PYXNAT_SKIP_NETWORK_TESTS:
-        raise SkipTest('No network. Skipping test.')
-
+@skip_if_no_network
+def test_04_scan_create():
     assert not scan_1.exists()
     scan_1.create()
     assert scan_1.exists()
 
-
-def test_reconstruction_create():
-    if PYXNAT_SKIP_NETWORK_TESTS:
-        raise SkipTest('No network. Skipping test.')
-
+@skip_if_no_network
+def test_05_reconstruction_create():
     assert not reco_1.exists()
     reco_1.create()
     assert reco_1.exists()
@@ -84,11 +69,8 @@ def test_reconstruction_create():
 #     reco_1.provenance.set({'program':'nosetests3'})
 #     assert reco_1.provenance.get()[0]['program'] == 'nosetests3'
 
-
-def test_multi_create():
-    if PYXNAT_SKIP_NETWORK_TESTS:
-        raise SkipTest('No network. Skipping test.')
-
+@skip_if_no_network
+def test_06_multi_create():
     asse_2 = central.select('/projects/nosetests3/subjects/%(sid)s'
                             '/experiments/%(eid)s'
                             '/assessors/%(aid)s' % _id_set2
@@ -161,11 +143,8 @@ def test_multi_create():
 #                              ).exists()
 #    assert subj_1.shares().get() == ['nosetests3']
 
-
-def test_put_file():
-    if PYXNAT_SKIP_NETWORK_TESTS:
-        raise SkipTest('No network. Skipping test.')
-
+@skip_if_no_network
+def test_07_put_file():
     local_path = op.join(_modulepath, 'hello_xnat.txt')
     f = subj_1.resource('test').file('hello.txt')
     subj_1.resource('test').file('hello.txt').put(local_path)
@@ -173,11 +152,8 @@ def test_put_file():
     assert subj_1.resource('test').file('hello.txt').exists()
     assert int(subj_1.resource('test').file('hello.txt').size()) == \
                                                 os.stat(local_path).st_size
-
-def test_get_file():
-    if PYXNAT_SKIP_NETWORK_TESTS:
-        raise SkipTest('No network. Skipping test.')
-
+@skip_if_no_network
+def test_08_get_file():
     fh = subj_1.resource('test').file('hello.txt')
 
     fpath = fh.get()
@@ -195,21 +171,16 @@ def test_get_file():
     os.remove(custom)
     os.remove(fpath)
 
-
-def test_put_dir_file():
-    if PYXNAT_SKIP_NETWORK_TESTS:
-        raise SkipTest('No network. Skipping test.')
-
+@skip_if_no_network
+def test_09_put_dir_file():
     local_path = op.join(_modulepath, 'hello_again.txt')
     subj_1.resource('test').file('dir/hello.txt').put(local_path)
     assert subj_1.resource('test').file('dir/hello.txt').exists()
     assert int(subj_1.resource('test').file('dir/hello.txt').size()) == \
                                                 os.stat(local_path).st_size
 
-def test_get_dir_file():
-    if PYXNAT_SKIP_NETWORK_TESTS:
-        raise SkipTest('No network. Skipping test.')
-
+@skip_if_no_network
+def test_10_get_dir_file():
     fh = subj_1.resource('test').file('dir/hello.txt')
 
     fpath = fh.get()
@@ -226,11 +197,8 @@ def test_get_dir_file():
     os.remove(custom)
     os.remove(fpath)
 
-
-def test_get_copy_file():
-    if PYXNAT_SKIP_NETWORK_TESTS:
-        raise SkipTest('No network. Skipping test.')
-
+@skip_if_no_network
+def test_11_get_copy_file():
     fpath = op.join(tempfile.gettempdir(), uuid1().hex)
     fpath = subj_1.resource('test').file('hello.txt').get_copy(fpath)
     assert op.exists(fpath)
@@ -242,20 +210,14 @@ def test_get_copy_file():
     fd.close()
     os.remove(fpath)
 
-
-def test_file_last_modified():
-    if PYXNAT_SKIP_NETWORK_TESTS:
-        raise SkipTest('No network. Skipping test.')
-
+@skip_if_no_network
+def test_12_file_last_modified():
     f = subj_1.resource('test').file('hello.txt')
     assert isinstance(f.last_modified(), string_types)
     assert len(f.last_modified()) > 0
 
-
-def test_last_modified():
-    if PYXNAT_SKIP_NETWORK_TESTS:
-        raise SkipTest('No network. Skipping test.')
-
+@skip_if_no_network
+def test_13_last_modified():
     sid = subj_1.id()
 
     t1 = central.select('/project/nosetests3').last_modified()[sid]
@@ -265,22 +227,16 @@ def test_last_modified():
 
     assert t1 != t2
 
-
-def test_getitem_key():
-    if PYXNAT_SKIP_NETWORK_TESTS:
-        raise SkipTest('No network. Skipping test.')
-
+@skip_if_no_network
+def test_14_getitem_key():
     projects = central.select.projects()
     assert projects.first().id() == projects[0].id()
     piter = projects.__iter__()
     next(piter)
     assert next(piter).id() == projects[1].id()
 
-
-def test_getitem_slice():
-    if PYXNAT_SKIP_NETWORK_TESTS:
-        raise SkipTest('No network. Skipping test.')
-
+@skip_if_no_network
+def test_15_getitem_slice():
     projects = central.select.projects()
     assert projects.first().id() == next(projects[:1]).id()
     piter = projects.__iter__()
@@ -298,30 +254,21 @@ def test_project_parent():
     project = central.select.project('nosetests3')
     assert not project.parent()
 
-
-def test_subject1_delete():
-    if PYXNAT_SKIP_NETWORK_TESTS:
-        raise SkipTest('No network. Skipping test.')
-
+@skip_if_no_network
+def test_16_subject1_delete():
     assert subj_1.exists()
     subj_1.delete()
     assert not subj_1.exists()
 
-
-def test_subject2_delete():
-    if PYXNAT_SKIP_NETWORK_TESTS:
-        raise SkipTest('No network. Skipping test.')
-
+@skip_if_no_network
+def test_17_subject2_delete():
     subj_2 = central.select('/projects/nosetests3/subjects/%(sid)s'%_id_set2)
     assert subj_2.exists()
     subj_2.delete()
     assert not subj_2.exists()
 
-
-def test_project_configuration():
-    if PYXNAT_SKIP_NETWORK_TESTS:
-        raise SkipTest('No network. Skipping test.')
-
+@skip_if_no_network
+def test_18_project_configuration():
     project = central.select('/project/nosetests3')
     version = central.version()
     from pyxnat.core.errors import DatabaseError
@@ -347,11 +294,8 @@ def test_project_configuration():
     assert 'nosetests' in project.owners()
     assert project.user_role('nosetests') == 'owner'
 
-
-def test_put_zip():
-    if PYXNAT_SKIP_NETWORK_TESTS:
-        raise SkipTest('No network. Skipping test.')
-
+@skip_if_no_network
+def test_19_put_zip():
     local_path = op.join(_modulepath, 'hello_dir.zip')
     assert op.exists(local_path)
 
@@ -368,11 +312,8 @@ def test_put_zip():
     assert r2.exists()
     assert r2.file('hello_dir.zip').exists()
 
-
-def test_get_zip():
-    if PYXNAT_SKIP_NETWORK_TESTS:
-        raise SkipTest('No network. Skipping test.')
-
+@skip_if_no_network
+def test_20_get_zip():
     r = subj_1.resource('test_zip_extract')
     local_dir = op.join(_modulepath, 'test_zip_download'+r.id())
     file_list = [op.join(local_dir,'test_zip_extract/hello_dir'),
@@ -388,19 +329,13 @@ def test_get_zip():
         assert op.exists(f)
     r.get(local_dir, extract=False)
 
-
-def test_project_aliases():
-    if PYXNAT_SKIP_NETWORK_TESTS:
-        raise SkipTest('No network. Skipping test.')
-
+@skip_if_no_network
+def test_21_project_aliases():
     project = central.select('/project/nosetests3')
     assert project.aliases() == ['nosetests32']
 
-
-def test_project():
-    if PYXNAT_SKIP_NETWORK_TESTS:
-        raise SkipTest('No network. Skipping test.')
-
+@skip_if_no_network
+def test_22_project():
     project = central.select.project('nosetests3')
     project.datatype()
     project.experiments()

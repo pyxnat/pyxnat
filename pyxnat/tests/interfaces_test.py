@@ -1,7 +1,6 @@
 import os.path as op
 from .. import Interface
-from . import PYXNAT_SKIP_NETWORK_TESTS
-from nose import SkipTest
+from . import skip_if_no_network
 
 fp = op.join(op.dirname(op.abspath(__file__)), 'central.cfg')
 central = Interface(config=fp)
@@ -19,10 +18,8 @@ def test_nested_object_listing():
 def test_nested_path_listing():
     assert isinstance(central.select('/projects/*OASIS*/subjects').get(), list)
 
-
+@skip_if_no_network
 def test_search_access():
-    if PYXNAT_SKIP_NETWORK_TESTS:
-        raise SkipTest('No network. Skipping test.')
     constraints = [('xnat:subjectData/PROJECT', '=', 'CENTRAL_OASIS_CS'), 'AND']
 
     for subject in central.select('//subjects').where(constraints):
@@ -39,9 +36,8 @@ def test_anonymous_access():
     assert isinstance(projects, list)
     assert list
 
+@skip_if_no_network
 def test_close_jsession():
-    if PYXNAT_SKIP_NETWORK_TESTS:
-        raise SkipTest('No network. Skipping test.')
     config_file = op.join(op.dirname(op.abspath(__file__)), 'central.cfg')
     with Interface(config=config_file) as central:
         assert central.select.project('nosetests').exists()
@@ -49,8 +45,7 @@ def test_close_jsession():
 def test_save_config():
     central.save_config('/tmp/.xnat.cfg')
 
+@skip_if_no_network
 def test_version():
-    if PYXNAT_SKIP_NETWORK_TESTS:
-        raise SkipTest('No network. Skipping test.')
     v = central.version()
     assert(v['tag'] == '1.7.5.1')
