@@ -2,8 +2,7 @@ import os
 import os.path as op
 from uuid import uuid1
 import time
-from . import PYXNAT_SKIP_NETWORK_TESTS
-from nose import SkipTest
+from . import skip_if_no_network
 from .. import Interface
 
 _modulepath = op.dirname(op.abspath(__file__))
@@ -18,10 +17,8 @@ eid = uuid1().hex
 subject = central.select.project('nosetests3').subject(sid)
 experiment = subject.experiment(eid)
 
-
-def test_fancy_resource_create():
-    if PYXNAT_SKIP_NETWORK_TESTS:
-        raise SkipTest('No network. Skipping test.')
+@skip_if_no_network
+def test_01_fancy_resource_create():
 
     field_data = {'experiment':'xnat:mrSessionData',
                   'ID':'TEST_%s' % eid,
@@ -38,16 +35,12 @@ def test_fancy_resource_create():
     globals()['subject'] = experiment.parent()
     globals()['experiment'] = experiment
 
-def test_attr_get():
-    if PYXNAT_SKIP_NETWORK_TESTS:
-        raise SkipTest('No network. Skipping test.')
+@skip_if_no_network
+def test_02_attr_get():
+        assert experiment.attrs.get('xnat:mrSessionData/age') == '42.0'
 
-    assert experiment.attrs.get('xnat:mrSessionData/age') == '42.0'
-
-def test_attr_mget():
-    if PYXNAT_SKIP_NETWORK_TESTS:
-        raise SkipTest('No network. Skipping test.')
-
+@skip_if_no_network
+def test_03_attr_mget():
     time.sleep(5)
     fields = ['xnat:subjectData/investigator/firstname',
               'xnat:subjectData/investigator/lastname'
@@ -55,10 +48,8 @@ def test_attr_mget():
 
     assert subject.attrs.mget(fields) == ['john', 'doe']
 
-def test_attr_set():
-    if PYXNAT_SKIP_NETWORK_TESTS:
-        raise SkipTest('No network. Skipping test.')
-
+@skip_if_no_network
+def test_04_attr_set():
     experiment.attrs.set('xnat:mrSessionData/age', '26')
     assert experiment.attrs.get('xnat:mrSessionData/age') == '26.0'
 
@@ -75,16 +66,14 @@ def test_attr_set():
 #     assert set(returned) == \
 #         set(field_data.values()), '''set: %s returned: %s ''' %(field_data.values(), returned)
 
-def test_cleanup():
-    if PYXNAT_SKIP_NETWORK_TESTS:
-        raise SkipTest('No network. Skipping test.')
+@skip_if_no_network
+def test_05_cleanup():
 
     subject.delete()
     assert not subject.exists()
 
-def test_list_project_attrs():
-    if PYXNAT_SKIP_NETWORK_TESTS:
-        raise SkipTest('No network. Skipping test.')
+@skip_if_no_network
+def test_06_list_project_attrs():
 
     project_attributes = ['xnat:projectData/name',
                           'xnat:projectData/type',
