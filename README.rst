@@ -37,7 +37,7 @@ For development purposes:
 - *python-nose* v1.2.1 or higher
 - *coverage* v3.6 or higher
 
-See the `full installation instructions <https://pyxnat.readthedocs.io/en/latest/installing.html>`_
+See the `full installation instructions <https://pyxnat.github.io/pyxnat/installing.html>`_
 for recommended and optional dependencies.
 
 Installation from sources
@@ -52,7 +52,7 @@ where you found this file after cloning the git repo), execute::
 Documentation
 =============
 
-The official documentation is hosted at: https://pyxnat.readthedocs.io/en/latest/
+The official documentation is hosted at: https://pyxnat.github.io/pyxnat
 
 Running the test suite
 =========================
