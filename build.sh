@@ -15,6 +15,7 @@ git push origin gh-pages --force
 rm -r *
 mv /tmp/html/*  .
 touch .nojekyll
+curl "https://raw.githubusercontent.com/xgrg/pyxnat/nosetests/pyxnat.png" -o _static/pyxnat.png
 git add --all
 git commit -m 'Update documentation'
 git push origin gh-pages
