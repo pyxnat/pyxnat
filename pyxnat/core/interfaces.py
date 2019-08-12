@@ -2,16 +2,15 @@ import os
 import time
 import tempfile
 import getpass
-
 import json
-
 import requests
+
 try:
     import socks
 except ImportError:
     socks = None
-import six
 
+import six
 if six.PY2:
     from urlparse import urlparse
     input = raw_input
@@ -58,20 +57,11 @@ class Interface(object):
             Proxy support requires the socks module be installed. This can be
             installed via pip::
 
-            pip install SocksiPy-branch
+            `pip install SocksiPy-branch`
 
         Or anonymously (unauthenticated):
 
         >>> central = Interface('http://central.xnat.org', anonymous=True)
-
-        Attributes
-        ----------
-        _mode: online | offline
-            Online or offline mode
-
-
-
-
     """
 
     def __init__(self, server=None, user=None, password=None, config=None,
@@ -115,9 +105,7 @@ class Interface(object):
         """
 
         self._interactive = False
-
         self._anonymous = anonymous
-
         self._verify = verify
 
         if self._anonymous:
@@ -181,15 +169,8 @@ class Interface(object):
 
         self._callback = None
 
-        self._memcache = {}
-        self._memtimeout = 1.0
-        self._mode = 'online'
         self._struct = {}
         self._entry = None
-
-        self._last_memtimeout = 1.0
-        self._last_mode = 'online'
-
         self._jsession = None #'authentication_by_credentials'
         self._connect_extras = {}
         self._connect()
@@ -197,7 +178,6 @@ class Interface(object):
         self.inspect = Inspector(self)
         self.select = Select(self)
         self.array = ArrayData(self)
-        # self.cache = CacheManager(self)
         self.manage = GlobalManager(self)
         self.xpath = XpathStore(self)
 
@@ -499,6 +479,9 @@ class Interface(object):
             raise Exception('Configuration file does not exist.')
 
     def version(self):
+        """
+            Get version of the currently running XNAT instance.
+        """
         from pyxnat.core.errors import DatabaseError
         try:
             return self._exec('/data/version')
@@ -567,7 +550,7 @@ class Interface(object):
 
     def close_jsession(self):
         '''
-        Closes the session with XNAT server and consumes the JSESSIONID token
+        Closes the session with XNAT server and consumes the JSESSIONID token.
         '''
         uri = '/data/JSESSION'
         response = self.delete(uri)

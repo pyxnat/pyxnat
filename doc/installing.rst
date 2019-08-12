@@ -1,5 +1,6 @@
-.. module:: pyxnat
+:orphan:
 
+.. module:: pyxnat
 
 Installation
 ============
@@ -32,7 +33,6 @@ For development purposes:
 
 - *python-nose* v1.2.1+ to run the unit tests
 - *coverage* v3.6+
-- *numpydoc* to build documentation
 
 
 The `easy_install` way

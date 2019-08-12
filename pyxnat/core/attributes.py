@@ -14,6 +14,7 @@ class EAttrs(object):
     """ Accessor class to resource fields.
 
         Help to retrieve the attributes paths relevant to this element::
+
             >>> subject.attrs()
             ['xnat:subjectData/sharing',
              'xnat:subjectData/sharing/share',
@@ -26,6 +27,7 @@ class EAttrs(object):
          is available. To retrieve the paths, the corresponding
          schemas must be downloaded first through the schema
          management interface in order to be parsed::
+         
              >>> interface.manage.schemas.add('xnat.xsd')
              >>> interface.manage.schemas.add('myschema/myschema.xsd')
     """
@@ -72,11 +74,11 @@ class EAttrs(object):
                 The attribute's value. Note that the python type is
                 always a string but the content of the value must
                 match what is defined in the schema.
-                    e.g. an element defined as a float in the schema
-                    must be given a string containing a number, a
-                    valid date must follow the ISO 8601 which is the
-                    standard representation for dates and times
-                    established by the W3C.
+                e.g. an element defined as a float in the schema
+                must be given a string containing a number, a
+                valid date must follow the ISO 8601 which is the
+                standard representation for dates and times
+                established by the W3C.
         """
         dt = self._get_datatype()
         if dt is None:

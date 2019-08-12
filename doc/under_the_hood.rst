@@ -1,3 +1,5 @@
+:orphan:
+
 ====================
 Under the Hood
 ====================
@@ -27,9 +29,7 @@ Requesting specific data in specific format is done with a query string:
     - /REST/projects?format=csv
     - /REST/projects/{ID}?format=xml
 
-_____
 
-.. [#] http://www.xnat.org/Web+Services
 
 REST in Python
 --------------
