@@ -82,8 +82,6 @@ Module contents
 .. currentmodule :: pyxnat
 
 .. autosummary::
-   :toctree: generated/
-
     Interface
     Select
     SearchManager

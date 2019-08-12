@@ -40,11 +40,8 @@ sys.path.append(os.path.abspath('..'))
 # Add any Sphinx extension module names here, as strings. They can be extensions
 # coming with Sphinx (named 'sphinx.ext.*') or your custom ones.
 extensions = [ 'sphinx.ext.autodoc',
-               'sphinx.ext.imgmath',
                'sphinx.ext.napoleon',
-               'phantom_import',
-               'sphinx.ext.autosummary',
-               'sphinx.ext.coverage'
+               'sphinx.ext.autosummary'
              ]
 
 # Add any paths that contain templates here, relative to this directory.
@@ -135,7 +132,7 @@ html_theme_path = [sphinx_theme.get_html_theme_path('stanford-theme')]
 # The name of an image file (within the static path) to use as favicon of the
 # docs.  This file should be a Windows icon file (.ico) being 16x16 or 32x32
 # pixels large.
-#html_favicon = None
+html_favicon = "pyxnat.png"
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
