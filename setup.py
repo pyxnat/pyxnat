@@ -32,7 +32,7 @@ PyXNAT
 **pyxnat** provides an API to access data on XNAT (see http://xnat.org)
 servers.
 
-Visit https://pyxnat.readthedocs.io/en/latest/ for more information.
+Visit https://pyxnat.github.io/pyxnat for more information.
 """
 
 setup(name='pyxnat',

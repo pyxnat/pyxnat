@@ -5,7 +5,7 @@ PyXNAT
 :mod:`pyxnat` provides an API to access data on XNAT servers
 (see http://xnat.org).
 
-Visit https://pyxnat.readthedocs.io/en/latest/ for more information.
+Visit https://pyxnat.github.io/pyxnat for more information.
 """
 
 from .version import VERSION as __version__
