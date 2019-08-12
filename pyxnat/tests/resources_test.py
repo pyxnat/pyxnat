@@ -7,6 +7,7 @@ import os.path as op
 import os
 from .. import Interface
 from . import skip_if_no_network
+from nose import SkipTest
 
 _modulepath = op.dirname(op.abspath(__file__))
 
