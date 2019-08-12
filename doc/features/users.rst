@@ -23,4 +23,5 @@ On a specific user:
 To assign users with specific roles (owner/member/collaborator) in a project:
 
 .. code-block:: python
+
    >>> central.select.project('project').add_user('admin', 'collaborator')

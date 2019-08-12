@@ -1,3 +1,5 @@
+:orphan:
+
 .. module:: pyxnat
 
 Getting started
@@ -24,7 +26,7 @@ You may also use `XNAT Central <https://central.xnat.org>`_, which is a public
 instance managed by the XNAT team and updated on a regular basis.
 
 Setting up a connection
--------------------
+-----------------------
 
 The first step when working with :mod:`pyxnat` is to connect to an XNAT
 instance with :class:`~pyxnat.Interface`. For this, you will need valid

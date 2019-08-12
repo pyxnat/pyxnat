@@ -1,3 +1,5 @@
+:orphan:
+
 .. module:: pyxnat
 
 ==============================
@@ -73,6 +75,7 @@ exotic resources will increase in future releases. A good way to know
 what is the supported REST hierarchy is to use the following method::
 
 >>> central.inspect.structure()
+
 - PROJECTS
     + SUBJECTS
         + EXPERIMENTS

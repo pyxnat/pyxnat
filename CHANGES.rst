@@ -1,3 +1,5 @@
+:orphan:
+
 Latest changes
 ===============
 

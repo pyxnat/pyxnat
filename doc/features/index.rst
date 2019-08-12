@@ -1,3 +1,5 @@
+:orphan:
+
 .. module:: pyxnat
 
 User Guide

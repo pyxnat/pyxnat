@@ -41,6 +41,7 @@ class Inspector(object):
         """ Once in a while queries will persist additional
             information on the server. This information is available
             through the following methods of this class:
+            
                 - experiment_types
                 - assessor_types
                 - scan_types

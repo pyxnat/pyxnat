@@ -470,7 +470,7 @@ class SearchManager(object):
             Parameters
             ----------
             name: string
-                Name under which the template is save in XNAT. A 'template_' is
+                Name under which the template is save in XNAT. A template is
                 prepended to the name so that it appear clearly as a template
                 on the web interface.
             row: string
@@ -541,6 +541,8 @@ class SearchManager(object):
 
     def use_template(self, name, values):
         """
+            Performs a search query using a previously saved template.
+
             Parameters
             ----------
             name: string

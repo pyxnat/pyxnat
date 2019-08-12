@@ -1,6 +1,5 @@
 -------------------------------------------------------------------------------
     The files
-    - numpydoc.py
     - autosummary.py
     - autosummary_generate.py
     - docscrape.py

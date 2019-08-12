@@ -87,5 +87,4 @@ Module contents
     Interface
     Select
     SearchManager
-    CacheManager
     Users

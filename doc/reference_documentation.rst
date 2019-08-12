@@ -1,3 +1,5 @@
+:orphan:
+
 ==============================
 Reference documentation
 ==============================
@@ -85,15 +87,8 @@ The `Inspector` class
 .. autoclass:: pyxnat.core.help.Inspector
     :members:
 
-The `CacheManager` class
-~~~~~~~~~~~~~~~~~~~~~~~~
-
-.. autoclass:: pyxnat.core.cache.CacheManager
-    :members:
-
 The `SchemaManager` class
 ~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. autoclass:: pyxnat.core.manage.SchemaManager
     :members:
-

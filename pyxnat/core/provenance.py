@@ -154,6 +154,7 @@ def process_step_xml(**kwargs):
 class Provenance(object):
     """ Class to annotate processed data with provenance information.
         The following parameters are available:
+
             - program
             - program_version
             - program_arguments
@@ -191,6 +192,7 @@ class Provenance(object):
                 If some required parameters are not provided, theses
                 parameters will be extracted from the current machine
                 and set automatically. Those parameters are:
+                
                     - machine
                     - platform
                     - timestamp

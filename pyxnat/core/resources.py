@@ -267,26 +267,32 @@ class EObject(object):
                To set up additional variables for the element at its
                creation it is possible to use shortcuts defined in the
                XNAT REST documentation or xpath in the schema:
-                   - element.create(ID='theid')
-                   - subject.create(**{'xnat:subjectData/ID':'theid'})
+
+                   - `element.create(ID='theid')`
+                   - `subject.create(**{'xnat:subjectData/ID':'theid'})`
 
 
             Parameters
             ----------
             params: keywords
+
                 - Specify the datatype of the element resource and of
                   any ancestor that may need to be created. The
                   keywords correspond to the levels in the REST
                   hierarchy, see Interface.inspect.architecture()
+
                 - If an element is created with no specified type:
+
                       - if its name matches a naming convention, this type
                         will be used
                       - else a default type is defined in the schema module
+
                 - To give the ID the same value as the label use
                   use_label=True e.g element.create(use_label=True)
 
             Examples
             --------
+
                 >>> interface.select('/project/PROJECT/subject'
                                      '/SUBJECT/experiment/EXP/scan/SCAN'
                             ).create(experiments='xnat:mrSessionData',
@@ -499,6 +505,7 @@ class CObject(object):
 
         A collection resource is a list of element resources. There is
         however several ways to obtain such a list:
+
             - a collection URI e.g. /REST/projects
             - a list of element URIs
             - a list of collections
@@ -508,6 +515,7 @@ class CObject(object):
             - a list a collection objects
 
         Collections objects built in different ways share the same behavior:
+
             - they behave as iterators, which enables a lazy access to
               the data
             - they always yield EObjects
@@ -1821,25 +1829,18 @@ class File(EObject):
         return self._getcells(['URI', 'Name', 'Size', 'path',
                                'file_tags', 'file_format', 'file_content'])
 
-    def get(self, dest=None, force_default=False):
+    def get(self, dest=None):
         """ Downloads the file.
 
             Parameters
             ----------
             dest: string | None
+
                 - If dest is None, then the user's Downloads directory is used
                     as the default download location.
                 - Else the file is downloaded at the requested location.
                     Path should include the file name.
                     eg: /path/to/file.txt
-            force_default: boolean
-                - Depricated as of 1.0.0.0
-                - Has no effect if the file is downloaded for the first time
-                - If the file was previously download with a custom path,
-                  calling get() will remember the custom location unless:
-                      - another custom location is set in dest
-                      - force_default is set to True and the file will be
-                        moved to the cache
 
             Returns
             -------

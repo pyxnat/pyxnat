@@ -20,8 +20,8 @@ different arguments:
 
     >>> project.resource('NIFTI').file('T1.nii').insert('/tmp/image.nii')
     >>> project.resource('NIFTI').file('image.nii').insert(
-    ...		'/tmp/image.nii', 
-    ...		content='T1', 
+    ...		'/tmp/image.nii',
+    ...		content='T1',
     ...		format='NIFTI'
     ...		tags='image test')
 
@@ -36,14 +36,7 @@ Download Files
 
 Files are downloaded with the :func:`~pyxnat.File.get` method. Given no
 location, a default path in the cachedir will be automatically generated
-and returned. A custom location can however be given and the file will
-still be tracked by the :class:`~pyxnat.CacheManager` and affected by its
-operations. Use :func:`~pyxnat.File.get_copy` instead if you want to
-download a file outside of the cache scope.
-
-.. note:: :func:`~pyxnat.File.get_copy` does what it says, it copies the 
-   file, so you'll have one version in the cache and one version at the
-   requested location.
+and returned.
 
 .. code-block:: python
 
