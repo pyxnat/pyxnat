@@ -338,7 +338,7 @@ used to retrieve a specific subset of REST resources or a table
 containing the relevant values. The following queries find all the
 subjects that are within `my_project` older than 14::
 
-    >>> contraints = [('xnat:subjectData/SUBJECT_ID','LIKE','%'),
+    >>> constraints = [('xnat:subjectData/SUBJECT_ID','LIKE','%'),
                       ('xnat:subjectData/PROJECT', '=', 'my_project'),
                       'OR',
                       [('xnat:subjectData/AGE','>','14'),
@@ -346,14 +346,14 @@ subjects that are within `my_project` older than 14::
                        ]
                       ]
     >>> # retrieve experiments
-    >>> interface.select('//experiments').where(contraints)
+    >>> interface.select('//experiments').where(constraints)
     >>> # retrieve table with one subject per row and the columns SUBJECT_ID and AGE
-    >>> interface.select('xnat:subjectData', ['xnat:subjectData/SUBJECT_ID', 'xnat:subjectData/AGE']).where(contraints)
+    >>> interface.select('xnat:subjectData', ['xnat:subjectData/SUBJECT_ID', 'xnat:subjectData/AGE']).where(constraints)
 
 See the ``Search``, ``SeachManager`` and ``CObject`` classes reference
 documentation for further details.
 
-To get the searchable types and fields to put in the contraints, rows
+To get the searchable types and fields to put in the constraints, rows
 and columns parameters, use the ``Interface.inspect.datatypes``
 method::
 
