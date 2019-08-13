@@ -50,8 +50,8 @@ of the targeted host.
 Alternative connections
 ~~~~~~~~~~~~~~~~~~~~~~~
 
-If a least one of server, user and password arguments are missing,
-the user will be prompted for it(them). In this mode, a connection
+If at least one of server, user and password arguments is missing,
+the user will be prompted for it (them). In this mode, a connection
 to the server will be attempted at the object creation and will raise
 an exception if something is wrong.
 
@@ -62,13 +62,13 @@ an exception if something is wrong.
        Password:
 
 There are two types of configuration files that :mod:`pyxnat` uses.
-The first one is used with the config parameter.
+The first one is used with the `config` parameter.
 
 .. code-block:: python
 
    >>> central = Interface(config='central.cfg')
 
-The best way to create this kind of configuration file is to use the
+The easiest way to create this configuration file is to use the
 :func:`~pyxnat.Interface.save_config()` method on an existing interface.
 
 .. code-block:: python
@@ -91,7 +91,7 @@ being the one selected by a ``+`` sign:
 
    >>> central = Interface()
 
-.. note:: If you use :class:`~pyxnat.Interface` without any parameter
+.. note:: If :class:`~pyxnat.Interface` is used without any parameter
    and any configuration file at default location,
    user will be prompted for server, user and password.
 
@@ -104,7 +104,9 @@ being the one selected by a ``+`` sign:
   way by using Python's getpass.getpass(.) method, some variations of which are
   demonstrated in examples below.
 
-  You can save an entire configuration to a file and then load it later. Note that the configuration file contains the password, so be sure only to save this file in an access-protected location.
+  You can save an entire configuration to a file and then load it later.
+  Note that the configuration file contains the password, so be sure only to
+  save this file in an access-protected location.
 
 Traversing the database
 -----------------------
@@ -165,8 +167,8 @@ and existence checking.
 Working with Files
 ~~~~~~~~~~~~~~~~~~
 
-**XNAT** was built to store images in addition to related data,
-which means it can handle files. Files resources in :mod:`pyxnat`
+**XNAT** was built to store images which means it can handle files.
+Files resources in :mod:`pyxnat`
 are just :class:`~pyxnat.EObject` objects with a few additional
 methods to upload and download the data.
 
