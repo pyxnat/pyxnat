@@ -3,6 +3,25 @@
 Latest changes
 ===============
 
+Release 1.2.0.0
+---------------
+
+      * New Features
+
+         - CI tests can be skipped if no network connectivity or no Docker-based XNAT available
+
+      * Improvements
+
+         - More tests
+         - Refreshing documentation
+
+      * Bug fixes
+
+         - XNAT REST API compatibility (`Interfaces.version()`, `Schemas`, etc)
+         - Removed deprecated references to cache support
+         - Python 3 fixes
+
+
 Release 1.1.0.2
 ---------------
 
@@ -84,7 +103,7 @@ Release 0.9.5
         - Add __getitem__ to CObject for slice operations.
 
 
-    * Impovements
+    * Improvements
         - Add toggle for overwriting files on the Resources object (put, put_dir, put_zip)
         - Add toggle for not extracting the zip file on the Resources object (put, put_dir, put_zip)
 
@@ -100,10 +119,10 @@ Release 0.9.4
     * New Features
         - add proxy support to interface.
 
-    * Impovements
+    * Improvements
 
     * Bug fixes
-        - python <2.7 compatability.
+        - python <2.7 compatibility.
         - project.parent() does not throw error.
         - removed simplejson requirement
         - md5 cache key
