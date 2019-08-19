@@ -63,5 +63,6 @@ setup(name='pyxnat',
       ],
 
       platforms='any',
+      scripts=['bin/sessionmirror.py'],
       install_requires=['lxml>=4.3', 'requests>=2.20', 'requests[security]'],
       **extra_setuptools_args)
