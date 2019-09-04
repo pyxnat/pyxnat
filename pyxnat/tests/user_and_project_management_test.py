@@ -23,7 +23,6 @@ def test_users():
 
 @docker_available
 def test_user_firstname():
-    print(x._server)
     assert x.manage.users.firstname('admin') == 'Admin'
 
 @docker_available
