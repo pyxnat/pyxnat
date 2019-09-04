@@ -329,6 +329,7 @@ def test_20_get_zip():
     for f in file_list:
         assert op.exists(f)
     r.get(local_dir, extract=False)
+    assert op.isfile(op.join(local_dir, 'test_zip_extract.zip'))
 
 @skip_if_no_network
 def test_21_project_aliases():
