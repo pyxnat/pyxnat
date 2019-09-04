@@ -33,6 +33,7 @@ python:
 install:
     - "pip install -r requirements.txt"
     - "pip install -r requirements-dev.txt"
+    - if [[ $TRAVIS_PYTHON_VERSION == 3.7 ]]; then pip install sphinx sphinx_theme; fi
     - "pip install ."
 script:
     - git clone https://github.com/NrgXnat/xnat-docker-compose
@@ -46,3 +47,4 @@ script:
     - "coverage report -m"
 after_success:
     - coveralls
+    - if [[ $TRAVIS_PYTHON_VERSION == 3.7 ]]; then ./build-docs.sh; fi
