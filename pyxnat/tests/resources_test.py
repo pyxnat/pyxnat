@@ -150,9 +150,9 @@ def test_07_put_file():
     f = subj_1.resource('test').file('hello.txt')
     subj_1.resource('test').file('hello.txt').put(local_path)
     subj_1.resource('test').put([local_path])
-    assert subj_1.resource('test').file('hello.txt').exists()
-    assert int(subj_1.resource('test').file('hello.txt').size()) == \
-                                                os.stat(local_path).st_size
+    assert f.exists()
+    assert int(f.size()) == os.stat(local_path).st_size
+    
 @skip_if_no_network
 def test_08_get_file():
     fh = subj_1.resource('test').file('hello.txt')
