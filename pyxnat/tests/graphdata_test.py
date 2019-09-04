@@ -19,5 +19,3 @@ def test_schemasinspector():
 
 def test_paintgraph():
     pg = PaintGraph(central)
-    # needs pygraphviz
-    #pg.architecture()
