@@ -67,8 +67,8 @@ def test_05_reconstruction_create():
     assert reco_1.exists()
 
 # def test_provenance():
-#     reco_1.provenance.set({'program':'nosetests3'})
-#     assert reco_1.provenance.get()[0]['program'] == 'nosetests3'
+#     reco_1.provenance.set({'program':'nosetests'})
+#     assert reco_1.provenance.get()[0]['program'] == 'nosetests'
 
 @skip_if_no_network
 def test_06_multi_create():
@@ -96,53 +96,53 @@ def test_06_multi_create():
     assert scan_2.datatype() == 'xnat:mrScanData'
 
 #def test_share_subject():
-#    assert not central.select('/projects/nosetests32'
+#    assert not central.select('/projects/nosetests2'
 #                              '/subjects/%(sid)s' % _id_set1
 #                              ).exists()
-#    subj_1.share('nosetests32')
-#    assert central.select('/projects/nosetests32/subjects/%(sid)s'%_id_set1
+#    subj_1.share('nosetests2')
+#    assert central.select('/projects/nosetests2/subjects/%(sid)s'%_id_set1
 #                              ).exists()
-#    assert set(subj_1.shares().get()) == set(['nosetests3', 'nosetests32'])
+#    assert set(subj_1.shares().get()) == set(['nosetests', 'nosetests2'])
 
 #def test_share_experiment():
-#    assert not central.select('/projects/nosetests32/subjects/%(sid)s'
+#    assert not central.select('/projects/nosetests2/subjects/%(sid)s'
 #                          '/experiments/%(eid)s'%_id_set1
 #                          ).exists()
-#    expe_1.share('nosetests32')
-#    assert central.select('/projects/nosetests32/subjects/%(sid)s'
+#    expe_1.share('nosetests2')
+#    assert central.select('/projects/nosetests2/subjects/%(sid)s'
 #                          '/experiments/%(eid)s'%_id_set1
 #                          ).exists()
-#    assert set(expe_1.shares().get()) == set(['nosetests3', 'nosetests32'])
+#    assert set(expe_1.shares().get()) == set(['nosetests', 'nosetests2'])
 
 #def test_share_assessor():
-#    assert not central.select('/projects/nosetests32/subjects/%(sid)s'
+#    assert not central.select('/projects/nosetests2/subjects/%(sid)s'
 #                              '/experiments/%(eid)s/assessors/%(aid)s'%_id_set1
 #                              ).exists()
-#    asse_1.share('nosetests32')
-#    assert central.select('/projects/nosetests32/subjects/%(sid)s'
+#    asse_1.share('nosetests2')
+#    assert central.select('/projects/nosetests2/subjects/%(sid)s'
 #                          '/experiments/%(eid)s/assessors/%(aid)s'%_id_set1
 #                          ).exists()
-#    assert set(asse_1.shares().get()) == set(['nosetests3', 'nosetests32'])
+#    assert set(asse_1.shares().get()) == set(['nosetests', 'nosetests2'])
 
 #def test_unshare_assessor():
-#    asse_1.unshare('nosetests32')
-#    assert not central.select('/projects/nosetests32/subjects/%(sid)s'
+#    asse_1.unshare('nosetests2')
+#    assert not central.select('/projects/nosetests2/subjects/%(sid)s'
 #                              '/experiments/%(eid)s/assessors/%(aid)s'%_id_set1
 #                              ).exists()
-#    assert asse_1.shares().get() == ['nosetests3']
+#    assert asse_1.shares().get() == ['nosetests']
 
 #def test_unshare_experiment():
-#    expe_1.unshare('nosetests32')
-#    assert not central.select('/projects/nosetests32/subjects/%(sid)s'
+#    expe_1.unshare('nosetests2')
+#    assert not central.select('/projects/nosetests2/subjects/%(sid)s'
 #                          '/experiments/%(eid)s'%_id_set1
 #                          ).exists()
-#    assert expe_1.shares().get() == ['nosetests3']
+#    assert expe_1.shares().get() == ['nosetests']
 
 #def test_unshare_subject():
-#    subj_1.unshare('nosetests32')
-#    assert not central.select('/projects/nosetests32/subjects/%(sid)s'%_id_set1
+#    subj_1.unshare('nosetests2')
+#    assert not central.select('/projects/nosetests2/subjects/%(sid)s'%_id_set1
 #                              ).exists()
-#    assert subj_1.shares().get() == ['nosetests3']
+#    assert subj_1.shares().get() == ['nosetests']
 
 @skip_if_no_network
 def test_07_put_file():
