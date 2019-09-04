@@ -313,7 +313,7 @@ class Interface(object):
 
         response = None
 
-        def query(method, uri, headers, body, kwargs):
+        def request(method, uri, headers, body, kwargs):
             if method is 'PUT':
                 response = self._http.put(uri, headers=headers, data=body,
                     **kwargs)
@@ -334,15 +334,15 @@ class Interface(object):
                 return
             return response
 
-        response = query(method, uri, headers, body, kwargs)
+        response = request(method, uri, headers, body, kwargs)
         if response is None:
             return
 
         # Dirty trick to help Travis CI tests on CENTRAL: consider fixing it
         if STUBBORN:
             if (response is not None and response.status_code == 500):
-                print('Retrying query... %s'%uri)
-                response = query(method, uri, headers, body, kwargs)
+                print('Retrying request... %s'%uri)
+                response = request(method, uri, headers, body, kwargs)
 
         if (response is not None and not response.ok) or is_xnat_error(response.content):
             if DEBUG:
