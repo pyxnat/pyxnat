@@ -278,16 +278,16 @@ def test_18_project_configuration():
         assert project.quarantine_code() == 0
         assert project.prearchive_code() == 4, project.prearchive_code()
     except DatabaseError:
-        if version['tag'] == '1.7.5.1':
-            msg = 'Version 1.7.5.1 gives trouble on some machines. Skipping it'
+        if version['version'] == '1.7.5.2-SNAPSHOT':
+            msg = 'Version 1.7.5.2-SNAPSHOT gives trouble on some machines. Skipping it'
             raise SkipTest(msg)
 
-    if version['tag'] != '1.7.5.1':
+    if version['version'] != '1.7.5.2-SNAPSHOT':
         try:
             assert project.current_arc() == b'arc001'
         except DatabaseError:
             msg = 'Check if current_arc is supported in XNAT version %s.'\
-                %version['tag']
+                %version['version']
             print(msg)
 
 

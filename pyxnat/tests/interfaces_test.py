@@ -48,4 +48,4 @@ def test_save_config():
 @skip_if_no_network
 def test_version():
     v = central.version()
-    assert(v['tag'] == '1.7.5.1')
+    assert(v['version'] == '1.7.5.2-SNAPSHOT')
