@@ -5,7 +5,7 @@ from .jsonutil import JsonTable
 from .uriutil import uri_parent
 from .schema import datatype_attributes
 
-
+""" Edit by Shunxing for optimizing dax build 09/06/2019"""
 class EAttrs(object):
     """ Accessor class to resource fields.
 
@@ -74,11 +74,25 @@ class EAttrs(object):
                     valid date must follow the ISO 8601 which is the
                     standard representation for dates and times
                     established by the W3C.
+            EDIT by SHUNXING (shunxing.bao@vanderbilt.edu)
+            09/05/2019
         """
-        put_uri = self._eobj._uri + '?xsiType=%s&%s=%s' % (urllib.quote(self._get_datatype())
+        # Please contact Shunxing if there is any exceptions
+        # referenced from pyxnat master branch
+        # tying to let urllib.quote avoid to quote a None object
+
+        dt = self._get_datatype()
+        if dt is None:
+            dt = ''
+
+        put_uri = self._eobj._uri + '?xsiType=%s&%s=%s' % (urllib.quote(dt)
                                                          , urllib.quote(path)
                                                          , urllib.quote(value)
                                               )
+        #put_uri = self._eobj._uri + '?xsiType=%s&%s=%s' % (urllib.quote(self._get_datatype())
+        #                                                 , urllib.quote(path)
+        #                                                 , urllib.quote(value)
+        #                                      )
 
         self._intf._exec(put_uri, 'PUT')
 
@@ -95,14 +109,33 @@ class EAttrs(object):
             dict_attrs: dict
                 The dict of key values to set. It follows the same
                 principles as the single `set()` method.
+            EDIT by SHUNXING (shunxing.bao@vanderbilt.edu)
+            09/05/2019
         """
+        # Please contact Shunxing if there is any exceptions
+        # referenced from pyxnat master branch
+        # tying to let urllib.quote avoid to quote a None object
+        
+        dt = self._get_datatype()
+        if dt is None:
+            dt = ''
 
-        query_str = '?xsiType=%s' % (urllib.quote(self._get_datatype())) + ''.join(['&%s=%s' % (urllib.quote(path),
-                                               urllib.quote(val)
-                                               )
-                                    for path, val in dict_attrs.items()
-                                    ]
-                                   )
+        tmpPathVal = ''
+        for path, val in dict_attrs.items():
+            if path is None:
+                path = ''
+            if val is None:
+                val = ''
+            tmpPathVal = tmpPathVal.join(['&%s=%s' % (path, val)])
+        
+        query_str = '?xsiType=%s' %  urllib.quote(dt) + ''.join(tmpPathVal)
+
+       # query_str = '?xsiType=%s' % (urllib.quote(self._get_datatype())) + ''.join(['&%s=%s' % (urllib.quote(path),
+       #                                        urllib.quote(val)
+       #                                        )
+       #                             for path, val in dict_attrs.items()
+       #                             ]
+       #                            )
 
         put_uri = self._eobj._uri + query_str
 

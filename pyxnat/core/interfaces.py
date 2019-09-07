@@ -25,9 +25,17 @@ from .array import ArrayData
 from .xpath_store import XpathStore
 from . import xpass
 
-
+#SHUNXING
+import cachecontrol
+#from cachecontrol import CacheControl, adapter
+#from cachecontrol.caches.file_cache import FileCache
+#import requests_cache
+import logging
+LOGGER = logging.getLogger('dax')
+from datetime import datetime
+import time
 DEBUG = False
-
+import sys
 
 # main entry point
 class Interface(object):
@@ -116,7 +124,7 @@ class Interface(object):
               with certification
 
         """
-
+        print('SHUNXING interface cachedir is %s'% str(cachedir))
         self._interactive = False
 
         self._anonymous = anonymous
@@ -201,6 +209,14 @@ class Interface(object):
         self.select = Select(self)
         self.array = ArrayData(self)
         # self.cache = CacheManager(self)
+        #SHUNXING EDIT for dax build Cache
+        LOGGER.warn('SHUNXING setup cache for dax build')
+        #self.cache = cachecontrol.CacheControl(self._http, cache=cachecontrol.caches.fileCache('/tmp/vuiiscci/nicai/.web_cache'))
+	if cachedir is not None: 
+	#    cachedir = '/tmp/.DAX_BUILD_CACHE_DIR'
+	    self.cache = cachecontrol.CacheControl(self._http, cache=cachecontrol.caches.fileCache(cachedir))
+	# play cache flag
+	self.cacheFlag = 0
         self.manage = GlobalManager(self)
         self.xpath = XpathStore(self)
 
@@ -262,14 +278,15 @@ class Interface(object):
                 the Http constructor. See the httplib2 documentation
                 for details. http://code.google.com/p/httplib2/
         """
-
+        #LOGGER.warn('SHUNXING connect')
         if kwargs != {}:
             self._connect_extras = kwargs
         else:
             kwargs = self._connect_extras
-
+        #SHUNXING EDIT
         self._http = requests.Session()
-
+        #self._http = Session() - for debugging
+        #SHUNXING EDIT DONE
         # requests verify defaults to True, but can be set from environment variables
         # Leave as-is unless user has explicitly overridden it
         if self._verify is not None:
@@ -315,6 +332,8 @@ class Interface(object):
             ----------
                 When calling with GET as method, the body parameter can be a key:value dictionary containing
                 request parameters or a string of parameters. They will be url encoded and appended to the url.
+://docs.google.com/spreadsheets/d/1O8PLPOzogRPcOvo_ughiYTLJNOdP9u_QiVTcc81iDE4/edit#gid=158505198rom .cachecontrol dimport CacheControl
+
 
             HTTP:POST
             ----------
@@ -322,34 +341,102 @@ class Interface(object):
                 request parameters they will be url encoded and appended to the url.
 
         """
+        #LOGGER.warn('SHUNXING exec')
 
         if headers is None:
             headers = {}
-
+        #headers = {'Cache-Control: Public'}
         self._get_entry_point()
 
         uri = join_uri(self._server, uri)
+        
+        #LOGGER.warn('SHUNXING URI:%s' % str(uri))
 
         if DEBUG:
             print(uri)
 
+        TIMEOUT = 3600
+        #print('timeout: ' + str(TIMEOUT))
+        #######SHUNXING DELETE ME FOR XML
+        #if "BLSA" in uri:
+            #http://xnat2.vanderbilt.edu:8080/xnat/data/projects/BLSA/subjects/BLSA_0038/experiments/BLSA_0038_21-0_03?format=xml
+            #uri="http://xnat2.vanderbilt.edu:8080/xnat/data/projects/BLSA/experiments/BLSA_0038_21-0_03?format=xml"
+            #uri="http://xnat2.vanderbilt.edu:8080/xnat/REST/archive/experiments?project=BLSA&xsiType=proc:genProcData&columns=ID,label,URI,xsiType,project,xnat:imagesessiondata/subject_id,xnat:imagesessiondata/id,xnat:imagesessiondata/label,proc:genProcData/procstatus,proc:genProcData/proctype,proc:genProcData/validation/status,proc:genProcData/procversion,proc:genProcData/jobstartdate,proc:genProcData/memused,proc:genProcData/walltimeused,proc:genProcData/jobid,proc:genProcData/jobnode,proc:genProcData/out/file/label,xnat:scans&format=csv"
+            #uri="http://xnat2.vanderbilt.edu:8080/xnat/data/projects/BLSA/subjects/BLSA_0038/experiments/BLSA_0038_21-0_03?format=csv&columns=ID,label,xnat:scans"
+            #response = self._http.get(uri, headers=headers, params=body, timeout=TIMEOUT, **kwargs)
+            #if response.content is not None:
+            #    f = open('/tmp/vuiisccidev/nicai/BLSA3.txt', 'w' )
+            #    f.write(str(uri) + '\n')
+            #    f.write(str(response.content) + '\n')
+            #    f.close()
+            #
+            #sys.exit()  
+        #######SHUNXING DELETE ME FOR XML
         response = None
-
+        #SHUNXING
+        headers={'Cache-Control':'max-age=18000'}
+        #if 'assessor' in uri and ('xsiType' in uri or 'label' in uri) :
+        if 'assessor' in uri and 'label' in uri:
+            headers = {'Cache-Control':'no-cache'} 
+     #   print(headers['Cache-Control'])
         if method is 'PUT':
-            response = self._http.put(uri, headers=headers, data=body, **kwargs)
+            response = self._http.put(uri, headers=headers, data=body, timeout=TIMEOUT, **kwargs)
         elif method is 'GET':
-            response = self._http.get(uri, headers=headers, params=body, **kwargs)
+            # when cacheFlag is 0, we should not use cache
+	    if cacheFlag == 0:
+                response = self._http.get(uri, headers=headers, params=body, timeout=TIMEOUT, **kwargs)
+            else:
+		#Start caching mode
+		# hard code headers to 18000s
+                headers={'Cache-Control':'max-age=18000'}
+		# assessor should not be cached in build mode since there is no assessor info initially
+		# once created, cache will keep showing previous None assessor info.
+                if 'assessor' in uri and 'label' in uri:
+                    headers = {'Cache-Control':'no-cache'}            
+                
+		# Double checking if cache is set correctly
+                if 'max-age' in headers['Cache-Control']:
+                    response = self.cache.get(uri,headers=headers)
+                    #LOGGER.warn('SHUNXING uri:%s' % str(uri))   
+                    #LOGGER.warn('SHUNXING CacheControl test cache content:%s'% str(response.content))
+            
+                    if response is None:
+                        #LOGGER.warn('SHUNXING exec GET')            
+                        #LOGGER.warn('SHUNXING no cache found')
+                        response = self._http.get(uri, headers=headers, params=body, timeout=TIMEOUT, **kwargs)
+                else:
+	            # max-age is not in headers, we shoud not use cache
+                    #LOGGER.warn('SHUNXING no need to cache')
+                    response = self._http.get(uri, headers=headers, params=body, timeout=TIMEOUT, **kwargs)
+
         elif method is 'POST':
-            response = self._http.post(uri, headers=headers, data=body, **kwargs)
+            response = self._http.post(uri, headers=headers, data=body, timeout=TIMEOUT, **kwargs)
         elif method is 'DELETE':
-            response = self._http.delete(uri, headers=headers, data=body, **kwargs)
+            response = self._http.delete(uri, headers=headers, data=body, timeout=TIMEOUT, **kwargs)
         elif method is 'HEAD':
-            response = self._http.head(uri, headers=headers, data=body, **kwargs)
+            response = self._http.head(uri, headers=headers, data=body, timeout=TIMEOUT, **kwargs)
         else:
             print 'unsupported HTTP method'
             return
+        
+        #response.headers.update({'Cache-Control': 'max-age=1800'})      
+        #print(response.headers['Cache-Control'])  
+        
+        # FOR 405 error exception, failed to close connection in the end...
+        for405Error = 0
+        while for405Error < 3:
+            if (response is not None and not response.ok) or is_xnat_error(response.content):
+                response = self._http.get(uri, headers=headers, params=body, timeout=TIMEOUT, **kwargs)             
+                LOGGER.warn('SHUNXING for 405 error...:%d'% for405Error)
+                for405Error +=1
+            else:
+                break
+
 
         if (response is not None and not response.ok) or is_xnat_error(response.content):
+            #LOGGER.warn('SHUNXING response.keys():%s' % str(response.key()))
+            #LOGGER.warn('SHUNIXNG response.get("status"):%s'% str(response.get("status")))
+            LOGGER.warn('SHUNXING response.ok:%s'% str(response.ok))
             if DEBUG:
                 print(response.keys())
                 print(response.get("status"))
@@ -360,6 +447,20 @@ class Interface(object):
     headers: {response.headers}
     content: {response.content}
 '''.format(response=response))
+
+        #######################################
+        ###ADD 1 second delay.........SHUNXING TRICK
+        ######################################
+        #time.sleep(1) # SHUNXING DELETE AFTER EXPERIENT
+        #if response.content is not None:
+        #   self._http.mount(uri, adapter.CacheControlAdapter())
+        #   self.cache = CacheControl(self._http)
+        #if response.content is not None:
+        #    f = open('uri_'+ '{:%Y%m%d%H%M%S}'.format(datetime.now())+'.txt', 'w' )
+        #    f.write(str(uri) + '\n')
+        #    f.write(str(response.content) + '\n')
+        #    f.close()
+
 
         return response.content
 
@@ -536,3 +637,13 @@ class Interface(object):
         uri = join_uri(self._server, uri)
         response = self._http.head(uri, **kwargs)
         return response
+    
+    '''
+    cacheFlag getter setter function 
+    when caching should be used
+    ''' 
+    def get_cacheFlag(self):
+        return self.cacheFlag
+
+def set_cacheFlag(self,flagValue):
+        self.cacheFlag = flagValue
