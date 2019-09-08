@@ -25,10 +25,10 @@ from .array import ArrayData
 from .xpath_store import XpathStore
 from . import xpass
 
-#SHUNXING
+''' This file is edit by Shunxing Bao for hacking caching mechanism for dax build '''
 import cachecontrol
-#from cachecontrol import CacheControl, adapter
-#from cachecontrol.caches.file_cache import FileCache
+from cachecontrol import CacheControl, adapter
+from cachecontrol.caches.file_cache import FileCache
 #import requests_cache
 import logging
 LOGGER = logging.getLogger('dax')
@@ -212,11 +212,12 @@ class Interface(object):
         #SHUNXING EDIT for dax build Cache
         LOGGER.warn('SHUNXING setup cache for dax build')
         #self.cache = cachecontrol.CacheControl(self._http, cache=cachecontrol.caches.fileCache('/tmp/vuiiscci/nicai/.web_cache'))
+	self._cacheFlag = -1
 	if cachedir is not None: 
 	#    cachedir = '/tmp/.DAX_BUILD_CACHE_DIR'
-	    self.cache = cachecontrol.CacheControl(self._http, cache=cachecontrol.caches.fileCache(cachedir))
-	# play cache flag
-	self.cacheFlag = 0
+	    self.cache = CacheControl(self._http, cache=FileCache(cachedir))
+	    self._cacheFlag = 0
+	
         self.manage = GlobalManager(self)
         self.xpath = XpathStore(self)
 
@@ -356,34 +357,13 @@ class Interface(object):
             print(uri)
 
         TIMEOUT = 3600
-        #print('timeout: ' + str(TIMEOUT))
-        #######SHUNXING DELETE ME FOR XML
-        #if "BLSA" in uri:
-            #http://xnat2.vanderbilt.edu:8080/xnat/data/projects/BLSA/subjects/BLSA_0038/experiments/BLSA_0038_21-0_03?format=xml
-            #uri="http://xnat2.vanderbilt.edu:8080/xnat/data/projects/BLSA/experiments/BLSA_0038_21-0_03?format=xml"
-            #uri="http://xnat2.vanderbilt.edu:8080/xnat/REST/archive/experiments?project=BLSA&xsiType=proc:genProcData&columns=ID,label,URI,xsiType,project,xnat:imagesessiondata/subject_id,xnat:imagesessiondata/id,xnat:imagesessiondata/label,proc:genProcData/procstatus,proc:genProcData/proctype,proc:genProcData/validation/status,proc:genProcData/procversion,proc:genProcData/jobstartdate,proc:genProcData/memused,proc:genProcData/walltimeused,proc:genProcData/jobid,proc:genProcData/jobnode,proc:genProcData/out/file/label,xnat:scans&format=csv"
-            #uri="http://xnat2.vanderbilt.edu:8080/xnat/data/projects/BLSA/subjects/BLSA_0038/experiments/BLSA_0038_21-0_03?format=csv&columns=ID,label,xnat:scans"
-            #response = self._http.get(uri, headers=headers, params=body, timeout=TIMEOUT, **kwargs)
-            #if response.content is not None:
-            #    f = open('/tmp/vuiisccidev/nicai/BLSA3.txt', 'w' )
-            #    f.write(str(uri) + '\n')
-            #    f.write(str(response.content) + '\n')
-            #    f.close()
-            #
-            #sys.exit()  
-        #######SHUNXING DELETE ME FOR XML
         response = None
-        #SHUNXING
-        headers={'Cache-Control':'max-age=18000'}
-        #if 'assessor' in uri and ('xsiType' in uri or 'label' in uri) :
-        if 'assessor' in uri and 'label' in uri:
-            headers = {'Cache-Control':'no-cache'} 
-     #   print(headers['Cache-Control'])
+
         if method is 'PUT':
             response = self._http.put(uri, headers=headers, data=body, timeout=TIMEOUT, **kwargs)
         elif method is 'GET':
             # when cacheFlag is 0, we should not use cache
-	    if cacheFlag == 0:
+	    if self._cacheFlag == -1 or self._cacheFlag == 0:
                 response = self._http.get(uri, headers=headers, params=body, timeout=TIMEOUT, **kwargs)
             else:
 		#Start caching mode
@@ -392,7 +372,7 @@ class Interface(object):
 		# assessor should not be cached in build mode since there is no assessor info initially
 		# once created, cache will keep showing previous None assessor info.
                 if 'assessor' in uri and 'label' in uri:
-                    headers = {'Cache-Control':'no-cache'}            
+                    headers = {'Cache-Control':'no-store'}            
                 
 		# Double checking if cache is set correctly
                 if 'max-age' in headers['Cache-Control']:
@@ -452,9 +432,6 @@ class Interface(object):
         ###ADD 1 second delay.........SHUNXING TRICK
         ######################################
         #time.sleep(1) # SHUNXING DELETE AFTER EXPERIENT
-        #if response.content is not None:
-        #   self._http.mount(uri, adapter.CacheControlAdapter())
-        #   self.cache = CacheControl(self._http)
         #if response.content is not None:
         #    f = open('uri_'+ '{:%Y%m%d%H%M%S}'.format(datetime.now())+'.txt', 'w' )
         #    f.write(str(uri) + '\n')
@@ -642,8 +619,9 @@ class Interface(object):
     cacheFlag getter setter function 
     when caching should be used
     ''' 
-    def get_cacheFlag(self):
-        return self.cacheFlag
+    def _get_cacheFlag(self):
+        return self._cacheFlag
 
-def set_cacheFlag(self,flagValue):
-        self.cacheFlag = flagValue
+    def _set_cacheFlag(self,flagValue):
+	if self._cacheFlag == 0:
+            self._cacheFlag = flagValue

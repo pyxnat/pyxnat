@@ -27,8 +27,8 @@ from . import xpass
 
 ''' This file is edit by Shunxing Bao for hacking caching mechanism for dax build '''
 import cachecontrol
-#from cachecontrol import CacheControl, adapter
-#from cachecontrol.caches.file_cache import FileCache
+from cachecontrol import CacheControl, adapter
+from cachecontrol.caches.file_cache import FileCache
 #import requests_cache
 import logging
 LOGGER = logging.getLogger('dax')
@@ -212,11 +212,12 @@ class Interface(object):
         #SHUNXING EDIT for dax build Cache
         LOGGER.warn('SHUNXING setup cache for dax build')
         #self.cache = cachecontrol.CacheControl(self._http, cache=cachecontrol.caches.fileCache('/tmp/vuiiscci/nicai/.web_cache'))
+	self._cacheFlag = -1 # default cacheFlag 
 	if cachedir is not None: 
 	#    cachedir = '/tmp/.DAX_BUILD_CACHE_DIR'
-	    self.cache = cachecontrol.CacheControl(self._http, cache=cachecontrol.caches.fileCache(cachedir))
-	# play cache flag
-	self.cacheFlag = 0
+	    self.cache = CacheControl(self._http, cache=FileCache(cachedir))
+	    self._cacheFlag = 0 # when cacheFlag is 0, it means cacheFolder exists, waiting for turning it on
+	
         self.manage = GlobalManager(self)
         self.xpath = XpathStore(self)
 
@@ -362,7 +363,7 @@ class Interface(object):
             response = self._http.put(uri, headers=headers, data=body, timeout=TIMEOUT, **kwargs)
         elif method is 'GET':
             # when cacheFlag is 0, we should not use cache
-	    if cacheFlag == 0:
+	    if self._cacheFlag == -1 or self._cacheFlag == 0:
                 response = self._http.get(uri, headers=headers, params=body, timeout=TIMEOUT, **kwargs)
             else:
 		#Start caching mode
@@ -617,9 +618,12 @@ class Interface(object):
     '''
     cacheFlag getter setter function 
     when caching should be used
-    ''' 
-    def get_cacheFlag(self):
-        return self.cacheFlag
 
-def set_cacheFlag(self,flagValue):
-        self.cacheFlag = flagValue
+    if cacheFlag <=0 cach mode is off
+    ''' 
+    def _get_cacheFlag(self):
+        return self._cacheFlag
+
+    def _set_cacheFlag(self,flagValue):
+	if self._cacheFlag == 0:
+            self._cacheFlag = flagValue
