@@ -126,8 +126,7 @@ class EAttrs(object):
                 path = ''
             if val is None:
                 val = ''
-            #tmpPathVal = tmpPathVal.join(['&%s=%s' % (path, val)])
-	    tmpPathVal += '&%s=%s' % (urllib.quote(path),urllib.quote(val))
+            tmpPathVal = tmpPathVal.join(['&%s=%s' % (path, val)])
         
         query_str = '?xsiType=%s' %  urllib.quote(dt) + ''.join(tmpPathVal)
 
