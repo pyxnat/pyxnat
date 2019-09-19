@@ -9,6 +9,7 @@ Release 1.2.0.0
       * New Features
 
          - CI tests can be skipped if no network connectivity or no Docker-based XNAT available
+         - bin/sessionmirror.py: migrate an experiment between two XNAT instances
 
       * Improvements
 
