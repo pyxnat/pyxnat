@@ -658,43 +658,6 @@ def write_xml(xml_str, file_path, clean_tags=True):
         print('ERROR:writing xml file: {}: {}'.format(file_path, str(error)))
 
 
-def check_attributes(src_obj, dest_obj, dtype=None):
-    '''Check that attributes on dest match those on src'''
-
-    if dtype is None:
-        dtype = src_obj.datatype()
-
-    if dtype == 'xnat:projectData':
-        attr_list = PROJ_ATTRS
-    elif dtype == 'xnat:subjectData':
-        attr_list = SUBJ_ATTRS
-    elif dtype == 'xnat:mrSessionData':
-        attr_list = MR_EXP_ATTRS
-    elif dtype == 'xnat:mrScanData':
-        attr_list = MR_SCAN_ATTRS
-    elif dtype == 'xnat:scScanData':
-        attr_list = SC_SCAN_ATTRS
-    elif dtype == 'xnat:petScanData':
-        attr_list = PET_SCAN_ATTRS
-    elif dtype == 'xnat:ctScanData':
-        attr_list = CT_SCAN_ATTRS
-    elif dtype == 'proc:genProcData':
-        attr_list = PROC_ATTRS
-    elif dtype == 'xnat:otherDicomScanData':
-        attr_list = OTHER_DICOM_SCAN_ATTRS
-    else:
-        print('WARN:Unknown Type:%s' % dtype)
-        return
-
-    for a in attr_list:
-        src_v = src_obj.attrs.get(a)
-        src_v = src_v.replace("\\", "|")
-        dest_v = dest_obj.attrs.get(a)
-        if src_v != dest_v:
-            print('WARN: Attri mismatch, setting again:%s:src_v=%s,dest_v=%s'
-                  % (a, src_v, dest_v))
-            dest_obj.attrs.set(a, src_v)
-
 
 def create_parser():
     import argparse
