@@ -694,7 +694,8 @@ def main(args):
         columns=columns).data[0]
     p = x2.select.project(args.project_id)
     s = p.subject(e1['subject_label'])
-    s.create()
+    if not s.exists():
+       s.create()
     e = s.experiment(e1['label'])
     e.create()
 
