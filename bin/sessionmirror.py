@@ -699,10 +699,8 @@ def main(args):
     e = s.experiment(e1['label'])
     e.create()
 
-    #e2 = x2.array.experiments(experiment_id=e.id()).data[0]
-
     src_sess = x1.select.project(e1['project']).subject(e1['subject_ID']).experiment(e1['ID'])
-    dst_sess = e #x2.select.project(args.project_id).subject(e1['subject_label']).experiment(e1['label'])
+    dst_sess = e 
 
     copy_session(src_sess, dst_sess, '/tmp')
 
