@@ -134,6 +134,36 @@ class CollectionType(type):
 
 # generic classes
 
+from . import derivatives
+from .derivatives import freesurfer as fs
+from .derivatives import ashs
+import types
+import pkgutil
+import inspect
+
+def __get_modules__(m):
+    modules = []
+    prefix = m.__name__ + '.'
+    for importer, modname, ispkg in pkgutil.iter_modules(m.__path__, prefix):
+        module = __import__(modname , fromlist='dummy')
+        if not ispkg:
+            modules.append(module)
+        else:
+            modules.extend(__get_modules__(module))
+    return modules
+
+def __find_all_resources__(m):
+    modules = []
+    classes = {}
+    modules = __get_modules__(m)
+    forbidden_classes = []
+    for m in modules:
+        for name, obj in inspect.getmembers(m):
+            if inspect.isfunction(obj) \
+                    and not obj in forbidden_classes:
+                classes.setdefault(m.__name__, []).append(obj)
+    return modules, classes
+
 
 class EObject(object):
     """ Generic Object for an element URI.
@@ -155,6 +185,20 @@ class EObject(object):
         self._urt = uri_nextlast(self._uri)
         self._intf = interface
         self.attrs = EAttrs(self)
+
+        modules, resources = __find_all_resources__(derivatives)
+
+        for m, (mn, res) in zip(modules, resources.items()):
+            is_resource = False
+            if (hasattr(m, 'XNAT_RESOURCE_NAME') and \
+                self._urn == m.XNAT_RESOURCE_NAME) or \
+                (hasattr(m , 'XNAT_RESOURCE_NAMES') and \
+                self._urn in m.XNAT_RESOURCE_NAMES):
+                    is_resource = True
+
+            if is_resource:
+                for r in res:
+                    setattr(self, r.__name__, types.MethodType(r, self))
 
     def __getstate__(self):
         return {
@@ -1772,6 +1816,23 @@ class Resource(EObject):
                 or 'xnat:abstractResource'
                 )
 
+    def attributes(self):
+        """ Files attributes include:
+                - URI
+                - Name
+                - Size in bytes
+                - path (relative to the parent resource)
+                - tags
+                - format
+                - content
+            Returns
+            -------
+            dict : a dictionary with the resource attributes
+        """
+
+        return self._getcells(['URI', 'Name', 'Size', 'path',
+                               'tags', 'format', 'content'])
+
 
 class In_Resource(Resource):
 
@@ -1823,7 +1884,7 @@ class File(EObject):
 
             Returns
             -------
-            dict : a dictionnary with the file attributes
+            dict : a dictionary with the file attributes
         """
 
         return self._getcells(['URI', 'Name', 'Size', 'path',
