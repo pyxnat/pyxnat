@@ -31,7 +31,6 @@ from cachecontrol import CacheControl, adapter
 from cachecontrol.caches.file_cache import FileCache
 #import requests_cache
 import logging
-LOGGER = logging.getLogger('dax')
 from datetime import datetime
 import time
 DEBUG = False
@@ -124,7 +123,7 @@ class Interface(object):
               with certification
 
         """
-        print('SHUNXING interface cachedir is %s'% str(cachedir))
+        #print('SHUNXING interface cachedir is %s'% str(cachedir))
         self._interactive = False
 
         self._anonymous = anonymous
@@ -407,7 +406,7 @@ class Interface(object):
         while for405Error < 3:
             if (response is not None and not response.ok) or is_xnat_error(response.content):
                 response = self._http.get(uri, headers=headers, params=body, timeout=TIMEOUT, **kwargs)             
-                LOGGER.warn('SHUNXING for 405 error...:%d'% for405Error)
+                #LOGGER.warn('SHUNXING for 405 error...:%d'% for405Error)
                 for405Error +=1
             else:
                 break
@@ -416,7 +415,7 @@ class Interface(object):
         if (response is not None and not response.ok) or is_xnat_error(response.content):
             #LOGGER.warn('SHUNXING response.keys():%s' % str(response.key()))
             #LOGGER.warn('SHUNIXNG response.get("status"):%s'% str(response.get("status")))
-            LOGGER.warn('SHUNXING response.ok:%s'% str(response.ok))
+            #LOGGER.warn('SHUNXING response.ok:%s'% str(response.ok))
             if DEBUG:
                 print(response.keys())
                 print(response.get("status"))

@@ -212,11 +212,11 @@ class Interface(object):
         #SHUNXING EDIT for dax build Cache
         LOGGER.warn('SHUNXING setup cache for dax build')
         #self.cache = cachecontrol.CacheControl(self._http, cache=cachecontrol.caches.fileCache('/tmp/vuiiscci/nicai/.web_cache'))
-	self._cacheFlag = -1
+	self._cacheFlag = -1 # default cacheFlag 
 	if cachedir is not None: 
 	#    cachedir = '/tmp/.DAX_BUILD_CACHE_DIR'
 	    self.cache = CacheControl(self._http, cache=FileCache(cachedir))
-	    self._cacheFlag = 0
+	    self._cacheFlag = 0 # when cacheFlag is 0, it means cacheFolder exists, waiting for turning it on
 	
         self.manage = GlobalManager(self)
         self.xpath = XpathStore(self)
@@ -618,6 +618,8 @@ class Interface(object):
     '''
     cacheFlag getter setter function 
     when caching should be used
+
+    if cacheFlag <=0 cach mode is off
     ''' 
     def _get_cacheFlag(self):
         return self._cacheFlag
