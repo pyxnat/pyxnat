@@ -209,7 +209,7 @@ class Interface(object):
         self.array = ArrayData(self)
         # self.cache = CacheManager(self)
         #SHUNXING EDIT for dax build Cache
-        LOGGER.warn('SHUNXING setup cache for dax build')
+        #LOGGER.warn('SHUNXING setup cache for dax build')
         #self.cache = cachecontrol.CacheControl(self._http, cache=cachecontrol.caches.fileCache('/tmp/vuiiscci/nicai/.web_cache'))
 	self._cacheFlag = -1 # default cacheFlag 
 	if cachedir is not None: 
