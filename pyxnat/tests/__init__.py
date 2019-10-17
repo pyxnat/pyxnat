@@ -1,4 +1,3 @@
-PYXNAT_SKIP_NETWORK_TESTS = False
 from functools import wraps
 from nose import SkipTest
 from nose.plugins.attrib import attr
@@ -16,7 +15,6 @@ def skip_if_no_network(func=None):
 
     if func:
         @wraps(func)
-        @attr('network')
         @attr('skip_if_no_network')
         def newfunc(*args, **kwargs):
             check_and_raise()
