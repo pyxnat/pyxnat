@@ -156,8 +156,8 @@ def __find_all_functions__(m):
     for m in modules:
         for name, obj in inspect.getmembers(m):
             if inspect.isfunction(obj):
-                functions.setdefault(m.__name__, []).append(obj)
-    return modules, functions
+                functions.setdefault(m, []).append(obj)
+    return functions
 
 
 class EObject(object):
@@ -181,9 +181,9 @@ class EObject(object):
         self._intf = interface
         self.attrs = EAttrs(self)
 
-        modules, functions = __find_all_functions__(derivatives)
+        functions = __find_all_functions__(derivatives)
 
-        for m, (module_name, mod_functions) in zip(modules, functions.items()):
+        for m, mod_functions in functions.items():
             is_resource = False
             if (hasattr(m, 'XNAT_RESOURCE_NAME') and \
                 self._urn == m.XNAT_RESOURCE_NAME) or \
