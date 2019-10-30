@@ -1,6 +1,6 @@
 XNAT_RESOURCE_NAME = 'ASHS'
 
-def stats(self, mode='corr_nogray'):
+def volumes(self, mode='corr_nogray'):
     import pandas as pd
 
     f = list(self.files('*icv.txt'))[0]
