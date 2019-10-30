@@ -135,8 +135,6 @@ class CollectionType(type):
 # generic classes
 
 from . import derivatives
-from .derivatives import freesurfer as fs
-from .derivatives import ashs
 import types
 import pkgutil
 import inspect
