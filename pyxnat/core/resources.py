@@ -150,17 +150,14 @@ def __get_modules__(m):
             modules.extend(__get_modules__(module))
     return modules
 
-def __find_all_resources__(m):
-    modules = []
-    classes = {}
+def __find_all_functions__(m):
+    functions = {}
     modules = __get_modules__(m)
-    forbidden_classes = []
     for m in modules:
         for name, obj in inspect.getmembers(m):
-            if inspect.isfunction(obj) \
-                    and not obj in forbidden_classes:
-                classes.setdefault(m.__name__, []).append(obj)
-    return modules, classes
+            if inspect.isfunction(obj):
+                functions.setdefault(m.__name__, []).append(obj)
+    return modules, functions
 
 
 class EObject(object):
@@ -184,9 +181,9 @@ class EObject(object):
         self._intf = interface
         self.attrs = EAttrs(self)
 
-        modules, resources = __find_all_resources__(derivatives)
+        modules, functions = __find_all_functions__(derivatives)
 
-        for m, (mn, res) in zip(modules, resources.items()):
+        for m, (module_name, mod_functions) in zip(modules, functions.items()):
             is_resource = False
             if (hasattr(m, 'XNAT_RESOURCE_NAME') and \
                 self._urn == m.XNAT_RESOURCE_NAME) or \
@@ -195,8 +192,8 @@ class EObject(object):
                     is_resource = True
 
             if is_resource:
-                for r in res:
-                    setattr(self, r.__name__, types.MethodType(r, self))
+                for f in mod_functions:
+                    setattr(self, f.__name__, types.MethodType(f, self))
 
     def __getstate__(self):
         return {
