@@ -13,8 +13,8 @@ def test_freesurfer_stats():
     v = hv.query('region=="TotalGrayVol"')['value'].tolist()[0]
     assert(v == 857168.580741)
 
-def test_ashs_stats():
+def test_ashs_volumes():
     r = central.select.experiment('CENTRAL04_E00637').resource('ASHS')
-    hv = r.stats()
+    hv = r.volumes()
     v = hv.query('region=="CA1" & side=="left"')['volume'].tolist()[0]
     assert(v == 1585.838)
