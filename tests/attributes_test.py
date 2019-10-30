@@ -3,7 +3,7 @@ import os.path as op
 from uuid import uuid1
 import time
 from . import skip_if_no_network
-from .. import Interface
+from pyxnat import Interface
 
 _modulepath = op.dirname(op.abspath(__file__))
 

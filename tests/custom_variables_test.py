@@ -1,6 +1,6 @@
 import os
 from uuid import uuid1
-from .. import Interface
+from pyxnat import Interface
 import os.path as op
 from . import skip_if_no_network
 

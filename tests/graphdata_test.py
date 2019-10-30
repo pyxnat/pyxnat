@@ -1,5 +1,5 @@
 from pyxnat.core.help import GraphData, PaintGraph, SchemasInspector
-from .. import Interface
+from pyxnat import Interface
 from . import skip_if_no_network
 import os.path as op
 

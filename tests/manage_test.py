@@ -1,5 +1,5 @@
 import os
-from .. import Interface
+from pyxnat import Interface
 from . import skip_if_no_network
 central = Interface(config=os.path.join(os.path.dirname(os.path.abspath(__file__)), 'central.cfg'))
 

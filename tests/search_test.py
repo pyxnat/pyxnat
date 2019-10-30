@@ -2,8 +2,8 @@ import os
 from uuid import uuid1
 from . import skip_if_no_network
 from nose import SkipTest
-from .. import Interface
-from .. import jsonutil
+from pyxnat import Interface
+from pyxnat import jsonutil
 
 central = Interface(config=os.path.join(os.path.dirname(os.path.abspath(__file__)), 'central.cfg'))
 search_name = uuid1().hex
