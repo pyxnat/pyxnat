@@ -15,10 +15,6 @@ def stats(self, mode='corr_nogray'):
     uri = f._uri
     resr = self._intf.get(uri).text.split('\n')
 
-    volumes = ['CA1', 'CA2', 'DG', 'CA3', 'misc', 'SUB',
-        'ERC', 'BA35', 'BA36', 'PHC', 'sulcus']
-
-
     table = []
     for resx in [resl, resr]:
         for line in resx:
@@ -31,7 +27,7 @@ def stats(self, mode='corr_nogray'):
                 i = int(line[-2])
                 m = float(line[-1])
                 table.append([s, side, region, i, m])
-                
+
     table.append([res[0], None, 'tiv', None, float(res[1].rstrip('\n'))])
 
     columns = ['subject', 'side', 'region', 'n_slices', 'volume']
