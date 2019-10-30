@@ -1,4 +1,4 @@
-from .. import Interface
+from pyxnat import Interface
 import os.path as op
 from . import skip_if_no_network
 from nose import SkipTest

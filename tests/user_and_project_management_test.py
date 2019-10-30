@@ -1,5 +1,5 @@
 import os
-from .. import Interface
+from pyxnat import Interface
 from requests.exceptions import ConnectionError
 import os.path as op
 from nose import SkipTest

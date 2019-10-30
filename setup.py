@@ -1,18 +1,7 @@
 #!/usr/bin/env python
 
-from distutils.core import setup
+import setuptools
 import sys, os
-
-# For some commands, use setuptools
-if len(set(['develop', 'sdist', 'release', 'bdist_egg', 'bdist_rpm', 'bdist',
-            'bdist_dumb', 'bdist_wininst', 'install_egg_info', 'build_sphinx',
-            'egg_info', 'easy_install', 'upload']).intersection(sys.argv)) > 0:
-    from setupegg import extra_setuptools_args
-
-# extra_setuptools_args is injected by the setupegg.py script, for
-# running the setup with setuptools.
-if not 'extra_setuptools_args' in globals():
-    extra_setuptools_args = dict()
 
 def get_version():
     try:
@@ -25,26 +14,22 @@ def get_version():
     except:
         raise RuntimeError("No version found")
 
-LONG_DESCRIPTION = """
-PyXNAT
-======
+import os.path as op
+this_directory = op.abspath(op.dirname(__file__))
+with open(op.join(this_directory, 'README.rst')) as f:
+    long_description = f.read()
 
-**pyxnat** provides an API to access data on XNAT (see http://xnat.org)
-servers.
 
-Visit https://pyxnat.github.io/pyxnat for more information.
-"""
-
-setup(name='pyxnat',
+setuptools.setup(name='pyxnat',
       version=get_version(),
       summary='XNAT in Python',
       author='Yannick Schwartz',
       author_email='yannick.schwartz@cea.fr',
       url='http://packages.python.org/pyxnat/',
-      packages=['pyxnat'],
-      package_data={'pyxnat': ['core/*.py', '*.py'], },
-      description="""XNAT in Python""",
-      long_description=LONG_DESCRIPTION,
+      packages=setuptools.find_packages(exclude=('doc*', 'tests')),
+      description='XNAT in Python',
+      long_description=long_description,
+      long_description_content_type='text/x-rst',
       license='BSD',
       classifiers=[
           'Development Status :: 4 - Beta',
@@ -64,5 +49,9 @@ setup(name='pyxnat',
 
       platforms='any',
       scripts=['bin/sessionmirror.py'],
-      install_requires=['lxml>=4.3', 'requests>=2.20', 'requests[security]'],
-      **extra_setuptools_args)
+      install_requires=['lxml>=4.3',
+        'requests>=2.20',
+        'requests[security]'],
+      package_data={'pyxnat': ['README.rst'], },
+
+      )

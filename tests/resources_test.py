@@ -5,7 +5,7 @@ from uuid import uuid1
 from six import string_types
 import os.path as op
 import os
-from .. import Interface
+from pyxnat import Interface
 from . import skip_if_no_network
 from nose import SkipTest
 
@@ -152,7 +152,7 @@ def test_07_put_file():
     subj_1.resource('test').put([local_path])
     assert f.exists()
     assert int(f.size()) == os.stat(local_path).st_size
-    
+
 @skip_if_no_network
 def test_08_get_file():
     fh = subj_1.resource('test').file('hello.txt')

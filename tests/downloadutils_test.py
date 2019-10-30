@@ -1,4 +1,4 @@
-from .. import Interface
+from pyxnat import Interface
 from pyxnat.core import downloadutils as du
 import os.path as op
 from . import skip_if_no_network

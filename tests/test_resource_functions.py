@@ -1,5 +1,5 @@
 import os.path as op
-from .. import Interface
+from pyxnat import Interface
 
 fp = op.join(op.dirname(op.abspath(__file__)), 'central.cfg')
 

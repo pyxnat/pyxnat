@@ -1,4 +1,4 @@
-from .. import xpass
+from pyxnat import xpass
 
 def test_find_plus_line():
     print("Testing find_plus_line")

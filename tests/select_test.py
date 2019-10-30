@@ -1,4 +1,4 @@
-from .. import select
+from pyxnat import select
 
 
 def test_switch_to_singular():
@@ -42,7 +42,7 @@ def test_double_level_expand():
              '/projects/*/subjects/*/experiments/*/assessors/*/out_resources/*/files/*',
              '/projects/*/subjects/*/experiments/*/assessors/*/in_resources/*/files/*',
              '/projects/*/subjects/*/experiments/*/reconstructions/*/out_resources/*/files/*',
-             '/projects/*/subjects/*/experiments/*/assessors/*/resources/*/files/*'])    
+             '/projects/*/subjects/*/experiments/*/assessors/*/resources/*/files/*'])
 
 def test_compute_all():
     assert set(select.compute('/projects/nosetests//experiments/*Session*//files/myfile.txt')) == \
@@ -53,4 +53,3 @@ def test_compute_all():
              '/project/nosetests/subjects/*/experiments/*Session*/assessors/*/in_resources/*/file/myfile.txt',
              '/project/nosetests/subjects/*/experiments/*Session*/reconstructions/*/out_resources/*/file/myfile.txt',
              '/project/nosetests/subjects/*/experiments/*Session*/assessors/*/resources/*/file/myfile.txt'])
-

@@ -1,5 +1,0 @@
-include *.txt *.py
-recursive-include pyxnat *.py
-graft doc
-prune pyxnat/examples
-prune pyxnat/tests

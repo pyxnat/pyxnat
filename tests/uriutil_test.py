@@ -1,4 +1,4 @@
-from .. import uriutil
+from pyxnat import uriutil
 
 def test_translate_uri():
     assert uriutil.translate_uri('/assessors/out_resources/files') == '/assessors/out/resources/files'
@@ -29,4 +29,3 @@ def test_uri_grandparent():
 
 def test_uri_split():
     assert uriutil.uri_split('/projects/1/subjects/2') == ['/projects/1/subjects', '2']
-
