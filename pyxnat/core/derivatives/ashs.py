@@ -20,27 +20,18 @@ def stats(self, mode='corr_nogray'):
 
 
     table = []
-    for line in resl:
-        if line == '':
-            continue
-        line = line.split(' ')
-        m = float(line[-1])
-        region = line[2]
-        side = line[1]
-        s = line[0]
-        i = int(line[-2])
-        table.append([s, side, region, i, m])
-
-    for line in resr:
-        if line == '':
-            continue
-        line = line.split(' ')
-        region = line[2]
-        m = float(line[-1])
-        side = line[1]
-        s = line[0]
-        i = int(line[-2])
-        table.append([s, side, region, i, m])
+    for resx in [resl, resr]:
+        for line in resx:
+                if line == '':
+                    continue
+                line = line.split(' ')
+                s = line[0]
+                side = line[1]
+                region = line[2]
+                i = int(line[-2])
+                m = float(line[-1])
+                table.append([s, side, region, i, m])
+                
     table.append([res[0], None, 'tiv', None, float(res[1].rstrip('\n'))])
 
     columns = ['subject', 'side', 'region', 'n_slices', 'volume']
