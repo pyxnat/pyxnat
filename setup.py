@@ -20,7 +20,7 @@ with open(op.join(this_directory, 'README.rst')) as f:
     long_description = f.read()
 
 
-setuptools.setup(name='pyxnat',
+setuptools.setup(name='bbrc-pyxnat',
       version=get_version(),
       summary='XNAT in Python',
       author='Yannick Schwartz',
