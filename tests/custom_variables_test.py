@@ -17,11 +17,7 @@ cid = uuid1().hex
 if not os.environ.get('PYXNAT_SKIP_NETWORK_TESTS'):
     scan = project.subject(sid).experiment(eid).scan(cid).insert(use_label=True)
 
-# def test_add_custom_variables():
-#     project.add_custom_variables(variables)
 
-# def test_get_custom_variables():
-#     assert project.get_custom_variables() == variables
 
 @skip_if_no_network
 def test_01_set_param():
@@ -38,3 +34,11 @@ def test_02_get_params():
 def test_03_params_cleanup():
     project.subject(sid).delete()
     assert not project.subject(sid).exists()
+
+@skip_if_no_network
+def test_04_add_custom_variables():
+    project.add_custom_variables(variables)
+
+@skip_if_no_network
+def test_05_get_custom_variables():
+    project.get_custom_variables()

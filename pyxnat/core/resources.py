@@ -1261,6 +1261,7 @@ class Project(EObject):
 
         """
         tree = lxml.etree.fromstring(self.get())
+
         update = False
 
         for protocol, value in custom_variables.items():
@@ -1285,6 +1286,7 @@ class Project(EObject):
                     )
                 protocol_element.append(definitions_element)
 
+
             for group, fields in value.items():
                 try:
                     group_element = definitions_element.xpath(
@@ -1294,8 +1296,10 @@ class Project(EObject):
                     fields_element = group_element.xpath(
                         "xnat:fields",
                         namespaces=tree.nsmap).pop()
+
                 except IndexError:
                     update = True
+
                     group_element = lxml.etree.Element(
                         lxml.etree.QName(tree.nsmap['xnat'], 'definition'),
                         nsmap=tree.nsmap
@@ -1335,7 +1339,7 @@ class Project(EObject):
                         update = True
         if update:
             body, content_type = httputil.file_message(
-                lxml.etree.tostring(tree),
+                lxml.etree.tostring(tree).decode('utf-8'),
                 'text/xml',
                 'cust.xml',
                 'cust.xml'
@@ -1344,7 +1348,7 @@ class Project(EObject):
             uri = self._uri
             if allow_data_deletion:
                 uri = self._uri + '?allowDataDeletion=true'
-            self._intf._exec(uri, method='PUT', body=body,
+            self._intf._exec(uri, method='PUT', body=str(body),
                              headers={'content-type': content_type})
 
     def get_custom_variables(self):

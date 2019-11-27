@@ -2,14 +2,20 @@ import sys
 import os
 import json
 import datetime
-import urllib2
-import smtplib
-from copy import deepcopy
-import email.mime.text
-import xml.dom.minidom
 
-import suds.client
-import suds.xsd.doctor
+import six
+if six.PY2:
+    from urllib2 import urlopen
+elif six.PY3:
+    from urllib.request import urlopen
+
+# import smtplib
+# from copy import deepcopy
+# import email.mime.text
+# import xml.dom.minidom
+
+# import suds.client
+# import suds.xsd.doctor
 
 from . import httputil
 
@@ -46,18 +52,18 @@ class Pipelines(object):
             os.path.split(location)[1]
             )
 
-        self._intf._exec(pipeline_uri, 
-                         method='PUT', 
+        self._intf._exec(pipeline_uri,
+                         method='PUT',
                          body=body,
                          headers={'content-type':content_type}
                          )
 
     def delete(self, pipeline_id):
         pass
-        
+
 
 class Pipeline(object):
-    
+
     def __init__(self, pipeline_id, interface):
         self._intf = interface
         self._id = pipeline_id
@@ -86,15 +92,15 @@ class Pipeline(object):
 #         self._username = username
 #         self._password = password
 #         self._cookiejar = None
-#         res = self._call('CreateServiceSession.jws', 
-#                          'execute', 
-#                          (), 
+#         res = self._call('CreateServiceSession.jws',
+#                          'execute',
+#                          (),
 #                          authenticated=True)
 #         self._session = str(res)
-#         args = (('ns1:string', self._session), 
-#                 ('ns1:string', 'wrk:workflowData.ID'), 
-#                 ('ns1:string', '='), 
-#                 ('ns1:string', workflow_id), 
+#         args = (('ns1:string', self._session),
+#                 ('ns1:string', 'wrk:workflowData.ID'),
+#                 ('ns1:string', '='),
+#                 ('ns1:string', workflow_id),
 #                 ('ns1:string', 'wrk:workflowData'))
 #         workflow_ids = self._call('GetIdentifiers.jws', 'search', args)
 #         self._doc = None
@@ -113,16 +119,16 @@ class Pipeline(object):
 #             raise PipelineNotFoundError
 #         return
 
-#     def _call(self, 
-#               jws, 
-#               operation, 
-#               inputs, 
-#               authenticated=False, 
+#     def _call(self,
+#               jws,
+#               operation,
+#               inputs,
+#               authenticated=False,
 #               fix_import=False):
 #         """perform a SOAP call"""
 #         url = '%s/axis/%s' % (self._base_url, jws)
 #         if authenticated:
-#             t = suds.transport.http.HttpAuthenticated(username=self._username, 
+#             t = suds.transport.http.HttpAuthenticated(username=self._username,
 #                                                       password=self._password)
 #         else:
 #             t = suds.transport.http.HttpTransport()
@@ -132,8 +138,8 @@ class Pipeline(object):
 #             xsd_url = 'http://schemas.xmlsoap.org/soap/encoding/'
 #             imp = suds.xsd.doctor.Import(xsd_url)
 #             doctor = suds.xsd.doctor.ImportDoctor(imp)
-#             client = suds.client.Client('%s?wsdl' % url, 
-#                                         transport=t, 
+#             client = suds.client.Client('%s?wsdl' % url,
+#                                         transport=t,
 #                                         doctor=doctor)
 #         else:
 #             client = suds.client.Client('%s?wsdl' % url, transport=t)
@@ -142,7 +148,7 @@ class Pipeline(object):
 #             ti = client.factory.create(dtype)
 #             ti.value = val
 #             typed_inputs.append(ti)
-#         # the WSDL returns the local IP address in the URLs; these need 
+#         # the WSDL returns the local IP address in the URLs; these need
 #         # to be corrected if XNAT is behind a proxy
 #         client.set_options(location=url)
 #         f = getattr(client.service, operation)
@@ -159,19 +165,19 @@ class Pipeline(object):
 
 #     def _update_xnat(self):
 #         """update XNAT with the current state of this (WorkflowInfo) object"""
-#         inputs = (('ns0:string', self._session), 
-#                   ('ns0:string', self._doc.toxml()), 
-#                   ('ns0:boolean', False), 
+#         inputs = (('ns0:string', self._session),
+#                   ('ns0:string', self._doc.toxml()),
+#                   ('ns0:boolean', False),
 #                   ('ns0:boolean', True))
-#         self._call('StoreXML.jws', 
-#                    'store', 
-#                    inputs, 
-#                    authenticated=True, 
+#         self._call('StoreXML.jws',
+#                    'store',
+#                    inputs,
+#                    authenticated=True,
 #                    fix_import=True)
 #         return
 
 #     def _append_node(self, root, name, value):
-#         """add a simple text node with tag "name" and data "value" under 
+#         """add a simple text node with tag "name" and data "value" under
 #         the node "root"
 #         """
 #         node = self._doc.createElement(name)
