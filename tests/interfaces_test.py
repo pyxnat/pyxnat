@@ -49,3 +49,7 @@ def test_save_config():
 def test_version():
     v = central.version()
     assert(v['version'] == '1.7.5.2-SNAPSHOT')
+
+def test_version():
+    x = Interface(server='http://server/',
+                user='user', password='password')
