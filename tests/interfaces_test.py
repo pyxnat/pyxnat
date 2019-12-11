@@ -50,6 +50,6 @@ def test_version():
     v = central.version()
     assert(v['version'] == '1.7.5.2-SNAPSHOT')
 
-def test_version():
+def test_login_using_explicit_credentials():
     x = Interface(server='http://server/',
                 user='user', password='password')
