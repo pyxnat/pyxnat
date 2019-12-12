@@ -3,11 +3,11 @@ import os
 import json
 import datetime
 
-import six
-if six.PY2:
-    from urllib2 import urlopen
-elif six.PY3:
-    from urllib.request import urlopen
+# import six
+# if six.PY2:
+#     from urllib2 import urlopen
+# elif six.PY3:
+#     from urllib.request import urlopen
 
 # import smtplib
 # from copy import deepcopy
