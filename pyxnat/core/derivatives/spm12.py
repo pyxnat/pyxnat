@@ -18,3 +18,15 @@ def volumes(self):
             vols.append((kls, v))
 
         return dict(vols)
+
+def download_rc(self, path):
+    '''Downloads a local copy of DARTEL imports.'''
+    import os.path as op
+    rc_files = ['rc1', 'rc2']
+    for each in rc_files:
+        res = self._intf.array.experiments(experiment_id=self.parent().id(),
+            columns=['subject_label']).data[0]
+        subject_label = res['subject_label']
+        id = res['ID']
+        fp = '%s_%s_%s.nii.gz'%(each[-3:], subject_label, id)
+        list(self.files('%s*'%each))[0].get(op.join(path, fp))
