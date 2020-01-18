@@ -82,7 +82,7 @@ def download_snapshot(self, name, fp):
 
     pdf = self.pdf(name)
     if pdf is None:
-        log.error('%s not found for experiment %s'%(name, e))
+        log.error('%s not found'%name)
         return
 
     f, fp1 = tempfile.mkstemp(suffix='.pdf')
