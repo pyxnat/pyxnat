@@ -17,8 +17,9 @@ def docker_available(func=None):
         x = Interface(config='.xnat.cfg')
         try:
             x.head('')
+            projects = list(x.select.projects())
             print('Docker instance found.')
-        except ConnectionError:
+        except (ConnectionError, KeyError):
             print('Skipping it.')
             raise SkipTest('Docker-based XNAT instance unavailable')
 
@@ -41,6 +42,7 @@ def test_users():
 @docker_available
 def test_user_firstname():
     x = Interface(config='.xnat.cfg')
+    print(x._get_json('%s/users' % x._entry))
     assert x.manage.users.firstname('admin') == 'Admin'
 
 @docker_available
@@ -73,12 +75,12 @@ def test_add_remove_user():
 @docker_available
 def test_project_accessibility():
     x = Interface(config='.xnat.cfg')
+    print(x.select.project('nosetests3').accessibility())
     assert x.select.project('nosetests3').accessibility() in \
                                         [b'public', b'protected', b'private']
     x.select.project('nosetests3').set_accessibility('private')
     assert x.select.project('nosetests3').accessibility() == b'private'
     x.select.project('nosetests3').set_accessibility('protected')
-    print(x.select.project('nosetests3').accessibility())
     assert x.select.project('nosetests3').accessibility() == b'protected'
 
 @docker_available

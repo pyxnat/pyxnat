@@ -1,6 +1,6 @@
 dist: xenial
-env:
-  DOCKER_COMPOSE_VERSION: 1.8.0
+#env:
+#  DOCKER_COMPOSE_VERSION: 1.8.0
 
 before_install:
   # update is required to update the repositories to see the new packages for
@@ -16,14 +16,14 @@ before_install:
   # do not need the following steps.
   - docker-compose --version
 
-  # As of the writing of this script Travis has docker-compose v1.4.2, we need
-  # to update it to 1.8+. $DOCKER_COMPOSE_VERSION is provide from the `env`
-  # above.
-  - sudo rm /usr/local/bin/docker-compose
-  - curl -L https://github.com/docker/compose/releases/download/${DOCKER_COMPOSE_VERSION}/docker-compose-`uname -s`-`uname -m` > docker-compose
-  - chmod +x docker-compose
-  - sudo mv docker-compose /usr/local/bin
-  - docker-compose --version
+  # # As of the writing of this script Travis has docker-compose v1.4.2, we need
+  # # to update it to 1.8+. $DOCKER_COMPOSE_VERSION is provide from the `env`
+  # # above.
+  # - sudo rm /usr/local/bin/docker-compose
+  # - curl -L https://github.com/docker/compose/releases/download/${DOCKER_COMPOSE_VERSION}/docker-compose-`uname -s`-`uname -m` > docker-compose
+  # - chmod +x docker-compose
+  # - sudo mv docker-compose /usr/local/bin
+  # - docker-compose --version
 
 language: python
 python:
@@ -33,12 +33,13 @@ python:
 install:
     - "pip install -r requirements.txt"
     - "pip install -r requirements-dev.txt"
-    - if [[ $TRAVIS_PYTHON_VERSION == 3.7 ]]; then pip install sphinx sphinx_theme; fi    
+    - if [[ $TRAVIS_PYTHON_VERSION == 3.7 ]]; then pip install sphinx sphinx_theme; fi
 script:
-    - git clone https://github.com/NrgXnat/xnat-docker-compose
+    - git clone https://github.com/xgrg/xnat-docker-compose
     - cd xnat-docker-compose
     - sudo docker-compose up -d &> /tmp/docker.log
     - sleep 120
+    - tail -100 /tmp/docker.log
     - sudo docker-compose logs --tail=20 xnat-web
     - "cd -"
     - python setup_docker_xnat.py
