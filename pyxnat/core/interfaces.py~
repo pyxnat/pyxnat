@@ -31,10 +31,17 @@ from cachecontrol import CacheControl, adapter
 from cachecontrol.caches.file_cache import FileCache
 #import requests_cache
 import logging
+LOGGER = logging.getLogger('dax')
 from datetime import datetime
 import time
 DEBUG = False
 import sys
+
+'''
+author: Shunxing Bao
+Modified on Feb 27, 2020
+Turn off cache for build module
+'''
 
 # main entry point
 class Interface(object):
@@ -209,10 +216,11 @@ class Interface(object):
         self.array = ArrayData(self)
         # self.cache = CacheManager(self)
         #SHUNXING EDIT for dax build Cache
-        LOGGER.warn('SHUNXING setup cache for dax build')
+        #LOGGER.warn('SHUNXING setup cache for dax build')
         #self.cache = cachecontrol.CacheControl(self._http, cache=cachecontrol.caches.fileCache('/tmp/vuiiscci/nicai/.web_cache'))
 	self._cacheFlag = -1 # default cacheFlag 
-	if cachedir is not None: 
+	if cachedir is not None:  
+	    # print('###########33%s'%str(cachedir))
 	#    cachedir = '/tmp/.DAX_BUILD_CACHE_DIR'
 	    self.cache = CacheControl(self._http, cache=FileCache(cachedir))
 	    self._cacheFlag = 0 # when cacheFlag is 0, it means cacheFolder exists, waiting for turning it on
@@ -373,19 +381,25 @@ class Interface(object):
                 if 'assessor' in uri and 'label' in uri:
                     headers = {'Cache-Control':'no-store'}            
                 
+		# SHUNXING ADD for removing all queries about scans for build module
+		if 'scans' in uri:
+                    headers = {'Cache-Control':'no-store'}
+                
 		# Double checking if cache is set correctly
                 if 'max-age' in headers['Cache-Control']:
+		    #print('SHUNXING Cache-Control')
                     response = self.cache.get(uri,headers=headers)
-                    #LOGGER.warn('SHUNXING uri:%s' % str(uri))   
-                    #LOGGER.warn('SHUNXING CacheControl test cache content:%s'% str(response.content))
+                    LOGGER.warn('SHUNXING uri:%s' % str(uri))   
+#                    LOGGER.warn('SHUNXING CacheControl test cache content:%s'% str(response.content))
             
                     if response is None:
                         #LOGGER.warn('SHUNXING exec GET')            
-                        #LOGGER.warn('SHUNXING no cache found')
+                        LOGGER.warn('SHUNXING no cache found')
                         response = self._http.get(uri, headers=headers, params=body, timeout=TIMEOUT, **kwargs)
                 else:
 	            # max-age is not in headers, we shoud not use cache
-                    #LOGGER.warn('SHUNXING no need to cache')
+                    LOGGER.warn('SHUNXING no need to cache')
+                    LOGGER.warn('SHUNXING uri:%s' % str(uri))		    
                     response = self._http.get(uri, headers=headers, params=body, timeout=TIMEOUT, **kwargs)
 
         elif method is 'POST':
