@@ -44,13 +44,14 @@ script:
     - python setup_docker_xnat.py
     - "nosetests tests --nologcapture --with-coverage --cover-inclusive --cover-erase --cover-package ."
     - "coverage report -m"
+
 jobs:
   include:
     - stage: lint
       python: 3.6
       before_install: false
       install: pip install flake8
-      script: flake8
+      script: flake8 . --exit-zero
 
 after_success:
     - coveralls
