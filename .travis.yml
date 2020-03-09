@@ -47,6 +47,7 @@ script:
 jobs:
   include:
     - stage: lint
+      python: 3.6
       before_install: false
       install: pip install flake8
       script: flake8
