@@ -44,6 +44,13 @@ script:
     - python setup_docker_xnat.py
     - "nosetests tests --nologcapture --with-coverage --cover-inclusive --cover-erase --cover-package ."
     - "coverage report -m"
+jobs:
+  include:
+    - stage: lint
+      before_install: false
+      install: pip install flake8
+      script: flake8
+
 after_success:
     - coveralls
     - if [[ $TRAVIS_PYTHON_VERSION == 3.7 ]]; then ./build-docs.sh; fi
