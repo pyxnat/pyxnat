@@ -2,3 +2,4 @@ lxml>=4.3.2
 requests>=2.20
 future>=0.16
 pandas>=0.24
+pathlib==1.0.1
