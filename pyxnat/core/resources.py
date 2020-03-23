@@ -13,6 +13,9 @@ import codecs
 from fnmatch import fnmatch
 from itertools import islice
 from lxml import etree
+from pathlib import Path
+
+
 from .uriutil import join_uri, translate_uri, uri_segment
 from .uriutil import uri_last, uri_nextlast
 from .uriutil import uri_parent, uri_grandparent
@@ -1649,8 +1652,8 @@ class Resource(EObject):
         fzip.close()
 
         members = []
-
-        for member in fzip.namelist():
+        fzip_namelist = [str(Path(item)) for item in fzip.namelist()]
+        for member in fzip_namelist:
             old_path = op.join(dest_dir, member)
             if DEBUG:
                 print(member)
@@ -1669,7 +1672,7 @@ class Resource(EObject):
             members.append(new_path)
 
         # TODO: cache.delete(...)
-        for extracted in fzip.namelist():
+        for extracted in fzip_namelist:
             pth = op.join(dest_dir, extracted.split(os.sep, 1)[0])
 
             if op.isdir(pth):
