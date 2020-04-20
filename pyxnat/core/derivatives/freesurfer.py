@@ -120,3 +120,21 @@ def aseg(self):
 
     columns = ['measurement', 'region', 'value']
     return pd.DataFrame(table, columns=columns)
+
+
+def normMean(self):
+
+    from roistats import collect
+    import pandas as pd
+    f1 = list(self.files('*mri/aparc.a2009s+aseg.mgz'))[0]
+    f2 = list(self.files('*mri/norm.mgz'))[0]
+    s_label = f2._uri.split('/')[-3]
+    e_id = f2._uri.split('/')[-7]
+    f1.get('/tmp/aparc.mgz')
+    f2.get('/tmp/T1.mgz')
+    import json
+    lut = dict([(int(e),v) for e,v in json.load(open('/tmp/d.json')).items()])
+    roi_values = collect.roistats_from_maps(['/tmp/norm.mgz'], '/tmp/aparc.mgz',
+        subjects=[(e_id, s_label)])
+    df = pd.DataFrame(roi_values, columns=lut)
+    return df.rename(columns=lut)
