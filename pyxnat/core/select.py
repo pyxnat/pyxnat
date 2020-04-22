@@ -3,7 +3,7 @@ import re
 from . import schema
 from .search import Search
 from .resources import CObject, Project, Projects, Experiment, Experiments # imports used implicitly
-from .uriutil import inv_translate_uri, check_entry
+from .uriutil import inv_translate_uri
 # from .uriutil import uri_last
 from .errors import ProgrammingError
 

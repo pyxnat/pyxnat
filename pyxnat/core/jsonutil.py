@@ -8,7 +8,7 @@ if six.PY2:
     from StringIO import StringIO
 elif six.PY3:
     unicode = str
-    from io import StringIO, BytesIO
+    from io import StringIO
 
 # jdata is a list of dicts
 

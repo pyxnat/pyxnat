@@ -1,5 +1,3 @@
-import glob
-
 try:
     import networkx as nx
     from networkx.drawing.nx_agraph import graphviz_layout
@@ -8,12 +6,9 @@ try:
 except:
     _DRAW_GRAPHS = False
 
-import json
-
 from . import schema
 from .jsonutil import get_column
 from .search import Search
-from .uriutil import check_entry
 
 class Inspector(object):
     """ Database introspection interface.
@@ -41,7 +36,7 @@ class Inspector(object):
         """ Once in a while queries will persist additional
             information on the server. This information is available
             through the following methods of this class:
-            
+
                 - experiment_types
                 - assessor_types
                 - scan_types

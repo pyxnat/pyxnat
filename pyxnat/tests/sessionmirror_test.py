@@ -1,4 +1,4 @@
-import os, sys
+import sys
 import os.path as op
 import pyxnat
 from . import skip_if_no_network

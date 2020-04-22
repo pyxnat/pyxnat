@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 
 import setuptools
-import sys, os
 
 def get_version():
     try:

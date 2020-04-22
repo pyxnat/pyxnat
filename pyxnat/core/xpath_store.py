@@ -1,8 +1,4 @@
 import re
-from datetime import datetime
-from os import path
-from glob import iglob
-
 from lxml import etree
 
 from .jsonutil import JsonTable

@@ -6,10 +6,8 @@ import sys
 import re
 import shutil
 import tempfile
-import mimetypes
 import zipfile
 import time
-import urllib
 import codecs
 from fnmatch import fnmatch
 from itertools import islice
@@ -21,7 +19,6 @@ elif six.PY3:
     from urllib.parse import quote, unquote
     unicode = str
 
-import json
 from lxml import etree
 
 

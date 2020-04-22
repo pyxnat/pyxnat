@@ -1,6 +1,3 @@
-import os
-import re
-
 from .schema import rest_translation
 # from .schema import resources_types
 
@@ -67,6 +64,7 @@ def uri_segment(uri, start=None, end=None):
         return '/'+'/'.join(uri.split('/')[start:end])
 
 def uri_shape(uri):
+    import re
 
     kwid_map = dict(zip(uri.split('/')[1::2], uri.split('/')[2::2]))
     shapes = {}

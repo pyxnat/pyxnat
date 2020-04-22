@@ -1,4 +1,3 @@
-from .uriutil import check_entry
 from .jsonutil import JsonTable
 
 class Users(object):

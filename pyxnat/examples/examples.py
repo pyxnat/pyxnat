@@ -6,6 +6,8 @@ import pyxnat
 
 url = 'https://imagen.cea.fr/imagen_database'
 
+login = ''
+password = ''
 interface = pyxnat.Interface(url, login, password)
 
 def bet(in_image):

@@ -1,6 +1,3 @@
-import os
-import re
-import glob
 import csv
 import difflib
 try:
@@ -14,7 +11,6 @@ except NameError:
 from six import string_types
 
 from lxml import etree
-import json
 
 from .jsonutil import JsonTable, get_column, get_where, get_selection
 from .errors import is_xnat_error, catch_error
