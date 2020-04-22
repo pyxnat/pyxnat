@@ -7,11 +7,11 @@ central = Interface(config=op.join(op.dirname(op.abspath(__file__)), 'central.cf
 project = central.select.project('nosetests3')
 
 prov = {
-    'program':'young',
-    'timestamp':'2011-03-01T12:01:01.897987',
-    'user':'angus',
-    'machine':'war',
-    'platform':'linux',
+    'program': 'young',
+    'timestamp': '2011-03-01T12:01:01.897987',
+    'user': 'angus',
+    'machine': 'war',
+    'platform': 'linux',
     }
 
 sid = uuid1().hex
@@ -27,7 +27,8 @@ def test_provenance():
     assessor.provenance.set(prov)
     _prov = assessor.provenance.get()[0]
 
-    assert prov['program'] == _prov['program'], "Subject: %s Study: %s Prov: %s" % (sid, eid, aid)
+    assert prov['program'] == _prov['program'], \
+        "Subject: %s Study: %s Prov: %s" % (sid, eid, aid)
 
 # def test_del_provenance():
 #     assessor.provenance.delete()

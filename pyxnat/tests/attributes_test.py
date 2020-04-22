@@ -20,11 +20,11 @@ experiment = subject.experiment(eid)
 @skip_if_no_network
 def test_01_fancy_resource_create():
 
-    field_data = {'experiment':'xnat:mrSessionData',
-                  'ID':'TEST_%s' % eid,
-                  'xnat:mrSessionData/age':'42',
-                  'xnat:subjectData/investigator/lastname':'doe',
-                  'xnat:subjectData/investigator/firstname':'john',
+    field_data = {'experiment': 'xnat:mrSessionData',
+                  'ID': 'TEST_%s' % eid,
+                  'xnat:mrSessionData/age': '42',
+                  'xnat:subjectData/investigator/lastname': 'doe',
+                  'xnat:subjectData/investigator/firstname': 'john',
                   'xnat:subjectData/ID': 'TEST_%s' % sid,
                   }
 
