@@ -1,5 +1,3 @@
-import socket
-import platform
 import tempfile
 from uuid import uuid1
 from six import string_types
@@ -8,27 +6,28 @@ import os
 from pyxnat import Interface
 from . import skip_if_no_network
 from nose import SkipTest
+from pyxnat.core import interfaces
 
 _modulepath = op.dirname(op.abspath(__file__))
 
-central = Interface(config=op.join(op.dirname(op.abspath(__file__)), 'central.cfg'))
-from pyxnat.core import interfaces
+central = Interface(config=op.join(op.dirname(op.abspath(__file__)),
+                                   'central.cfg'))
 interfaces.STUBBORN = True
 
 _id_set1 = {
-    'sid':uuid1().hex,
-    'eid':uuid1().hex,
-    'aid':uuid1().hex,
-    'cid':uuid1().hex,
-    'rid':uuid1().hex,
+    'sid': uuid1().hex,
+    'eid': uuid1().hex,
+    'aid': uuid1().hex,
+    'cid': uuid1().hex,
+    'rid': uuid1().hex,
     }
 
 _id_set2 = {
-    'sid':uuid1().hex,
-    'eid':uuid1().hex,
-    'aid':uuid1().hex,
-    'cid':uuid1().hex,
-    'rid':uuid1().hex,
+    'sid': uuid1().hex,
+    'eid': uuid1().hex,
+    'aid': uuid1().hex,
+    'cid': uuid1().hex,
+    'rid': uuid1().hex,
     }
 subj_1 = central.select.project('nosetests3').subject(_id_set1['sid'])
 expe_1 = subj_1.experiment(_id_set1['eid'])
@@ -36,11 +35,13 @@ asse_1 = expe_1.assessor(_id_set1['aid'])
 scan_1 = expe_1.scan(_id_set1['cid'])
 reco_1 = expe_1.reconstruction(_id_set1['rid'])
 
+
 @skip_if_no_network
 def test_01_subject_create():
     assert not subj_1.exists()
     subj_1.create()
     assert subj_1.exists()
+
 
 @skip_if_no_network
 def test_02_experiment_create():
@@ -48,11 +49,13 @@ def test_02_experiment_create():
     expe_1.create()
     assert expe_1.exists()
 
+
 @skip_if_no_network
 def test_03_assessor_create():
     assert not asse_1.exists()
     asse_1.create()
     assert asse_1.exists()
+
 
 @skip_if_no_network
 def test_04_scan_create():
@@ -60,11 +63,13 @@ def test_04_scan_create():
     scan_1.create()
     assert scan_1.exists()
 
+
 @skip_if_no_network
 def test_05_reconstruction_create():
     assert not reco_1.exists()
     reco_1.create()
     assert reco_1.exists()
+
 
 # def test_provenance():
 #     reco_1.provenance.set({'program':'nosetests'})
@@ -78,7 +83,7 @@ def test_06_multi_create():
                             )
 
     expe_2 = central.select('/projects/nosetests3/subjects/%(sid)s'
-                            '/experiments/%(eid)s'%_id_set2
+                            '/experiments/%(eid)s' % _id_set2
                             )
 
     assert not asse_2.exists()
@@ -95,7 +100,8 @@ def test_06_multi_create():
 
     assert scan_2.datatype() == 'xnat:mrScanData'
 
-#def test_share_subject():
+
+# def test_share_subject():
 #    assert not central.select('/projects/nosetests2'
 #                              '/subjects/%(sid)s' % _id_set1
 #                              ).exists()
@@ -104,7 +110,7 @@ def test_06_multi_create():
 #                              ).exists()
 #    assert set(subj_1.shares().get()) == set(['nosetests', 'nosetests2'])
 
-#def test_share_experiment():
+# def test_share_experiment():
 #    assert not central.select('/projects/nosetests2/subjects/%(sid)s'
 #                          '/experiments/%(eid)s'%_id_set1
 #                          ).exists()
@@ -114,7 +120,7 @@ def test_06_multi_create():
 #                          ).exists()
 #    assert set(expe_1.shares().get()) == set(['nosetests', 'nosetests2'])
 
-#def test_share_assessor():
+# def test_share_assessor():
 #    assert not central.select('/projects/nosetests2/subjects/%(sid)s'
 #                              '/experiments/%(eid)s/assessors/%(aid)s'%_id_set1
 #                              ).exists()
@@ -124,21 +130,21 @@ def test_06_multi_create():
 #                          ).exists()
 #    assert set(asse_1.shares().get()) == set(['nosetests', 'nosetests2'])
 
-#def test_unshare_assessor():
+# def test_unshare_assessor():
 #    asse_1.unshare('nosetests2')
 #    assert not central.select('/projects/nosetests2/subjects/%(sid)s'
 #                              '/experiments/%(eid)s/assessors/%(aid)s'%_id_set1
 #                              ).exists()
 #    assert asse_1.shares().get() == ['nosetests']
 
-#def test_unshare_experiment():
+# def test_unshare_experiment():
 #    expe_1.unshare('nosetests2')
 #    assert not central.select('/projects/nosetests2/subjects/%(sid)s'
 #                          '/experiments/%(eid)s'%_id_set1
 #                          ).exists()
 #    assert expe_1.shares().get() == ['nosetests']
 
-#def test_unshare_subject():
+# def test_unshare_subject():
 #    subj_1.unshare('nosetests2')
 #    assert not central.select('/projects/nosetests2/subjects/%(sid)s'%_id_set1
 #                              ).exists()
@@ -153,6 +159,7 @@ def test_07_put_file():
     assert f.exists()
     assert int(f.size()) == os.stat(local_path).st_size
 
+
 @skip_if_no_network
 def test_08_get_file():
     fh = subj_1.resource('test').file('hello.txt')
@@ -161,7 +168,8 @@ def test_08_get_file():
     assert op.exists(fpath)
     print(['toto3', open(fpath, 'rb').read()])
     try:
-        assert open(fpath, 'rb').read() == bytes('Hello XNAT!%s' % os.linesep, encoding='utf8')
+        assert open(fpath, 'rb').read() == bytes('Hello XNAT!%s' % os.linesep,
+                                                 encoding='utf8')
     except TypeError:
         pass
 
@@ -171,6 +179,7 @@ def test_08_get_file():
     assert op.exists(custom), "fpath: %s custom: %s" % (fpath, custom)
     os.remove(custom)
     os.remove(fpath)
+
 
 @skip_if_no_network
 def test_09_put_dir_file():
@@ -180,6 +189,7 @@ def test_09_put_dir_file():
     assert int(subj_1.resource('test').file('dir/hello.txt').size()) == \
                                                 os.stat(local_path).st_size
 
+
 @skip_if_no_network
 def test_10_get_dir_file():
     fh = subj_1.resource('test').file('dir/hello.txt')
@@ -187,7 +197,8 @@ def test_10_get_dir_file():
     fpath = fh.get()
     assert op.exists(fpath)
     try:
-        assert open(fpath, 'rb').read() == bytes('Hello again!%s' % os.linesep, encoding='utf8')
+        assert open(fpath, 'rb').read() == bytes('Hello again!%s' % os.linesep,
+                                                 encoding='utf8')
     except TypeError:
         pass
 
@@ -198,6 +209,7 @@ def test_10_get_dir_file():
     os.remove(custom)
     os.remove(fpath)
 
+
 @skip_if_no_network
 def test_11_get_copy_file():
     fpath = op.join(tempfile.gettempdir(), uuid1().hex)
@@ -205,17 +217,20 @@ def test_11_get_copy_file():
     assert op.exists(fpath)
     fd = open(fpath, 'rb')
     try:
-        assert fd.read() == bytes('Hello XNAT!%s' % os.linesep, encoding='utf8')
+        assert fd.read() == bytes('Hello XNAT!%s' % os.linesep,
+                                                    encoding='utf8')
     except TypeError:
         pass
     fd.close()
     os.remove(fpath)
+
 
 @skip_if_no_network
 def test_12_file_last_modified():
     f = subj_1.resource('test').file('hello.txt')
     assert isinstance(f.last_modified(), string_types)
     assert len(f.last_modified()) > 0
+
 
 @skip_if_no_network
 def test_13_last_modified():
@@ -228,6 +243,7 @@ def test_13_last_modified():
 
     assert t1 != t2
 
+
 @skip_if_no_network
 def test_14_getitem_key():
     projects = central.select.projects()
@@ -235,6 +251,7 @@ def test_14_getitem_key():
     piter = projects.__iter__()
     next(piter)
     assert next(piter).id() == projects[1].id()
+
 
 @skip_if_no_network
 def test_15_getitem_slice():
@@ -247,13 +264,16 @@ def test_15_getitem_slice():
     for pobj in projects[3:6]:
         assert next(piter).id() == pobj.id()
 
+
 def test_subject1_parent():
     project = central.select.project('nosetests3')
     assert subj_1.parent()._uri == project._uri
 
+
 def test_project_parent():
     project = central.select.project('nosetests3')
     assert not project.parent()
+
 
 @skip_if_no_network
 def test_16_subject1_delete():
@@ -261,12 +281,14 @@ def test_16_subject1_delete():
     subj_1.delete()
     assert not subj_1.exists()
 
+
 @skip_if_no_network
 def test_17_subject2_delete():
     subj_2 = central.select('/projects/nosetests3/subjects/%(sid)s'%_id_set2)
     assert subj_2.exists()
     subj_2.delete()
     assert not subj_2.exists()
+
 
 @skip_if_no_network
 def test_18_project_configuration():
@@ -279,7 +301,8 @@ def test_18_project_configuration():
         assert project.prearchive_code() == 4, project.prearchive_code()
     except DatabaseError:
         if version['version'] == '1.7.5.2-SNAPSHOT':
-            msg = 'Version 1.7.5.2-SNAPSHOT gives trouble on some machines. Skipping it'
+            msg = 'Version 1.7.5.2-SNAPSHOT gives trouble on some machines. \
+                   Skipping it'
             raise SkipTest(msg)
 
     if version['version'] != '1.7.5.2-SNAPSHOT':
@@ -294,6 +317,7 @@ def test_18_project_configuration():
     assert 'nosetests' in project.users()
     assert 'nosetests' in project.owners()
     assert project.user_role('nosetests') == 'owner'
+
 
 @skip_if_no_network
 def test_19_put_zip():
@@ -313,14 +337,16 @@ def test_19_put_zip():
     assert r2.exists()
     assert r2.file('hello_dir.zip').exists()
 
+
 @skip_if_no_network
 def test_20_get_zip():
     r = subj_1.resource('test_zip_extract')
     local_dir = op.join(_modulepath, 'test_zip_download'+r.id())
-    file_list = [op.join(local_dir,'test_zip_extract/hello_dir'),
-                 op.join(local_dir,'test_zip_extract/hello_dir/hello_xnat_dir.txt'),
-                 op.join(local_dir,'test_zip_extract/hello_dir/hello_dir2'),
-                 op.join(local_dir,'test_zip_extract/hello_dir/hello_dir2/hello_xnat_dir2.txt')]
+    file_list = ['test_zip_extract/hello_dir',
+                 'test_zip_extract/hello_dir/hello_xnat_dir.txt',
+                 'test_zip_extract/hello_dir/hello_dir2',
+                 'test_zip_extract/hello_dir/hello_dir2/hello_xnat_dir2.txt']
+    file_list = [op.join(local_dir, e) for e in file_list]
 
     if not op.exists(local_dir):
         os.mkdir(local_dir)
@@ -331,10 +357,12 @@ def test_20_get_zip():
     r.get(local_dir, extract=False)
     assert op.isfile(op.join(local_dir, 'test_zip_extract.zip'))
 
+
 @skip_if_no_network
 def test_21_project_aliases():
     project = central.select('/project/nosetests3')
-    assert project.aliases() == ['nosetests32']
+    assert project.aliases() ==  ['nosetests32']
+
 
 @skip_if_no_network
 def test_22_project():

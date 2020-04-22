@@ -6,7 +6,7 @@ if __name__ == '__main__':
     p = x.select.project('nosetests')
     p.create()
     for i in range(3, 10):
-        p = x.select.project('nosetests%s'%i)
+        p = x.select.project('nosetests%s' % i)
         p.create()
 
     uri = '/data/projects/nosetests'

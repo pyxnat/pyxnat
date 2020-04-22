@@ -5,6 +5,7 @@ from functools import partial
 def path():
     return os.getenv('USERPROFILE') or os.getenv('HOME') + "/.xnatPass"
 
+
 # str ->  {'host': ..., 'u': ..., 'p': ..., 'port': ...} | None
 def read_xnat_pass(f):
     if os.path.exists(f) and os.path.isfile(f):
@@ -14,21 +15,23 @@ def read_xnat_pass(f):
         # raise IOError('XNAT Pass file :' + f + " does not exist")
         return None
 
+
 # [str] -> {'host': ..., 'u': ..., 'p': ..., 'port':...} | None
 def parse_xnat_pass(lines):
-    empty = {'host': None,  'u': None, 'p': None}
+    empty = {'host': None, 'u': None, 'p': None}
     line = find_plus_line(lines)
-    u = ('u',partial(find_token,'@'),True)
-    host = ('host',partial(find_token,'='),True)
-    p = ('p',partial(lambda x : (x,x)),True)
+    u = ('u', partial(find_token,'@'), True)
+    host = ('host', partial(find_token,'='), True)
+    p = ('p', partial(lambda x : (x,x)), True)
 
-    def update_state(x,k,state):
+    def update_state(x, k, state):
         state[k] = x
         return state
     if line == None:
         return None
     else:
         return chain([u,host,p],line,empty,update_state)
+
 
 # [(str, str -> str, bool)] ->
 #  str ->
@@ -50,6 +53,7 @@ def chain(ops, initEnv, initState, update_statef):
             state = update_statef(v,k,state)
     return state
 
+
 # [str] -> str | None
 def find_plus_line(lines):
     plusLines = list(filter (lambda x: x.startswith('+'), lines))
@@ -59,11 +63,13 @@ def find_plus_line(lines):
     else:
         return ''.join(plusLines[0])[1:]
 
+
 # char -> str -> (str,str) | None
 def find_token(tok,line):
     splitString = list(map(lambda x: x.strip(), line.split(tok)))
     print([line, tok, splitString])
-    if splitString is None or len(splitString) == 0 or len(splitString) == 1 or splitString[0] == '':
+    if splitString is None or len(splitString) == 0 or len(splitString) == 1 \
+            or splitString[0] == '':
         return None
     else:
         return (splitString[0],splitString[1])

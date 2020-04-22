@@ -11,24 +11,12 @@ import time
 import codecs
 from fnmatch import fnmatch
 from itertools import islice
-import six
-from six import string_types, add_metaclass
-if six.PY2:
-    from urllib import quote, unquote  # Python 2.X
-elif six.PY3:
-    from urllib.parse import quote, unquote
-    unicode = str
-
 from lxml import etree
-
-
-
 from .uriutil import join_uri, translate_uri, uri_segment
 from .uriutil import uri_last, uri_nextlast
 from .uriutil import uri_parent, uri_grandparent
 from .uriutil import uri_shape
 from .uriutil import file_path
-
 from .jsonutil import JsonTable, get_selection
 from .pathutil import find_files, ensure_dir_exists
 from .attributes import EAttrs
@@ -40,7 +28,17 @@ from .provenance import Provenance
 from . import schema
 from . import httputil
 from . import downloadutils
-
+from . import derivatives
+import types
+import pkgutil
+import inspect
+import six
+from six import string_types, add_metaclass
+if six.PY2:
+    from urllib import quote, unquote  # Python 2.X
+elif six.PY3:
+    from urllib.parse import quote, unquote
+    unicode = str
 
 DEBUG = False
 
@@ -129,23 +127,19 @@ class CollectionType(type):
     def __init__(cls, name, bases, dct):
         super(CollectionType, cls).__init__(name, bases, dct)
 
+
 # generic classes
-
-from . import derivatives
-import types
-import pkgutil
-import inspect
-
 def __get_modules__(m):
     modules = []
     prefix = m.__name__ + '.'
     for importer, modname, ispkg in pkgutil.iter_modules(m.__path__, prefix):
-        module = __import__(modname , fromlist='dummy')
+        module = __import__(modname, fromlist='dummy')
         if not ispkg:
             modules.append(module)
         else:
             modules.extend(__get_modules__(module))
     return modules
+
 
 def __find_all_functions__(m):
     functions = {}
@@ -182,11 +176,11 @@ class EObject(object):
 
         for m, mod_functions in functions.items():
             is_resource = False
-            if (hasattr(m, 'XNAT_RESOURCE_NAME') and \
+            if (hasattr(m, 'XNAT_RESOURCE_NAME') and
                 self._urn == m.XNAT_RESOURCE_NAME) or \
-                (hasattr(m , 'XNAT_RESOURCE_NAMES') and \
-                self._urn in m.XNAT_RESOURCE_NAMES):
-                    is_resource = True
+                (hasattr(m, 'XNAT_RESOURCE_NAMES') and
+                 self._urn in m.XNAT_RESOURCE_NAMES):
+                is_resource = True
 
             if is_resource:
                 for f in mod_functions:
@@ -351,14 +345,15 @@ class EObject(object):
                 doc_tree = etree.fromstring(doc)
                 doc_tree.xpath('//*')[0].set('label', uri_last(self._uri))
                 doc = etree.tostring(doc_tree)
-            except:
+            except Exception:
                 pass
 
             body, content_type = httputil.file_message(
                 doc.decode(), 'text/xml', 'data.xml', 'data.xml')
 
             _uri = self._uri
-            if ('allowDataDeletion' in params and params.get('allowDataDeletion') is False):
+            if ('allowDataDeletion' in params and
+                    params.get('allowDataDeletion') is False):
                 _uri += '?allowDataDeletion=false'
             else:
                 _uri += '?allowDataDeletion=true'
@@ -366,8 +361,7 @@ class EObject(object):
             self._intf._exec(_uri,
                              method='PUT',
                              body=body,
-                             headers={'content-type': content_type}
-                             )
+                             headers={'content-type': content_type})
 
             return self
 
@@ -427,10 +421,12 @@ class EObject(object):
             print('PUT', create_uri)
 
         if 'params' in params and 'event_reason' in params['params']:
-            if DEBUG: print('Found event_reason')
+            if DEBUG:
+                print('Found event_reason')
             output = self._intf._exec(create_uri, 'PUT', **params)
         else:
-            if DEBUG: print('event_reason not found')
+            if DEBUG:
+                print('event_reason not found')
             output = self._intf._exec(create_uri, 'PUT')
 
         if is_xnat_error(output):
@@ -638,7 +634,6 @@ class CObject(object):
                 self._intf.inspect._tick == 0 and\
                 self._intf.inspect._auto
 
-
             columns += ['xsiType']
 
             query_string = '?format=json&columns=%s' % ','.join(columns)
@@ -671,16 +666,16 @@ class CObject(object):
         for element in jtable:
             xsitype = element.get('xsiType')
             if xsitype:
-                #Only some of the xnat elements return xsiType like we asked them to.
-                #Projects and Subjects are two known offenders so we cannot update our
-                #knowledge of them.
-                uri = element.get('URI').split(self._intf._get_entry_point(), 1)[1]
+                # Only some of the xnat elements return xsiType like we asked
+                # them to.Projects and Subjects are two known offenders so we
+                #  cannot update our knowledge of them.
+                uri = element.get('URI').split(self._intf._get_entry_point(),
+                                               1)[1]
                 uri = uri.replace(uri.split('/')[-2], _type)
                 shape = uri_shape(uri)
                 request_knowledge[shape] = xsitype
 
         self._intf._struct.update(request_knowledge)
-
 
     def __iter__(self):
         if self._ctype == 'cobjectcuri':
@@ -1998,7 +1993,7 @@ class File(EObject):
             else:
                 path = self._uri.split('/')[-1]
                 name = path
-        except:
+        except Exception:
             path = self._uri.split('/')[-1]
             name = path
 
@@ -2096,17 +2091,21 @@ class File(EObject):
         info = self._intf._get_head(self._absuri)
         return info['last-modified']
 
+
 @add_metaclass(ElementType)
 class In_File(File):
     pass
+
 
 @add_metaclass(ElementType)
 class Out_File(File):
     pass
 
+
 @add_metaclass(CollectionType)
 class Projects(CObject):
     pass
+
 
 @add_metaclass(CollectionType)
 class Subjects(CObject):
@@ -2126,6 +2125,7 @@ class Subjects(CObject):
         for eobj in self:
             eobj.unshare(project)
 
+
 @add_metaclass(CollectionType)
 class Experiments(CObject):
 
@@ -2143,6 +2143,7 @@ class Experiments(CObject):
     def unshare(self, project):
         for eobj in self:
             eobj.unshare(project)
+
 
 @add_metaclass(CollectionType)
 class Assessors(CObject):
@@ -2170,6 +2171,7 @@ class Assessors(CObject):
         return downloadutils.download(dest_dir, self, type, name,
                                       extract, safe, removeZip)
 
+
 @add_metaclass(CollectionType)
 class Reconstructions(CObject):
 
@@ -2180,6 +2182,7 @@ class Reconstructions(CObject):
         """
         return downloadutils.download(dest_dir, self, type, name,
                                       extract, safe, removeZip)
+
 
 @add_metaclass(CollectionType)
 class Scans(CObject):
@@ -2193,25 +2196,31 @@ class Scans(CObject):
         return downloadutils.download(dest_dir, self, type, name,
                                       extract, safe, removeZip)
 
+
 @add_metaclass(CollectionType)
 class Resources(CObject):
     pass
+
 
 @add_metaclass(CollectionType)
 class In_Resources(Resources):
     pass
 
+
 @add_metaclass(CollectionType)
 class Out_Resources(Resources):
     pass
+
 
 @add_metaclass(CollectionType)
 class Files(CObject):
     pass
 
+
 @add_metaclass(CollectionType)
 class In_Files(Files):
     pass
+
 
 @add_metaclass(CollectionType)
 class Out_Files(Files):

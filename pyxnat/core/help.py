@@ -392,8 +392,8 @@ class GraphData(object):
 
         graph = nx.DiGraph()
         graph.add_node(name)
-        graph.labels = {name:name}
-        graph.weights = {name:100.0}
+        graph.labels = {name : name}
+        graph.weights = {name : 100.0}
 
         namespaces = set([exp.split(':')[0] for exp in resource_types])
 
@@ -436,8 +436,8 @@ class GraphData(object):
     def architecture(self, with_datatypes=True):
         graph = nx.DiGraph()
         graph.add_node('projects')
-        graph.labels = {'projects':'projects'}
-        graph.weights = {'projects':100.0}
+        graph.labels = {'projects' : 'projects'}
+        graph.weights = {'projects' : 100.0}
 
         def traverse(lkw, as_lkw):
 
