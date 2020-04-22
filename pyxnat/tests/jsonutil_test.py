@@ -11,6 +11,8 @@ jtable = jsonutil.JsonTable(_list_of_dirs)
 
 # coverage_tests
 def test_dump_methods():
+    jtable.__repr__()
+
     jtable.dumps_csv()
     jtable.dumps_json()
 
@@ -29,6 +31,7 @@ def test_dump_methods():
 
 # unit_tests
 def test_get_item_str_value():
+    jtable.items()
     assert jtable['subject_label'] == jtable.get('subject_label')
 
 def test_get_item_int_value():
