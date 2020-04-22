@@ -26,7 +26,6 @@ def get_version():
     except:
         raise RuntimeError("No version found")
 
-sys.path.append(os.path.abspath('./sphinxext'))
 sys.path.append(os.path.abspath('..'))
 
 # If your extensions (or modules documented by autodoc) are in another directory,

@@ -2,7 +2,6 @@ from uuid import uuid1
 from . import skip_if_no_network
 from pyxnat import Interface
 import os.path as op
-import os
 
 central = Interface(config=op.join(op.dirname(op.abspath(__file__)), 'central.cfg'))
 project = central.select.project('nosetests3')

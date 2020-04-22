@@ -1,6 +1,5 @@
 import os
 import time
-import tempfile
 import getpass
 import json
 import requests
@@ -314,19 +313,19 @@ class Interface(object):
         response = None
 
         def request(method, uri, headers, body, kwargs):
-            if method is 'PUT':
+            if method == 'PUT':
                 response = self._http.put(uri, headers=headers, data=body,
                     **kwargs)
-            elif method is 'GET':
+            elif method == 'GET':
                 response = self._http.get(uri, headers=headers, params=body,
                     **kwargs)
-            elif method is 'POST':
+            elif method == 'POST':
                 response = self._http.post(uri, headers=headers, data=body,
                     **kwargs)
-            elif method is 'DELETE':
+            elif method == 'DELETE':
                 response = self._http.delete(uri, headers=headers, data=body,
                     **kwargs)
-            elif method is 'HEAD':
+            elif method == 'HEAD':
                 response = self._http.head(uri, headers=headers, data=body,
                     **kwargs)
             else:

@@ -1,7 +1,5 @@
-import sys
 import os
 import json
-import datetime
 
 # import six
 # if six.PY2:

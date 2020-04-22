@@ -1,5 +1,3 @@
-import re
-import glob
 import urllib
 
 from lxml import etree
@@ -8,9 +6,7 @@ from .search import SearchManager
 from .users import Users
 from .resources import Project
 from .tags import Tags
-from .uriutil import join_uri, check_entry
 from .jsonutil import JsonTable
-from . import httputil
 
 
 class GlobalManager(object):

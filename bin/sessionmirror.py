@@ -31,13 +31,11 @@ def cmp(a, b):
     return (a > b) - (a < b)
 
 from builtins import zip
-from builtins import input
 from builtins import str
 
 import os
 import os.path as op
 import sys
-from datetime import datetime
 
 from xml.etree import cElementTree as ET
 import pyxnat
@@ -384,66 +382,67 @@ def is_empty_resource(_res):
 
     return f_count == 0
 
+# copy_project and copy_subject are untested
 
-def copy_project(src_proj, dst_proj, proj_cache_dir):
-    '''Copy XNAT project from source to destination'''
+# def copy_project(src_proj, dst_proj, proj_cache_dir):
+#     '''Copy XNAT project from source to destination'''
+#
+#     if not dst_proj.exists():
+#         try:
+#             dst_proj.create()
+#         except Exception as e:
+#             msg = 'ERROR: can not create project on destination '\
+#                 'xnat. Check your user rights. %s' % e
+#             raise Exception(msg)
+#         copy_attributes(src_proj, dst_proj)
+#     print('INFO:loading and sorting subject list...')
+#
+#     proj_label = src_proj.label()
+#     subj_list = src_xnat.get_subjects(proj_label)
+#     subj_list = [x for x in subj_list if x['label'] not in SUBJECTS_MIRRORED]
+#     subj_i = 0
+#     for subj in subj_list:
+#         subj_i += 1
+#         subject_label = subj['label']
+#
+#         print("INFO:Processing subject %s (%d)..." % (subject_label, subj_i))
+#         src_subj = src_proj.subject(subject_label)
+#         dst_subj = dst_proj.subject(subject_label)
+#         subj_cache_dir = op.join(proj_cache_dir, subject_label)
+#         copy_subject(src_subj, dst_subj, subj_cache_dir)
 
-    if not dst_proj.exists():
-        try:
-            dst_proj.create()
-        except Exception as e:
-            msg = 'ERROR: can not create project on destination '\
-                'xnat. Check your user rights. %s' % e
-            raise Exception(msg)
-        copy_attributes(src_proj, dst_proj)
-    print('INFO:loading and sorting subject list...')
 
-    proj_label = src_proj.label()
-    subj_list = src_xnat.get_subjects(proj_label)
-    subj_list = [x for x in subj_list if x['label'] not in SUBJECTS_MIRRORED]
-    subj_i = 0
-    for subj in subj_list:
-        subj_i += 1
-        subject_label = subj['label']
-
-        print("INFO:Processing subject %s (%d)..." % (subject_label, subj_i))
-        src_subj = src_proj.subject(subject_label)
-        dst_subj = dst_proj.subject(subject_label)
-        subj_cache_dir = op.join(proj_cache_dir, subject_label)
-        copy_subject(src_subj, dst_subj, subj_cache_dir)
-
-
-def copy_subject(src_subj, dst_subj, subj_cache_dir):
-    '''Copy subject from XNAT src to XNAT dst'''
-
-    if not dst_subj.exists():
-        print('INFO:uploading subject attributes as xml')
-
-        # Create dirs
-        if not op.exists(subj_cache_dir):
-            os.makedirs(subj_cache_dir)
-
-        # Write xml to file
-        subj_xml = src_subj.get()
-        xml_path = op.join(subj_cache_dir, 'subj.xml')
-        write_xml(subj_xml, xml_path)
-        dst_subj.create(xml=xml_path, allowDataDeletion=False)
-
-    # Process each experiment of subject
-    for src_sess in src_subj.experiments().fetchall('obj'):
-        sess_label = src_sess.label()
-        sess_type = src_sess.datatype()
-        if sess_type != 'xnat:mrSessionData' and \
-           sess_type != 'xnat:petSessionData' and \
-           sess_type != 'xnat:ctSessionData':
-            print('WARN:Skipping, session is not MR, CT, or PET Session')
-            continue
-
-        print("INFO:Processing session:%s..." % (sess_label))
-
-        dst_sess = dst_subj.experiment(sess_label)
-        sess_cache_dir = op.join(subj_cache_dir, sess_label)
-        copy_session(src_sess, dst_sess, sess_cache_dir)
+# def copy_subject(src_subj, dst_subj, subj_cache_dir):
+#     '''Copy subject from XNAT src to XNAT dst'''
+#
+#     if not dst_subj.exists():
+#         print('INFO:uploading subject attributes as xml')
+#
+#         # Create dirs
+#         if not op.exists(subj_cache_dir):
+#             os.makedirs(subj_cache_dir)
+#
+#         # Write xml to file
+#         subj_xml = src_subj.get()
+#         xml_path = op.join(subj_cache_dir, 'subj.xml')
+#         write_xml(subj_xml, xml_path)
+#         dst_subj.create(xml=xml_path, allowDataDeletion=False)
+#
+#     # Process each experiment of subject
+#     for src_sess in src_subj.experiments().fetchall('obj'):
+#         sess_label = src_sess.label()
+#         sess_type = src_sess.datatype()
+#         if sess_type != 'xnat:mrSessionData' and \
+#            sess_type != 'xnat:petSessionData' and \
+#            sess_type != 'xnat:ctSessionData':
+#             print('WARN:Skipping, session is not MR, CT, or PET Session')
+#             continue
+#
+#         print("INFO:Processing session:%s..." % (sess_label))
+#
+#         dst_sess = dst_subj.experiment(sess_label)
+#         sess_cache_dir = op.join(subj_cache_dir, sess_label)
+#         copy_session(src_sess, dst_sess, sess_cache_dir)
 
 
 def copy_session(src_sess, dst_sess, sess_cache_dir):
@@ -700,7 +699,7 @@ def main(args):
     e.create()
 
     src_sess = x1.select.project(e1['project']).subject(e1['subject_ID']).experiment(e1['ID'])
-    dst_sess = e 
+    dst_sess = e
 
     copy_session(src_sess, dst_sess, '/tmp')
 
