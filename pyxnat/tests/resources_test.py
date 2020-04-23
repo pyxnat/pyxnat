@@ -230,6 +230,11 @@ def test_12_file_last_modified():
     f = subj_1.resource('test').file('hello.txt')
     assert isinstance(f.last_modified(), string_types)
     assert len(f.last_modified()) > 0
+    f.delete()
+    assert(not f.exists())
+    r = subj_1.resource('test')
+    r.delete()
+    assert(not r.exists())
 
 
 @skip_if_no_network
