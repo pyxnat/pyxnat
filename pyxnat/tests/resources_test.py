@@ -48,6 +48,7 @@ def test_02_experiment_create():
     assert not expe_1.exists()
     expe_1.create()
     assert expe_1.exists()
+    expe_1.trigger(fix_types=True, pipelines=True, scan_headers=False)
 
 
 @skip_if_no_network

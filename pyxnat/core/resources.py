@@ -1502,7 +1502,7 @@ class Experiment(EObject):
 
             options = '?' + '&'.join(options)
 
-            self._intf._exec(self._uri + options, 'PUT')
+            self._intf._exec(self._uri + options, 'PUT', body=[])
 
 
 @add_metaclass(ElementType)
