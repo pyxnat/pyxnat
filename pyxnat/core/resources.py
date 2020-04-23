@@ -2038,11 +2038,11 @@ class File(EObject):
                 print(response.get("status"))
 
             catch_error(response.content, '''pyxnat.file.put failure:
-    URI: {response.url}
-    status code: {response.status_code}
-    headers: {response.headers}
-    content: {response.content}
-'''.format(response=response))
+                                             URI: {response.url}
+                                             status code: {response.status_code}
+                                             headers: {response.headers}
+                                             content: {response.content}
+                                          '''.format(response=response))
 
     insert = put
     create = put
