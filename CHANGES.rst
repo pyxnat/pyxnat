@@ -3,6 +3,13 @@
 Latest changes
 ===============
 
+Release 1.3.0.0
+---------------
+
+     - Docker-based tests are temporarily removed from Travis
+     - Tests are now included with the PyPI package     
+
+
 Release 1.2.0.0
 ---------------
 
