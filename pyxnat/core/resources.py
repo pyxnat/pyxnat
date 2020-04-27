@@ -177,9 +177,9 @@ class EObject(object):
         for m, mod_functions in functions.items():
             is_resource = False
             if (hasattr(m, 'XNAT_RESOURCE_NAME') and
-                self._urn == m.XNAT_RESOURCE_NAME) or \
-                (hasattr(m, 'XNAT_RESOURCE_NAMES') and
-                 self._urn in m.XNAT_RESOURCE_NAMES):
+                    self._urn == m.XNAT_RESOURCE_NAME) or \
+                    (hasattr(m, 'XNAT_RESOURCE_NAMES') and
+                        self._urn in m.XNAT_RESOURCE_NAMES):
                 is_resource = True
 
             if is_resource:
