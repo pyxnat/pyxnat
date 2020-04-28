@@ -17,13 +17,11 @@ def pdf(self, name):
         each._uri.split('/')[-1].endswith('.pdf')}
 
     if len(pdf.items()) == 0:
-        log.error('No %s found'%name)
-        return None
+        raise Exception('No %s found'%name)
 
     keys = list(pdf.keys())
     if len(keys) != 1:
-        log.warning('Multiple matching reports found (%s)'%keys)
-        return None
+        raise Exception('Multiple matching reports found (%s)'%keys)
 
     f = pdf[list(pdf.keys())[0]]
     return f
@@ -36,7 +34,6 @@ def download_snapshot(self, name, fp):
     import tempfile
     import logging as log
     from glob import glob
-
 
     def extract_file(fp):
         dn = op.dirname(fp)
@@ -81,9 +78,6 @@ def download_snapshot(self, name, fp):
         return jpeg
 
     pdf = self.pdf(name)
-    if pdf is None:
-        log.error('%s not found'%name)
-        return
 
     f, fp1 = tempfile.mkstemp(suffix='.pdf')
     os.close(f)
@@ -93,8 +87,7 @@ def download_snapshot(self, name, fp):
     jpeg = extract_file(fp1)
 
     if len(glob(op.join(op.dirname(fp1), '*.jpg'))) == 0:
-        log.error('No snapshot found in report. %s %s'%(name, fp1))
-        return
+        raise Exception('No snapshot found in report. %s %s'%(name, fp1))
 
     f, fp2 = tempfile.mkstemp(suffix='.jpg')
     os.close(f) # we dont need the handle
