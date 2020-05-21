@@ -3,6 +3,7 @@ from uuid import uuid1
 from six import string_types
 import os.path as op
 import os
+import pandas
 from pyxnat import Interface
 from . import skip_if_no_network
 from nose import SkipTest
@@ -376,3 +377,82 @@ def test_22_project():
     project.datatype()
     project.experiments()
     project.experiment('nose')
+
+
+
+@skip_if_no_network
+def test_23_info():
+
+    # Checking with all information present
+    info = {}
+
+    info['age'] = '22'
+    info['handedness'] = 'right'
+    info['gender'] = 'Male'
+    date = '33-32-2121'
+    user_type = 'admin'
+    info['doc_type'] = date + '('+user_type+')'
+    info['scan'] = '34'
+    info['exp_counter'] = '32'
+    info['exp_output'] = ['exp 1','exp2 ','exp3']
+    info['project_uri'] = '/dfd/dfdf'
+    info['subject_uri'] = 'sdf/sdf/sdf'
+    info['project_id'] = '323'
+    info['subject_id'] = 'ce32'
+
+    sub = central.select.project('nosetests_info').subjects()
+    outputStyleType = sub.info_subjects_notebook(info)
+    outputStringType = sub.info_subjects_ipython(info)
+
+    assert isinstance(outputStyleType ,pandas.io.formats.style.Styler)
+    assert isinstance(outputStringType, str)
+
+
+    # Checking no information present
+    info = {}
+    info['age'] = ''
+    info['handedness'] = ''
+    info['gender'] = ''
+    date = '33-32-2121'
+    user_type = 'admin'
+    info['doc_type'] = date + '('+user_type+')'
+    info['scan'] = ''
+    info['exp_counter'] = ''
+    info['exp_output'] = []
+    info['project_uri'] = ''
+    info['subject_uri'] = ''
+    info['project_id'] = ''
+    info['subject_id'] = ''
+
+    assert isinstance(outputStyleType ,pandas.io.formats.style.Styler)
+    assert isinstance(outputStringType, str)
+
+@skip_if_no_network
+def test_24_info():
+
+    # Checking with all information present
+    info = {}
+
+    info['scan'] = '34'
+    info['exp_counter'] = '32'
+    info['exp_output'] = ['exp 1','exp2 ','exp3']
+
+    sub = central.select.project('nosetests_info').subjects()[0].experiments()
+    outputStyleType = sub.info_exp_notebook(info)
+    outputStringType = sub.info_exp_ipython(info)
+
+    assert isinstance(outputStyleType ,pandas.io.formats.style.Styler)
+    assert isinstance(outputStringType, str)
+
+    # Checking no information present
+    info = {}
+    info['scan'] = ''
+    info['exp_counter'] = ''
+    info['exp_output'] = []
+
+    sub = central.select.project('nosetests_info').subjects()[0].experiments()
+    outputStyleType = sub.info_exp_notebook(info)
+    outputStringType = sub.info_exp_ipython(info)
+
+    assert isinstance(outputStyleType ,pandas.io.formats.style.Styler)
+    assert isinstance(outputStringType, str)
