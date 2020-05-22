@@ -933,6 +933,7 @@ class CObject(object):
 
         output_string = output_string + '--------------------------------------------------------------------\n'
         
+        # Returns formatted details of experiments for ipython
         return output_string
 
 
@@ -982,7 +983,7 @@ class CObject(object):
             html = (df.style.set_table_styles(styles))
             html.hide_index()
 
-            # Since this function will run only in notebook and display is a global function in notebook
+            # Returns formatted details of experiments for notebook
             return html
             
     fetchall = get
@@ -2309,6 +2310,7 @@ class Experiments(CObject):
 
     def info(self):
 
+        # Fetch the number of experiments
         exp = self.fetchall()
         experiment_count = 'Experiments '+'('+str(len(exp))+')'
 
@@ -2330,6 +2332,7 @@ class Experiments(CObject):
         info['scan'] = files_counter
         info['exp_output'] = experiment_output
 
+        # will check whether we are running notebook, ipython or terminal
         try:
             ip = get_ipython()
             if ip.has_trait('kernel'):
@@ -2344,7 +2347,7 @@ class Experiments(CObject):
 
 
     def info_exp_ipython(self,info):
-
+        # Returns formatted details of experiments for ipython
         output = '--------------------------------------------------------------------\n'
         output = output + info['exp_counter']+'\n'
             
@@ -2358,7 +2361,7 @@ class Experiments(CObject):
 
 
     def info_exp_notebook(self,info):
-
+        # Returns formatted details of experiments for notebook
         output_list = []
         experiment_output =  info['exp_counter']+'</br>'
             
