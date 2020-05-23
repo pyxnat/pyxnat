@@ -2318,7 +2318,7 @@ class Experiments(CObject):
         experiment_output = []
         for experiment in self:
 
-            experiment_output.append('Experiment '+ str(exp_counter) +' - '+ str(experiment))
+            experiment_output.append('Experiment '+ str(exp_counter) +' - '+ str(experiment)[20:])
             exp_counter = exp_counter + 1
 
 
@@ -2352,7 +2352,7 @@ class Experiments(CObject):
         output = output + info['exp_counter']+'\n'
             
         for exp in info['exp_output']:
-            output = output + exp[17:] + '\n'
+            output = output + exp + '\n'
             
         output = output + 'Files : \n Scan Files '+'('+str(info['scan'])+')\n'
         output = output + '--------------------------------------------------------------------\n'
