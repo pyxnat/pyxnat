@@ -399,8 +399,8 @@ def test_23_info():
     info['subject_uri'] = 'sdf/sdf/sdf'
     info['project_id'] = '323'
     info['subject_id'] = 'ce32'
-    
-    # Subject object is used for calling the info_exp_ipython method
+
+    # sub object is used for calling the info_exp_ipython and notebook
     sub = central.select.project('nosetests_info').subjects()
     outputStyleType = sub.info_subjects_notebook(info)
     outputStringType = sub.info_subjects_ipython(info)
@@ -438,10 +438,10 @@ def test_24_info():
     info['exp_counter'] = '32'
     info['exp_output'] = ['exp 1','exp2 ','exp3']
 
-    # Experiments object is used for calling the info_exp_ipython method
-    sub = central.select.project('nosetests_info').subjects()[0].experiments()
-    outputStyleType = sub.info_exp_notebook(info)
-    outputStringType = sub.info_exp_ipython(info)
+    # experiment object is used for calling the info_exp_ipython and notebook
+    exp = central.select.project('nosetests_info').subjects()[0].experiments()
+    outputStyleType = exp.info_exp_notebook(info)
+    outputStringType = exp.info_exp_ipython(info)
 
     assert isinstance(outputStyleType ,pandas.io.formats.style.Styler)
     assert isinstance(outputStringType, str)
@@ -452,9 +452,9 @@ def test_24_info():
     info['exp_counter'] = ''
     info['exp_output'] = []
 
-    sub = central.select.project('nosetests_info').subjects()[0].experiments()
-    outputStyleType = sub.info_exp_notebook(info)
-    outputStringType = sub.info_exp_ipython(info)
+    exp = central.select.project('nosetests_info').subjects()[0].experiments()
+    outputStyleType = exp.info_exp_notebook(info)
+    outputStringType = exp.info_exp_ipython(info)
 
     assert isinstance(outputStyleType ,pandas.io.formats.style.Styler)
     assert isinstance(outputStringType, str)
