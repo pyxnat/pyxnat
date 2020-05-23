@@ -2340,7 +2340,7 @@ class Experiments(CObject):
             else:
                 print(self.info_exp_ipython(info))
         except:
-            # Meaning ipython not running and shell is running
+            # ipython not running and shell is running
             print(self.info_exp_ipython(info))
 
             return None
