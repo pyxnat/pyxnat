@@ -10,7 +10,6 @@ import zipfile
 import time
 import codecs
 import pandas
-from IPython.display import display
 from fnmatch import fnmatch
 from itertools import islice
 from lxml import etree
