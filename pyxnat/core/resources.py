@@ -900,8 +900,14 @@ class CObject(object):
             return True
 
     def __repr__(self):
-        self.info()
-        return '<Collection Object> %s' % id(self)
+        try:
+            self.info()
+        except KeyError:
+            print("To print information in object please call experiment object on subject object")
+        except KeyboardInterrupt:
+            print('Skipped by keyboard interrupt')
+        finally:
+            return '<Collection Object> %s' % id(self)
 
     def info_subjects_ipython(self, info):
         
@@ -910,14 +916,16 @@ class CObject(object):
         output_string = '--------------------------------------------------------------------\
                         \nProject ID: '
 
-        output_string = output_string + str(info['project_id'])[17:]+'  '+\
-                        'URI: '+info['project_uri']+'\n'
-        output_string = output_string+ 'Subject ID: ' + str(info['subject_id']) + ' URI: '+\
-                        info['project_uri']+info['subject_uri'][5:] + '\n'
+        output_string = output_string + str(info['project_id'])[17:]+'\n'
+        output_string = output_string+ 'Subject ID: ' + str(info['subject_id']) +'\n'
 
         output_string = output_string + 'Date of Creation : '+info['doc_type']+'\n'
-        output_string = output_string + 'Age : '+str(info['age'])+'\n'
-        output_string = output_string + 'Gender : '+info['gender']+' - Handedness : ' +\
+
+        if('age' in info):
+            output_string = output_string + 'Age : '+str(info['age'])+'\n'
+
+        if('gender' in info and 'handedness' in info):   
+            output_string = output_string + 'Gender : '+info['gender']+' - Handedness : ' +\
                         info['handedness']+'\n'
         
         exp_output = ''
@@ -925,7 +933,7 @@ class CObject(object):
 
         # Looping through each experiment object present in the subject details
         for exp in info['exp_output']:
-            exp_output = exp_output + exp + '\n'
+            exp_output = exp_output +'  '+ exp + '\n'
 
         output_string = output_string + exp_output
         output_string = output_string + 'Files : \nScan Files '+'('+str(info['scan'])+')\n'
@@ -951,21 +959,19 @@ class CObject(object):
             experiment_output =  info['exp_counter']+'</br>'
             
             for exp in info['exp_output']:
-                experiment_output = experiment_output + exp + '</br>'
+                experiment_output = experiment_output+'&emsp;' + exp + '</br>'
 
             output_list.append('Date of Creation : '+info['doc_type']+'</br>')
 
             # Checking the if any age related details present
             if('age' in info):
                 output_list.append('Age : '+str(info['age'])+'</br>')
-            elif('dob' in info):
-                output_list.append('Date of birth: '+str(info['dob'])+'</br>')
-            elif('yob' in info):
-                output_list.append('Birth Year : '+str(info['yob'])+'</br>')
 
-            output_list.append('Gender : '+info['gender']+' - Handedness : ' +info['handedness']+'</br>')
+            if('gender' in info and 'handedness' in info): 
+                output_list.append('Gender : '+info['gender']+' - Handedness : ' +info['handedness']+'</br>')
+
             output_list.append(experiment_output)
-            output_list.append('Files : </br> Scan Files '+'('+str(info['scan'])+')')
+            output_list.append('Files : </br>&emsp; Scan Files '+'('+str(info['scan'])+')')
 
             # Placing the output list in the data frame
             df = pandas.DataFrame(output_list, columns = [' '])
@@ -995,8 +1001,6 @@ class CObject(object):
             project_id = subject.parent()
             subject_id = subject.id()
             age = subject.attrs.get('age')
-            dob = subject.attrs.get('dob')
-            yob = subject.attrs.get('yob')
             date = subject.attrs.get('insert_date')
             gender = subject.attrs.get('gender')
             handedness = subject.attrs.get('handedness')
@@ -1007,10 +1011,9 @@ class CObject(object):
             experiment_count = 'Experiments '+'('+str(len(exp))+')'
             
             experiment_output = []
-            exp_counter = 1
+
             for i in exp:
-                experiment_output.append('Experiment '+ str(exp_counter) +' - '+ i)
-                exp_counter = exp_counter + 1
+                experiment_output.append('  '+i)
 
 
             files_counter = 0
@@ -1035,10 +1038,6 @@ class CObject(object):
             # Check age data
             if(age.isdigit()):
                 info['age'] = age
-            elif(dob != ''):
-                info['dob'] = dob
-            elif(yob != ''):
-                info['yob'] = yob
             else:
                 info['age'] = '---'
             
@@ -2313,23 +2312,36 @@ class Experiments(CObject):
         exp = self.fetchall()
         experiment_count = 'Experiments '+'('+str(len(exp))+')'
 
-        exp_counter = 1
         experiment_output = []
         for experiment in self:
+            experiment_output.append('  '+ str(experiment)[20:])
 
-            experiment_output.append('Experiment '+ str(exp_counter) +' - '+ str(experiment)[20:])
-            exp_counter = exp_counter + 1
-
-
-        files_counter = 0
+        scan_counter = 0
         for experiment in self:
-            files_counter = files_counter + len(experiment.scans().get())
+            scan_counter = len(experiment.scans().get())
+
+        resources_counter = 0
+        for experiment in self:
+            resources_counter = len(experiment.resources().get())
+        
+        resource_files = []
+        for experimentObject in self:
+            for resource in experimentObject.resources():
+                resource_files.append(resource.attrs.get('ID'))
+
+        scan_files = []
+        for experimentObject in self:
+            for scan in experimentObject.scans():
+                scan_files.append(scan.attrs.get('ID'))
 
         info = {}
 
+        info['scan_files'] = scan_files
         info['exp_counter'] = experiment_count
-        info['scan'] = files_counter
+        info['scan_counter'] = scan_counter
         info['exp_output'] = experiment_output
+        info['resources_counter'] = resources_counter
+        info['resources_files'] = resource_files
 
         # will check whether we are running notebook, ipython or terminal
         try:
@@ -2353,7 +2365,16 @@ class Experiments(CObject):
         for exp in info['exp_output']:
             output = output + exp + '\n'
             
-        output = output + 'Files : \n Scan Files '+'('+str(info['scan'])+')\n'
+        output = output + 'Files : \n Scan Files '+'('+str(info['scan_counter'])+')\n'
+        
+        for i in info['scan_files']:
+            output = output+'   ' + i + '\n'
+
+        output = output + 'Files : \n Resourcecs Files '+'('+str(info['resources_counter'])+')\n'
+        
+        for i in info['resources_files']:
+            output = output+'   ' + i + '\n'
+
         output = output + '--------------------------------------------------------------------\n'
         
         return output
@@ -2368,8 +2389,22 @@ class Experiments(CObject):
             experiment_output = experiment_output + exp + '</br>'
             
         output_list.append(experiment_output)
-        output_list.append('Files : </br> Scan Files '+'('+str(info['scan'])+')')
+        output_list.append('Files : </br> Scan Files '+'('+str(info['scan_counter'])+')')
 
+        output_scans = ''
+        for i in info['scan_files']:
+            output_scans = output_scans+ '&emsp;'+ i + '</br>'
+
+        output_list.append(output_scans)
+
+        output_list.append('Files : </br> Resources Files '+'('+str(info['resources_counter'])+')')
+
+        output_resources = ''
+        for i in info['resources_files']:
+            output_resources = output_resources+'&emsp;' + i + '</br>'
+
+        output_list.append(output_resources)
+        
         df = pandas.DataFrame(output_list, columns = [' '])
 
         # Styling the data frame
