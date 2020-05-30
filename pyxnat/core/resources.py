@@ -10,6 +10,7 @@ import zipfile
 import time
 import codecs
 import pandas
+from IPython.display import display
 from fnmatch import fnmatch
 from itertools import islice
 from lxml import etree
@@ -2354,7 +2355,7 @@ class Experiments(CObject):
             # ipython not running and shell is running
             print(self.info_exp_ipython(info))
 
-    return None
+        return None
 
 
     def info_exp_ipython(self,info):
