@@ -3,3 +3,4 @@ requests>=2.20
 future>=0.16
 pandas>=0.24
 jinja2>=2.11.2
+ipython>=6.5.0
