@@ -468,9 +468,18 @@ def test_24_info_experiments():
 @skip_if_no_network
 def test_25_info():
 
-    # Return type should be a subject
+    # Return type should be a subject object
     sub = central.select.project('CENTRAL_OASIS_CS').subjects('OAS1_0002')
     assert isinstance(sub, resources.Subjects)
 
+    # Return type should be a experiment object
     exp = central.select.project('CENTRAL_OASIS_CS').subjects('OAS1_0002').experiments()
     assert isinstance(exp, resources.Experiments)
+
+    # Return type for info should be none
+    subInfo = central.select.project('CENTRAL_OASIS_CS').subjects('OAS1_0002').info()
+    assert subInfo is None
+
+    # Return type should be none
+    expInfo = central.select.project('CENTRAL_OASIS_CS').subjects('OAS1_0002').experiments().info()
+    assert expInfo is None
