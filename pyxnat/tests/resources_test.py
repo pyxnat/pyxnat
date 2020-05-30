@@ -7,7 +7,7 @@ import pandas
 from pyxnat import Interface
 from . import skip_if_no_network
 from nose import SkipTest
-from pyxnat.core import interfaces
+from pyxnat.core import interfaces, resources
 
 _modulepath = op.dirname(op.abspath(__file__))
 
@@ -381,7 +381,7 @@ def test_22_project():
 
 
 @skip_if_no_network
-def test_23_info():
+def test_23_info_subjects():
 
     # Checking with all information present
     info = {}
@@ -429,14 +429,17 @@ def test_23_info():
     assert isinstance(outputStringType, str)
 
 @skip_if_no_network
-def test_24_info():
+def test_24_info_experiments():
 
     # Checking with all information present
     info = {}
 
-    info['scan'] = '34'
+    info['scan_counter'] = '34'
     info['exp_counter'] = '32'
     info['exp_output'] = ['exp 1','exp2 ','exp3']
+    info['scan_files'] = ['fd','34','32']
+    info['resources_counter'] = '31'
+    info['resources_files'] = ['f1','f2']
 
     # experiment object is used for calling the info_exp_ipython and notebook
     exp = central.select.project('nosetests_info').subjects()[0].experiments()
@@ -448,9 +451,12 @@ def test_24_info():
 
     # Checking no information present
     info = {}
-    info['scan'] = ''
+    info['scan_counter'] = ''
     info['exp_counter'] = ''
     info['exp_output'] = []
+    info['scan_files'] = []
+    info['resources_counter'] = ''
+    info['resources_files'] = []
 
     exp = central.select.project('nosetests_info').subjects()[0].experiments()
     outputStyleType = exp.info_exp_notebook(info)
@@ -458,3 +464,13 @@ def test_24_info():
 
     assert isinstance(outputStyleType ,pandas.io.formats.style.Styler)
     assert isinstance(outputStringType, str)
+
+@skip_if_no_network
+def test_25_info():
+
+    # Return type should be a subject
+    sub = central.select.project('CENTRAL_OASIS_CS').subjects('OAS1_0002')
+    assert isinstance(sub, resources.Subjects)
+
+    exp = central.select.project('CENTRAL_OASIS_CS').subjects('OAS1_0002').experiments()
+    assert isinstance(exp, resources.Experiments)
