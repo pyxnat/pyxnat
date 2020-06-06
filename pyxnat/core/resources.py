@@ -9,7 +9,6 @@ import tempfile
 import zipfile
 import time
 import codecs
-import pandas
 from fnmatch import fnmatch
 from itertools import islice
 from lxml import etree
@@ -1482,24 +1481,17 @@ class Subject(EObject):
                                                             + str(info['scan'])
                                                             + ')')
 
-        # Placing the output list in the data frame
-        df = pandas.DataFrame(output_list, columns=[' '])
+        # Code for creating a table
 
-        # Styling the data frame
-        styles = [
-            dict(selector="th", props=[("font-size", "150%"),
-                                       ("text-align", "Left")]),
-            dict(selector="td", props=[("font-size", "150%"),
-                                       ("text-align", "Left")]),
-            dict(selector="td", props=[("border", "1px solid black"),
-                                       ("width", "1000px")])
-        ]
+        html = '<table style="width:100%">'
+        for output_html in output_list:
+            html = html\
+                   + '<tr>'\
+                   + '<td style="font-size:20px;text-align: left;">'\
+                   + output_html + '</td>' + '</tr>'
+        html = html + '</table>'
 
-        html = (df.style.set_table_styles(styles))
-        html.hide_index()
-
-        # Returns formatted details of experiments for notebook
-        return html.render()
+        return html
 
     def __info(self):
 
@@ -1716,22 +1708,15 @@ class Experiment(EObject):
 
         output_list.append(output_resources)
 
-        df = pandas.DataFrame(output_list, columns=[' '])
+        html = '<table style="width:100%">'
+        for output_html in output_list:
+            html = html\
+                   + '<tr>'\
+                   + '<td style="font-size:20px;text-align: left;">'\
+                   + output_html + '</td>' + '</tr>'
+        html = html + '</table>'
 
-        # Styling the data frame
-        styles = [
-            dict(selector="th", props=[("font-size", "150%"),
-                                       ("text-align", "Left")]),
-            dict(selector="td", props=[("font-size", "150%"),
-                                       ("text-align", "Left")]),
-            dict(selector="td", props=[("border", "1px solid black"),
-                                       ("width", "1000px")])
-        ]
-
-        html = (df.style.set_table_styles(styles))
-        html.hide_index()
-
-        return html.render()
+        return html
 
     def shares(self, id_filter='*'):
         """ Returns the projects sharing this experiment.
