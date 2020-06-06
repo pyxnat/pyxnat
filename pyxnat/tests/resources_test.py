@@ -3,11 +3,10 @@ from uuid import uuid1
 from six import string_types
 import os.path as op
 import os
-import pandas
 from pyxnat import Interface
 from . import skip_if_no_network
 from nose import SkipTest
-from pyxnat.core import interfaces, resources
+from pyxnat.core import interfaces
 
 _modulepath = op.dirname(op.abspath(__file__))
 
@@ -379,107 +378,88 @@ def test_22_project():
     project.experiment('nose')
 
 
-
 @skip_if_no_network
-def test_23_info_subjects():
+def test_23_info_subject():
 
-    # Checking with all information present
-    info = {}
+    # For testing the notebook function
+    info_full = {}
+    info_full['project_id'] = 'project_id'
+    info_full['subject_id'] = 'subject_id'
+    info_full['doc_type'] = 'data'
+    info_full['gender'] = 'gender'
+    info_full['age'] = 'age'
+    info_full['exp_counter'] = 'experiment_count'
+    info_full['exp_output'] = 'experiment_output'
+    info_full['scan'] = 'files_counter'
+    info_full['project_uri'] = 'project_uri'
+    info_full['subject_uri'] = 'subject_uri'
 
-    info['age'] = '22'
-    info['handedness'] = 'right'
-    info['gender'] = 'Male'
-    date = '33-32-2121'
-    user_type = 'admin'
-    info['doc_type'] = date + '('+user_type+')'
-    info['scan'] = '34'
-    info['exp_counter'] = '32'
-    info['exp_output'] = ['exp 1','exp2 ','exp3']
-    info['project_uri'] = '/dfd/dfdf'
-    info['subject_uri'] = 'sdf/sdf/sdf'
-    info['project_id'] = '323'
-    info['subject_id'] = 'ce32'
+    subject_notebook_full = central.select.project('testing_new')\
+        .subject('test_new_2')._Subject__info_subjects_notebook(info_full)
+    assert isinstance(subject_notebook_full, str)
+
+    info_empty = {}
+    info_empty['project_id'] = ''
+    info_empty['subject_id'] = ''
+    info_empty['doc_type'] = ''
+    info_empty['gender'] = ''
+    info_empty['age'] = ''
+    info_empty['exp_counter'] = ''
+    info_empty['exp_output'] = ''
+    info_empty['scan'] = ''
+    info_empty['project_uri'] = ''
+    info_empty['subject_uri'] = ''
+
+    subject_notebook_empty = central.select.project('testing_new')\
+        .subject('test_new_2')._Subject__info_subjects_notebook(info_full)
+    assert isinstance(subject_notebook_empty, str)
 
     # sub object is used for calling the info_exp_ipython and notebook
-    sub = central.select.project('nosetests_info').subjects()
-    outputStyleType = sub.info_subjects_notebook(info)
-    outputStringType = sub.info_subjects_ipython(info)
+    subject_ipython_empty = repr(central.select.project('nosetests_info')
+                                        .subject('test3'))
 
-    assert isinstance(outputStyleType ,pandas.io.formats.style.Styler)
-    assert isinstance(outputStringType, str)
+    subject_ipython_full = repr(central.select.project('nosetests_info')
+                                .subject('test1_no_info'))
 
+    assert isinstance(subject_ipython_empty, str)
+    assert isinstance(subject_ipython_full, str)
 
-    # Checking no information present
-    info = {}
-    info['age'] = ''
-    info['handedness'] = ''
-    info['gender'] = ''
-    date = '33-32-2121'
-    user_type = 'admin'
-    info['doc_type'] = date + '('+user_type+')'
-    info['scan'] = ''
-    info['exp_counter'] = ''
-    info['exp_output'] = []
-    info['project_uri'] = ''
-    info['subject_uri'] = ''
-    info['project_id'] = ''
-    info['subject_id'] = ''
-
-    assert isinstance(outputStyleType ,pandas.io.formats.style.Styler)
-    assert isinstance(outputStringType, str)
 
 @skip_if_no_network
-def test_24_info_experiments():
+def test_23_info_experiment():
 
-    # Checking with all information present
-    info = {}
+    # sub object is used for calling the info_exp_ipython and notebook
+    info_full = {}
+    info_full['scan_files'] = 'scan_files'
+    info_full['exp_counter'] = 'experiment_count'
+    info_full['scan_counter'] = 'scan_counter'
+    info_full['exp_output'] = 'experiment_output'
+    info_full['resources_counter'] = 'resources_counter'
+    info_full['resources_files'] = 'resource_files'
+    experiment_full = central.select.project('nosetests_info')\
+        .subject('test1_no_info').experiment('exp1')\
+        ._Experiment__info_exp_notebook(info_full)
 
-    info['scan_counter'] = '34'
-    info['exp_counter'] = '32'
-    info['exp_output'] = ['exp 1','exp2 ','exp3']
-    info['scan_files'] = ['fd','34','32']
-    info['resources_counter'] = '31'
-    info['resources_files'] = ['f1','f2']
+    assert isinstance(experiment_full, str)
 
-    # experiment object is used for calling the info_exp_ipython and notebook
-    exp = central.select.project('nosetests_info').subjects()[0].experiments()
-    outputStyleType = exp.info_exp_notebook(info)
-    outputStringType = exp.info_exp_ipython(info)
+    info_empty = {}
+    info_empty['scan_files'] = 'scan_files'
+    info_empty['exp_counter'] = 'experiment_count'
+    info_empty['scan_counter'] = 'scan_counter'
+    info_empty['exp_output'] = 'experiment_output'
+    info_empty['resources_counter'] = 'resources_counter'
+    info_empty['resources_files'] = 'resource_files'
+    experiment_empty = central.select.project('nosetests_info')\
+        .subject('test1_no_info').experiment('exp1')\
+        ._Experiment__info_exp_notebook(info_empty)
 
-    assert isinstance(outputStyleType ,pandas.io.formats.style.Styler)
-    assert isinstance(outputStringType, str)
+    assert isinstance(experiment_empty, str)
 
-    # Checking no information present
-    info = {}
-    info['scan_counter'] = ''
-    info['exp_counter'] = ''
-    info['exp_output'] = []
-    info['scan_files'] = []
-    info['resources_counter'] = ''
-    info['resources_files'] = []
+    experiment_repr_full = repr(central.select.project('testing_new')
+                                .subject('test_new_3').experiment('session2'))
 
-    exp = central.select.project('nosetests_info').subjects()[0].experiments()
-    outputStyleType = exp.info_exp_notebook(info)
-    outputStringType = exp.info_exp_ipython(info)
+    experiment_repr_empty = repr(central.select.project('testing_new')
+                                .subject('test_new_3').experiment('Mrsession'))
 
-    assert isinstance(outputStyleType ,pandas.io.formats.style.Styler)
-    assert isinstance(outputStringType, str)
-
-@skip_if_no_network
-def test_25_info():
-
-    # Return type should be a subject object
-    sub = central.select.project('CENTRAL_OASIS_CS').subjects('OAS1_0002')
-    assert isinstance(sub, resources.Subjects)
-
-    # Return type should be a experiment object
-    exp = central.select.project('CENTRAL_OASIS_CS').subjects('OAS1_0002').experiments()
-    assert isinstance(exp, resources.Experiments)
-
-    # Return type for info should be none
-    subInfo = central.select.project('CENTRAL_OASIS_CS').subjects('OAS1_0002').info()
-    assert subInfo is None
-
-    # Return type should be none
-    expInfo = central.select.project('CENTRAL_OASIS_CS').subjects('OAS1_0002').experiments().info()
-    assert expInfo is None
+    assert isinstance(experiment_repr_full, str)
+    assert isinstance(experiment_repr_empty, str)
