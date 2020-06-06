@@ -426,7 +426,7 @@ def test_23_info_subject():
 
 
 @skip_if_no_network
-def test_23_info_experiment():
+def test_24_info_experiment():
 
     # sub object is used for calling the info_exp_ipython and notebook
     info_full = {}
