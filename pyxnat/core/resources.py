@@ -10,7 +10,6 @@ import zipfile
 import time
 import codecs
 import pandas
-from IPython.display import display
 from fnmatch import fnmatch
 from itertools import islice
 from lxml import etree
@@ -891,6 +890,7 @@ class CObject(object):
             else:
                 return [e[0] for e in entries]
 
+    fetchall = get
 
     def __nonzero__(self):
         try:
@@ -901,175 +901,7 @@ class CObject(object):
             return True
 
     def __repr__(self):
-        try:
-            self.info()
-        except KeyError:
-            print("To print information in object please call experiment object on subject object")
-        except KeyboardInterrupt:
-            print('Skipped by keyboard interrupt')
-        finally:
-            return '<Collection Object> %s' % id(self)
-
-    def info_subjects_ipython(self, info):
-        
-        # Creating the output string to be returned
-
-        output_string = '--------------------------------------------------------------------\
-                        \nProject ID: '
-
-        output_string = output_string + str(info['project_id'])[17:]+'\n'
-        output_string = output_string+ 'Subject ID: ' + str(info['subject_id']) +'\n'
-
-        output_string = output_string + 'Date of Creation : '+info['doc_type']+'\n'
-
-        if('age' in info):
-            output_string = output_string + 'Age : '+str(info['age'])+'\n'
-
-        if('gender' in info and 'handedness' in info):   
-            output_string = output_string + 'Gender : '+info['gender']+' - Handedness : ' +\
-                        info['handedness']+'\n'
-        
-        exp_output = ''
-        output_string = output_string + info['exp_counter'] + ':\n'
-
-        # Looping through each experiment object present in the subject details
-        for exp in info['exp_output']:
-            exp_output = exp_output +'  '+ exp + '\n'
-
-        output_string = output_string + exp_output
-        output_string = output_string + 'Files : \nScan Files '+'('+str(info['scan'])+')\n'
-
-        output_string = output_string + '--------------------------------------------------------------------\n'
-        
-        # Returns formatted details of experiments for ipython
-        return output_string
-
-
-    def info_subjects_notebook(self,info):
-
-            # Creating the output list to be given to pandas data frame
-
-            output_list = []
-            output_list.append('Project ID : <a href ='+ info['project_uri']+' target = _blank>'\
-                                +str(info['project_id'])+'</a>'+ '</br>')
-
-            # adding subject id and project id to the url
-            output_list.append('Subject ID : <a href ='+info['project_uri']+info['subject_uri']+\
-                                ' target = _blank>'+str(info['subject_id'])+'</a>'+'</br>')
-
-            experiment_output =  info['exp_counter']+'</br>'
-            
-            for exp in info['exp_output']:
-                experiment_output = experiment_output+'&emsp;' + exp + '</br>'
-
-            output_list.append('Date of Creation : '+info['doc_type']+'</br>')
-
-            # Checking the if any age related details present
-            if('age' in info):
-                output_list.append('Age : '+str(info['age'])+'</br>')
-
-            if('gender' in info and 'handedness' in info): 
-                output_list.append('Gender : '+info['gender']+' - Handedness : ' +info['handedness']+'</br>')
-
-            output_list.append(experiment_output)
-            output_list.append('Files : </br>&emsp; Scan Files '+'('+str(info['scan'])+')')
-
-            # Placing the output list in the data frame
-            df = pandas.DataFrame(output_list, columns = [' '])
-
-            # Styling the data frame
-            styles = [
-                dict(selector="th", props=[("font-size", "150%"),
-                                        ("text-align", "Left")]),
-                dict(selector="td", props=[("font-size", "150%"),
-                                        ("text-align", "Left")]),
-                dict(selector="td",props=[("border","1px solid black"),("width","1000px")])
-            ]
-
-            html = (df.style.set_table_styles(styles))
-            html.hide_index()
-
-            # Returns formatted details of experiments for notebook
-            return html
-            
-    fetchall = get
-
-    def info(self):
-
-        for subject in self:
-
-            # Fetching the details 
-            project_id = subject.parent()
-            subject_id = subject.id()
-            age = subject.attrs.get('age')
-            date = subject.attrs.get('insert_date')
-            gender = subject.attrs.get('gender')
-            handedness = subject.attrs.get('handedness')
-            user_type = subject.attrs.get('insert_user')
-
-            experiment = subject.experiments()
-            exp = experiment.fetchall()
-            experiment_count = 'Experiments '+'('+str(len(exp))+')'
-            
-            experiment_output = []
-
-            for i in exp:
-                experiment_output.append('  '+i)
-
-
-            files_counter = 0
-            for experiment in experiment:
-                files_counter = files_counter + len(experiment.scans().get())
-
-            info = {}
-
-            # Creating the url for project and subject
-
-            project_uri = subject.parent().attrs.get('URI')
-            subject_uri = subject.attrs.get('URI')
-
-            # Check gender data
-            if(gender == 'M'):
-                gender = 'Male'
-            elif(gender == 'F'):
-                gender = 'Female'
-            else:
-                gender = 'Unknown'
-            
-            # Check age data
-            if(age.isdigit()):
-                info['age'] = age
-            else:
-                info['age'] = '---'
-            
-            if(handedness == ''):
-                info['handedness'] = '---'
-            else: 
-                info['handedness'] = handedness
-
-            # Adding data
-            info['project_id'] = project_id
-            info['subject_id'] = subject_id
-            info['doc_type'] = date + '('+user_type+')'
-            info['gender'] = gender
-            info['exp_counter'] = experiment_count
-            info['exp_output'] = experiment_output
-            info['scan'] = files_counter
-            info['project_uri'] = project_uri
-            info['subject_uri'] = subject_uri
-
-            try:
-                ip = get_ipython()
-                if ip.has_trait('kernel'):
-                    display(self.info_subjects_notebook(info))
-                else:
-                    print(self.info_subjects_ipython(info))
-            except:
-                # Meaning ipython not running and shell is running
-                display(self.info_subjects_ipython(info))
-
-        return None
-
+        return '<Collection Object> %s' % id(self)
 
     def tag(self, name):
         """ Tag the collection.
@@ -1197,7 +1029,6 @@ class CObject(object):
         return self
 
 # specialized classes
-
 
 @add_metaclass(ElementType)
 class Project(EObject):
@@ -1567,6 +1398,182 @@ class Project(EObject):
 @add_metaclass(ElementType)
 class Subject(EObject):
 
+    def __repr__(self):
+
+        return self.__info()
+
+    def _repr_html_(self):
+
+        return self.__info()
+
+    def __info_subjects_ipython(self, info):
+        # Creating the output string to be returned
+
+        output_string = '\n-------------------------------------\nProject ID: '
+
+        output_string = output_string + str(info['project_id'])[17:]+'\n'
+        output_string = output_string + 'Subject ID: '\
+                                        + str(info['subject_id']) + '\n'
+
+        output_string = output_string + 'Date of Creation: '\
+                                        + info['doc_type'] + '\n'
+
+        if('age' in info):
+            output_string = output_string + 'Age: '+str(info['age'])+'\n'
+
+        if('gender' in info and 'handedness' in info):
+            output_string = output_string + 'Gender: '\
+                            + info['gender']+' - Handedness: '\
+                            + info['handedness']+'\n'
+
+        exp_output = ''
+        output_string = output_string + info['exp_counter'] + ':\n'
+
+        # Looping through each experiment object present in the subject details
+        for exp in info['exp_output']:
+            exp_output = exp_output + '  ' + exp + '\n'
+
+        output_string = output_string + exp_output
+        output_string = output_string + 'Files: \n  Scan Files '\
+                                      + '('+str(info['scan']) + ')\n'
+
+        output_string = output_string + '----------------------------------'
+
+        # Returns formatted details of experiments for ipython
+        return output_string
+
+    def __info_subjects_notebook(self, info):
+
+        # Creating the output list to be given to pandas data frame
+
+        output_list = []
+        output_list.append('Project ID: <a href =' + info['project_uri']
+                                                   + ' target = _blank>'
+                                                   + str(info['project_id'])
+                                                   + '</a>'
+                                                   + '</br>')
+
+        # adding subject id and project id to the url
+        output_list.append('Subject ID: <a href =' + self._uri
+                                                   + ' target = _blank>'
+                                                   + str(info['subject_id'])
+                                                   + '</a>'
+                                                   + '</br>')
+
+        experiment_output = info['exp_counter'] + '</br>'
+
+        for exp in info['exp_output']:
+            experiment_output = experiment_output+'&emsp;' + exp + '</br>'
+
+        output_list.append('Date of Creation: '+info['doc_type']+'</br>')
+
+        # Checking the if any age related details present
+        if('age' in info):
+            output_list.append('Age: '+str(info['age'])+'</br>')
+
+        if('gender' in info and 'handedness' in info):
+            output_list.append('Gender:  ' + info['gender']
+                                           + ' - Handedness: '
+                                           + info['handedness']
+                                           + '</br>')
+
+        output_list.append(experiment_output)
+        output_list.append('Files: </br>&emsp; Scan Files '+'('
+                                                            + str(info['scan'])
+                                                            + ')')
+
+        # Placing the output list in the data frame
+        df = pandas.DataFrame(output_list, columns=[' '])
+
+        # Styling the data frame
+        styles = [
+            dict(selector="th", props=[("font-size", "150%"),
+                                       ("text-align", "Left")]),
+            dict(selector="td", props=[("font-size", "150%"),
+                                       ("text-align", "Left")]),
+            dict(selector="td", props=[("border", "1px solid black"),
+                                       ("width", "1000px")])
+        ]
+
+        html = (df.style.set_table_styles(styles))
+        html.hide_index()
+
+        # Returns formatted details of experiments for notebook
+        return html.render()
+
+    def __info(self):
+
+        # Fetching the details
+        project_id = self.parent()
+        subject_id = self.id()
+        age = self.attrs.get('age')
+        date = self.attrs.get('insert_date')
+        gender = self.attrs.get('gender')
+        handedness = self.attrs.get('handedness')
+        user_type = self.attrs.get('insert_user')
+
+        experiment = self.experiments()
+        exp = experiment.fetchall()
+        experiment_count = 'Experiments '+'('+str(len(exp))+')'
+
+        experiment_output = []
+
+        for i in exp:
+            experiment_output.append('  '+i)
+
+        files_counter = 0
+        for experiment in experiment:
+            files_counter = files_counter + len(experiment.scans().get())
+
+        info = {}
+
+        # Creating the url for project and subject
+
+        project_uri = self.parent().attrs.get('URI')
+        subject_uri = self.attrs.get('URI')
+
+        # Check gender data
+        if(gender == 'M'):
+            gender = 'Male'
+        elif(gender == 'F'):
+            gender = 'Female'
+        else:
+            gender = 'Unknown'
+
+        # Check age data
+        if(age.isdigit()):
+            info['age'] = age
+        else:
+            info['age'] = '---'
+
+        if(handedness == ''):
+            info['handedness'] = '---'
+        else:
+            info['handedness'] = handedness
+
+        # Adding data
+        info['project_id'] = project_id
+        info['subject_id'] = subject_id
+        info['doc_type'] = date + '('+user_type+')'
+        info['gender'] = gender
+        info['exp_counter'] = experiment_count
+        info['exp_output'] = experiment_output
+        info['scan'] = files_counter
+        info['project_uri'] = project_uri
+        info['subject_uri'] = subject_uri
+
+        try:
+            ip = get_ipython()
+            if ip.has_trait('kernel'):
+                return self.__info_subjects_notebook(info)
+            else:
+                return self.__info_subjects_ipython(info)
+        except Exception:
+            # Meaning ipython not running and shell is running
+            return self.__info_subjects_ipython(info)
+
+        return None
+
     def datatype(self):
         return 'xnat:subjectData'
 
@@ -1603,6 +1610,128 @@ class Subject(EObject):
 
 @add_metaclass(ElementType)
 class Experiment(EObject):
+
+    def __repr__(self):
+        return self.__info()
+
+    def _repr_html_(self):
+        return self.__info()
+
+    def __info(self):
+
+        # Fetch the number of experiments
+        experiment = self
+        experiment_count = 'Experiment Details: '
+
+        experiment_output = []
+        experiment_output.append('  ' + str(experiment._urn))
+
+        scan_counter = 0
+        scan_counter = len(experiment.scans().get())
+
+        resources_counter = 0
+        resources_counter = len(experiment.resources().get())
+
+        resource_files = []
+        for resource in experiment.resources():
+            resource_files.append(resource.attrs.get('ID'))
+
+        scan_files = []
+        for scan in experiment.scans():
+            scan_files.append(scan.attrs.get('ID'))
+
+        info = {}
+
+        info['scan_files'] = scan_files
+        info['exp_counter'] = experiment_count
+        info['scan_counter'] = scan_counter
+        info['exp_output'] = experiment_output
+        info['resources_counter'] = resources_counter
+        info['resources_files'] = resource_files
+
+        # will check whether we are running notebook, ipython or terminal
+        try:
+            ip = get_ipython()
+            if ip.has_trait('kernel'):
+                return self.__info_exp_notebook(info)
+            else:
+                return self.__info_exp_ipython(info)
+        except Exception:
+            # ipython not running and shell is running
+            return self.__info_exp_ipython(info)
+
+        return None
+
+    def __info_exp_ipython(self, info):
+
+        # Returns formatted details of experiments for ipython
+        output = '\n--------------------------------------------------------\n'
+        output = output + info['exp_counter']+'\n'
+
+        for exp in info['exp_output']:
+            output = output + exp + '\n'
+
+        output = output \
+            + 'Files: \n Scan Files '\
+            + '('+str(info['scan_counter'])+')\n'
+
+        for i in info['scan_files']:
+            output = output+'   ' + i + '\n'
+
+        output = output + 'Files: \n Resources Files '\
+            + '('+str(info['resources_counter'])+')\n'
+
+        for i in info['resources_files']:
+            output = output+'   ' + i + '\n'
+
+        output = output + '-------------------------------------------------\n'
+
+        return output
+
+    def __info_exp_notebook(self, info):
+
+        # Returns formatted details of experiments for notebook
+        output_list = []
+        experiment_output = info['exp_counter'] + '</br>'
+
+        for exp in info['exp_output']:
+            experiment_output = experiment_output + '&emsp;' + exp + '</br>'
+
+        output_list.append(experiment_output)
+        output_list.append('Files: </br> Scan Files '
+                            + '(' + str(info['scan_counter'])+')')
+
+        output_scans = ''
+        for i in info['scan_files']:
+            output_scans = output_scans + '&emsp;' + i + '</br>'
+
+        output_list.append(output_scans)
+
+        output_list.append('Files: </br> &emsp; Resources Files '
+                            + '(' + str(info['resources_counter'])+')')
+
+        output_resources = ''
+        for i in info['resources_files']:
+            output_resources = output_resources+'&emsp;' + i + '</br>'
+
+        output_list.append(output_resources)
+
+        df = pandas.DataFrame(output_list, columns=[' '])
+
+        # Styling the data frame
+        styles = [
+            dict(selector="th", props=[("font-size", "150%"),
+                                       ("text-align", "Left")]),
+            dict(selector="td", props=[("font-size", "150%"),
+                                       ("text-align", "Left")]),
+            dict(selector="td", props=[("border", "1px solid black"),
+                                       ("width", "1000px")])
+        ]
+
+        html = (df.style.set_table_styles(styles))
+        html.hide_index()
+
+        return html.render()
 
     def shares(self, id_filter='*'):
         """ Returns the projects sharing this experiment.
@@ -1674,6 +1803,7 @@ class Experiment(EObject):
             options = '?' + '&'.join(options)
 
             self._intf._exec(self._uri + options, 'PUT', body=[])
+
 
 
 @add_metaclass(ElementType)
@@ -2307,120 +2437,6 @@ class Experiments(CObject):
                            self._intf
                            )
 
-    def info(self):
-
-        # Fetch the number of experiments
-        exp = self.fetchall()
-        experiment_count = 'Experiments '+'('+str(len(exp))+')'
-
-        experiment_output = []
-        for experiment in self:
-            experiment_output.append('  '+ str(experiment)[20:])
-
-        scan_counter = 0
-        for experiment in self:
-            scan_counter = len(experiment.scans().get())
-
-        resources_counter = 0
-        for experiment in self:
-            resources_counter = len(experiment.resources().get())
-        
-        resource_files = []
-        for experimentObject in self:
-            for resource in experimentObject.resources():
-                resource_files.append(resource.attrs.get('ID'))
-
-        scan_files = []
-        for experimentObject in self:
-            for scan in experimentObject.scans():
-                scan_files.append(scan.attrs.get('ID'))
-
-        info = {}
-
-        info['scan_files'] = scan_files
-        info['exp_counter'] = experiment_count
-        info['scan_counter'] = scan_counter
-        info['exp_output'] = experiment_output
-        info['resources_counter'] = resources_counter
-        info['resources_files'] = resource_files
-
-        # will check whether we are running notebook, ipython or terminal
-        try:
-            ip = get_ipython()
-            if ip.has_trait('kernel'):
-                 display(self.info_exp_notebook(info))
-            else:
-                print(self.info_exp_ipython(info))
-        except:
-            # ipython not running and shell is running
-            print(self.info_exp_ipython(info))
-
-        return None
-
-
-    def info_exp_ipython(self,info):
-        # Returns formatted details of experiments for ipython
-        output = '--------------------------------------------------------------------\n'
-        output = output + info['exp_counter']+'\n'
-            
-        for exp in info['exp_output']:
-            output = output + exp + '\n'
-            
-        output = output + 'Files : \n Scan Files '+'('+str(info['scan_counter'])+')\n'
-        
-        for i in info['scan_files']:
-            output = output+'   ' + i + '\n'
-
-        output = output + 'Files : \n Resourcecs Files '+'('+str(info['resources_counter'])+')\n'
-        
-        for i in info['resources_files']:
-            output = output+'   ' + i + '\n'
-
-        output = output + '--------------------------------------------------------------------\n'
-        
-        return output
-
-
-    def info_exp_notebook(self,info):
-        # Returns formatted details of experiments for notebook
-        output_list = []
-        experiment_output =  info['exp_counter']+'</br>'
-            
-        for exp in info['exp_output']:
-            experiment_output = experiment_output + exp + '</br>'
-            
-        output_list.append(experiment_output)
-        output_list.append('Files : </br> Scan Files '+'('+str(info['scan_counter'])+')')
-
-        output_scans = ''
-        for i in info['scan_files']:
-            output_scans = output_scans+ '&emsp;'+ i + '</br>'
-
-        output_list.append(output_scans)
-
-        output_list.append('Files : </br> Resources Files '+'('+str(info['resources_counter'])+')')
-
-        output_resources = ''
-        for i in info['resources_files']:
-            output_resources = output_resources+'&emsp;' + i + '</br>'
-
-        output_list.append(output_resources)
-        
-        df = pandas.DataFrame(output_list, columns = [' '])
-
-        # Styling the data frame
-        styles = [
-            dict(selector="th", props=[("font-size", "150%"),
-                                    ("text-align", "Left")]),
-            dict(selector="td", props=[("font-size", "150%"),
-                                    ("text-align", "Left")]),
-            dict(selector="td",props=[("border","1px solid black"),("width","1000px")])
-        ]
-
-        html = (df.style.set_table_styles(styles))
-        html.hide_index()
-
-        return html
 
 
     def share(self, project):
