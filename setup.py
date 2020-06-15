@@ -23,6 +23,9 @@ def get_version():
     raise RuntimeError("No version found")
 
 LONG_DESCRIPTION = """
+The package is hosted at VUIIS github repo, which is a customized PyXnat with cache feature (debugging, testing purpose)
+The main purpose is to explicitly display all incoming URL queries and open session IDs.
+
 PyXNAT
 ======
 
@@ -32,12 +35,12 @@ servers.
 Visit http://packages.python.org/pyxnat for more information.
 """
 
-setup(name='pyxnat',
+setup(name='pyxnat_ldax',
       version=get_version(),
-      summary='XNAT in Python',
-      author='Yannick Schwartz',
-      author_email='yannick.schwartz@cea.fr',
-      url='http://packages.python.org/pyxnat/',
+      summary='XNAT in Python for LDax',
+      author='Shunxing Bao',
+      author_email='onealbao@gmail.com',
+      url='https://github.com/VUIIS/pyxnat/tree/vuiis_dax_build',
       packages=['pyxnat'],
       package_data={'pyxnat': ['externals/*.py',
                                'externals/httplib2/*.py',
