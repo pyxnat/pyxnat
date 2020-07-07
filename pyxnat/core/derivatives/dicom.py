@@ -10,7 +10,8 @@ def scandate(self):
     f = list(self.files())[0]
 
     fp = op.join(tempfile.gettempdir(), 'test.dcm')
-    _, fp = tempfile.mkstemp(suffix='.dcm')
+    fd, fp = tempfile.mkstemp(suffix='.dcm')
+    os.close(fd)
     f.get(dest=fp)
     d = pydicom.read_file(fp)
 
@@ -20,5 +21,5 @@ def scandate(self):
         acquisition_date = d.AcquisitionDateTime[:8]
 
     os.remove(fp)
-    ad = datetime.strptime(acquisition_date, '%Y%m%d').strftime('%m-%d-%Y')
+    ad = datetime.strptime(acquisition_date, '%Y%m%d').strftime('%Y-%m-%d')
     return ad
