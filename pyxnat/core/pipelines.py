@@ -29,7 +29,7 @@ class Pipelines(object):
         self._project = project
 
     def get(self):
-        response =  self._intf._exec('%s/projects/%s/pipelines' % (
+        response = self._intf._exec('%s/projects/%s/pipelines' % (
                 self._intf._get_entry_point(),
                 self._project,
                 ))
@@ -53,7 +53,7 @@ class Pipelines(object):
         self._intf._exec(pipeline_uri,
                          method='PUT',
                          body=body,
-                         headers={'content-type':content_type}
+                         headers={'content-type': content_type}
                          )
 
     def delete(self, pipeline_id):

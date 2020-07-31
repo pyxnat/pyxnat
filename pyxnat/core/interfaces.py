@@ -95,11 +95,11 @@ class Interface(object):
                 to the hostname:
                 http://user:pass@hostname:port
 
-            verify: True, False, or path to file containing certificate for your site
-              Added to the requests Session, as documented here:
+            verify: True, False, or path to file containing certificate for
+              your site. Added to the requests Session, as documented here:
               http://docs.python-requests.org/en/latest/user/advanced/#ssl-cert-verification
-              Simplifies handling self-certified sites, or sites where there is an issue
-              with certification
+              Simplifies handling self-certified sites, or sites where there
+              is an issue with certification
 
         """
 
@@ -140,7 +140,6 @@ class Interface(object):
                 self._user = connection_args['u']
                 self._pwd = connection_args['p']
 
-
                 if 'proxy' in connection_args:
                     self.__set_proxy(connection_args['proxy'])
                 else:
@@ -170,7 +169,7 @@ class Interface(object):
 
         self._struct = {}
         self._entry = None
-        self._jsession = None #'authentication_by_credentials'
+        self._jsession = None  # 'authentication_by_credentials'
         self._connect_extras = {}
         self._connect()
 
@@ -224,7 +223,7 @@ class Interface(object):
                 if is_xnat_error(self._jsession):
                     catch_error(self._jsession)
             except Exception as e:
-                if not '/data/JSESSION' in str(e):
+                if '/data/JSESSION' not in str(e):
                     raise e
 
         return self._entry
@@ -247,10 +246,10 @@ class Interface(object):
 
         self._http = requests.Session()
 
-        # requests verify defaults to True, but can be set from environment variables
-        # Leave as-is unless user has explicitly overridden it
+        # requests verify defaults to True, but can be set from environment
+        # variables Leave as-is unless user has explicitly overridden it
         if self._verify is not None:
-          self._http.verify = self._verify
+            self._http.verify = self._verify
 
         if not self._anonymous:
             self._http.auth = (self._user, self._pwd)
@@ -258,14 +257,15 @@ class Interface(object):
         if self._proxy_url:
             self._http.proxies = {'http': self._proxy_url.geturl()}
 
-
-        # Turns out this doesn't work any more: XNAT doesn't do the 401 response that forces
-        # httplib2 to re-submit the request with credentials. See where the Authorization header
-        # is added manually in the _exec function.
+        # Turns out this doesn't work any more: XNAT doesn't do the 401
+        # response that forces httplib2 to re-submit the request with
+        # credentials. See where the Authorization header is added manually in
+        # the _exec function.
         # if not self._anonymous:
         #    self._http.add_credentials(self._user, self._pwd)
 
-    def _exec(self, uri, method='GET', body=None, headers=None, force_preemptive_auth=False, **kwargs):
+    def _exec(self, uri, method='GET', body=None, headers=None,
+              force_preemptive_auth=False, **kwargs):
         """ A wrapper around a simple httplib2.request call that:
                 - avoids repeating the server url in the request
                 - deals with custom caching mechanisms :: Depricated
@@ -284,19 +284,24 @@ class Interface(object):
                 Additional headers for the HTTP request.
             force_preemptive_auth: boolean
                 .. note:: Depricated as of 1.0.0.0
-                Indicates whether the request should include an Authorization header with basic auth credentials.
+                Indicates whether the request should include an Authorization
+                header with basic auth credentials.
             **kwargs: dictionary
-                Additional parameters to pass directly to the Requests HTTP call.
+                Additional parameters to pass directly to the Requests HTTP
+                call.
 
             HTTP:GET
             ----------
-                When calling with GET as method, the body parameter can be a key:value dictionary containing
-                request parameters or a string of parameters. They will be url encoded and appended to the url.
+                When calling with GET as method, the body parameter can be a
+                key:value dictionary containing request parameters or a string
+                of parameters. They will be url encoded and appended to the
+                url.
 
             HTTP:POST
             ----------
-                When calling with POST as method, the body parameter can be a key:value dictionary containing
-                request parameters they will be url encoded and appended to the url.
+                When calling with POST as method, the body parameter can be a
+                key:value dictionary containing request parameters they will
+                be url encoded and appended to the url.
 
         """
 
@@ -315,21 +320,21 @@ class Interface(object):
         def request(method, uri, headers, body, kwargs):
             if method == 'PUT':
                 response = self._http.put(uri, headers=headers, data=body,
-                    **kwargs)
+                                          **kwargs)
             elif method == 'GET':
                 response = self._http.get(uri, headers=headers, params=body,
-                    **kwargs)
+                                          **kwargs)
             elif method == 'POST':
                 response = self._http.post(uri, headers=headers, data=body,
-                    **kwargs)
+                                           **kwargs)
             elif method == 'DELETE':
                 response = self._http.delete(uri, headers=headers, data=body,
-                    **kwargs)
+                                             **kwargs)
             elif method == 'HEAD':
                 response = self._http.head(uri, headers=headers, data=body,
-                    **kwargs)
+                                           **kwargs)
             else:
-                print('Unsupported HTTP method (%s)'%method)
+                print('Unsupported HTTP method (%s)' % method)
                 return
             return response
 
@@ -340,10 +345,11 @@ class Interface(object):
         # Dirty trick to help Travis CI tests on CENTRAL: consider fixing it
         if STUBBORN:
             if (response is not None and response.status_code == 500):
-                print('Retrying request... %s'%uri)
+                print('Retrying request... %s' % uri)
                 response = request(method, uri, headers, body, kwargs)
 
-        if (response is not None and not response.ok) or is_xnat_error(response.content):
+        if (response is not None and not response.ok) or \
+           is_xnat_error(response.content):
             if DEBUG:
                 print(response.content)
                 print(response.status_code)
@@ -397,11 +403,13 @@ class Interface(object):
         if DEBUG:
             print('GET HEAD')
 
-        response = self._http.head('{server}{uri}'.format(server=self._server, uri=uri))
+        response = self._http.head('{server}{uri}'.format(server=self._server,
+                                                          uri=uri))
 
         if not response.ok:
             time.sleep(1)
-            self._http.head('{server}{uri}'.format(server=self._server, uri=uri))
+            self._http.head('{server}{uri}'.format(server=self._server,
+                                                   uri=uri))
 
         return response.headers
 
@@ -441,7 +449,6 @@ class Interface(object):
         with open(location, 'w') as fp:
             json.dump(config, fp)
 
-
     def load_config(self, location):
         """ Loads a configuration file and replaces current connection
             parameters.
@@ -462,7 +469,6 @@ class Interface(object):
         if os.path.exists(location):
             with open(location, 'rb') as fp:
                 config = json.load(fp)
-
 
             self._server = str(config['server'])
             self._user = str(config['user'])
@@ -485,7 +491,8 @@ class Interface(object):
         try:
             return self._exec('/data/version')
         except DatabaseError:
-            return json.loads(self._exec('/xapi/siteConfig/buildInfo').decode())
+            j = self._exec('/xapi/siteConfig/buildInfo').decode()
+            return json.loads(j)
 
     def set_logging(self, level=0):
         pass
@@ -496,7 +503,6 @@ class Interface(object):
         """
         self._exec('/data/JSESSION', method='DELETE')
         self._http.close()
-
 
     def get(self, uri, **kwargs):
         '''

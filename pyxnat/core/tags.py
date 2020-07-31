@@ -54,7 +54,7 @@ class Tag(object):
             self._intf._user).resource('tags').file(name)
 
     def __repr__(self):
-        return '<Tag> %s'%self._name
+        return '<Tag> %s' % self._name
 
     def _read(self):
         fd = open(self._file.get(), 'rb')
@@ -100,7 +100,7 @@ class Tag(object):
         uri = self._intf.select(uri)._uri
         jtag = self._read()
         if uri not in jtag.get('URI', always_list=True):
-            jtag.data.append({'URI':uri})
+            jtag.data.append({'URI': uri})
             tmp = tempfile.mkstemp()[1]
             jtag.dump_csv(tmp)
             self._file.put(tmp)
@@ -109,7 +109,7 @@ class Tag(object):
     def reference_many(self, uris=[]):
         jtag = self._read()
         for uri in uris:
-            jtag.data.append({'URI':uri})
+            jtag.data.append({'URI': uri})
         tmp = tempfile.mkstemp()[1]
         jtag.dump_csv(tmp)
         self._file.put(tmp)

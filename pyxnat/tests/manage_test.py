@@ -1,12 +1,17 @@
-import os
+import os.path as op
 from pyxnat import Interface
 from . import skip_if_no_network
-central = Interface(config=os.path.join(os.path.dirname(os.path.abspath(__file__)), 'central.cfg'))
+
+
+fp = op.join(op.dirname(op.abspath(__file__)), 'central.cfg')
+central = Interface(config=fp)
 
 notified = []
 
+
 def notify(cobj, eobj):
     notified.append(eobj)
+
 
 def test_register_callback():
     local_notified = []
@@ -16,9 +21,11 @@ def test_register_callback():
 
     assert notified == local_notified
 
+
 def test_unregister_callback():
     central.manage.unregister_callback()
     assert central._callback is None
+
 
 @skip_if_no_network
 def test_add_schema():

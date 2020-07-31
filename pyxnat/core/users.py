@@ -1,5 +1,6 @@
 from .jsonutil import JsonTable
 
+
 class Users(object):
     """ Database user management interface. It is used to retrieve information
         on users registered on a server.
@@ -71,7 +72,6 @@ class Users(object):
 
         return JsonTable(self._intf._get_json('%s/users' % self._intf._entry)
                          ).where(login=login)['email']
-
 
     def resources(self):
         """ Returns the resources of the user.

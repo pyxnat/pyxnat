@@ -2,12 +2,13 @@ from __future__ import with_statement
 
 import lxml
 import os
+import os.path as op
 import sys
 import re
 import shutil
 import tempfile
 import zipfile
-import time
+# import time
 import codecs
 from fnmatch import fnmatch
 from itertools import islice
@@ -335,7 +336,7 @@ class EObject(object):
             :func:`EObject.label`
             :func:`EObject.datatype`
         """
-        if 'xml' in params and os.path.exists(params.get('xml')):
+        if 'xml' in params and op.exists(params.get('xml')):
 
             f = codecs.open(params.get('xml'))
             doc = f.read()
@@ -624,15 +625,15 @@ class CObject(object):
             uri = translate_uri(self._cbase)
             uri = quote(uri)
 
-            request_shape = uri_shape(
-                '%s/0' % uri.split(self._intf._get_entry_point(), 1)[1])
+            # request_shape = uri_shape(
+            #    '%s/0' % uri.split(self._intf._get_entry_point(), 1)[1])
 
-            gather = uri.split('/')[-1] in ['experiments', 'assessors',
-                                            'scans', 'reconstructions']
+            # gather = uri.split('/')[-1] in ['experiments', 'assessors',
+            #                                'scans', 'reconstructions']
 
-            tick = time.gmtime(time.time())[5] % \
-                self._intf.inspect._tick == 0 and\
-                self._intf.inspect._auto
+            # tick = time.gmtime(time.time())[5] % \
+            #    self._intf.inspect._tick == 0 and\
+            #    self._intf.inspect._auto
 
             columns += ['xsiType']
 
@@ -720,8 +721,8 @@ class CObject(object):
         elif self._ctype == 'cobjecteuris':
             for uri in self._cbase:
                 try:
-                    Klass = globals().get(uri_nextlast(uri).rstrip('s').title(),
-                                          self._intf.__class__)
+                    title = uri_nextlast(uri).rstrip('s').title()
+                    Klass = globals().get(title, self._intf.__class__)
                     eobj = Klass(uri, self._intf)
                     if self._nested is None:
                         self._run_callback(self, eobj)
@@ -1153,9 +1154,8 @@ class Project(EObject):
             string : owner | member | collaborator
 
         """
-        return ''.join(JsonTable(self._intf._get_json(join_uri(self._uri, 'users'))
-                         ).where(login=login
-                                 )['displayname']).lower().rstrip('s')
+        j = JsonTable(self._intf._get_json(join_uri(self._uri, 'users')))
+        return ''.join(j.where(login=login)['displayname']).lower().rstrip('s')
 
     def add_user(self, login, role='member'):
         """ Adds a user to the project. The user must already exist on
@@ -1199,24 +1199,19 @@ class Project(EObject):
 
     def experiments(self, id_filter='*'):
         datapath = '%s/projects/%s/experiments'
-
-        return Experiments(datapath % (self._intf._get_entry_point(), self.id()),
-                           self._intf,
-                           id_filter
-                           )
+        dp = datapath % (self._intf._get_entry_point(), self.id())
+        return Experiments(dp, self._intf, id_filter)
 
     def experiment(self, ID):
         datapath = '%s/projects/%s/experiments/%s'
+        dp = datapath % (self._intf._get_entry_point(), self.id(), ID)
 
-        tmp = Experiment(datapath % (
-            self._intf._get_entry_point(), self.id(), ID),
-            self._intf
-            )
+        tmp = Experiment(dp, self._intf)
         if tmp.id() == ID:
             return tmp
         else:
-            #if id id not mach given id (which may have been a label
-            #re-select with the ID of the matching experiment.
+            # if id id not mach given id (which may have been a label
+            # re-select with the ID of the matching experiment.
             return Experiment(datapath % (
                 self._intf._get_entry_point(), self.id(), tmp.id()),
                 self._intf
@@ -1236,7 +1231,8 @@ class Project(EObject):
                                        ).items()
                     )
 
-    def add_custom_variables(self, custom_variables, allow_data_deletion=False):
+    def add_custom_variables(self, custom_variables,
+                             allow_data_deletion=False):
         """Adds a custom variable to a specified group
 
         Parameters
@@ -1248,7 +1244,8 @@ class Project(EObject):
         Examples
         --------
 
-        >>> variables = {'Subjects' : {'newgroup' : {'foo' : 'string', 'bar' : 'int'}}}
+        >>> variables = {'Subjects' : {'newgroup' : {'foo' : 'string',
+            'bar': 'int'}}}
         >>> project.add_custom_variables(variables)
 
         """
@@ -1277,7 +1274,6 @@ class Project(EObject):
                     nsmap=tree.nsmap
                     )
                 protocol_element.append(definitions_element)
-
 
             for group, fields in value.items():
                 try:
@@ -1383,14 +1379,14 @@ class Project(EObject):
         """
 
         uri = '/data/projects'
-        options = {'columns': 'alias', 'format':'csv'}
+        options = {'columns': 'alias', 'format': 'csv'}
         data = self._intf.get(uri, params=options).text
         from .jsonutil import csv_to_json
         data = csv_to_json(data)
 
         # parse the results
-        return [item['alias'] for item in data if item['alias'] and \
-            item['ID'] == self._urn]
+        return [item['alias'] for item in data
+                if item['alias'] and item['ID'] == self._urn]
 
 
 @add_metaclass(ElementType)
@@ -1573,6 +1569,7 @@ class Reconstruction(EObject):
                 or 'xnat:reconstructedImageData'
                 )
 
+
 @add_metaclass(ElementType)
 class Scan(EObject):
 
@@ -1591,6 +1588,7 @@ class Scan(EObject):
 
     def params(self):
         return self.xpath('//xnat:addParam/attribute::*')
+
 
 @add_metaclass(ElementType)
 class Resource(EObject):
@@ -1611,8 +1609,8 @@ class Resource(EObject):
             ----------
             dest_dir: string
                 Destination directory for the resource data.
-                if dest_dir is None, then the user's Downloads directory is used
-                as the default download location.
+                if dest_dir is None, then the user's Downloads directory is
+                used as the default download location.
             extract: boolean
                 If True, the downloaded zip file is extracted.
                 If False, not extracted.
@@ -1623,10 +1621,11 @@ class Resource(EObject):
             If extract is True, the list of file paths previously in
             the zip.
         """
-        zip_location = os.path.join(dest_dir, uri_last(self._uri) + '.zip')
+        zip_location = op.join(dest_dir, uri_last(self._uri) + '.zip')
 
         with open(zip_location, 'wb') as f:
-            response = self._intf.get(join_uri(self._uri, 'files') + '?format=zip', stream=True)
+            response = self._intf.get(join_uri(self._uri, 'files') +
+                                      '?format=zip', stream=True)
             try:
                 count = 0
                 for chunk in response.iter_content(chunk_size=1024):
@@ -1634,7 +1633,7 @@ class Resource(EObject):
                         f.write(chunk)
                         count += 1
                         if count % 10 == 0:
-                            #flush the buffer every once in a while.
+                            # flush the buffer every once in a while.
                             f.flush()
                 f.flush()  # and one last flush.
             except Exception as e:
@@ -1652,18 +1651,18 @@ class Resource(EObject):
         members = []
 
         for member in fzip.namelist():
-            old_path = os.path.join(dest_dir, member)
+            old_path = op.join(dest_dir, member)
             if DEBUG:
                 print(member)
                 print(member.split('files', 1))
-            new_path = os.path.join(
+            new_path = op.join(
                 dest_dir,
                 uri_last(self._uri),
                 member.split('files', 1)[1].split(os.sep, 1)[1]
                 )
 
-            if not os.path.exists(os.path.dirname(new_path)):
-                os.makedirs(os.path.dirname(new_path))
+            if not op.exists(op.dirname(new_path)):
+                os.makedirs(op.dirname(new_path))
 
             shutil.move(old_path, new_path)
 
@@ -1671,30 +1670,29 @@ class Resource(EObject):
 
         # TODO: cache.delete(...)
         for extracted in fzip.namelist():
-            pth = os.path.join(dest_dir, extracted.split(os.sep, 1)[0])
+            pth = op.join(dest_dir, extracted.split(os.sep, 1)[0])
 
-            if os.path.isdir(pth):
+            if op.isdir(pth):
                 shutil.rmtree(pth)
 
         os.remove(zip_location)
 
         if not extract:
             fzip = zipfile.ZipFile(zip_location, 'w')
-            arcprefix = os.path.commonprefix(members).rpartition(os.sep)[0]
-            arcroot = '/%s' % os.path.split(arcprefix.rstrip(os.sep))[1]
+            arcprefix = op.commonprefix(members).rpartition(os.sep)[0]
+            arcroot = '/%s' % op.split(arcprefix.rstrip(os.sep))[1]
             for member in members:
-                fzip.write(member, os.path.join(arcroot,
-                                                member.split(arcprefix)[1])
-                           )
+                opj = op.join(arcroot, member.split(arcprefix)[1])
+                fzip.write(member, opj)
             fzip.close()
-            unzippedTree = os.path.join(dest_dir, uri_last(self._uri))
-            if os.path.exists(unzippedTree):
-                if os.path.isdir(unzippedTree):
-                    shutil.rmtree(os.path.join(dest_dir, uri_last(self._uri)))
+            unzippedTree = op.join(dest_dir, uri_last(self._uri))
+            if op.exists(unzippedTree):
+                if op.isdir(unzippedTree):
+                    shutil.rmtree(op.join(dest_dir, uri_last(self._uri)))
                 else:
                     os.remove(unzippedTree)
 
-        return zip_location if os.path.exists(zip_location) else members
+        return zip_location if op.exists(zip_location) else members
 
     def put(self, sources, overwrite=False, extract=True, **datatypes):
         """ Insert a list of files in a single resource element.
@@ -1712,7 +1710,8 @@ class Resource(EObject):
             sources: List of paths of files to upload.
 
             overwrite: boolean
-                If True, overwrite the files that already exist under the given id.
+                If True, overwrite the files that already exist under the
+                    given id.
                 If False, do not overwrite (Default)
 
             extract: boolean
@@ -1722,36 +1721,38 @@ class Resource(EObject):
         """
         zip_location = tempfile.mkdtemp(suffix='pyxnat')
 
-        #get the largest common directory.
-        arcprefix, _, _ = os.path.commonprefix(sources).rpartition(os.path.sep)
-        #get just the name of the largest common directory.
-        zip_name = os.path.split(arcprefix.rstrip(os.path.sep))[1]
+        # get the largest common directory.
+        arcprefix, _, _ = op.commonprefix(sources).rpartition(op.sep)
+        # get just the name of the largest common directory.
+        zip_name = op.split(arcprefix.rstrip(op.sep))[1]
         arcroot = '/%s' % zip_name
 
         if not zip_name:
-            #if no common prefix, then use "files" as the zip file name.
-            #inside, each file will be directly under the zip root.
+            # if no common prefix, then use "files" as the zip file name.
+            # inside, each file will be directly under the zip root.
             zip_name = "files"
 
-        zip_name = os.path.join(zip_location, zip_name + ".zip")
+        zip_name = op.join(zip_location, zip_name + ".zip")
         fzip = None
         try:
-            #use compression if avaiable.
+            # use compression if avaiable.
             fzip = zipfile.ZipFile(zip_name, 'w', zipfile.ZIP_DEFLATED)
         except RuntimeError:
             print("Zip compression not supported for uploading files.")
             fzip = zipfile.ZipFile(zip_name, 'w')
 
         for src in sources:
-            fzip.write(src, os.path.join(arcroot, src.split(arcprefix)[1]))
+            fzip.write(src, op.join(arcroot, src.split(arcprefix)[1]))
 
         fzip.close()
 
-        self.put_zip(zip_name, overwrite=overwrite, extract=extract, **datatypes)
+        self.put_zip(zip_name, overwrite=overwrite, extract=extract,
+                     **datatypes)
         os.remove(zip_name)
         os.rmdir(zip_location)
 
-    def put_zip(self, zip_location, overwrite=False, extract=True, **datatypes):
+    def put_zip(self, zip_location, overwrite=False, extract=True,
+                **datatypes):
         """ Uploads a zip or tgz file an then extracts it on the server.
 
             After the compressed file is extracted the individual
@@ -1762,7 +1763,8 @@ class Resource(EObject):
             zip_location: Path to zip file for upload.
 
             overwrite: boolean
-                If True, overwrite the files that already exist under the given id.
+                If True, overwrite the files that already exist under the
+                    given id.
                 If False, do not overwrite (Default)
 
             extract: boolean
@@ -1777,7 +1779,7 @@ class Resource(EObject):
         else:
             do_extract = ''
 
-        self.file(os.path.split(zip_location)[1] + do_extract
+        self.file(op.split(zip_location)[1] + do_extract
                   ).put(zip_location, overwrite=overwrite, **datatypes)
 
     def put_dir(self, src_dir, overwrite=False, extract=True, **datatypes):
@@ -1789,14 +1791,16 @@ class Resource(EObject):
             src_dir: Path to directory to upload.
 
             overwrite: boolean
-                If True, overwrite the files that already exist under the given id.
+                If True, overwrite the files that already exist under the
+                    given id.
                 If False, do not overwrite (Default)
 
             extract: boolean
                 If True, the uploaded zip file is extracted. (Default)
                 If False, the file is not extracted.
         """
-        self.put(find_files(src_dir), overwrite=overwrite, extract=extract, **datatypes)
+        self.put(find_files(src_dir), overwrite=overwrite, extract=extract,
+                 **datatypes)
 
     batch_insert = put
     zip_insert = put_zip
@@ -1832,6 +1836,7 @@ class In_Resource(Resource):
         Klass = globals()[uri.split('/')[-3].title().rsplit('s', 1)[0]]
         return Klass(uri_parent(uri), self._intf)
 
+
 @add_metaclass(ElementType)
 class Out_Resource(Resource):
 
@@ -1839,6 +1844,7 @@ class Out_Resource(Resource):
         uri = uri_grandparent(self._uri)
         Klass = globals()[uri.split('/')[-3].title().rsplit('s', 1)[0]]
         return Klass(uri_parent(uri), self._intf)
+
 
 @add_metaclass(ElementType)
 class File(EObject):
@@ -1905,8 +1911,8 @@ class File(EObject):
             raise DataError('Cannot get file: does not exists')
 
         if not dest:
-            dest = os.path.join(os.path.expanduser("~"), 'Downloads', self.id())
-            if not ensure_dir_exists(os.path.dirname(dest)):
+            dest = op.join(op.expanduser("~"), 'Downloads', self.id())
+            if not ensure_dir_exists(op.dirname(dest)):
                 if DEBUG:
                     print("File.get: failed to create dir")
                 raise DataError('Cannot create dir for file: %s' % (dest))
@@ -1923,7 +1929,7 @@ class File(EObject):
                         f.write(chunk)
                         count += 1
                         if count % 10 == 0:
-                            #flush the buffer every once in a while.
+                            # flush the buffer every once in a while.
                             f.flush()
                 f.flush()  # and one last flush.
             except Exception as e:
@@ -1950,7 +1956,8 @@ class File(EObject):
 
         return self.get(dest)
 
-    def put(self, src, format='U', content='U', tags='U', overwrite=False, **datatypes):
+    def put(self, src, format='U', content='U', tags='U', overwrite=False,
+            **datatypes):
         """ Uploads a file to XNAT.
 
             Parameters
@@ -1968,34 +1975,35 @@ class File(EObject):
                 Optional parameter to specify tags for the file.
                 Defaults to 'U'.
             overwrite: boolean
-                Optional parameter to specify if the file should be overwritten.
-                Defaults to False
+                Optional parameter to specify if the file should be
+                overwritten. Defaults to False.
         """
 
-        #First make sure parents and grandparents exist.
+        # First make sure parents and grandparents exist.
 
-        #URI is in the form of data/.../something/files/me so
-        #guri = data/.../something
+        # URI is in the form of data/.../something/files/me so
+        # guri = data/.../something
         guri = uri_grandparent(self._uri)
 
         if not self._intf.select(guri).exists():
             self._intf.select(guri).insert(**datatypes)
 
         resource_id = self._intf.select(guri).id()
-        isFile=False
+        isFile = False
 
-        #Cleanup the src and make sure it exists.
+        # Cleanup the src and make sure it exists.
         try:
-            if os.path.exists(src):
-                isFile=True
-                path = src
-                name = os.path.basename(path).split('?')[0]
-            else:
-                path = self._uri.split('/')[-1]
-                name = path
+            if op.exists(src):
+                isFile = True
+                # path = src
+                # name = op.basename(path).split('?')[0]
+            # else:
+                # path = self._uri.split('/')[-1]
+                # name = path
         except Exception:
-            path = self._uri.split('/')[-1]
-            name = path
+            pass  # FIXME
+            # path = self._uri.split('/')[-1]
+            # name = path
 
         self._absuri = unquote(
             re.sub('resources/.*?/',
@@ -2007,11 +2015,12 @@ class File(EObject):
             'content': content,
             'tags': tags,
             'overwrite': 'true' if overwrite else 'false',
-            'inbody':'true'
+            'inbody': 'true'
             }
 
         if 'params' in datatypes:
-            query_args.update(datatypes['params']) # Pass on params such as event_reason
+            query_args.update(datatypes['params'])
+            # Pass on params such as event_reason
 
         if '?' in self._absuri:
             k, v = self._absuri.split('?')[1].split('=')
@@ -2019,30 +2028,33 @@ class File(EObject):
             self._absuri = self._absuri.split('?')[0]
 
         if DEBUG:
-            print(('INSERT FILE', os.path.exists(src)))
+            print(('INSERT FILE', op.exists(src)))
             print("URI is: " + self._absuri)
 
         response = None
         if isFile:
-            #If src was a file, use inbody streaming to send the file
+            # If src was a file, use inbody streaming to send the file
             with open(src, 'rb') as f:
-                response = self._intf.post(self._absuri, params=query_args,  data=f)
+                response = self._intf.post(self._absuri, params=query_args,
+                                           data=f)
         else:
-            #If it wasn't a file we can just dump the src as data directly.
-            response = self._intf.post(self._absuri, params=query_args,  data=src)
+            # If it wasn't a file we can just dump the src as data directly.
+            response = self._intf.post(self._absuri, params=query_args,
+                                       data=src)
 
-        #default error handling.
-        if (response is not None and not response.ok) or is_xnat_error(response.content):
+        # default error handling.
+        if (response is not None and not response.ok) or \
+           is_xnat_error(response.content):
             if DEBUG:
                 print(response.keys())
                 print(response.get("status"))
-
-            catch_error(response.content, '''pyxnat.file.put failure:
-                                             URI: {response.url}
-                                             status code: {response.status_code}
-                                             headers: {response.headers}
-                                             content: {response.content}
-                                          '''.format(response=response))
+            msg = '''pyxnat.file.put failure:
+                        URI: {response.url}
+                        status code: {response.status_code}
+                        headers: {response.headers}
+                        content: {response.content}
+                    '''.format(response=response)
+            catch_error(response.content, msg)
 
     insert = put
     create = put
@@ -2226,7 +2238,7 @@ class In_Files(Files):
 class Out_Files(Files):
     pass
 
-## Utility functions for downloading and extracting zip archives
+# Utility functions for downloading and extracting zip archives
 
 
 def _datatypes_from_query(query):

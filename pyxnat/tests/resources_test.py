@@ -188,7 +188,7 @@ def test_09_put_dir_file():
     subj_1.resource('test').file('dir/hello.txt').put(local_path)
     assert subj_1.resource('test').file('dir/hello.txt').exists()
     assert int(subj_1.resource('test').file('dir/hello.txt').size()) == \
-                                                os.stat(local_path).st_size
+           os.stat(local_path).st_size
 
 
 @skip_if_no_network
@@ -219,7 +219,7 @@ def test_11_get_copy_file():
     fd = open(fpath, 'rb')
     try:
         assert fd.read() == bytes('Hello XNAT!%s' % os.linesep,
-                                                    encoding='utf8')
+                                  encoding='utf8')
     except TypeError:
         pass
     fd.close()
@@ -290,7 +290,7 @@ def test_16_subject1_delete():
 
 @skip_if_no_network
 def test_17_subject2_delete():
-    subj_2 = central.select('/projects/nosetests3/subjects/%(sid)s'%_id_set2)
+    subj_2 = central.select('/projects/nosetests3/subjects/%(sid)s' % _id_set2)
     assert subj_2.exists()
     subj_2.delete()
     assert not subj_2.exists()
@@ -316,9 +316,8 @@ def test_18_project_configuration():
             assert project.current_arc() == b'arc001'
         except DatabaseError:
             msg = 'Check if current_arc is supported in XNAT version %s.'\
-                %version['version']
+                 % version['version']
             print(msg)
-
 
     assert 'nosetests' in project.users()
     assert 'nosetests' in project.owners()
@@ -367,7 +366,7 @@ def test_20_get_zip():
 @skip_if_no_network
 def test_21_project_aliases():
     project = central.select('/project/nosetests3')
-    assert project.aliases() ==  ['nosetests32']
+    assert project.aliases() == ['nosetests32']
 
 
 @skip_if_no_network
