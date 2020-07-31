@@ -3,7 +3,9 @@ from . import skip_if_no_network
 from pyxnat import Interface
 import os.path as op
 
-central = Interface(config=op.join(op.dirname(op.abspath(__file__)), 'central.cfg'))
+
+fp = op.join(op.dirname(op.abspath(__file__)), 'central.cfg')
+central = Interface(config=fp)
 project = central.select.project('nosetests3')
 
 prov = {
@@ -34,6 +36,7 @@ def test_provenance():
 #     assessor.provenance.delete()
 #     print assessor.provenance.get()
 #     assert assessor.provenance.get()[0] == []
+
 
 @skip_if_no_network
 def test_provenance_cleanup():

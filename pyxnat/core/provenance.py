@@ -9,10 +9,9 @@ from .uriutil import uri_parent
 from .jsonutil import JsonTable
 from . import httputil
 
-_nsmap = {'xnat':'http://nrg.wustl.edu/xnat',
-          'prov':'http://www.nbirn.net/prov',
-          'xsi':'http://www.w3.org/2001/XMLSchema-instance'
-          }
+_nsmap = {'xnat': 'http://nrg.wustl.edu/xnat',
+          'prov': 'http://www.nbirn.net/prov',
+          'xsi': 'http://www.w3.org/2001/XMLSchema-instance'}
 
 _required = ['program', 'timestamp', 'user', 'machine', 'platform']
 _optional = ['program_version', 'program_arguments',
@@ -33,8 +32,8 @@ _all = ['program', 'program_version', 'program_arguments',
         ]
 
 _platform_name, _hostname, \
-_platform_version, _platform_version2,\
-_machine, _machine2 = platform.uname()
+    _platform_version, _platform_version2,\
+    _machine, _machine2 = platform.uname()
 _machine = socket.gethostname()
 
 
@@ -79,6 +78,7 @@ def provenance_parameters(process_steps):
         prov.append(process_step_xml(**step))
 
     return prov
+
 
 def process_step_xml(**kwargs):
 
@@ -139,8 +139,7 @@ def process_step_xml(**kwargs):
 
     if 'library' in kwargs.keys():
         library_node = Element(QName(_nsmap['prov'], 'library'),
-                                nsmap=_nsmap
-                                )
+                               nsmap=_nsmap)
         library_node.text = kwargs['library']
 
         if 'library_version' in kwargs.keys():
@@ -192,7 +191,6 @@ class Provenance(object):
                 If some required parameters are not provided, theses
                 parameters will be extracted from the current machine
                 and set automatically. Those parameters are:
-                
                     - machine
                     - platform
                     - timestamp
@@ -221,17 +219,18 @@ class Provenance(object):
                                        time.localtime()
                                        )
 
-            if not 'machine' in process_step.keys():
+            if 'machine' not in process_step.keys():
                 process_step['machine'] = _machine
-            if not 'platform' in process_step.keys():
+            if 'platform' not in process_step.keys():
                 process_step['platform'] = _platform_name
                 process_step['platform_version'] = _platform_version
-            if not 'timestamp' in process_step.keys():
+            if 'timestamp' not in process_step.keys():
                 process_step['timestamp'] = _timestamp
-            if not 'user' in process_step.keys():
+            if 'user' not in process_step.keys():
                 process_step['user'] = self._intf._user
 
-        doc = provenance_document(self._eobject, process_steps, overwrite).decode('utf-8')
+        doc = provenance_document(self._eobject, process_steps, overwrite)
+        doc = doc.decode('utf-8')
 
         body, content_type = httputil.file_message(
             doc, 'text/xml', 'prov.xml', 'prov.xml')
@@ -244,8 +243,7 @@ class Provenance(object):
         self._intf._exec(prov_uri,
                          method='PUT',
                          body=body,
-                         headers={'content-type':content_type}
-                         )
+                         headers={'content-type': content_type})
 
     def get(self):
         """ Gets all the provenance information for that object.
@@ -272,7 +270,7 @@ class Provenance(object):
         id_header = 'ID' if table.has_header('ID') \
             else '%s/id' % datatype.lower()
 
-        for step in table.where(**{id_header:self._eobject.id()}):
+        for step in table.where(**{id_header: self._eobject.id()}):
             step_dict = {}
             for key in step.keys():
                 if 'processstep' in key:
@@ -307,5 +305,5 @@ class Provenance(object):
                 '%s?allowDataDeletion=true' % self._eobject._uri,
                 method='PUT',
                 body=body,
-                headers={'content-type':content_type}
+                headers={'content-type': content_type}
                 )

@@ -3,11 +3,11 @@ import tempfile
 
 from pyxnat import jsonutil
 
-_csv_example = op.join(op.dirname(op.abspath(__file__)),
-                            'results.csv')
+_csv_example = op.join(op.dirname(op.abspath(__file__)), 'results.csv')
 _list_of_dirs = jsonutil.csv_to_json(open(_csv_example, 'r').read())
 
 jtable = jsonutil.JsonTable(_list_of_dirs)
+
 
 # coverage_tests
 def test_dump_methods():
@@ -29,16 +29,21 @@ def test_dump_methods():
 
     assert True
 
+
 # unit_tests
 def test_get_item_str_value():
     jtable.items()
     assert jtable['subject_label'] == jtable.get('subject_label')
 
+
 def test_get_item_int_value():
     assert jtable.data[0] == jtable[0].data[0]
 
+
 def test_get_item_list_value():
-    assert set(jtable[['projects', 'subjectid']].headers()) == set(['projects', 'subjectid'])
+    headers = set(jtable[['projects', 'subjectid']].headers())
+    assert headers == set(['projects', 'subjectid'])
+
 
 def test_join():
     index = list(jtable.headers()).index('subjectid')

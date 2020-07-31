@@ -57,7 +57,7 @@ def parse_put_error_message(message):
                                           )[1].rsplit(':', 1)[1].strip('}\'')
 
                 required_fields.append((datatype_name, element_name))
-            except:
+            except Exception:
                 continue
 
     return required_fields

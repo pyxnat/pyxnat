@@ -1,7 +1,5 @@
-import urllib
-
 from lxml import etree
-
+import urllib
 from .search import SearchManager
 from .users import Users
 from .resources import Project
@@ -113,7 +111,7 @@ class SchemaManager(object):
 
         """
 
-        #if not re.match('/?schemas/.*/.*\.xsd', url):
+        # if not re.match('/?schemas/.*/.*\.xsd', url):
         #    if not 'schemas' in url and re.match('/?\w+/\w+[.]xsd', url):
         #        url = join_uri('/schemas', url)
         #
@@ -131,24 +129,27 @@ class SchemaManager(object):
         if name in self._trees.keys():
             del self._trees[name]
 
+
 """
    Fields Of the Prearchive
    ------------------------
    Each session in the prearchive
     has the following fields:
-       "project" - The name of the project. "Unassigned" if the session is unassigned.
-       "timestamp" - The time (down to millisecond) that this session was received
-                     by XNAT. "20110603_124835868" for example.
-       "lastmod" - The time this session as last modified. Moving, resetting etc.
-                   updates this time
-       "uploaded" - The time this session was uploaded to XNAT. Usually the same as
-                    "timestamp"
+       "project" - The name of the project. "Unassigned" if the session is
+            unassigned.
+       "timestamp" - The time (down to millisecond) that this session was
+            received by XNAT. "20110603_124835868" for example.
+       "lastmod" - The time this session as last modified. Moving, resetting
+            etc. updates this time
+       "uploaded" - The time this session was uploaded to XNAT. Usually the
+            same as "timestamp"
        "scan_date" - The date this session was scanned.
        "scan_time" - The time this session was scanned.
        "subject" - The name of the subject
        "folderName" - The id of this session. Corresponds to XNAT's session id,
        "name" - The name of this session. Corresponds to XNAT's session label.
-       "tag" - This session's unique DICOM identifier. Usually the SOP instance UID.
+       "tag" - This session's unique DICOM identifier. Usually the SOP
+            instance UID.
        "status" - The current status of this session
        "url" - The unique uri of this session.
        "autoarchive" - Whether this session should be auto-archived.
@@ -161,10 +162,12 @@ class SchemaManager(object):
     "timestamp" and "folderName".
     (13/7/2011) - Each session could have been uniquely identified by the "url"
                   field or the "tag" field. These are arguably more elegant
-                  identifiers but for now the "project", "timestamp", "folderName"
-                  triple is used.
+                  identifiers but for now the "project", "timestamp",
+                  "folderName" triple is used.
 
 """
+
+
 class PreArchive(object):
     def __init__(self, interface):
         self._intf = interface
@@ -173,7 +176,8 @@ class PreArchive(object):
     Retrieve the status of a session
     Parameters
     ----------
-       triple - A list containing the project, timestamp and session id, in that order.
+       triple - A list containing the project, timestamp and session id, in
+       that order.
     """
     def status(self, triple):
         return JsonTable(
@@ -195,19 +199,20 @@ class PreArchive(object):
     Retrieve the scans of a give session triple
     Parameters
     ----------
-       triple - A list containing the project, timestamp and session id, in that order.
+       triple - A list containing the project, timestamp and session id, in
+       that order.
     """
     def get_scans(self, triple):
         return JsonTable(self._intf._get_json(
-                '/data/prearchive/projects/%s/scans' \
-                    % '/'.join(triple)
-                )).get('ID')
+                '/data/prearchive/projects/%s/scans'
+                % '/'.join(triple))).get('ID')
 
     """
     Retrieve the resource of a session triple
     Parameters
     ----------
-       triple - A list containing the project, timestamp and session id, in that order.
+       triple - A list containing the project, timestamp and session id, in
+       that order.
        scan_id - id of the scan
     """
     def get_resources(self, triple, scan_id):
@@ -220,7 +225,8 @@ class PreArchive(object):
     Retrieve a list of files in a given session triple
     Parameters
     ----------
-       triple - A list containing the project, timestamp and session id, in that order.
+       triple - A list containing the project, timestamp and session id, in
+       that order.
        scan_id - id of the scan
        resource_id - id of the resource
     """
@@ -243,20 +249,21 @@ class PreArchive(object):
        uris - a list of session uris
        new_project - The name of the project to which to move the sessions.
     """
-    def move (self, uris, new_project):
-        add_src = lambda u: urllib.urlencode({'src':u})
+
+    def move(self, uris, new_project):
+        add_src = lambda u: urllib.urlencode({'src': u})
 
         async_ = len(uris) > 1 and 'true' or 'false'
         print(async_)
 
-        post_body = '&'.join ((map(add_src,uris))
-                            + [urllib.urlencode({'newProject':new_project})]
-                            + [urllib.urlencode({'async':async_})])
+        post_body = '&'.join((map(add_src, uris)) +
+                             [urllib.urlencode({'newProject': new_project})] +
+                             [urllib.urlencode({'async': async_})])
 
         request_uri = '/data/services/prearchive/move?format=csv'
-        return self._intf._exec(request_uri ,'POST', post_body,
+        ct = {'content-type': 'application/x-www-form-urlencoded'}
+        return self._intf._exec(request_uri, 'POST', post_body, ct)
 
-                                {'content-type':'application/x-www-form-urlencoded'})
     """
     Reinspect the file on the filesystem on the XNAT server and recreate the
     parameters of the file. Essentially a refresh of the file.
@@ -268,32 +275,34 @@ class PreArchive(object):
        uris - a list of session uris
        new_project - The name of the project to which to move the sessions.
     """
+
     def reset(self, triple):
         post_body = "action=build"
         request_uri = '/data/prearchive/projects/%s?format=single' \
-                    % '/'.join(triple)
-        return self._intf._exec(request_uri ,'POST', post_body,
-                                {'content-type':'application/x-www-form-urlencoded'})
+                      % '/'.join(triple)
+        ct = {'content-type': 'application/x-www-form-urlencoded'}
+        return self._intf._exec(request_uri, 'POST', post_body, ct)
+
     """
     Delete  a session from the prearchive
     Parameters
     ----------
        uri - The uri of the session to delete
     """
-    def delete (self, uri):
+
+    def delete(self, uri):
         post_body = "src=" + uri + "&" + "async=false"
         request_uri = "/data/services/prearchive/delete?format=csv"
-        return self._intf._exec(request_uri ,'POST', post_body,
-                                {'content-type':'application/x-www-form-urlencoded'})
+        ct = {'content-type': 'application/x-www-form-urlencoded'}
+        return self._intf._exec(request_uri, 'POST', post_body, ct)
     """
     Get the uri of the given session.
     Parameters
     ----------
-       triple - A list containing the project, timestamp and session id, in that order.
+       triple - A list containing the project, timestamp and session id, in
+       that order.
     """
     def get_uri(self, triple):
-        return JsonTable(
-            self._intf._get_json('/data/prearchive/projects')
-            ).where(
-            project=triple[0], timestamp=triple[1], folderName=triple[2]
-            ).get('url')
+        j = JsonTable(self._intf._get_json('/data/prearchive/projects'))
+        return j.where(project=triple[0], timestamp=triple[1],
+                       folderName=triple[2]).get('url')

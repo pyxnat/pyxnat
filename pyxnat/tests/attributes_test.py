@@ -1,14 +1,15 @@
-import os
 import os.path as op
 from uuid import uuid1
 import time
 from . import skip_if_no_network
 from pyxnat import Interface
+from pyxnat.core import interfaces
+
 
 _modulepath = op.dirname(op.abspath(__file__))
 
-central = Interface(config=op.join(op.dirname(op.abspath(__file__)), 'central.cfg'))
-from pyxnat.core import interfaces
+fp = op.join(op.dirname(op.abspath(__file__)), 'central.cfg')
+central = Interface(config=fp)
 interfaces.STUBBORN = True
 
 sid = uuid1().hex
@@ -16,6 +17,7 @@ eid = uuid1().hex
 
 subject = central.select.project('nosetests3').subject(sid)
 experiment = subject.experiment(eid)
+
 
 @skip_if_no_network
 def test_01_fancy_resource_create():
@@ -35,9 +37,11 @@ def test_01_fancy_resource_create():
     globals()['subject'] = experiment.parent()
     globals()['experiment'] = experiment
 
+
 @skip_if_no_network
 def test_02_attr_get():
-        assert experiment.attrs.get('xnat:mrSessionData/age') == '42.0'
+    assert experiment.attrs.get('xnat:mrSessionData/age') == '42.0'
+
 
 @skip_if_no_network
 def test_03_attr_mget():
@@ -47,6 +51,7 @@ def test_03_attr_mget():
               ]
 
     assert subject.attrs.mget(fields) == ['john', 'doe']
+
 
 @skip_if_no_network
 def test_04_attr_set():
@@ -64,13 +69,16 @@ def test_04_attr_set():
 #     returned = subject.attrs.mget(field_data.keys())
 #
 #     assert set(returned) == \
-#         set(field_data.values()), '''set: %s returned: %s ''' %(field_data.values(), returned)
+#         set(field_data.values()),
+#              '''set: %s returned: %s ''' %(field_data.values(), returned)
+
 
 @skip_if_no_network
 def test_05_cleanup():
 
     subject.delete()
     assert not subject.exists()
+
 
 @skip_if_no_network
 def test_06_list_project_attrs():

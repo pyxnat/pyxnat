@@ -27,7 +27,7 @@ class EAttrs(object):
          is available. To retrieve the paths, the corresponding
          schemas must be downloaded first through the schema
          management interface in order to be parsed::
-         
+
              >>> interface.manage.schemas.add('xnat.xsd')
              >>> interface.manage.schemas.add('myschema/myschema.xsd')
     """
@@ -83,10 +83,9 @@ class EAttrs(object):
         dt = self._get_datatype()
         if dt is None:
             dt = ''
-        put_uri = self._eobj._uri + '?xsiType=%s&%s=%s' % (quote(dt)
-                                                         , quote(path)
-                                                         , quote(value)
-                                              )
+        put_uri = self._eobj._uri + '?xsiType=%s&%s=%s' % (quote(dt),
+                                                           quote(path),
+                                                           quote(value))
 
         self._intf._exec(put_uri, 'PUT', **kwargs)
 
@@ -104,13 +103,9 @@ class EAttrs(object):
                 The dict of key values to set. It follows the same
                 principles as the single `set()` method.
         """
-
-        query_str = '?xsiType=%s' % (quote(self._get_datatype())) + ''.join(['&%s=%s' % (quote(path),
-                                               quote(val)
-                                               )
-                                    for path, val in dict_attrs.items()
-                                    ]
-                                   )
+        t = ['&%s=%s' % (quote(path), quote(val))
+             for path, val in dict_attrs.items()]
+        query_str = '?xsiType=%s' % quote(self._get_datatype()) + ''.join(t)
 
         put_uri = self._eobj._uri + query_str
 
@@ -150,7 +145,7 @@ class EAttrs(object):
         else:
             header = header[0]
 
-        replaceSlashS = lambda x : x.replace('\s', ' ')
+        replaceSlashS = lambda x: x.replace('\s', ' ')
         if type(jdata.get(header)) == list:
             return map(replaceSlashS, jdata.get(header))
         else:

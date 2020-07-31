@@ -3,12 +3,13 @@ try:
     from networkx.drawing.nx_agraph import graphviz_layout
     import matplotlib.pyplot as plt
     _DRAW_GRAPHS = True
-except:
+except Exception:
     _DRAW_GRAPHS = False
 
 from . import schema
 from .jsonutil import get_column
 from .search import Search
+
 
 class Inspector(object):
     """ Database introspection interface.
@@ -80,14 +81,14 @@ class Inspector(object):
         self._intf._get_entry_point()
 
         search_els = self._get_json('%s/search/elements?format=json' %
-                                        self._intf._get_entry_point())
+                                    self._intf._get_entry_point())
 
         if not fields_pattern and ('*' in pattern or '?' in pattern):
-            return get_column(search_els , 'ELEMENT_NAME', pattern)
+            return get_column(search_els, 'ELEMENT_NAME', pattern)
 
         else:
             fields = []
-            for datatype in get_column(search_els , 'ELEMENT_NAME', pattern):
+            for datatype in get_column(search_els, 'ELEMENT_NAME', pattern):
                 fields.extend(self._datafields(datatype,
                                                fields_pattern or '*', True)
                               )
@@ -97,9 +98,9 @@ class Inspector(object):
     def _datafields(self, datatype, pattern='*', prepend_type=True):
         self._intf._get_entry_point()
 
-        search_fds = self._get_json('%s/search/elements/%s?format=json'
-                                        % (self._intf._get_entry_point(), datatype)
-                                    )
+        search_fds = self._get_json('%s/search/elements/%s?format=json' %
+                                    (self._intf._get_entry_point(),
+                                        datatype))
 
         fields = get_column(search_fds, 'FIELD_ID', pattern)
 
@@ -148,7 +149,6 @@ class Inspector(object):
             :func:`Inspector.set_autolearn`
         """
         return self._resource_types('scan')
-
 
     def field_values(self, field_name):
         """ Look for the values a specific datafield takes in the database.
@@ -370,8 +370,8 @@ class GraphData(object):
     def datatypes(self, pattern='*'):
         graph = nx.DiGraph()
         graph.add_node('datatypes')
-        graph.labels = {'datatypes':'datatypes'}
-        graph.weights = {'datatypes':100.0}
+        graph.labels = {'datatypes': 'datatypes'}
+        graph.weights = {'datatypes': 100.0}
 
         datatypes = self._intf.inspect.datatypes(pattern)
         namespaces = set([dat.split(':')[0] for dat in datatypes])
@@ -392,8 +392,8 @@ class GraphData(object):
 
         graph = nx.DiGraph()
         graph.add_node(name)
-        graph.labels = {name : name}
-        graph.weights = {name : 100.0}
+        graph.labels = {name: name}
+        graph.weights = {name: 100.0}
 
         namespaces = set([exp.split(':')[0] for exp in resource_types])
 
@@ -436,8 +436,8 @@ class GraphData(object):
     def architecture(self, with_datatypes=True):
         graph = nx.DiGraph()
         graph.add_node('projects')
-        graph.labels = {'projects' : 'projects'}
-        graph.weights = {'projects' : 100.0}
+        graph.labels = {'projects': 'projects'}
+        graph.weights = {'projects': 100.0}
 
         def traverse(lkw, as_lkw):
 
@@ -471,7 +471,7 @@ class PaintGraph(object):
     def architecture(self, with_datatypes=True, save=None):
         graph = self.get_graph.architecture(with_datatypes)
 
-        plt.figure(figsize=(8,8))
+        plt.figure(figsize=(8, 8))
         pos = graphviz_layout(graph, prog='twopi', args='')
 
         # node_size = [(float(graph.degree(v)) * 5)**3 for v in graph]
@@ -514,7 +514,7 @@ class PaintGraph(object):
         self._draw_rest_resource(graph)
 
     def _draw_rest_resource(self, graph, save=None):
-        plt.figure(figsize=(8,8))
+        plt.figure(figsize=(8, 8))
         pos = graphviz_layout(graph, prog='twopi', args='')
 
         cost = lambda v: float(graph.degree(v)) ** 3 + \
@@ -540,7 +540,7 @@ class PaintGraph(object):
     def datatypes(self, pattern='*', save=None):
         graph = self.get_graph.datatypes(pattern)
 
-        plt.figure(figsize=(8,8))
+        plt.figure(figsize=(8, 8))
         pos = graphviz_layout(graph, prog='twopi', args='')
 
         cost = lambda v: float(graph.degree(v)) ** 3 + \
@@ -567,7 +567,7 @@ class PaintGraph(object):
     def field_values(self, field_name, save=None):
         graph = self.get_graph.field_values(field_name)
 
-        plt.figure(figsize=(8,8))
+        plt.figure(figsize=(8, 8))
         pos = graphviz_layout(graph, prog='twopi', args='')
 
         cost = lambda v: graph.weights[v]
@@ -593,7 +593,7 @@ class PaintGraph(object):
 def norm_costs(costs, norm=1000):
     max_cost = max(costs)
 
-    return [ (cost / max_cost) * norm for cost in costs]
+    return [(cost / max_cost) * norm for cost in costs]
 
 
 # class GraphDrawer(object):
@@ -657,13 +657,12 @@ class SchemasInspector(object):
             print('-'*40)
             print()
 
-            for datatype in schema.datatypes(
-                self._intf.manage.schemas._trees[xsd]):
+            trees = self._intf.manage.schemas._trees[xsd]
+            for datatype in schema.datatypes(trees):
                 print('[%s]' % datatype)
                 print()
 
-                for path in schema.datatype_attributes(
-                    self._intf.manage.schemas._trees[xsd], datatype):
+                for path in schema.datatype_attributes(trees, datatype):
                     print(path)
 
                 print()
@@ -679,17 +678,14 @@ class SchemasInspector(object):
 
         for xsd in self._intf.manage.schemas():
             # nsmap = self._intf.manage.schemas._trees[xsd].nsmap
-
+            trees = self._intf.manage.schemas._trees[xsd]
             if datatype_name is not None:
                 datatypes = [datatype_name]
             else:
-                datatypes = schema.datatypes(
-                    self._intf.manage.schemas._trees[xsd]
-                    )
+                datatypes = schema.datatypes(trees)
 
             for datatype in datatypes:
-                for path in schema.datatype_attributes(
-                    self._intf.manage.schemas._trees[xsd], datatype):
+                for path in schema.datatype_attributes(trees, datatype):
                     if element_name in path:
                         paths.append(path)
 

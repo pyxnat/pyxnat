@@ -2,33 +2,40 @@ import re
 
 from . import schema
 from .search import Search
-from .resources import CObject, Project, Projects, Experiment, Experiments # imports used implicitly
+from .resources import CObject, Project, Projects, Experiment, Experiments
+# imports used implicitly
 from .uriutil import inv_translate_uri
 # from .uriutil import uri_last
 from .errors import ProgrammingError
 
 DEBUG = False
 
+
 def is_type_level(element):
     return element.strip('/') in schema.resources_types and \
            not is_expand_level(element)
+
 
 def is_singular_type_level(element):
     return element.strip('/') in schema.resources_singular and \
            not is_expand_level(element)
 
+
 def is_expand_level(element):
     return element.startswith('//') and \
         element.strip('/') in schema.resources_types
+
 
 def is_id_level(element):
     return element is not None and \
         element.strip('/') not in schema.resources_types
 
+
 def is_wildid_level(element):
     return element is not None and \
         element.strip('/') not in schema.resources_types and \
         ('?' in element or '*' in element)
+
 
 def expand_level(element, fullpath):
 
@@ -68,7 +75,8 @@ def expand_level(element, fullpath):
         return absolute_paths
     else:
         for i in range(1, 4):
-            if is_type_level(els[index - i]) or is_expand_level(els[index - i]):
+            if is_type_level(els[index - i]) or\
+               is_expand_level(els[index - i]):
                 parent_level = els[index - i]
                 break
 
@@ -78,6 +86,7 @@ def expand_level(element, fullpath):
     return [abspath.split(parent_level)[1]
             for abspath in absolute_paths
             if parent_level in abspath]
+
 
 def mtransform(paths):
     tpaths = []
@@ -136,14 +145,15 @@ def mtransform(paths):
 
     return tpaths
 
+
 def group_paths(paths):
     groups = {}
 
     for path in paths:
         resources = [el
                      for el in re.findall('/{1,2}.*?(?=/{1,2}|$)', path)
-                     if el.strip('/') in schema.resources_types \
-                         and el.strip('/') not in ['files', 'file']
+                     if el.strip('/') in schema.resources_types
+                     and el.strip('/') not in ['files', 'file']
                      ]
 
         if len(resources) == 1:
@@ -157,8 +167,8 @@ def group_paths(paths):
                     [el for el in re.findall('/{1,2}.*?(?=/{1,2}|$)',
                                              alt_path
                                              )
-                     if el.strip('/') in schema.resources_types \
-                         and el.strip('/') not in ['files', 'file']
+                     if el.strip('/') in schema.resources_types
+                        and el.strip('/') not in ['files', 'file']
                      ]
 
                 if alt_rsc[-1].strip('/') in \
@@ -173,6 +183,7 @@ def group_paths(paths):
 
     return groups
 
+
 def compute(path):
     if not re.match('/project(s)?|//.+', path):
         path = '/' + path
@@ -181,7 +192,7 @@ def compute(path):
 
     try:
         groups = group_paths(mtransform([path]))
-    except:
+    except Exception:
         raise ProgrammingError('in %s' % path)
 
     best = []
@@ -282,7 +293,6 @@ class Select(object):
         return globals()['Experiments'](
             '%s/experiments' % self._intf._entry, self._intf, id_filter)
 
-
     def tag(self, name):
         self._intf._get_entry_point()
 
@@ -321,7 +331,7 @@ class Select(object):
             else:
                 return self.tags()
 
-        if datatype_or_path  in ['/', '//', self._intf._entry]:
+        if datatype_or_path in ['/', '//', self._intf._entry]:
             return self
 
         if datatype_or_path.startswith(self._intf._entry):

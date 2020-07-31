@@ -28,7 +28,6 @@ class XpathStore(object):
         self._nsmap = {}
         self._tree = etree.Element('Store')
 
-
     def __call__(self, xpath):
         if self._tree is None:
             self._load()
@@ -47,7 +46,6 @@ class XpathStore(object):
         else:
             self._tree.append(new_subject)
 
-
     def _last_modified(self):
         entry_point = self._intf._get_entry_point()
         uri = '%s/subjects?columns=last_modified' % entry_point
@@ -62,7 +60,6 @@ class XpathStore(object):
         """
 
         self.checkout(subjects=self.subjects())
-
 
     def checkout(self, project=None, subjects=None):
         """ Downloads all the subject XMLs for a project or a list
@@ -84,14 +81,12 @@ class XpathStore(object):
                           self._intf._get_entry_point(), sid))
                           )
 
-
     def subject(self, subject_id):
         tmp = self.__call__('//xnat:Subject[@ID="%s"]' % (subject_id))
 
         if len(tmp) > 0:
             return tmp[1]
         return None
-
 
     def subjects(self):
         """ Returns all the subject ids.

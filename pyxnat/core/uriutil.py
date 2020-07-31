@@ -1,6 +1,7 @@
 from .schema import rest_translation
 # from .schema import resources_types
 
+
 def translate_uri(uri):
     segs = uri.split('/')
     for key in rest_translation.keys():
@@ -9,21 +10,25 @@ def translate_uri(uri):
 
     return uri
 
+
 def inv_translate_uri(uri):
     inv_table = dict(zip(rest_translation.values(), rest_translation.keys()))
 
     for key in inv_table.keys():
-            uri = uri.replace('/%s' % key, '/%s' % inv_table[key])
+        uri = uri.replace('/%s' % key, '/%s' % inv_table[key])
 
     return uri
+
 
 def join_uri(uri, *segments):
     part1 = [seg.lstrip('/') for seg in segments]
     return '/'.join(uri.split('/') + part1).rstrip('/')
 
+
 def uri_last(uri):
     # return uri.split(uri_parent(uri))[1].strip('/')
     return uri.split('/')[-1]
+
 
 def uri_nextlast(uri):
     # return uri_last(uri.split(uri_last(uri))[0].strip('/'))
@@ -31,6 +36,7 @@ def uri_nextlast(uri):
     if '/files/' in uri:
         return 'files'
     return uri.split('/')[-2]
+
 
 def uri_parent(uri):
     # parent = uri
@@ -47,11 +53,14 @@ def uri_parent(uri):
         uri = uri[:7+files_index]
     return uri_split(uri)[0]
 
+
 def uri_grandparent(uri):
     return uri_parent(uri_parent(uri))
 
+
 def uri_split(uri):
     return uri.rsplit('/', 1)
+
 
 def uri_segment(uri, start=None, end=None):
     if start is None and end is None:
@@ -62,6 +71,7 @@ def uri_segment(uri, start=None, end=None):
         return '/'+'/'.join(uri.split('/')[start:])
     else:
         return '/'+'/'.join(uri.split('/')[start:end])
+
 
 def uri_shape(uri):
     import re
@@ -81,7 +91,7 @@ def uri_shape(uri):
                 try:
                     float(chunk)
                     chunk = '*'
-                except:
+                except Exception:
                     pass
 
                 chunks.append(chunk)
@@ -90,18 +100,20 @@ def uri_shape(uri):
 
     return make_uri(shapes)
 
+
 def make_uri(_dict):
     uri = ''
 
     kws = ['projects', 'subjects', 'experiments', 'assessors',
-            'reconstructions', 'scans', 'resources', 'in_resources',
-                'out_resources', 'files', 'in_files', 'out_files']
+           'reconstructions', 'scans', 'resources', 'in_resources',
+           'out_resources', 'files', 'in_files', 'out_files']
 
     for kw in kws:
         if kw in _dict.keys():
             uri += '/%s/%s' % (kw, _dict.get(kw))
 
     return uri
+
 
 def check_entry(func):
     def inner(*args, **kwargs):
@@ -111,27 +123,31 @@ def check_entry(func):
     return inner
 
 
-def extract_uri(uri) :
+def extract_uri(uri):
     """
     Destructure the given REST uri into project,subject and experiment.
 
-    Returns None if any one of project,subject or experiment is unspecified in the URI and a
-    (project,subject,experiment) triple otherwise.
+    Returns None if any one of project,subject or experiment is unspecified in
+    the URI and a (project,subject,experiment) triple otherwise.
     """
     # elements in URLs are always separated by /, regardless of client
     split = uri.split('/')
     # a well qualified uri has a project subject, and experiment name
     # so when split the following items should be present:
-    # ['', 'data', 'projects', 'project-name', 'subjects', 'subject-name', 'experiments', 'experiment-name', 'scans']
+    # ['', 'data', 'projects', 'project-name', 'subjects', 'subject-name',
+    # 'experiments', 'experiment-name', 'scans']
 
-    # Based on the above comment if there aren't 9 items in the split list the uri isn't well qualified
-    if (len(split) != 9): return None
+    # Based on the above comment if there aren't 9 items in the split list the
+    # uri isn't well qualified
+    if (len(split) != 9):
+        return None
 
     project = split[3]
     subject = split[5]
     experiment = split[7]
 
-    return (project,subject,experiment)
+    return (project, subject, experiment)
+
 
 def file_path(uri):
     """return the relative path of the file in the given URI

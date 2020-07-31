@@ -1,5 +1,6 @@
 from .jsonutil import JsonTable
 
+
 class ArrayData(object):
 
     def __init__(self, interface):
@@ -24,8 +25,8 @@ class ArrayData(object):
         if subject_id is not None:
             uri += '&%s/subject_id=%s' % (experiment_type, subject_id)
 
-        #Subject Label is only held in the xnat:subjectData so look for it there.
-        #this should join against whatever the experiment type is. 
+        # Subject Label is only held in the xnat:subjectData so look for it
+        # there. This should join against whatever the experiment type is.
         if subject_label is not None:
             uri += '&xnat:subjectData/label=%s' % (subject_label)
 
@@ -52,13 +53,12 @@ class ArrayData(object):
         return JsonTable(self._intf._get_json(uri)).where(**c)
 
     def experiments(self, project_id=None, subject_id=None, subject_label=None,
-              experiment_id=None, experiment_label=None,
-              experiment_type='xnat:subjectAssessorData',
-              columns=None,
-              constraints=None
-              ):
+                    experiment_id=None, experiment_label=None,
+                    experiment_type='xnat:subjectAssessorData',
+                    columns=None,
+                    constraints=None):
 
-        """ Returns a list of all visible experiment IDs of the specified 
+        """ Returns a list of all visible experiment IDs of the specified
             type, filtered by optional constraints.
 
             Parameters
@@ -91,10 +91,9 @@ class ArrayData(object):
                                )
 
     def mrsessions(self, project_id=None, subject_id=None, subject_label=None,
-              experiment_id=None, experiment_label=None,
-              columns=None,
-              constraints=None
-              ):
+                   experiment_id=None, experiment_label=None,
+                   columns=None,
+                   constraints=None):
 
         """ Returns a list of all MR sessions, filtered by optional constraints.
 
@@ -160,18 +159,16 @@ class ArrayData(object):
             experiment_type, scan_type)
 
         array = self._get_array(query_string, project_id,
-                               subject_id, subject_label,
-                               experiment_id, experiment_label,
-                               experiment_type, columns, constraints
-                               )
+                                subject_id, subject_label,
+                                experiment_id, experiment_label,
+                                experiment_type, columns, constraints)
         id_key = ('%s/ID' % scan_type).lower()
         return JsonTable([i for i in array if i[id_key]])
 
     def mrscans(self, project_id=None, subject_id=None, subject_label=None,
                 experiment_id=None, experiment_label=None,
                 columns=None,
-                constraints=None
-                ):
+                constraints=None):
 
         """ Returns a list of all MR scans, filtered by optional constraints.
 
@@ -227,8 +224,8 @@ class ArrayData(object):
             columns: List[string]
                 list of xsi paths for names of columns to return.
             constraints: list[(tupple)]
-                List of tupples for comparison in the form (key, comparison, value)
-                valid comparisons are: =, <, <=,>,>=, LIKE
+                List of tupples for comparison in the form (key, comparison,
+                value) valid comparisons are: =, <, <=,>,>=, LIKE
             """
 
         if columns is None:
@@ -237,7 +234,8 @@ class ArrayData(object):
         where_clause = []
 
         if project_id is not None:
-            where_clause.append(('%s/project' % experiment_type, "=", project_id))
+            item = ('%s/project' % experiment_type, "=", project_id)
+            where_clause.append(item)
         if subject_id is not None:
             where_clause.append(('xnat:subjectData/ID', "=", subject_id))
         if subject_label is not None:
@@ -250,9 +248,9 @@ class ArrayData(object):
             where_clause.append('AND')
 
         if where_clause != []:
-            table = self._intf.select(experiment_type, columns=columns).where(where_clause)
+            sel = self._intf.select(experiment_type, columns=columns)
+            table = sel.where(where_clause)
             return table
         else:
             table = self._intf.select(experiment_type, columns=columns)
             return table.all()
-

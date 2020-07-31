@@ -2,17 +2,16 @@ import unittest
 import os.path as op
 from pyxnat import Interface
 from . import skip_if_no_network
-from nose import SkipTest
-
-
 import logging as log
 log.basicConfig(level=log.INFO)
+
 
 class ArrayTests(unittest.TestCase):
     ''' Resource-related XNAT connectivity test cases '''
 
     def setUp(self):
-        self._interface = Interface(config=op.join(op.dirname(op.abspath(__file__)), 'central.cfg'))
+        fp = op.join(op.dirname(op.abspath(__file__)), 'central.cfg')
+        self._intf = Interface(config=fp)
 
     @skip_if_no_network
     def test_array_experiments(self):
@@ -21,20 +20,20 @@ class ArrayTests(unittest.TestCase):
         of experiments (i.e. MRSessions and PETSessions) and assert it gathers
         them all.
         '''
-        e = self._interface.array.experiments(subject_id='CENTRAL_S06242').data
+        e = self._intf.array.experiments(subject_id='CENTRAL_S06242').data
         self.assertGreaterEqual(len(e), 3)
 
     @skip_if_no_network
     def test_array_mrsessions(self):
         '''
-        From a given subject which has multiple types of experiments, get a list
-        of MRI sessions and assert its length matches the list of experiments of
-        type 'xnat:mrSessionData'
+        From a given subject which has multiple types of experiments, get a
+        list of MRI sessions and assert its length matches the list of
+        experiments of type 'xnat:mrSessionData'
         '''
-        mris = self._interface.array.mrsessions(subject_id='CENTRAL_S06242').data
-        exps = self._interface.array.experiments(subject_id='CENTRAL_S06242',
-                                                 experiment_type='xnat:mrSessionData'
-                                                 ).data
+        mris = self._intf.array.mrsessions(subject_id='CENTRAL_S06242').data
+        e = self._intf.array.experiments(subject_id='CENTRAL_S06242',
+                                         experiment_type='xnat:mrSessionData')
+        exps = e.data
         self.assertListEqual(mris, exps)
 
     @skip_if_no_network
@@ -43,26 +42,27 @@ class ArrayTests(unittest.TestCase):
         Get a list of scans from a given experiment which has multiple types
         of scans (i.e. PETScans and CTScans) and assert it gathers them all.
         '''
-        s = self._interface.array.scans(experiment_id='CENTRAL_E72012').data
-        self.assertEqual(len(s),16)
+        s = self._intf.array.scans(experiment_id='CENTRAL_E72012').data
+        self.assertEqual(len(s), 16)
 
     @skip_if_no_network
     def test_array_mrscans(self):
         '''
-        Get a list of MRI scans from a given experiment which has multiple scans
-        mixed (i.e. MRScans and MRSpectroscopies, aka OtherDicomScans) and
-        assert its length matches the list of scans filtered by type 'xnat:mrScanData'
+        Get a list of MRI scans from a given experiment which has multiple
+        scans mixed (i.e. MRScans and MRSpectroscopies, aka OtherDicomScans)
+        and assert its length matches the list of scans filtered by type
+        'xnat:mrScanData'
         '''
-        mris = self._interface.array.mrscans(experiment_id='CENTRAL_E72012').data
-        exps = self._interface.array.scans(experiment_id='CENTRAL_E72012',
-                                           scan_type='xnat:mrScanData'
-                                           ).data
+        mris = self._intf.array.mrscans(experiment_id='CENTRAL_E72012').data
+        exps = self._intf.array.scans(experiment_id='CENTRAL_E72012',
+                                      scan_type='xnat:mrScanData').data
         self.assertListEqual([i['xnat:mrscandata/id'] for i in mris],
                              [i['xnat:mrscandata/id'] for i in exps])
 
     @skip_if_no_network
     def test_search_experiments(self):
-
-        res = self._interface.array.search_experiments(project_id='nosetests3',
-            experiment_type='xnat:subjectData').data
+        et = 'xnat:subjectData'
+        e = self._intf.array.search_experiments(project_id='nosetests3',
+                                                experiment_type=et)
+        res = e.data
         self.assertGreaterEqual(len(res), 1)

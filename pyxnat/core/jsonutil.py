@@ -12,6 +12,7 @@ elif six.PY3:
 
 # jdata is a list of dicts
 
+
 def join_tables(join_column, jdata, *jtables):
     indexes = []
 
@@ -30,6 +31,7 @@ def join_tables(join_column, jdata, *jtables):
 
     return merged_jdata
 
+
 def get_column(jdata, col, val_pattern='*'):
     if isinstance(jdata, dict):
         jdata = [jdata]
@@ -40,6 +42,7 @@ def get_column(jdata, col, val_pattern='*'):
         return [entry[col] for entry in jdata
                 if fnmatch(entry.get(col), val_pattern)
                 ]
+
 
 def get_where(jdata, *args, **kwargs):
     if isinstance(jdata, dict):
@@ -61,6 +64,7 @@ def get_where(jdata, *args, **kwargs):
 
     return match
 
+
 def get_where_not(jdata, *args, **kwargs):
     if isinstance(jdata, dict):
         jdata = [jdata]
@@ -81,10 +85,12 @@ def get_where_not(jdata, *args, **kwargs):
 
     return match
 
+
 def get_headers(jdata):
     if isinstance(jdata, dict):
         jdata = [jdata]
     return [] if jdata == [] else jdata[0].keys()
+
 
 def get_selection(jdata, columns):
     if isinstance(jdata, dict):
@@ -107,12 +113,15 @@ def csv_to_json(csv_str):
     import csv
     import six
     if six.PY2:
-        csv_reader = csv.reader(StringIO(csv_str), delimiter=',', quotechar='"')
+        csv_reader = csv.reader(StringIO(csv_str), delimiter=',',
+                                quotechar='"')
     elif six.PY3:
         try:
-            csv_reader = csv.reader(StringIO(csv_str), delimiter=',', quotechar='"')
+            csv_reader = csv.reader(StringIO(csv_str), delimiter=',',
+                                    quotechar='"')
         except TypeError:
-            csv_reader = csv.reader(StringIO(csv_str.decode('utf-8')), delimiter=',', quotechar='"')
+            csv_reader = csv.reader(StringIO(csv_str.decode('utf-8')),
+                                    delimiter=',', quotechar='"')
     headers = next(csv_reader)
     ans = [dict(zip(headers, entry)) for entry in csv_reader]
     return ans
