@@ -8,25 +8,26 @@
 # aseg = resource.aseg()
 # and thus get access to FreeSurfer measurements.
 #
-# Another example, with the ASHS pipeline for hippocampal subfield segmentation:
+# Another example, with the ASHS pipeline for hippocampal subfield
+# segmentation:
 #
 # resource = experiment.resource('ASHS')
 # volumes = resource.volumes()
 #
 # Again, this would only work provided that corresponding resources respect a
-# certain naming and structure on XNAT. Here in this present example, FreeSurfer
-# results are stored in resources called FREESURFER6 and the whole FreeSurfer
-# folder (named after the subject) is stored in the resource. Having access
-# to such additional functions would be conditioned by the existence of these
-# resources with proper matching structure.
+# certain naming and structure on XNAT. Here in this present example,
+# FreeSurfer results are stored in resources called FREESURFER6 and the whole
+# FreeSurfer folder (named after the subject) is stored in the resource.
+# Having access to such additional functions would be conditioned by the
+# existence of these resources with proper matching structure.
 #
 # Nevertheless, this mechanism has been implemented so as to get easily adapted
 # to local configurations, by editing/adding this very same folder.
 #
 # Adding a custom function can be done simply as follows.
 #
-# In this same folder (pyxnat/core/derivatives/), edit any existing file or add a new
-# one (filename does not matter):
+# In this same folder (pyxnat/core/derivatives/), edit any existing file or add
+# a new one (filename does not matter):
 #
 # Define XNAT_RESOURCE_NAME. This variable names the XNAT resource which needs
 # a custom function.
@@ -37,4 +38,3 @@
 # XNAT_RESOURCE_NAMES.
 #
 # An example is provided in pyxnat/core/derivatives/ashs.py
-# 
