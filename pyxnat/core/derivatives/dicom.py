@@ -1,5 +1,6 @@
 XNAT_RESOURCE_NAME = 'DICOM'
 
+
 def scandate(self):
     import os.path as op
     import os
