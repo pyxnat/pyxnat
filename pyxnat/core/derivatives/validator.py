@@ -1,5 +1,6 @@
 XNAT_RESOURCE_NAMES = ['BBRC_VALIDATOR']
 
+
 def tests(self, name, key=None):
     import json
     j = [e for e in list(self.files('{}*.json'.format(name)))][0]
@@ -9,28 +10,27 @@ def tests(self, name, key=None):
     else:
         return j[key]
 
+
 def pdf(self, name):
-    import logging as log
     files = list(self.files())
-    pdf = {each._uri.split('/')[-1]:each for each in files \
-        if name in each._uri.split('/')[-1] and \
-        each._uri.split('/')[-1].endswith('.pdf')}
+    pdf = {each._uri.split('/')[-1]: each for each in files
+           if name in each._uri.split('/')[-1] and
+           each._uri.split('/')[-1].endswith('.pdf')}
 
     if len(pdf.items()) == 0:
-        raise Exception('No %s found'%name)
+        raise Exception('No %s found' % name)
 
     keys = list(pdf.keys())
     if len(keys) != 1:
-        raise Exception('Multiple matching reports found (%s)'%keys)
+        raise Exception('Multiple matching reports found (%s)' % keys)
 
     f = pdf[list(pdf.keys())[0]]
     return f
 
+
 def download_snapshot(self, name, fp):
     import os.path as op
-    import shutil
     import os
-    import os.path as op
     import tempfile
     import logging as log
     from glob import glob
@@ -81,24 +81,24 @@ def download_snapshot(self, name, fp):
 
     f, fp1 = tempfile.mkstemp(suffix='.pdf')
     os.close(f)
-    log.debug('Saving it in %s.'%fp1)
+    log.debug('Saving it in %s.' % fp1)
     pdf.get(dest=fp1)
 
     jpeg = extract_file(fp1)
 
     if len(glob(op.join(op.dirname(fp1), '*.jpg'))) == 0:
-        raise Exception('No snapshot found in report. %s %s'%(name, fp1))
+        raise Exception('No snapshot found in report. %s %s' % (name, fp1))
 
     f, fp2 = tempfile.mkstemp(suffix='.jpg')
-    os.close(f) # we dont need the handle
+    os.close(f)  # we dont need the handle
     cmd = 'montage %s/jpg*jpg -background black -geometry 2600x+0+0 '\
-        '-tile 1x %s'%(op.dirname(fp1), fp2)
+        '-tile 1x %s' % (op.dirname(fp1), fp2)
     os.system(cmd)
 
-    cmd = 'mv %s %s'%(fp2, fp)
+    cmd = 'mv %s %s' % (fp2, fp)
     os.system(cmd)
     for each in jpeg:
-        cmd = 'rm %s'%each
+        cmd = 'rm %s' % each
         os.system(cmd)
-    cmd = 'rm %s'%fp1
+    cmd = 'rm %s' % fp1
     os.system(cmd)
