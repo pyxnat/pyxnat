@@ -2,6 +2,19 @@ XNAT_RESOURCE_NAMES = ['BBRC_VALIDATOR']
 
 
 def tests(self, name, key=None):
+    """
+    Looks up a validation test based on the validator name and returns its
+    result. If no test name is provided, then a dictionary is returned with
+    all the tests from the validation report.
+
+    Args:
+        name (String): Root found in the name of the report
+            (ex: FreeSurferValidator)
+        key (String): Name of the test.
+    Returns:
+        A `pyxnat` File of the report.
+
+    """
     import json
     j = [e for e in list(self.files('{}*.json'.format(name)))][0]
     j = json.loads(self._intf.get(j._uri).text)
@@ -12,6 +25,17 @@ def tests(self, name, key=None):
 
 
 def pdf(self, name):
+    """
+    Returns a validator report based on its name. Raises exception if
+    multiple reports are found.
+
+    Args:
+        name (String): Root found in the name of the report
+            (ex: FreeSurferValidator)
+    Returns:
+        A `pyxnat` File of the report.
+
+    """
     files = list(self.files())
     pdf = {each._uri.split('/')[-1]: each for each in files
            if name in each._uri.split('/')[-1] and
