@@ -1,5 +1,4 @@
-import os
-import json
+import os.path as op
 
 # import six
 # if six.PY2:
@@ -15,7 +14,7 @@ import json
 # import suds.client
 # import suds.xsd.doctor
 
-from . import httputil
+# from . import httputil
 
 
 class PipelineNotFoundError(Exception):
@@ -28,46 +27,169 @@ class Pipelines(object):
         self._intf = interface
         self._project = project
 
-    def get(self):
-        response = self._intf._exec('%s/projects/%s/pipelines' % (
-                self._intf._get_entry_point(),
-                self._project,
-                ))
+    def aliases(self):
+        """
+        Fetch the alias ID (stepId) of each available pipeline.
+        :return: Dictionary including pipeline IDs and aliases of all
+        available pipelines as keys and values respectively.
+        """
+        import xml.etree.ElementTree as eTree
 
-        return json.loads(response)['ResultSet']['Result']
+        namespace = {'archive': 'http://nrg.wustl.edu/arc'}
+
+        uri = '{}/archive_spec'.format(self._project.attrs.get('URI'))
+        data = self._intf.get(uri).content
+
+        # traverse XML sub-elements named 'pipeline' and get stepId attribute,
+        # Pipeline Engine uses stepID as actual ID for scheduling the pipeline
+        proj_specs = eTree.fromstring(data)
+        pipes_info = proj_specs.findall('archive:pipelines/archive:descendants/archive:'
+                                        'descendant/archive:pipeline', namespace)
+        aliases = {item.find('archive:name', namespace).text: item.attrib['stepId']
+                   for item in pipes_info}
+
+        return aliases
+
+    def info(self, pipeline_id=None):
+        """ Get information about the available pipelines.
+        """
+        response = self._intf.get('{}/pipelines'.format(self._project.attrs.get('URI')))
+        result = response.json()['ResultSet']['Result']
+        if pipeline_id:
+            result = [item for item in result if item['Name'] == pipeline_id]
+        return result
+
+    def pipeline(self, pipeline_id):
+        """ Return a pipeline object.
+        """
+        return Pipeline(pipeline_id, self._project, self._intf)
 
     def add(self, location):
-        f = open(location, 'rb')
-        pip_doc = f.read()
-        f.close()
-
-        body, content_type = httputil.file_message(
-            pip_doc, 'text/xml', location, os.path.split(location)[1])
-
-        pipeline_uri = '%s/projects/%s/pipelines/%s' % (
-            self._intf._get_entry_point(),
-            self._project,
-            os.path.split(location)[1]
-            )
-
-        self._intf._exec(pipeline_uri,
-                         method='PUT',
-                         body=body,
-                         headers={'content-type': content_type}
-                         )
+        raise NotImplementedError
+        # f = open(location, 'rb')
+        # pip_doc = f.read()
+        # f.close()
+        #
+        # body, content_type = httputil.file_message(
+        #     pip_doc, 'text/xml', location, op.split(location)[1])
+        #
+        # pipeline_uri = '%s/projects/%s/pipelines/%s' % (
+        #     self._intf._get_entry_point(),
+        #     self._project,
+        #     op.split(location)[1]
+        #     )
+        #
+        # self._intf._exec(pipeline_uri,
+        #                  method='PUT',
+        #                  body=body,
+        #                  headers={'content-type': content_type}
+        #                  )
 
     def delete(self, pipeline_id):
-        pass
+        raise NotImplementedError
 
 
 class Pipeline(object):
 
-    def __init__(self, pipeline_id, interface):
+    def __init__(self, pipeline_id, project, interface):
         self._intf = interface
-        self._id = pipeline_id
+        self._project = project
+        self.id = pipeline_id
+        self.uri = '{}/pipelines/{}'.format(self._project.attrs.get('URI'), self.id)
+        # self.datatype = self._datatype()
+        # self.alias = self._alias()
 
-    def run(self):
-        pass
+    def _alias(self):
+        """Fetch the alias ID of the pipeline (stepId) asserting its uniqueness.
+        """
+        proj_pipes = Pipelines(self._project, self._intf)
+        proj_aliases = proj_pipes.aliases()
+
+        alias = proj_aliases[self.id]
+        if list(proj_aliases.values()).count(alias) > 1:
+            raise ValueError('Pipeline {} alias ({}) is not unique in project {}.'
+                             .format(self.id, alias, self._project.id()))
+        return alias
+
+    def _datatype(self):
+        """Fetch the experiment datatype the pipeline applies to. If the
+        pipeline does not cope with an specific datatype, function returns
+        'All Datatypes'.
+        """
+        proj_pipes = Pipelines(self._project, self._intf)
+        info = proj_pipes.info(self.id).pop()
+
+        return info['Datatype']
+
+    def exists(self):
+        """ Test whether a pipeline exists in the given context.
+        """
+        response = self._intf.head(self.uri)
+        return response.ok
+
+    def info(self):
+        """ Get pipeline details.
+        """
+        if not self.exists():
+            raise PipelineNotFoundError('Pipeline {} not found in project {}.'
+                                        .format(self.id, self._project.id()))
+
+        response = self._intf.get(self.uri)
+        return response.json()
+
+    def run(self, experiment_id, params=None):
+        """ Run the pipeline on an experiment.
+        """
+        if not self.exists():
+            raise PipelineNotFoundError('Pipeline {} not found in project {}.'
+                                        .format(self.id, self._project.id()))
+
+        e = self._project.experiment(experiment_id)
+        if not e.exists():
+            raise ValueError('Experiment {} not found in project {}.'
+                             .format(experiment_id, self._project.id()))
+
+        datatype = self._datatype()
+        if datatype != 'All Datatypes' and datatype != e.datatype():
+            raise TypeError('Experiment {} does not match the pipeline\'s '
+                            'expected datatype ({}).'.format(experiment_id,
+                                                             datatype))
+
+        uri = '{}/experiments/{}'.format(self.uri.replace(self.id, self._alias()),
+                                         experiment_id)
+
+        response = self._intf.post(uri, params=params)
+        return response.raise_for_status()
+
+    def status(self, experiment_id):
+        """ Fetch latest pipeline execution status for the given experiment.
+        """
+        if not self.exists():
+            raise PipelineNotFoundError('Pipeline {} not found in project {}.'
+                                        .format(self.id, self._project.id()))
+
+        e = self._project.experiment(experiment_id)
+        if not e.exists():
+            raise ValueError('Experiment {} not found in project {}.'
+                             .format(experiment_id, self._project.id()))
+
+        uri = '/data/services/workflows/{}'.format(self.id)
+        options = {'project': self._project.id(),
+                   'experiment': experiment_id,
+                   'display': 'ALL',
+                   'format': 'json'}
+
+        response = self._intf.get(uri, params=options)
+        data = response.json()['ResultSet']['Result']
+        data = [item for item in data
+                if self.id == op.basename(op.splitext(item['pipeline_name'])[0])]
+
+        if not data:
+            status = None
+        else:
+            from operator import itemgetter
+            status = sorted(data, key=itemgetter('wrk_workflowData_id')).pop(-1)
+        return status
 
     def stop(self):
         pass
