@@ -26,7 +26,7 @@ from .search import rpn_contraints, query_from_xml
 from .errors import is_xnat_error, parse_put_error_message
 from .errors import DataError, ProgrammingError, catch_error
 from .provenance import Provenance
-# from .pipelines import Pipelines
+from .pipelines import Pipelines
 from . import schema
 from . import httputil
 from . import downloadutils
@@ -1033,7 +1033,7 @@ class Project(EObject):
         """
 
         EObject.__init__(self, uri, interface)
-        # self.pipelines = Pipelines(self.id(), self._intf)
+        self.pipelines = Pipelines(self, self._intf)
 
     def __repr__(self):
         interface = self._intf
