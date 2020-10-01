@@ -33,21 +33,26 @@ from . import derivatives
 import types
 import pkgutil
 import inspect
+import json
+from IPython import get_ipython
+from IPython.display import display, HTML
 import six
 from six import string_types, add_metaclass
+
 if six.PY2:
     from urllib import quote, unquote  # Python 2.X
 elif six.PY3:
     from urllib.parse import quote, unquote
+
     unicode = str
 
 DEBUG = False
+
 
 # metaclasses
 
 
 def get_element_from_element(rsc_name):
-
     def getter(self, ID):
         Element = globals()[rsc_name.title()]
 
@@ -57,7 +62,6 @@ def get_element_from_element(rsc_name):
 
 
 def get_element_from_collection(rsc_name):
-
     def getter(self, ID):
         Element = globals()[rsc_name.title()]
         Collection = globals()[rsc_name.title() + 's']
@@ -69,11 +73,11 @@ def get_element_from_collection(rsc_name):
                            ],
                           self._intf
                           )
+
     return getter
 
 
 def get_collection_from_element(rsc_name):
-
     def getter(self, id_filter='*'):
         Collection = globals()[rsc_name.title()]
         return Collection(join_uri(self._uri, rsc_name),
@@ -84,7 +88,6 @@ def get_collection_from_element(rsc_name):
 
 
 def get_collection_from_collection(rsc_name):
-
     def getter(self, id_filter='*'):
         Collection = globals()[rsc_name.title()]
 
@@ -96,7 +99,6 @@ def get_collection_from_collection(rsc_name):
 
 class ElementType(type):
     def __new__(cls, name, bases, dct):
-
         rsc_name = name.lower() + 's' \
             if name.lower() in schema.resources_singular \
             else name.lower()
@@ -155,6 +157,7 @@ def __find_all_functions__(m):
 class EObject(object):
     """ Generic Object for an element URI.
     """
+
     def __init__(self, uri, interface):
         """
             Parameters
@@ -178,9 +181,9 @@ class EObject(object):
         for m, mod_functions in functions.items():
             is_resource = False
             if (hasattr(m, 'XNAT_RESOURCE_NAME') and
-                    self._urn == m.XNAT_RESOURCE_NAME) or \
+                self._urn == m.XNAT_RESOURCE_NAME) or \
                     (hasattr(m, 'XNAT_RESOURCE_NAMES') and
-                        self._urn in m.XNAT_RESOURCE_NAMES):
+                     self._urn in m.XNAT_RESOURCE_NAMES):
                 is_resource = True
 
             if is_resource:
@@ -191,7 +194,7 @@ class EObject(object):
         return {
             'uri': self._uri,
             'interface': self._intf
-            }
+        }
 
     def __setstate__(self, dict):
         self.__init__(dict['uri'], dict['interface'])
@@ -224,19 +227,18 @@ class EObject(object):
             if fnmatch(uri_segment(
                     self._uri.split(
                         self._intf._get_entry_point(), 1)[1], -2), pattern):
-
                 reg_pat = self._intf._struct[pattern]
                 filters.setdefault('xsiType', set()).add(reg_pat)
 
         if filters:
             get_id += '&' + \
-                '&'.join('%s=%s' % (item[0], item[1])
-                         if isinstance(item[1], string_types)
-                         else '%s=%s' % (item[0],
-                                         ','.join([val for val in item[1]])
-                                         )
-                         for item in filters.items()
-                         )
+                      '&'.join('%s=%s' % (item[0], item[1])
+                               if isinstance(item[1], string_types)
+                               else '%s=%s' % (item[0],
+                                               ','.join([val for val in item[1]])
+                                               )
+                               for item in filters.items()
+                               )
 
         for res in self._intf._get_json(get_id):
             if self._urn in [res.get(id_head), res.get(lbl_head)]:
@@ -372,8 +374,8 @@ class EObject(object):
         if datatype is None:
             for uri_pattern in struct.keys():
                 if fnmatch(
-                    self._uri.split(
-                        self._intf._get_entry_point(), 1)[1], uri_pattern):
+                        self._uri.split(
+                            self._intf._get_entry_point(), 1)[1], uri_pattern):
                     datatype = struct.get(uri_pattern)
                     break
             else:
@@ -386,7 +388,7 @@ class EObject(object):
             local_params = \
                 [param for param in params
                  if param not in schema.resources_types + ['use_label']
-                    and (param.startswith(datatype) or '/' not in param)
+                 and (param.startswith(datatype) or '/' not in param)
                  ]
 
             create_uri = '%s?xsiType=%s' % (self._uri, datatype)
@@ -394,7 +396,6 @@ class EObject(object):
             if 'ID' not in local_params \
                     and '%s/ID' % datatype not in local_params \
                     and params.get('use_label'):
-
                 create_uri += '&%s/ID=%s' % (datatype, uri_last(self._uri))
 
             if local_params:
@@ -568,6 +569,7 @@ class CObject(object):
             >>> for subject in interface.select.projects().subjects():
             >>>     print subject
     """
+
     def __init__(self, cbase, interface, pattern='*', nested=None,
                  id_header='ID', columns=[], filters={}):
 
@@ -646,7 +648,7 @@ class CObject(object):
                     else '%s=%s' % (
                         item[0], ','.join([val for val in item[1]]))
                     for item in self._filters.items()
-                    )
+                )
 
             if DEBUG:
                 print(uri + query_string)
@@ -849,7 +851,7 @@ class CObject(object):
         if isinstance(k, slice):
             return islice(self, k.start, k.stop, k.step)
         else:
-            return next(islice(self, k, k+1))
+            return next(islice(self, k, k + 1))
 
     def get(self, *args):
         """ Returns every element.
@@ -992,7 +994,7 @@ class CObject(object):
             return_values=['xnat:subjectData/PROJECT',
                            'xnat:subjectData/SUBJECT_ID'],
             _filter=constraints
-            )
+        )
 
         searchpop = ['%s/projects/' % self._intf._get_entry_point() +
                      '%(project)s/subjects/%(subject_id)s' % res
@@ -1026,6 +1028,7 @@ class CObject(object):
 
         return self
 
+
 # specialized classes
 
 
@@ -1043,6 +1046,46 @@ class Project(EObject):
 
         EObject.__init__(self, uri, interface)
         # self.pipelines = Pipelines(self.id(), self._intf)
+
+    def __repr__(self):
+        interface = self._intf
+        project_id = uri_last(self._uri)
+
+        # Check if project exists
+        if self.exists():
+
+            # Fetch data project
+            data = interface.select('xnat:projectData').where([('xnat:projectData/ID', '=', project_id)]).data[0]
+            name = data['name']
+            metadata = [data['description_csv'], data['project_owners'], data['insert_date'], data['project_access'],
+                        data['proj_mr_count'], data['proj_ct_count'], data['proj_pet_count'], data['proj_ut_count']]
+            labels = ['Description', 'Project owners', 'Insert date', 'Access', 'MR experiments', 'CT experiments',
+                      'PET experiments', 'UT experiments']
+
+            # Fetch data subjects
+            subjects = self.subjects()
+            subjects_count = str(len(subjects.fetchall()))
+
+            # Creating the project url
+            url = interface._server + self._uri
+
+            # Creating the dictionary
+            d = {'Project': '{}({}) {}'.format(project_id, name, url), 'Subjects': subjects_count,
+                 }
+            # Append metadata
+            for m, l in zip(metadata, labels):
+                if m:
+                    d[l] = m
+
+            # Creating the output string to be returned
+            output = ''
+            for n, v in d.items():
+                output = output + '\n' + "{}: {}".format(n, v)
+            return output
+        else:
+            return '<%s Object> %s' % (self.__class__.__name__,
+                                       self._urn
+                                       )
 
     def prearchive_code(self):
         """ Gets project prearchive code.
@@ -1214,8 +1257,8 @@ class Project(EObject):
             # re-select with the ID of the matching experiment.
             return Experiment(datapath % (
                 self._intf._get_entry_point(), self.id(), tmp.id()),
-                self._intf
-                )
+                              self._intf
+                              )
 
     def last_modified(self):
         """ Gets the last modified dates for all the project subjects.
@@ -1262,7 +1305,7 @@ class Project(EObject):
             except IndexError:
                 raise ValueError(
                     'Protocol %s not in current schema' % protocol
-                    )
+                )
 
             try:
                 definitions_element = protocol_element.xpath(
@@ -1272,7 +1315,7 @@ class Project(EObject):
                 definitions_element = lxml.etree.Element(
                     lxml.etree.QName(tree.nsmap['xnat'], 'definitions'),
                     nsmap=tree.nsmap
-                    )
+                )
                 protocol_element.append(definitions_element)
 
             for group, fields in value.items():
@@ -1291,7 +1334,7 @@ class Project(EObject):
                     group_element = lxml.etree.Element(
                         lxml.etree.QName(tree.nsmap['xnat'], 'definition'),
                         nsmap=tree.nsmap
-                        )
+                    )
                     group_element.set('ID', group)
                     group_element.set(
                         'data-type', protocol_element.get('data-type'))
@@ -1301,7 +1344,7 @@ class Project(EObject):
                     fields_element = lxml.etree.Element(
                         lxml.etree.QName(tree.nsmap['xnat'], 'fields'),
                         nsmap=tree.nsmap
-                        )
+                    )
                     group_element.append(fields_element)
 
                 for field, datatype in fields.items():
@@ -1322,7 +1365,7 @@ class Project(EObject):
                             "xnat:%s/fields/field[name=%s]/field" % (
                                 protocol_element.get(
                                     'data-type').split(':')[-1], field)
-                            )
+                        )
                         fields_element.append(field_element)
                         update = True
         if update:
@@ -1331,7 +1374,7 @@ class Project(EObject):
                 'text/xml',
                 'cust.xml',
                 'cust.xml'
-                )
+            )
 
             uri = self._uri
             if allow_data_deletion:
@@ -1395,6 +1438,41 @@ class Subject(EObject):
     def datatype(self):
         return 'xnat:subjectData'
 
+    def __repr__(self):
+        interface = self._intf
+        subject_id = uri_last(self._uri)
+
+        # Check if subject exists
+        if self.exists():
+
+            # Fetch data subject
+            data = interface.select('xnat:subjectData').where([('xnat:subjectData/ID', '=', subject_id)]).data[0]
+            project_id = data['project']
+            metadata = [self.attrs.get('age'), data['insert_user'], data['insert_date'], data['gender_text'],
+                        data['handedness_text'], data['ses']]
+            labels = ['Age', 'Insert user', 'Insert date', 'Gender', 'Handedness', 'Sessions']
+
+            # Creating the project url
+            url = interface._server + self._uri
+
+            # Creating the dictionary
+            d = {'Subject': '{} {}'.format(subject_id, url), 'Project': project_id
+                 }
+            # Add metadata
+            for m, l in zip(metadata, labels):
+                if m:
+                    d[l] = m
+
+            # Creating the output string to be returned
+            output = ''
+            for n, v in d.items():
+                output = output + '\n' + "{}: {}".format(n, v)
+            return output
+        else:
+            return '<%s Object> %s' % (self.__class__.__name__,
+                                       unquote(uri_last(self._uri))
+                                       )
+
     def shares(self, id_filter='*'):
         """ Returns the projects sharing this subject.
 
@@ -1428,6 +1506,48 @@ class Subject(EObject):
 
 @add_metaclass(ElementType)
 class Experiment(EObject):
+
+    def __repr__(self):
+        interface = self._intf
+        session_id = uri_last(self._uri)
+
+        # Check if subject exists
+        if self.exists():
+
+            # Fetch data experiment
+            data_type = interface.array.experiments(experiment_id=session_id).data[0]
+            data = interface.select(data_type['xsiType']).where([('{}/{}'.format(data_type['xsiType'], 'ID'),
+                                                                  '=', session_id)]).data[0]
+            project_id = data['project']
+            subject_id = data['subject_id']
+            metadata = [data['insert_user'], data['insert_date'], data['date'], data['visit'], data['type'],
+                        data['scanner_csv']]
+            labels = ['Insert user', 'Insert date', 'Date', 'Visit', 'Type', 'Scanner']
+
+            # Fetch data scans
+            scans_counter = len(self.scans().fetchall())
+
+            # Creating the project url
+            url = interface._server + self._uri
+
+            # Creating the dictionary
+            d = {'Session': '{} {}'.format(session_id, url), 'Subject': subject_id, 'Project': project_id,
+                 'Scans': scans_counter
+                 }
+            # Add metadata
+            for m, l in zip(metadata, labels):
+                if m:
+                    d[l] = m
+
+            # Creating the output string to be returned
+            output = ''
+            for n, v in d.items():
+                output = output + '\n' + "{}: {}".format(n, v)
+            return output
+        else:
+            return '<%s Object> %s' % (self.__class__.__name__,
+                                       unquote(uri_last(self._uri))
+                                       )
 
     def shares(self, id_filter='*'):
         """ Returns the projects sharing this experiment.
@@ -1573,6 +1693,40 @@ class Reconstruction(EObject):
 @add_metaclass(ElementType)
 class Scan(EObject):
 
+    def __repr__(self):
+        interface = self._intf
+        scan_id = uri_last(self._uri)
+        experiment_id = uri_nextlast(uri_parent(self._uri))
+
+        # Check if subject exists
+        if self.exists():
+
+            # Fetch data experiment
+            data = self.attrs.mget(['type', 'frames', 'quality', 'series_description',
+                                    'fieldStrength'])
+            labels = ['Type', 'Frames', 'Quality', 'Series Description', 'Field Strength']
+
+            # Creating the project url
+            url = interface._server + self._uri
+
+            # Creating the dictionary
+            d = {'Scan': '{} {}'.format(scan_id, url), 'Experiment': experiment_id
+                 }
+            # Add metadata
+            for i, l in zip(data, labels):
+                if i != '':
+                    d[l] = i
+
+            # Creating the output string to be returned
+            output = ''
+            for n, v in d.items():
+                output = output + '\n' + "{}: {}".format(n, v)
+            return output
+        else:
+            return '<%s Object> %s' % (self.__class__.__name__,
+                                       unquote(uri_last(self._uri))
+                                       )
+
     def set_param(self, key, value):
         self.attrs.set('%s/parameters/addParam[name=%s]/addField'
                        % (self.datatype(), key),
@@ -1592,6 +1746,28 @@ class Scan(EObject):
 
 @add_metaclass(ElementType)
 class Resource(EObject):
+
+    def __repr__(self):
+        resource_id = uri_last(self._uri)
+
+        # Check if resource exists
+        if self.exists():
+
+            # Fetch data files
+            files_counter = len(self.files().fetchall())
+
+            # Creating the dictionary
+            d = {'Resource': resource_id, 'Files': files_counter
+                 }
+            # Creating the output string to be returned
+            output = ''
+            for n, v in d.items():
+                output = output + '\n' + "{}: {}".format(n, v)
+            return output
+        else:
+            return '<%s Object> %s' % (self.__class__.__name__,
+                                       unquote(uri_last(self._uri))
+                                       )
 
     def get(self, dest_dir, extract=False):
         """ Downloads all the files within a resource.
@@ -1659,7 +1835,7 @@ class Resource(EObject):
                 dest_dir,
                 uri_last(self._uri),
                 member.split('files', 1)[1].split(os.sep, 1)[1]
-                )
+            )
 
             if not op.exists(op.dirname(new_path)):
                 os.makedirs(op.dirname(new_path))
@@ -1998,8 +2174,8 @@ class File(EObject):
                 # path = src
                 # name = op.basename(path).split('?')[0]
             # else:
-                # path = self._uri.split('/')[-1]
-                # name = path
+            # path = self._uri.split('/')[-1]
+            # name = path
         except Exception:
             pass  # FIXME
             # path = self._uri.split('/')[-1]
@@ -2008,7 +2184,7 @@ class File(EObject):
         self._absuri = unquote(
             re.sub('resources/.*?/',
                    'resources/%s/' % resource_id, self._uri)
-            )
+        )
 
         query_args = {
             'format': format,
@@ -2016,7 +2192,7 @@ class File(EObject):
             'tags': tags,
             'overwrite': 'true' if overwrite else 'false',
             'inbody': 'true'
-            }
+        }
 
         if 'params' in datatypes:
             query_args.update(datatypes['params'])
@@ -2044,7 +2220,7 @@ class File(EObject):
 
         # default error handling.
         if (response is not None and not response.ok) or \
-           is_xnat_error(response.content):
+                is_xnat_error(response.content):
             if DEBUG:
                 print(response.keys())
                 print(response.get("status"))
@@ -2238,6 +2414,7 @@ class In_Files(Files):
 class Out_Files(Files):
     pass
 
+
 # Utility functions for downloading and extracting zip archives
 
 
@@ -2255,7 +2432,6 @@ def _datatypes_from_query(query):
 
 def query_with(interface, join_field,
                common_field, return_values, _filter):
-
     _stm = (join_field.split('/')[0], return_values)
     _cls = rewrite_query(interface, join_field,
                          common_field, _filter)
@@ -2265,7 +2441,6 @@ def query_with(interface, join_field,
 
 def rewrite_query(interface, join_field,
                   common_field, _filter):
-
     _new_filter = []
 
     for _f in _filter:
@@ -2277,7 +2452,7 @@ def rewrite_query(interface, join_field,
             _datatype = _f[0].split('/')[0]
             _res = interface.select(
                 _datatype, ['%s/%s' % (_datatype, common_field)]
-                ).where([_f, 'AND'])
+            ).where([_f, 'AND'])
 
             _new_f = [(join_field, '=', '%s' % sid)
                       for sid in _res['subject_id']
