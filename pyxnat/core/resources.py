@@ -84,6 +84,7 @@ def get_collection_from_element(rsc_name):
 
 
 def get_collection_from_collection(rsc_name):
+
     def getter(self, id_filter='*'):
         Collection = globals()[rsc_name.title()]
 
@@ -153,7 +154,7 @@ def __find_all_functions__(m):
 
 class EObject(object):
     """ Generic Object for an element URI.
-    """<
+    """
     def __init__(self, uri, interface):
         """
             Parameters
