@@ -35,21 +35,19 @@ import pkgutil
 import inspect
 import six
 from six import string_types, add_metaclass
-
 if six.PY2:
     from urllib import quote, unquote  # Python 2.X
 elif six.PY3:
     from urllib.parse import quote, unquote
-
     unicode = str
 
 DEBUG = False
-
 
 # metaclasses
 
 
 def get_element_from_element(rsc_name):
+
     def getter(self, ID):
         Element = globals()[rsc_name.title()]
 
@@ -59,6 +57,7 @@ def get_element_from_element(rsc_name):
 
 
 def get_element_from_collection(rsc_name):
+
     def getter(self, ID):
         Element = globals()[rsc_name.title()]
         Collection = globals()[rsc_name.title() + 's']
@@ -70,11 +69,11 @@ def get_element_from_collection(rsc_name):
                            ],
                           self._intf
                           )
-
     return getter
 
 
 def get_collection_from_element(rsc_name):
+
     def getter(self, id_filter='*'):
         Collection = globals()[rsc_name.title()]
         return Collection(join_uri(self._uri, rsc_name),
@@ -96,6 +95,7 @@ def get_collection_from_collection(rsc_name):
 
 class ElementType(type):
     def __new__(cls, name, bases, dct):
+
         rsc_name = name.lower() + 's' \
             if name.lower() in schema.resources_singular \
             else name.lower()
@@ -153,8 +153,7 @@ def __find_all_functions__(m):
 
 class EObject(object):
     """ Generic Object for an element URI.
-    """
-
+    """<
     def __init__(self, uri, interface):
         """
             Parameters
@@ -178,9 +177,9 @@ class EObject(object):
         for m, mod_functions in functions.items():
             is_resource = False
             if (hasattr(m, 'XNAT_RESOURCE_NAME') and
-                self._urn == m.XNAT_RESOURCE_NAME) or \
+                    self._urn == m.XNAT_RESOURCE_NAME) or \
                     (hasattr(m, 'XNAT_RESOURCE_NAMES') and
-                     self._urn in m.XNAT_RESOURCE_NAMES):
+                        self._urn in m.XNAT_RESOURCE_NAMES):
                 is_resource = True
 
             if is_resource:
@@ -191,7 +190,7 @@ class EObject(object):
         return {
             'uri': self._uri,
             'interface': self._intf
-        }
+            }
 
     def __setstate__(self, dict):
         self.__init__(dict['uri'], dict['interface'])
@@ -224,18 +223,19 @@ class EObject(object):
             if fnmatch(uri_segment(
                     self._uri.split(
                         self._intf._get_entry_point(), 1)[1], -2), pattern):
+
                 reg_pat = self._intf._struct[pattern]
                 filters.setdefault('xsiType', set()).add(reg_pat)
 
         if filters:
             get_id += '&' + \
-              '&'.join('%s=%s' % (item[0], item[1])
-                       if isinstance(item[1], string_types)
-                       else '%s=%s' % (item[0],
-                                       ','.join([val for val in item[1]])
-                                       )
-                       for item in filters.items()
-                       )
+                '&'.join('%s=%s' % (item[0], item[1])
+                         if isinstance(item[1], string_types)
+                         else '%s=%s' % (item[0],
+                                         ','.join([val for val in item[1]])
+                                         )
+                         for item in filters.items()
+                         )
 
         for res in self._intf._get_json(get_id):
             if self._urn in [res.get(id_head), res.get(lbl_head)]:
@@ -2170,12 +2170,12 @@ class File(EObject):
                 # path = src
                 # name = op.basename(path).split('?')[0]
             # else:
-            # path = self._uri.split('/')[-1]
-            # name = path
-        except Exception:
-            pass  # FIXME
                 # path = self._uri.split('/')[-1]
                 # name = path
+        except Exception:
+            pass  # FIXME
+            # path = self._uri.split('/')[-1]
+            # name = path
 
         self._absuri = unquote(
             re.sub('resources/.*?/',
@@ -2216,7 +2216,7 @@ class File(EObject):
 
         # default error handling.
         if (response is not None and not response.ok) or \
-            is_xnat_error(response.content):
+           is_xnat_error(response.content):
             if DEBUG:
                 print(response.keys())
                 print(response.get("status"))
