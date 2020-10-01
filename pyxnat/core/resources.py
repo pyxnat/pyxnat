@@ -33,9 +33,6 @@ from . import derivatives
 import types
 import pkgutil
 import inspect
-import json
-from IPython import get_ipython
-from IPython.display import display, HTML
 import six
 from six import string_types, add_metaclass
 
@@ -232,13 +229,13 @@ class EObject(object):
 
         if filters:
             get_id += '&' + \
-                      '&'.join('%s=%s' % (item[0], item[1])
-                               if isinstance(item[1], string_types)
-                               else '%s=%s' % (item[0],
-                                               ','.join([val for val in item[1]])
-                                               )
-                               for item in filters.items()
-                               )
+              '&'.join('%s=%s' % (item[0], item[1])
+                       if isinstance(item[1], string_types)
+                       else '%s=%s' % (item[0],
+                                       ','.join([val for val in item[1]])
+                                       )
+                       for item in filters.items()
+                       )
 
         for res in self._intf._get_json(get_id):
             if self._urn in [res.get(id_head), res.get(lbl_head)]:
@@ -374,8 +371,8 @@ class EObject(object):
         if datatype is None:
             for uri_pattern in struct.keys():
                 if fnmatch(
-                        self._uri.split(
-                            self._intf._get_entry_point(), 1)[1], uri_pattern):
+                    self._uri.split(
+                        self._intf._get_entry_point(), 1)[1], uri_pattern):
                     datatype = struct.get(uri_pattern)
                     break
             else:
@@ -388,7 +385,7 @@ class EObject(object):
             local_params = \
                 [param for param in params
                  if param not in schema.resources_types + ['use_label']
-                 and (param.startswith(datatype) or '/' not in param)
+                    and (param.startswith(datatype) or '/' not in param)
                  ]
 
             create_uri = '%s?xsiType=%s' % (self._uri, datatype)
@@ -396,6 +393,7 @@ class EObject(object):
             if 'ID' not in local_params \
                     and '%s/ID' % datatype not in local_params \
                     and params.get('use_label'):
+
                 create_uri += '&%s/ID=%s' % (datatype, uri_last(self._uri))
 
             if local_params:
@@ -569,7 +567,6 @@ class CObject(object):
             >>> for subject in interface.select.projects().subjects():
             >>>     print subject
     """
-
     def __init__(self, cbase, interface, pattern='*', nested=None,
                  id_header='ID', columns=[], filters={}):
 
@@ -648,7 +645,7 @@ class CObject(object):
                     else '%s=%s' % (
                         item[0], ','.join([val for val in item[1]]))
                     for item in self._filters.items()
-                )
+                    )
 
             if DEBUG:
                 print(uri + query_string)
@@ -851,7 +848,7 @@ class CObject(object):
         if isinstance(k, slice):
             return islice(self, k.start, k.stop, k.step)
         else:
-            return next(islice(self, k, k + 1))
+            return next(islice(self, k, k+1))
 
     def get(self, *args):
         """ Returns every element.
@@ -994,7 +991,7 @@ class CObject(object):
             return_values=['xnat:subjectData/PROJECT',
                            'xnat:subjectData/SUBJECT_ID'],
             _filter=constraints
-        )
+            )
 
         searchpop = ['%s/projects/' % self._intf._get_entry_point() +
                      '%(project)s/subjects/%(subject_id)s' % res
@@ -1027,7 +1024,6 @@ class CObject(object):
         cobj._id_header = backup_header
 
         return self
-
 
 # specialized classes
 
@@ -1257,8 +1253,8 @@ class Project(EObject):
             # re-select with the ID of the matching experiment.
             return Experiment(datapath % (
                 self._intf._get_entry_point(), self.id(), tmp.id()),
-                              self._intf
-                              )
+                self._intf
+                )
 
     def last_modified(self):
         """ Gets the last modified dates for all the project subjects.
@@ -1305,7 +1301,7 @@ class Project(EObject):
             except IndexError:
                 raise ValueError(
                     'Protocol %s not in current schema' % protocol
-                )
+                    )
 
             try:
                 definitions_element = protocol_element.xpath(
@@ -1315,7 +1311,7 @@ class Project(EObject):
                 definitions_element = lxml.etree.Element(
                     lxml.etree.QName(tree.nsmap['xnat'], 'definitions'),
                     nsmap=tree.nsmap
-                )
+                    )
                 protocol_element.append(definitions_element)
 
             for group, fields in value.items():
@@ -1334,7 +1330,7 @@ class Project(EObject):
                     group_element = lxml.etree.Element(
                         lxml.etree.QName(tree.nsmap['xnat'], 'definition'),
                         nsmap=tree.nsmap
-                    )
+                        )
                     group_element.set('ID', group)
                     group_element.set(
                         'data-type', protocol_element.get('data-type'))
@@ -1344,7 +1340,7 @@ class Project(EObject):
                     fields_element = lxml.etree.Element(
                         lxml.etree.QName(tree.nsmap['xnat'], 'fields'),
                         nsmap=tree.nsmap
-                    )
+                        )
                     group_element.append(fields_element)
 
                 for field, datatype in fields.items():
@@ -1365,7 +1361,7 @@ class Project(EObject):
                             "xnat:%s/fields/field[name=%s]/field" % (
                                 protocol_element.get(
                                     'data-type').split(':')[-1], field)
-                        )
+                            )
                         fields_element.append(field_element)
                         update = True
         if update:
@@ -1374,7 +1370,7 @@ class Project(EObject):
                 'text/xml',
                 'cust.xml',
                 'cust.xml'
-            )
+                )
 
             uri = self._uri
             if allow_data_deletion:
@@ -1835,7 +1831,7 @@ class Resource(EObject):
                 dest_dir,
                 uri_last(self._uri),
                 member.split('files', 1)[1].split(os.sep, 1)[1]
-            )
+                )
 
             if not op.exists(op.dirname(new_path)):
                 os.makedirs(op.dirname(new_path))
@@ -2178,13 +2174,13 @@ class File(EObject):
             # name = path
         except Exception:
             pass  # FIXME
-            # path = self._uri.split('/')[-1]
-            # name = path
+                # path = self._uri.split('/')[-1]
+                # name = path
 
         self._absuri = unquote(
             re.sub('resources/.*?/',
                    'resources/%s/' % resource_id, self._uri)
-        )
+            )
 
         query_args = {
             'format': format,
@@ -2192,7 +2188,7 @@ class File(EObject):
             'tags': tags,
             'overwrite': 'true' if overwrite else 'false',
             'inbody': 'true'
-        }
+            }
 
         if 'params' in datatypes:
             query_args.update(datatypes['params'])
@@ -2220,7 +2216,7 @@ class File(EObject):
 
         # default error handling.
         if (response is not None and not response.ok) or \
-                is_xnat_error(response.content):
+            is_xnat_error(response.content):
             if DEBUG:
                 print(response.keys())
                 print(response.get("status"))
@@ -2414,7 +2410,6 @@ class In_Files(Files):
 class Out_Files(Files):
     pass
 
-
 # Utility functions for downloading and extracting zip archives
 
 
@@ -2432,6 +2427,7 @@ def _datatypes_from_query(query):
 
 def query_with(interface, join_field,
                common_field, return_values, _filter):
+
     _stm = (join_field.split('/')[0], return_values)
     _cls = rewrite_query(interface, join_field,
                          common_field, _filter)
@@ -2441,6 +2437,7 @@ def query_with(interface, join_field,
 
 def rewrite_query(interface, join_field,
                   common_field, _filter):
+
     _new_filter = []
 
     for _f in _filter:
@@ -2452,7 +2449,7 @@ def rewrite_query(interface, join_field,
             _datatype = _f[0].split('/')[0]
             _res = interface.select(
                 _datatype, ['%s/%s' % (_datatype, common_field)]
-            ).where([_f, 'AND'])
+                ).where([_f, 'AND'])
 
             _new_f = [(join_field, '=', '%s' % sid)
                       for sid in _res['subject_id']

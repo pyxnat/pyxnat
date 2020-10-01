@@ -6,7 +6,7 @@ from IPython import get_ipython
 _modulepath = op.dirname(op.abspath(__file__))
 
 central = Interface(config=op.join(op.dirname(op.abspath(__file__)),
-                                   '.xnat-central.cfg'))
+                                   'central.cfg'))
 
 proj_1 = central.select.project('CENTRAL_OASIS_CS')
 subj_1 = proj_1.subject('OAS1_0002')
