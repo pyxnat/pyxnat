@@ -43,7 +43,7 @@ def test_info_project():
     Data for Neurosurgical Planning&quot; (IGT_FMRI_NEURO) project processed with surface \
     obscuring algorithm.' + '\n' + 'Project owners:  mmilch ' + '\n' + \
                       'Insert date: 2012-04-05 15:45:30.0' + '\n' + 'Access: public' + '\n' + 'MR experiments: 43'
-    assert list(str(proj_1)) == list(expected_output)
+    assert list(sorted(str(proj_1))) == list(sorted(expected_output))
 
 
 @skip_if_no_network
@@ -67,7 +67,7 @@ def test_info_subject():
                              'CENTRAL_S01791' \
                       + '\n' + 'Project: surfmask_smpl' + '\n' + 'Insert user: mmilch' \
                       + '\n' + 'Insert date: 2012-04-10 17:27:22.0' + '\n' + 'Gender: U'
-    assert list(str(subj_1)) == list(expected_output)
+    assert list(sorted(str(subj_1))) == list(sorted(expected_output))
 
 
 @skip_if_no_network
@@ -92,7 +92,7 @@ def test_info_experiment():
                       + '\n' + 'Subject: CENTRAL_S01791' + '\n' + 'Project: surfmask_smpl' + '\n' + 'Scans: 4' \
                       + '\n' + 'Insert user: mmilch' + '\n' + 'Insert date: 2012-04-10 17:27:25.0' \
                       + '\n' + 'Date: 2008-05-06' + '\n' + 'Type: IGT_FMRI_NEURO'
-    assert list(str(exp_1)) == list(expected_output)
+    assert list(sorted(str(exp_1))) == list(sorted(expected_output))
 
 
 @skip_if_no_network
@@ -116,7 +116,7 @@ def test_info_scan():
                              '/experiments/CENTRAL_E04850/scans/11' \
                       + '\n' + 'Experiment: CENTRAL_E04850' + '\n' + 'Type: SPGR' + '\n' + 'Frames: 175' \
                       + '\n' + 'Series Description: SPGR' + '\n' + 'Field Strength: 3.0'
-    assert list(str(scan_1)) == list(expected_output)
+    assert list(sorted(str(scan_1))) == list(sorted(expected_output))
 
 
 @skip_if_no_network
@@ -134,7 +134,7 @@ def test_resource_not_exists():
 
 
 @skip_if_no_network
-def test_info_experiment():
+def test_info_resource():
     assert isinstance(resource_1, object)
     expected_output = '\n' + 'Resource: obscure_algorithm_output' + '\n' + 'Files: 66'
-    assert list(str(resource_1)) == list(expected_output)
+    assert list(sorted(str(resource_1))) == list(sorted(expected_output))
