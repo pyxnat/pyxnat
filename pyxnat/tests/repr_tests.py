@@ -1,7 +1,6 @@
 from pyxnat import Interface
 import os.path as op
 from . import skip_if_no_network
-from IPython import get_ipython
 
 _modulepath = op.dirname(op.abspath(__file__))
 
