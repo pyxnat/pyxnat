@@ -38,12 +38,10 @@ def test_project_not_exists():
 @skip_if_no_network
 def test_info_project():
     assert isinstance(proj_1, object)
-    expected_output_ipython = 'Project: surfmask_smpl(Surface masking samples) ' \
-                              'https://central.xnat.org/data/projects/surfmask_smpl ' \
+    expected_output_ipython = 'Project: surfmask_smpl(Surface masking samples) https://central.xnat.org/data/projects/surfmask_smpl ' \
                               'Subjects: 43' \
-                              'Description: The collection of structural T1 MRI scans from &quot;Functional Data for ' \
-                              'Neurosurgical Planning&quot; (IGT_FMRI_NEURO) project processed with surface obscuring ' \
-                              'a' \
+                              'Description: The collection of structural T1 MRI scans from &quot;Functional Data for Neurosurgical Planning&quot;' \
+                              '(IGT_FMRI_NEURO) project processed with surface obscuring algorithm.' \
                               'Project owners:  mmilch' \
                               'Insert date: 2012-04-05 15:45:30.0' \
                               'Access: public' \
@@ -68,8 +66,7 @@ def test_subject_not_exists():
 @skip_if_no_network
 def test_info_subject():
     assert isinstance(subj_1, object)
-    expected_output_ipython = 'Subject: CENTRAL_S01791 https://central.xnat.org/data/projects/surfmask_smpl/subjects' \
-                              '/CENTRAL_S01791' \ 
+    expected_output_ipython = 'Subject: CENTRAL_S01791 https://central.xnat.org/data/projects/surfmask_smpl/subjects/CENTRAL_S01791' \
                               'Project: surfmask_smpl' \
                               'Insert user: mmilch' \
                               'Insert date: 2012-04-10 17:27:22.0' \
@@ -99,7 +96,7 @@ def test_info_experiment():
                               'Project: surfmask_smpl' \
                               'Scans: 4' \
                               'Insert user: mmilch' \
-                              'Insert date:  2012-04-10 17:27:25.0' \
+                              'Insert date: 2012-04-10 17:27:25.0' \
                               'Date: 2008-05-06' \
                               'Type: IGT_FMRI_NEURO'
     assert str(exp_1) == str(expected_output_ipython)
