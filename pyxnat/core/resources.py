@@ -1698,7 +1698,7 @@ class Scan(EObject):
         # Check if subject exists
         if self.exists():
 
-            # Fetch data experiment
+            # Fetch data scan
             data = self.attrs.mget(['type', 'frames', 'quality', 'series_description',
                                     'fieldStrength'])
             labels = ['Type', 'Frames', 'Quality', 'Series Description', 'Field Strength']
