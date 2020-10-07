@@ -89,9 +89,8 @@ class Inspector(object):
         else:
             fields = []
             for datatype in get_column(search_els, 'ELEMENT_NAME', pattern):
-                fields.extend(self._datafields(datatype,
-                                               fields_pattern or '*', True)
-                              )
+                df = self._datafields(datatype, fields_pattern or '*', True)
+                fields.extend(df)
 
             return fields
 
