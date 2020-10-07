@@ -141,7 +141,7 @@ class JsonTable(object):
         #     return str(self.data[0])
 
         if len(self.headers()) <= 5:
-            _headers = ','.join(list(self.headers()))
+            _headers = self.headers()
         else:
             _headers = '%s ... %s' % (','.join(list(self.headers())[:2]),
                                       ','.join(list(self.headers())[-2:])
