@@ -84,11 +84,11 @@ def test_experiment_not_exists():
 @skip_if_no_network
 def test_info_experiment():
     assert isinstance(exp_1, object)
-    expected_output = '\n' + 'Session: CENTRAL_E04850 https://central.xnat.org/data/projects/surfmask_smpl/subjects/' \
-                             'CENTRAL_S01791/experiments/CENTRAL_E04850' \
-                      + '\n' + 'Subject: CENTRAL_S01791' + '\n' + 'Project: surfmask_smpl' + '\n' + 'Scans: 4' \
-                      + '\n' + 'Insert user: mmilch' + '\n' + 'Insert date: 2012-04-10 17:27:25.0' \
-                      + '\n' + 'Date: 2008-05-06' + '\n' + 'Type: IGT_FMRI_NEURO'
+    expected_output = '<Experiment Object> CENTRAL_E04850 (subject: '\
+        'CENTRAL_S01791 `001`) (project: surfmask_smpl) 4 scans 1 resource '\
+        '(created on 2012-04-10 17:27:25.0) https://central.xnat.org/'\
+        'data/projects/surfmask_smpl/subjects/CENTRAL_S01791/experiments/'\
+        'CENTRAL_E04850'
     assert list(sorted(str(exp_1))) == list(sorted(expected_output))
 
 
