@@ -1051,34 +1051,51 @@ class Project(EObject):
         # Check if project exists
 
         if self.exists():
-
             # Fetch data project
-            data = interface.select('xnat:projectData').where([('xnat:projectData/ID', '=', project_id)]).data[0]
+            if hasattr(interface, '_projectData'):
+                data = getattr(interface, '_projectData')
+            else:
+                data = interface.select('xnat:projectData').all().data
+                setattr(interface, '_projectData', data)
+
+            data = [e for e in data if e['id'] == project_id][0]
             name = data['name']
-            metadata = [data['description_csv'], data['project_owners'], data['insert_date'], data['project_access'],
-                        data['proj_mr_count'], data['proj_ct_count'], data['proj_pet_count'], data['proj_ut_count']]
-            labels = ['Description', 'Project owners', 'Insert date', 'Access', 'MR experiments', 'CT experiments',
-                      'PET experiments', 'UT experiments']
 
             # Fetch data subjects
-            subjects = self.subjects()
-            subjects_count = str(len(subjects.fetchall()))
+            n_subjects = len(list(self.subjects()))
 
             # Creating the project url
             url = interface._server + self._uri
 
-            # Creating the dictionary
-            d = {'Project': '{}({}) {}'.format(project_id, name, url), 'Subjects': subjects_count,
-                 }
-            # Append metadata
-            for m, l in zip(metadata, labels):
-                if m:
-                    d[l] = m
+            # Listing experiments
+            exp = []
+            for e in ['mr', 'ct', 'pet', 'ut']:
+                field = 'proj_%s_count' % e
+                if data[field]:
+                    item = '{f} {e} experiment{s}'
+                    final_s = {True: 's', False: ''}[int(data[field]) > 1]
+                    item = item.format(f=data[field],
+                                       e=e.upper(),
+                                       s=final_s)
+                    exp.append(item)
 
+            owners = [e.strip(' ')
+                      for e in data['project_owners'].split(' <br/> ')]
             # Creating the output string to be returned
-            output = ''
-            for n, v in d.items():
-                output = output + '\n' + "{}: {}".format(n, v)
+            output = '<{cl} Object> {id} `{label}` ({access}) {n_subjects}'\
+                ' subject{s} {exp} (owner: {owner}) (created on {insert_date}'\
+                ') {url}'
+            output = output.format(cl=self.__class__.__name__,
+                                   id=project_id,
+                                   label=name,
+                                   s={True: 's', False: ''}[n_subjects > 1],
+                                   n_subjects=n_subjects,
+                                   owner='/'.join(owners),
+                                   insert_date=data['insert_date'],
+                                   access=data['project_access'],
+                                   url=url,
+                                   exp=' '.join(exp))
+
             return output
         else:
             return '<%s Object> %s' % (self.__class__.__name__,

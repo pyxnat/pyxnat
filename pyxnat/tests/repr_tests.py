@@ -37,14 +37,10 @@ def test_project_not_exists():
 @skip_if_no_network
 def test_info_project():
     assert isinstance(proj_1, object)
-    expected_output = '\n' + 'Project: surfmask_smpl(Surface masking samples) ' \
-                             'https://central.xnat.org/data/projects/surfmask_smpl' \
-                      + '\n' + 'Subjects: 43' \
-                      + '\n' + 'Description: The collection of structural T1 MRI scans from &quot;Functional Data for ' \
-                               'Neurosurgical Planning&quot; (IGT_FMRI_NEURO) project processed with surface ' \
-                               'obscuring algorithm.' \
-                      + '\n' + 'Project owners:  mmilch ' + '\n' + 'Insert date: 2012-04-05 15:45:30.0' \
-                      + '\n' + 'Access: public' + '\n' + 'MR experiments: 43'
+    expected_output = '<Project Object> surfmask_smpl `Surface masking '\
+        'samples` (public) 43 subjects 43 MR experiments (owner: mmilch) '\
+        '(created on 2012-04-05 15:45:30.0) https://central.xnat.org/data/'\
+        'projects/surfmask_smpl'
     assert list(sorted(str(proj_1))) == list(sorted(expected_output))
 
 
