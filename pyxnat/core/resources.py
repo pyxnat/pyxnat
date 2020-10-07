@@ -1828,15 +1828,14 @@ class Resource(EObject):
         if self.exists():
 
             # Fetch data files
-            files_counter = len(self.files().fetchall())
+            files_count = len(self.files().fetchall())
 
-            # Creating the dictionary
-            d = {'Resource': resource_id, 'Files': files_counter
-                 }
             # Creating the output string to be returned
-            output = ''
-            for n, v in d.items():
-                output = output + '\n' + "{}: {}".format(n, v)
+            output = '<{cl} Object> {id} `{label}` ({fc} files)'
+            output = output.format(label=self.label(),
+                                   cl=self.__class__.__name__,
+                                   id=resource_id,
+                                   fc=files_count)
             return output
         else:
             return '<%s Object> %s' % (self.__class__.__name__,
