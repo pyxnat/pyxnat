@@ -1431,6 +1431,23 @@ class Project(EObject):
         return [item['alias'] for item in data
                 if item['alias'] and item['ID'] == self._urn]
 
+    def desc(self):
+        """Returns the description for this project.
+
+        Returns
+        -------
+        Description (string) of the project.
+        """
+        intf = self._intf
+        if hasattr(intf, '_projectData'):
+            data = getattr(intf, '_projectData')
+        else:
+            data = intf.select('xnat:projectData').all().data
+            setattr(intf, '_projectData', data)
+
+        data = [e for e in data if e['id'] == self._urn][0]
+        return data['description']
+
 
 @add_metaclass(ElementType)
 class Subject(EObject):
