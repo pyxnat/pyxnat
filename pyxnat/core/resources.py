@@ -1574,41 +1574,52 @@ class Subject(EObject):
 class Experiment(EObject):
 
     def __repr__(self):
-        interface = self._intf
-        session_id = uri_last(self._uri)
+        intf = self._intf
+        eid = uri_last(self._uri)
 
         # Check if subject exists
         if self.exists():
 
             # Fetch data experiment
-            data_type = interface.array.experiments(experiment_id=session_id).data[0]
-            data = interface.select(data_type['xsiType']).where([('{}/{}'.format(data_type['xsiType'], 'ID'),
-                                                                  '=', session_id)]).data[0]
+            if hasattr(intf, '_experimentData'):
+                data = getattr(intf, '_experimentData')
+            else:
+                e = intf.array.experiments(experiment_id=eid).data[0]
+                filter = [('{}/{}'.format(e['xsiType'], 'ID'), '=', eid)]
+                data = intf.select(e['xsiType']).where(filter).data[0]
+                setattr(intf, '_experimentData', data)
+
             project_id = data['project']
             subject_id = data['subject_id']
-            metadata = [data['insert_user'], data['insert_date'], data['date'], data['visit'], data['type'],
-                        data['scanner_csv']]
-            labels = ['Insert user', 'Insert date', 'Date', 'Visit', 'Type', 'Scanner']
+            subject_label = data['subject_label']
+            insert_date = data['insert_date']
+            n_res = len(list(self.resources()))
 
             # Fetch data scans
-            scans_counter = len(self.scans().fetchall())
+            n_scans = len(list(self.scans()))
 
             # Creating the project url
-            url = interface._server + self._uri
-
-            # Creating the dictionary
-            d = {'Session': '{} {}'.format(session_id, url), 'Subject': subject_id, 'Project': project_id,
-                 'Scans': scans_counter
-                 }
-            # Add metadata
-            for m, l in zip(metadata, labels):
-                if m:
-                    d[l] = m
+            url = intf._server + self._uri
 
             # Creating the output string to be returned
-            output = ''
-            for n, v in d.items():
-                output = output + '\n' + "{}: {}".format(n, v)
+            output = '<{cl} Object> {id} (subject: {subject_id} '\
+                     '`{subject_label}`) (project: {project}) {n_scans} '\
+                     'scan{final_s1} {n_res} resource{final_s2} (created on '\
+                     '{insert_date}) {url}'
+
+            fs = {True: 's', False: ''}
+            output = output.format(cl=self.__class__.__name__,
+                                   id=eid,
+                                   subject_id=subject_id,
+                                   subject_label=subject_label,
+                                   project=project_id,
+                                   url=url,
+                                   n_res=n_res,
+                                   insert_date=insert_date,
+                                   n_scans=n_scans,
+                                   final_s1=fs[n_scans > 1],
+                                   final_s2=fs[n_res > 1])
+
             return output
         else:
             return '<%s Object> %s' % (self.__class__.__name__,
