@@ -116,8 +116,7 @@ def test_info_scan():
     assert isinstance(scan_1, object)
     expected_output = '\n' + 'Scan: 11 https://central.xnat.org/data/projects/surfmask_smpl/subjects/CENTRAL_S01791' \
                              '/experiments/CENTRAL_E04850/scans/11' \
-                      + '\n' + 'Experiment: CENTRAL_E04850' + '\n' + 'Type: SPGR' + '\n' + 'Frames: 175' \
-                      + '\n' + 'Series Description: SPGR' + '\n' + 'Field Strength: 3.0'
+                      + '\n' + 'Experiment: CENTRAL_E04850' + '\n' + 'Type: SPGR' + '\n' + 'Frames: 175'
     assert list(sorted(str(scan_1))) == list(sorted(expected_output))
 
 

@@ -1049,6 +1049,7 @@ class Project(EObject):
         project_id = uri_last(self._uri)
 
         # Check if project exists
+
         if self.exists():
 
             # Fetch data project
@@ -1440,6 +1441,7 @@ class Subject(EObject):
         subject_id = uri_last(self._uri)
 
         # Check if subject exists
+
         if self.exists():
 
             # Fetch data subject
@@ -1696,12 +1698,12 @@ class Scan(EObject):
         experiment_id = uri_nextlast(uri_parent(self._uri))
 
         # Check if subject exists
+
         if self.exists():
 
             # Fetch data scan
-            data = self.attrs.mget(['type', 'frames', 'quality', 'series_description',
-                                    'fieldStrength'])
-            labels = ['Type', 'Frames', 'Quality', 'Series Description', 'Field Strength']
+            data = self.attrs.mget(['type', 'frames', 'quality'])
+            labels = ['Type', 'Frames', 'Quality']
 
             # Creating the project url
             url = interface._server + self._uri
@@ -1748,6 +1750,7 @@ class Resource(EObject):
         resource_id = uri_last(self._uri)
 
         # Check if resource exists
+
         if self.exists():
 
             # Fetch data files
