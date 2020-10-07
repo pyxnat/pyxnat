@@ -1082,8 +1082,7 @@ class Project(EObject):
             return output
         else:
             return '<%s Object> %s' % (self.__class__.__name__,
-                                       self._urn
-                                       )
+                                       self._urn)
 
     def prearchive_code(self):
         """ Gets project prearchive code.
@@ -1545,8 +1544,7 @@ class Experiment(EObject):
             return output
         else:
             return '<%s Object> %s' % (self.__class__.__name__,
-                                       unquote(uri_last(self._uri))
-                                       )
+                                       unquote(uri_last(self._uri)))
 
     def shares(self, id_filter='*'):
         """ Returns the projects sharing this experiment.
@@ -1766,8 +1764,7 @@ class Resource(EObject):
             return output
         else:
             return '<%s Object> %s' % (self.__class__.__name__,
-                                       unquote(uri_last(self._uri))
-                                       )
+                                       unquote(uri_last(self._uri)))
 
     def get(self, dest_dir, extract=False):
         """ Downloads all the files within a resource.

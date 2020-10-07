@@ -125,9 +125,8 @@ def datatypes(root):
 
     return [element.get('type')
             for element in root.xpath('/xs:schema/xs:element',
-                                      namespaces=nsmap)
-            ]
-
+                                      namespaces=nsmap)]
+                                      
 
 def get_nsmap(node):
     nsmap = node.nsmap
