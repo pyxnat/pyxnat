@@ -132,5 +132,6 @@ def test_resource_not_exists():
 @skip_if_no_network
 def test_info_resource():
     assert isinstance(resource_1, object)
-    expected_output = '\n' + 'Resource: obscure_algorithm_output' + '\n' + 'Files: 66'
+    expected_output = '<Resource Object> obscure_algorithm_output '\
+        '`obscure_algorithm_output` (66 files)'
     assert list(sorted(str(resource_1))) == list(sorted(expected_output))
