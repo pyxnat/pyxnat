@@ -61,10 +61,9 @@ def test_subject_not_exists():
 @skip_if_no_network
 def test_info_subject():
     assert isinstance(subj_1, object)
-    expected_output = '\n' + 'Subject: CENTRAL_S01791 https://central.xnat.org/data/projects/surfmask_smpl/subjects/' \
-                             'CENTRAL_S01791' \
-                      + '\n' + 'Project: surfmask_smpl' + '\n' + 'Insert user: mmilch' \
-                      + '\n' + 'Insert date: 2012-04-10 17:27:22.0' + '\n' + 'Gender: U'
+    expected_output = '<Subject Object> CENTRAL_S01791 `001` (project: '\
+        'surfmask_smpl) (Gender: U) 1 experiment https://central.xnat.org/'\
+        'data/projects/surfmask_smpl/subjects/CENTRAL_S01791'
     assert list(sorted(str(subj_1))) == list(sorted(expected_output))
 
 

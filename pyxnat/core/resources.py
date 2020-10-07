@@ -1478,27 +1478,61 @@ class Subject(EObject):
         if self.exists():
 
             # Fetch data subject
-            data = interface.select('xnat:subjectData').where([('xnat:subjectData/ID', '=', subject_id)]).data[0]
-            project_id = data['project']
-            metadata = [self.attrs.get('age'), data['insert_user'], data['insert_date'], data['gender_text'],
-                        data['handedness_text'], data['ses']]
-            labels = ['Age', 'Insert user', 'Insert date', 'Gender', 'Handedness', 'Sessions']
+            if hasattr(interface, '_subjectData'):
+                data = getattr(interface, '_subjectData')
+            else:
+                columns = ['xnat:subjectData/PROJECT',
+                           'xnat:subjectData/SUBJECT_ID',
+                           'xnat:subjectData/INSERT_DATE',
+                           'xnat:subjectData/INSERT_USER',
+                           'xnat:subjectData/GENDER_TEXT',
+                           'xnat:subjectData/HANDEDNESS_TEXT',
+                           'xnat:subjectData/SES',
+                           'xnat:subjectData/ADD_IDS',
+                           'xnat:subjectData/RACE',
+                           'xnat:subjectData/ETHNICITY',
+                           'xnat:subjectData/XNAT_COL_SUBJECTDATALABEL']
+
+                dt = 'xnat:subjectData'
+                data = interface.select(dt, columns=columns).all().data
+                setattr(interface, '_subjectData', data)
 
             # Creating the project url
             url = interface._server + self._uri
 
-            # Creating the dictionary
-            d = {'Subject': '{} {}'.format(subject_id, url), 'Project': project_id
-                 }
-            # Add metadata
-            for m, l in zip(metadata, labels):
-                if m:
-                    d[l] = m
+            # Collecting data
+            data = [e for e in data if e['subject_id'] == subject_id][0]
+
+            project_id = data['project']
+            age = self.attrs.get('age')
+            gender = data['gender_text']
+            handedness = data['handedness_text']
+            label = data['xnat_col_subjectdatalabel']
+            n_expes = len(list(self.experiments()))
+
+            ag = ''
+            if [age, gender, handedness] != ['', '', '']:
+                ag = []
+                if age != '':
+                    ag.append('Age: %s' % age)
+                if gender != '':
+                    ag.append('Gender: %s' % gender)
+                if handedness != '':
+                    ag.append('Handedness: %s' % handedness)
+                ag = '(%s)' % ' - '.join(ag)
 
             # Creating the output string to be returned
-            output = ''
-            for n, v in d.items():
-                output = output + '\n' + "{}: {}".format(n, v)
+            output = '<{cl} Object> {id} `{label}` (project: {project}) {ag}'\
+                ' {n_expes} experiment{final_s} {url}'
+            output = output.format(cl=self.__class__.__name__,
+                                   label=label,
+                                   id=subject_id,
+                                   project=project_id,
+                                   url=url,
+                                   ag=ag,
+                                   n_expes=n_expes,
+                                   final_s={True: 's', False: ''}[n_expes > 1])
+
             return output
         else:
             return '<%s Object> %s' % (self.__class__.__name__,
