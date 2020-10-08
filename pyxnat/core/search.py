@@ -6,6 +6,9 @@ except ImportError:
     from io import StringIO
 try:
     unicode
+    import sys
+    reload(sys)  # Reload does the trick!
+    sys.setdefaultencoding('UTF8')
 except NameError:
     unicode = str
 from six import string_types
