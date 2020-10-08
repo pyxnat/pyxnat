@@ -1772,31 +1772,25 @@ class Scan(EObject):
     def __repr__(self):
         interface = self._intf
         scan_id = uri_last(self._uri)
-        experiment_id = uri_nextlast(uri_parent(self._uri))
 
         # Check if subject exists
 
         if self.exists():
 
             # Fetch data scan
-            data = self.attrs.mget(['type', 'frames', 'quality'])
-            labels = ['Type', 'Frames', 'Quality']
+            attrs = ['type', 'frames', 'quality', 'series_description']
+            sc_type, n_frames, quality, series_desc = self.attrs.mget(attrs)
 
             # Creating the project url
             url = interface._server + self._uri
 
-            # Creating the dictionary
-            d = {'Scan': '{} {}'.format(scan_id, url), 'Experiment': experiment_id
-                 }
-            # Add metadata
-            for i, l in zip(data, labels):
-                if i != '':
-                    d[l] = i
-
             # Creating the output string to be returned
-            output = ''
-            for n, v in d.items():
-                output = output + '\n' + "{}: {}".format(n, v)
+            output = '<{cl} Object> {id} (`{type}` {n_frames} frames) {url}'
+            output = output.format(cl=self.__class__.__name__,
+                                   id=scan_id,
+                                   type=sc_type,
+                                   n_frames=n_frames,
+                                   url=url)
             return output
         else:
             return '<%s Object> %s' % (self.__class__.__name__,
