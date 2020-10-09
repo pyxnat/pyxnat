@@ -1068,7 +1068,7 @@ class Project(EObject):
             n_subjects = len(list(self.subjects()))
 
             # Creating the project url
-            url = interface._server + self._uri
+            url = interface._server + self._uri + '?format=html'
 
             # Listing experiments
             exp = []
@@ -1501,7 +1501,7 @@ class Subject(EObject):
                 setattr(interface, '_subjectData', data)
 
             # Creating the project url
-            url = interface._server + self._uri
+            url = interface._server + self._uri + '?format=html'
 
             # Collecting data
             data = [e for e in data if e['subject_id'] == subject_id][0]
@@ -1602,7 +1602,7 @@ class Experiment(EObject):
             n_scans = len(list(self.scans()))
 
             # Creating the project url
-            url = intf._server + self._uri
+            url = intf._server + self._uri + '?format=html'
 
             # Creating the output string to be returned
             output = '<{cl} Object> {id} (subject: {subject_id} '\
@@ -1785,7 +1785,7 @@ class Scan(EObject):
             sc_type, n_frames, quality, series_desc = self.attrs.mget(attrs)
 
             # Creating the project url
-            url = interface._server + self._uri
+            url = interface._server + self._uri + '?format=html'
 
             # Creating the output string to be returned
             output = '<{cl} Object> {id} (`{type}` {n_frames} frames) {url}'
