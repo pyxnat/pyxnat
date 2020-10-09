@@ -4,8 +4,9 @@ from . import skip_if_no_network
 
 _modulepath = op.dirname(op.abspath(__file__))
 
-central = Interface(config=op.join(op.dirname(op.abspath(__file__)),
-                                   'central.cfg'))
+fp = op.join(op.dirname(op.abspath(__file__)), 'central.cfg')
+print(fp)
+central = Interface(config=fp)
 
 proj_1 = central.select.project('surfmask_smpl')
 subj_1 = proj_1.subject('CENTRAL_S01791')
@@ -40,7 +41,7 @@ def test_info_project():
     expected_output = '<Project Object> surfmask_smpl `Surface masking '\
         'samples` (public) 43 subjects 43 MR experiments (owner: mmilch) '\
         '(created on 2012-04-05 15:45:30.0) https://central.xnat.org/data/'\
-        'projects/surfmask_smpl'
+        'projects/surfmask_smpl?format=html'
     assert list(sorted(str(proj_1))) == list(sorted(expected_output))
 
 
@@ -63,7 +64,7 @@ def test_info_subject():
     assert isinstance(subj_1, object)
     expected_output = '<Subject Object> CENTRAL_S01791 `001` (project: '\
         'surfmask_smpl) (Gender: U) 1 experiment https://central.xnat.org/'\
-        'data/projects/surfmask_smpl/subjects/CENTRAL_S01791'
+        'data/projects/surfmask_smpl/subjects/CENTRAL_S01791?format=html'
     assert list(sorted(str(subj_1))) == list(sorted(expected_output))
 
 
@@ -88,7 +89,7 @@ def test_info_experiment():
         'CENTRAL_S01791 `001`) (project: surfmask_smpl) 4 scans 1 resource '\
         '(created on 2012-04-10 17:27:25.0) https://central.xnat.org/'\
         'data/projects/surfmask_smpl/subjects/CENTRAL_S01791/experiments/'\
-        'CENTRAL_E04850'
+        'CENTRAL_E04850?format=html'
     assert list(sorted(str(exp_1))) == list(sorted(expected_output))
 
 
@@ -111,7 +112,7 @@ def test_info_scan():
     assert isinstance(scan_1, object)
     expected_output = '<Scan Object> 11 (`SPGR` 175 frames) '\
         'https://central.xnat.org/data/projects/surfmask_smpl/subjects/'\
-        'CENTRAL_S01791/experiments/CENTRAL_E04850/scans/11'
+        'CENTRAL_S01791/experiments/CENTRAL_E04850/scans/11?format=html'
     assert list(sorted(str(scan_1))) == list(sorted(expected_output))
 
 
