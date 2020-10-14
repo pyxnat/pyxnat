@@ -1494,7 +1494,7 @@ class Subject(EObject):
                            'xnat:subjectData/ADD_IDS',
                            'xnat:subjectData/RACE',
                            'xnat:subjectData/ETHNICITY',
-                           'xnat:subjectData/XNAT_COL_SUBJECTDATALABEL']
+                           'xnat:subjectData/SUBJECT_LABEL']
 
                 dt = 'xnat:subjectData'
                 data = interface.select(dt, columns=columns).all().data
@@ -1510,7 +1510,7 @@ class Subject(EObject):
             age = self.attrs.get('age')
             gender = data['gender_text']
             handedness = data['handedness_text']
-            label = data['xnat_col_subjectdatalabel']
+            label = data['subject_label']
             n_expes = len(list(self.experiments()))
 
             ag = ''
