@@ -1210,15 +1210,9 @@ class Project(EObject):
         dp = datapath % (self._intf._get_entry_point(), self.id(), ID)
 
         tmp = Experiment(dp, self._intf)
-        if tmp.id() == ID:
-            return tmp
-        else:
-            # if id id not mach given id (which may have been a label
-            # re-select with the ID of the matching experiment.
-            return Experiment(datapath % (
-                self._intf._get_entry_point(), self.id(), tmp.id()),
-                self._intf
-                )
+        e_uri = '%s/experiments/%s' % (self._intf._get_entry_point(),
+                                       tmp.id())
+        return Experiment(e_uri, self._intf)
 
     def last_modified(self):
         """ Gets the last modified dates for all the project subjects.
