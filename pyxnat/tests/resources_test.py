@@ -375,3 +375,18 @@ def test_22_project():
     project.datatype()
     project.experiments()
     project.experiment('nose')
+
+
+@skip_if_no_network
+def test_23_project_experiment():
+    e1 = central.select.experiment('CENTRAL04_E00637')
+    e2 = central.select.project('nosetests3').experiment('CENTRAL04_E00637')
+    e3 = central.select.project('nosetests3').experiment('rs_MR1')
+    assert (e1._uri == e2._uri == e3._uri)
+
+    e4 = central.select.project('nosetests3').subject('rs').experiment('rs_MR1')
+    assert(len(list(e1.resources())) ==
+           len(list(e2.resources())) ==
+           len(list(e3.resources())) ==
+           len(list(e4.resources())))
+
