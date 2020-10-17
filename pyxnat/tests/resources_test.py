@@ -390,3 +390,40 @@ def test_23_project_experiment():
            len(list(e3.resources())) ==
            len(list(e4.resources())))
 
+@skip_if_no_network
+def test_24_share_subject():
+    from pyxnat.core.errors import DatabaseError
+
+    proj_a = central.select.project('nosetests3')
+    proj_b = central.select.project('metabase_nosetests')
+    subj_a = proj_a.subject('rs')
+
+    # always unshare at the begining just in case of abnormal termination
+    try:
+        proj_a.subjects().unshare('metabase_nosetests')
+    except DatabaseError:
+        pass
+    assert not proj_b.subject('rs').exists()
+    subj_a.share('metabase_nosetests')
+    assert proj_b.subject('rs').exists()
+    assert set(subj_a.shares().get()) == set(['nosetests3', 'metabase_nosetests'])
+    subj_a.unshare('metabase_nosetests')
+
+@skip_if_no_network
+def test_25_share_experiment():
+    from pyxnat.core.errors import DatabaseError
+
+    proj_a = central.select.project('nosetests3')
+    proj_b = central.select.project('metabase_nosetests')
+    exp_a = proj_a.experiment('rs_MR1')
+
+    # always unshare at the begining just in case of abnormal termination
+    try:
+        proj_a.experiments().unshare('metabase_nosetests')
+    except DatabaseError:
+        pass
+    assert not proj_b.experiment('rs_MR1').exists()
+    exp_a.share('metabase_nosetests')
+    assert proj_b.experiment('rs_MR1').exists()
+    assert set(exp_a.shares().get()) == set(['nosetests3', 'metabase_nosetests'])
+    exp_a.unshare('metabase_nosetests')
