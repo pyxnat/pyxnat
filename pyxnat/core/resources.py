@@ -1049,17 +1049,17 @@ class Project(EObject):
 
     def __repr__(self):
         interface = self._intf
-        project_id = uri_last(self._uri)
+        project_id = self.id()
 
         # Check if project exists
 
         if self.exists():
             # Fetch data project
             if hasattr(interface, '_projectData'):
-                data = getattr(interface, '_projectData')
+                data = interface._projectData 
             else:
                 data = interface.select('xnat:projectData').all().data
-                setattr(interface, '_projectData', data)
+                interface._projectData = data
 
             data = [e for e in data if e['id'] == project_id][0]
             name = data['name']
@@ -1455,15 +1455,7 @@ class Project(EObject):
         -------
         Description (string) of the project.
         """
-        intf = self._intf
-        if hasattr(intf, '_projectData'):
-            data = getattr(intf, '_projectData')
-        else:
-            data = intf.select('xnat:projectData').all().data
-            setattr(intf, '_projectData', data)
-
-        data = [e for e in data if e['id'] == self._urn][0]
-        return data['description']
+        return self.attrs.get('description')
 
 
 @add_metaclass(ElementType)
@@ -1474,7 +1466,7 @@ class Subject(EObject):
 
     def __repr__(self):
         interface = self._intf
-        subject_id = uri_last(self._uri)
+        subject_id = self.id()
 
         # Check if subject exists
 
@@ -1482,7 +1474,7 @@ class Subject(EObject):
 
             # Fetch data subject
             if hasattr(interface, '_subjectData'):
-                data = getattr(interface, '_subjectData')
+                data = interface._subjectData
             else:
                 columns = ['xnat:subjectData/PROJECT',
                            'xnat:subjectData/SUBJECT_ID',
@@ -1498,7 +1490,7 @@ class Subject(EObject):
 
                 dt = 'xnat:subjectData'
                 data = interface.select(dt, columns=columns).all().data
-                setattr(interface, '_subjectData', data)
+                interface._subjectData = data
 
             # Creating the project url
             url = interface._server + self._uri + '?format=html'
@@ -1578,19 +1570,19 @@ class Experiment(EObject):
 
     def __repr__(self):
         intf = self._intf
-        eid = uri_last(self._uri)
+        eid = self.id()
 
         # Check if subject exists
         if self.exists():
 
             # Fetch data experiment
             if hasattr(intf, '_experimentData'):
-                data = getattr(intf, '_experimentData')
+                data = intf._experimentData
             else:
                 e = intf.array.experiments(experiment_id=eid).data[0]
                 filter = [('{}/{}'.format(e['xsiType'], 'ID'), '=', eid)]
                 data = intf.select(e['xsiType']).where(filter).data[0]
-                setattr(intf, '_experimentData', data)
+                intf._experimentData = data
 
             project_id = data['project']
             subject_id = data['subject_id']
@@ -1774,25 +1766,26 @@ class Scan(EObject):
 
     def __repr__(self):
         interface = self._intf
-        scan_id = uri_last(self._uri)
+        scan_id = self.id()
 
         # Check if subject exists
 
         if self.exists():
 
             # Fetch data scan
-            attrs = ['type', 'frames', 'quality', 'series_description']
-            sc_type, n_frames, quality, series_desc = self.attrs.mget(attrs)
+            attrs = ['type', 'frames', 'quality']
+            sc_type, n_frames, quality = self.attrs.mget(attrs)
 
             # Creating the project url
             url = interface._server + self._uri + '?format=html'
 
             # Creating the output string to be returned
-            output = '<{cl} Object> {id} (`{type}` {n_frames} frames) {url}'
+            output = '<{cl} Object> {id} (`{type}` {n_frames} frames) {quality} {url}'
             output = output.format(cl=self.__class__.__name__,
                                    id=scan_id,
                                    type=sc_type,
                                    n_frames=n_frames,
+                                   quality=quality,
                                    url=url)
             return output
         else:
@@ -1821,7 +1814,7 @@ class Scan(EObject):
 class Resource(EObject):
 
     def __repr__(self):
-        resource_id = uri_last(self._uri)
+        resource_id = self.id()
 
         # Check if resource exists
 
