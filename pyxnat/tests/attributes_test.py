@@ -15,7 +15,7 @@ interfaces.STUBBORN = True
 sid = uuid1().hex
 eid = uuid1().hex
 
-subject = central.select.project('nosetests3').subject(sid)
+subject = central.select.project('nosetests5').subject(sid)
 experiment = subject.experiment(eid)
 
 

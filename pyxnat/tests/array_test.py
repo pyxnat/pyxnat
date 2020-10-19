@@ -62,7 +62,7 @@ class ArrayTests(unittest.TestCase):
     @skip_if_no_network
     def test_search_experiments(self):
         et = 'xnat:subjectData'
-        e = self._intf.array.search_experiments(project_id='nosetests3',
+        e = self._intf.array.search_experiments(project_id='nosetests5',
                                                 experiment_type=et)
         res = e.data
         self.assertGreaterEqual(len(res), 1)
