@@ -110,7 +110,7 @@ def test_scan_not_exists():
 @skip_if_no_network
 def test_info_scan():
     assert isinstance(scan_1, object)
-    expected_output = '<Scan Object> 11 (`SPGR` 175 frames) '\
+    expected_output = '<Scan Object> 11 (`SPGR` 175 frames)  '\
         'https://central.xnat.org/data/projects/surfmask_smpl/subjects/'\
         'CENTRAL_S01791/experiments/CENTRAL_E04850/scans/11?format=html'
     assert list(sorted(str(scan_1))) == list(sorted(expected_output))
