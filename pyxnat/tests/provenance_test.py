@@ -6,7 +6,7 @@ import os.path as op
 
 fp = op.join(op.dirname(op.abspath(__file__)), 'central.cfg')
 central = Interface(config=fp)
-project = central.select.project('nosetests3')
+project = central.select.project('nosetests5')
 
 prov = {
     'program': 'young',

@@ -70,24 +70,24 @@ def test_user_id():
 @docker_available
 def test_add_remove_user():
     x = Interface(config='.xnat.cfg')
-    x.select.project('nosetests3').remove_user('admin')
-    x.select.project('nosetests3').add_user('admin', 'collaborator')
-    assert 'admin' in x.select.project('nosetests3').collaborators()
-    x.select.project('nosetests3').remove_user('admin')
-    assert 'admin' not in x.select.project('nosetests3').collaborators()
-    x.select.project('nosetests3').add_user('admin', 'owner')
+    x.select.project('nosetests5').remove_user('admin')
+    x.select.project('nosetests5').add_user('admin', 'collaborator')
+    assert 'admin' in x.select.project('nosetests5').collaborators()
+    x.select.project('nosetests5').remove_user('admin')
+    assert 'admin' not in x.select.project('nosetests5').collaborators()
+    x.select.project('nosetests5').add_user('admin', 'owner')
 
 
 @docker_available
 def test_project_accessibility():
     x = Interface(config='.xnat.cfg')
-    print(x.select.project('nosetests3').accessibility())
-    assert x.select.project('nosetests3').accessibility() in \
+    print(x.select.project('nosetests5').accessibility())
+    assert x.select.project('nosetests5').accessibility() in \
            [b'public', b'protected', b'private']
-    x.select.project('nosetests3').set_accessibility('private')
-    assert x.select.project('nosetests3').accessibility() == b'private'
-    x.select.project('nosetests3').set_accessibility('protected')
-    assert x.select.project('nosetests3').accessibility() == b'protected'
+    x.select.project('nosetests5').set_accessibility('private')
+    assert x.select.project('nosetests5').accessibility() == b'private'
+    x.select.project('nosetests5').set_accessibility('protected')
+    assert x.select.project('nosetests5').accessibility() == b'protected'
 
 
 @docker_available
@@ -106,25 +106,25 @@ def test_create_xml():
 
 def test_project_users():
     x = Interface(config=fp)
-    assert isinstance(x.select.project('nosetests3').users(), list)
+    assert isinstance(x.select.project('nosetests5').users(), list)
 
 
 def test_project_owners():
     x = Interface(config=fp)
-    assert isinstance(x.select.project('nosetests3').owners(), list)
+    assert isinstance(x.select.project('nosetests5').owners(), list)
 
 
 def test_project_members():
     x = Interface(config=fp)
-    assert isinstance(x.select.project('nosetests3').members(), list)
+    assert isinstance(x.select.project('nosetests5').members(), list)
 
 
 def test_project_collaborators():
     x = Interface(config=fp)
-    assert isinstance(x.select.project('nosetests3').collaborators(),
+    assert isinstance(x.select.project('nosetests5').collaborators(),
                       list)
 
 
 def test_project_user_role():
     x = Interface(config=fp)
-    assert x.select.project('nosetests3').user_role('nosetests') == 'owner'
+    assert x.select.project('nosetests5').user_role('nosetests') == 'owner'

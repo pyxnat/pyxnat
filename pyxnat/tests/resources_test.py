@@ -6,6 +6,7 @@ import os
 from pyxnat import Interface
 from . import skip_if_no_network
 from nose import SkipTest
+import time
 from pyxnat.core import interfaces
 
 _modulepath = op.dirname(op.abspath(__file__))
@@ -29,7 +30,8 @@ _id_set2 = {
     'cid': uuid1().hex,
     'rid': uuid1().hex,
     }
-subj_1 = central.select.project('nosetests3').subject(_id_set1['sid'])
+
+subj_1 = central.select.project('nosetests5').subject(_id_set1['sid'])
 expe_1 = subj_1.experiment(_id_set1['eid'])
 asse_1 = expe_1.assessor(_id_set1['aid'])
 scan_1 = expe_1.scan(_id_set1['cid'])
@@ -78,14 +80,12 @@ def test_05_reconstruction_create():
 
 @skip_if_no_network
 def test_06_multi_create():
-    asse_2 = central.select('/projects/nosetests3/subjects/%(sid)s'
+    asse_2 = central.select('/projects/nosetests5/subjects/%(sid)s'
                             '/experiments/%(eid)s'
-                            '/assessors/%(aid)s' % _id_set2
-                            )
+                            '/assessors/%(aid)s' % _id_set2)
 
-    expe_2 = central.select('/projects/nosetests3/subjects/%(sid)s'
-                            '/experiments/%(eid)s' % _id_set2
-                            )
+    expe_2 = central.select('/projects/nosetests5/subjects/%(sid)s'
+                            '/experiments/%(eid)s' % _id_set2)
 
     assert not asse_2.exists()
     asse_2.create(experiments='xnat:petSessionData',
@@ -95,7 +95,7 @@ def test_06_multi_create():
     assert asse_2.datatype() == 'xnat:petAssessorData'
     assert expe_2.datatype() == 'xnat:petSessionData'
 
-    scan_2 = central.select('/projects/nosetests3/subjects/%(sid)s'
+    scan_2 = central.select('/projects/nosetests5/subjects/%(sid)s'
                             '/experiments/%(eid)s/scans/%(cid)s' % _id_set2
                             ).create()
 
@@ -242,10 +242,10 @@ def test_12_file_last_modified():
 def test_13_last_modified():
     sid = subj_1.id()
 
-    t1 = central.select('/project/nosetests3').last_modified()[sid]
+    t1 = central.select('/project/nosetests5').last_modified()[sid]
     subj_1.attrs.set('age', '26')
     assert subj_1.attrs.get('age') == '26'
-    t2 = central.select('/project/nosetests3').last_modified()[sid]
+    t2 = central.select('/project/nosetests5').last_modified()[sid]
 
     assert t1 != t2
 
@@ -272,12 +272,12 @@ def test_15_getitem_slice():
 
 
 def test_subject1_parent():
-    project = central.select.project('nosetests3')
+    project = central.select.project('nosetests5')
     assert subj_1.parent()._uri == project._uri
 
 
 def test_project_parent():
-    project = central.select.project('nosetests3')
+    project = central.select.project('nosetests5')
     assert not project.parent()
 
 
@@ -290,7 +290,7 @@ def test_16_subject1_delete():
 
 @skip_if_no_network
 def test_17_subject2_delete():
-    subj_2 = central.select('/projects/nosetests3/subjects/%(sid)s' % _id_set2)
+    subj_2 = central.select('/projects/nosetests5/subjects/%(sid)s' % _id_set2)
     assert subj_2.exists()
     subj_2.delete()
     assert not subj_2.exists()
@@ -298,7 +298,7 @@ def test_17_subject2_delete():
 
 @skip_if_no_network
 def test_18_project_configuration():
-    project = central.select('/project/nosetests3')
+    project = central.select('/project/nosetests5')
     version = central.version()
     from pyxnat.core.errors import DatabaseError
 
@@ -365,13 +365,13 @@ def test_20_get_zip():
 
 @skip_if_no_network
 def test_21_project_aliases():
-    project = central.select('/project/nosetests3')
-    assert project.aliases() == ['nosetests32']
+    project = central.select('/project/nosetests5')
+    assert project.aliases() == ['nosetests52']
 
 
 @skip_if_no_network
 def test_22_project():
-    project = central.select.project('nosetests3')
+    project = central.select.project('nosetests5')
     project.datatype()
     project.experiments()
     project.experiment('nose')

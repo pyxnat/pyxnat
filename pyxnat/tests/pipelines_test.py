@@ -8,5 +8,5 @@ central = Interface(config=fp)
 
 def test_pipelines_get():
     from pyxnat.core import pipelines
-    p = pipelines.Pipelines('nosetests3', central)
+    p = pipelines.Pipelines('nosetests5', central)
     print(p.get())
