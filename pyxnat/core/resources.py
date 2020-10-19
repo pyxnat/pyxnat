@@ -1046,14 +1046,15 @@ class Project(EObject):
 
     def __repr__(self):
         interface = self._intf
-        project_id = uri_last(self._uri)
 
         # Check if project exists
 
         if self.exists():
+            project_id = self.id()
+
             # Fetch data project
             if hasattr(interface, '_projectData'):
-                data = interface._projectData
+                data = interface._projectData 
             else:
                 data = interface.select('xnat:projectData').all().data
                 interface._projectData = data
@@ -1463,11 +1464,11 @@ class Subject(EObject):
 
     def __repr__(self):
         interface = self._intf
-        subject_id = uri_last(self._uri)
 
         # Check if subject exists
 
         if self.exists():
+            subject_id = self.id()
 
             # Fetch data subject
             if hasattr(interface, '_subjectData'):
@@ -1589,10 +1590,11 @@ class Experiment(EObject):
 
     def __repr__(self):
         intf = self._intf
-        eid = uri_last(self._uri)
 
         # Check if subject exists
         if self.exists():
+            eid = self.id()
+
 
             # Fetch data experiment
             if hasattr(intf, '_experimentData'):
@@ -1786,11 +1788,10 @@ class Scan(EObject):
 
     def __repr__(self):
         interface = self._intf
-        scan_id = uri_last(self._uri)
 
         # Check if subject exists
-
         if self.exists():
+            scan_id = self.id()
 
             # Fetch data scan
             attrs = ['type', 'frames', 'quality']
@@ -1834,11 +1835,11 @@ class Scan(EObject):
 class Resource(EObject):
 
     def __repr__(self):
-        resource_id = uri_last(self._uri)
 
         # Check if resource exists
 
         if self.exists():
+            resource_id = self.id()
 
             # Fetch data files
             files_count = len(self.files().fetchall())
