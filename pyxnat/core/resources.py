@@ -1568,6 +1568,28 @@ class Subject(EObject):
 @add_metaclass(ElementType)
 class Experiment(EObject):
 
+    def __init__(self, cbase, interface):
+        items = cbase.split('/')
+        e = []
+        if 'subjects' not in items \
+                and 'projects' in items and 'experiments' in items:
+            ID = uri_last(cbase)
+            e = interface.array.experiments(experiment_id=ID,
+                                            columns=['subject_id']).data
+
+        if len(e) == 1:
+            subject_id = e[0]['subject_ID']
+            project_id = e[0]['project']
+
+            cbase = '%s/projects/%s/subjects/%s/experiments/%s'
+            cbase = cbase % (interface._get_entry_point(),
+                             project_id,
+                             subject_id,
+                             ID)
+            return super(Experiment, self).__init__(cbase, interface)
+
+        return super(Experiment, self).__init__(cbase, interface)
+
     def __repr__(self):
         intf = self._intf
         eid = uri_last(self._uri)
