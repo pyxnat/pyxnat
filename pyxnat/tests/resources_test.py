@@ -375,3 +375,10 @@ def test_22_project():
     project.datatype()
     project.experiments()
     project.experiment('nose')
+
+
+@skip_if_no_network
+def test_22_project_description():
+    project = central.select.project('nosetests5')
+    desc = project.description()
+    assert(desc == 'nosetests')
