@@ -1608,7 +1608,8 @@ class Experiment(EObject):
 
             project_id = data['project']
             subject_id = data['subject_id']
-            subject_label = data['subject_label']
+            e = intf.array.experiments(experiment_id=eid, columns=['subject_label']).data[0]
+            subject_label = e['subject_label']
             insert_date = data['insert_date']
             n_res = len(list(self.resources()))
 
