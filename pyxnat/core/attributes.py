@@ -58,10 +58,7 @@ class EAttrs(object):
         return self._datatype
 
     def _get_id(self):
-        if self._id is None:
-            self._id = self._eobj.id()
-
-        return self._id
+        return self._eobj.id()
 
     def set(self, path, value, **kwargs):
         """ Set an attribute.
