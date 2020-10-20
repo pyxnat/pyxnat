@@ -191,18 +191,15 @@ class EObject(object):
                     setattr(self, f.__name__, types.MethodType(f, self))
 
     def __getstate__(self):
-        return {
-            'uri': self._uri,
-            'interface': self._intf
-            }
+        return {'uri': self._uri,
+                'interface': self._intf}
 
     def __setstate__(self, dict):
         self.__init__(dict['uri'], dict['interface'])
 
     def __repr__(self):
         return '<%s Object> %s' % (self.__class__.__name__,
-                                   unquote(uri_last(self._uri))
-                                   )
+                                   unquote(uri_last(self._uri)))
 
     def _getcell(self, col):
         """ Gets a single property of the element resource.
@@ -219,8 +216,7 @@ class EObject(object):
 
         columns = set([col for col in cols
                        if col not in schema.json[self._urt]
-                       or col != 'URI'] + schema.json[self._urt]
-                      )
+                       or col != 'URI'] + schema.json[self._urt])
         get_id = p_uri + '?format=json&columns=%s' % ','.join(columns)
 
         for pattern in self._intf._struct.keys():
@@ -236,10 +232,8 @@ class EObject(object):
                 '&'.join('%s=%s' % (item[0], item[1])
                          if isinstance(item[1], string_types)
                          else '%s=%s' % (item[0],
-                                         ','.join([val for val in item[1]])
-                                         )
-                         for item in filters.items()
-                         )
+                                         ','.join([val for val in item[1]]))
+                         for item in filters.items())
 
         for res in self._intf._get_json(get_id):
             if self._urn in [res.get(id_head), res.get(lbl_head)]:
@@ -2125,8 +2119,7 @@ class File(EObject):
 
     def __repr__(self):
         return '<%s Object> %s' % (self.__class__.__name__,
-                                   self._urn
-                                   )
+                                   self._urn)
 
     def attributes(self):
         """ Files attributes include:
@@ -2400,10 +2393,8 @@ class Experiments(CObject):
 
     def sharing(self, projects=[]):
         return Experiments([eobj for eobj in self
-                            if set(projects).issubset(eobj.shares().get())
-                            ],
-                           self._intf
-                           )
+                            if set(projects).issubset(eobj.shares().get())],
+                           self._intf)
 
     def share(self, project):
         for eobj in self:
