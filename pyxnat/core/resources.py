@@ -1051,18 +1051,13 @@ class Project(EObject):
         interface = self._intf
 
         # Check if project exists
-
         if self.exists():
             project_id = self.id()
 
-            # Fetch data project
-            if hasattr(interface, '_projectData'):
-                data = interface._projectData 
-            else:
-                data = interface.select('xnat:projectData').all().data
-                interface._projectData = data
-
+            data = interface.select('xnat:projectData').all().data
             data = [e for e in data if e['id'] == project_id][0]
+
+            # Collecting projects details
             name = data['name']
 
             # Fetch data subjects
@@ -1469,35 +1464,27 @@ class Subject(EObject):
         interface = self._intf
 
         # Check if subject exists
-
         if self.exists():
             subject_id = self.id()
+            columns = ['xnat:subjectData/PROJECT',
+                       'xnat:subjectData/SUBJECT_ID',
+                       'xnat:subjectData/INSERT_DATE',
+                       'xnat:subjectData/INSERT_USER',
+                       'xnat:subjectData/GENDER_TEXT',
+                       'xnat:subjectData/HANDEDNESS_TEXT',
+                       'xnat:subjectData/SES',
+                       'xnat:subjectData/ADD_IDS',
+                       'xnat:subjectData/RACE',
+                       'xnat:subjectData/ETHNICITY',
+                       'xnat:subjectData/SUBJECT_LABEL']
 
-            # Fetch data subject
-            if hasattr(interface, '_subjectData'):
-                data = interface._subjectData
-            else:
-                columns = ['xnat:subjectData/PROJECT',
-                           'xnat:subjectData/SUBJECT_ID',
-                           'xnat:subjectData/INSERT_DATE',
-                           'xnat:subjectData/INSERT_USER',
-                           'xnat:subjectData/GENDER_TEXT',
-                           'xnat:subjectData/HANDEDNESS_TEXT',
-                           'xnat:subjectData/SES',
-                           'xnat:subjectData/ADD_IDS',
-                           'xnat:subjectData/RACE',
-                           'xnat:subjectData/ETHNICITY',
-                           'xnat:subjectData/SUBJECT_LABEL']
-
-                dt = 'xnat:subjectData'
-                data = interface.select(dt, columns=columns).all().data
-                interface._subjectData = data
-
-            # Creating the project url
-            url = interface._server + self._uri + '?format=html'
-
-            # Collecting data
+            dt = 'xnat:subjectData'
+            data = interface.select(dt, columns=columns).all().data
+            interface._subjectData = data
             data = [e for e in data if e['subject_id'] == subject_id][0]
+
+            # Collecting subject details
+            url = interface._server + self._uri + '?format=html'
 
             project_id = data['project']
             age = self.attrs.get('age')
@@ -1594,23 +1581,19 @@ class Experiment(EObject):
     def __repr__(self):
         intf = self._intf
 
-        # Check if subject exists
+        # Check if experiment exists
         if self.exists():
             eid = self.id()
 
+            e = intf.array.experiments(experiment_id=eid).data[0]
+            filter = [('{}/{}'.format(e['xsiType'], 'ID'), '=', eid)]
+            data = intf.select(e['xsiType']).where(filter).data[0]
 
-            # Fetch data experiment
-            if hasattr(intf, '_experimentData'):
-                data = intf._experimentData
-            else:
-                e = intf.array.experiments(experiment_id=eid).data[0]
-                filter = [('{}/{}'.format(e['xsiType'], 'ID'), '=', eid)]
-                data = intf.select(e['xsiType']).where(filter).data[0]
-                intf._experimentData = data
-
+            # Collecting experiment details
             project_id = data['project']
             subject_id = data['subject_id']
-            e = intf.array.experiments(experiment_id=eid, columns=['subject_label']).data[0]
+            e = intf.array.experiments(experiment_id=eid,
+                                       columns=['subject_label']).data[0]
             subject_label = e['subject_label']
             insert_date = data['insert_date']
             n_res = len(list(self.resources()))
@@ -2389,10 +2372,8 @@ class Subjects(CObject):
 
     def sharing(self, projects=[]):
         return Subjects([eobj for eobj in self
-                         if set(projects).issubset(eobj.shares().get())
-                         ],
-                        self._intf
-                        )
+                         if set(projects).issubset(eobj.shares().get())],
+                        self._intf)
 
     def share(self, project):
         for eobj in self:
