@@ -136,3 +136,17 @@ def test_info_resource():
     expected_output = '<Resource Object> obscure_algorithm_output '\
         '`obscure_algorithm_output` (66 files)'
     assert list(sorted(str(resource_1))) == list(sorted(expected_output))
+
+
+@skip_if_no_network
+def test_create_delete_create():
+    p = central.select.project('nosetests5')
+    from uuid import uuid1
+    sid = uuid1().hex
+    s = p.subject(sid)
+    s.create()
+    assert(s.exists())
+    s.delete()
+    s.create()
+    s.delete()
+    assert(not s.exists())
