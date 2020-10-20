@@ -1824,20 +1824,29 @@ class Resource(EObject):
 
     def __repr__(self):
 
-        # Check if resource exists
+        def sizeof_fmt(num, suffix='B'):
+            for unit in ['', 'K', 'M', 'G', 'T', 'P', 'E', 'Z']:
+                if abs(num) < 1024.0:
+                    return "%3.2f %s%s" % (num, unit, suffix)
+                num /= 1024.0
+            return "%.2f %s%s" % (num, 'Y', suffix)
 
+        # Check if resource exists
         if self.exists():
             resource_id = self.id()
-
-            # Fetch data files
-            files_count = len(self.files().fetchall())
+            base_url = uri_parent(self._uri)
+            resources = self._intf._get_json(base_url)
+            res_info = [r for r in resources
+                        if r['xnat_abstractresource_id'] == resource_id][0]
+            fs = sizeof_fmt(float(res_info['file_size']))
 
             # Creating the output string to be returned
-            output = '<{cl} Object> {id} `{label}` ({fc} files)'
+            output = '<{cl} Object> {id} `{label}` ({fc} files {fs})'
             output = output.format(label=self.label(),
                                    cl=self.__class__.__name__,
                                    id=resource_id,
-                                   fc=files_count)
+                                   fc=res_info['file_count'],
+                                   fs=fs)
             return output
         else:
             return '<%s Object> %s' % (self.__class__.__name__,
