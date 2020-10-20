@@ -125,17 +125,16 @@ class EAttrs(object):
             A string containing the value.
         """
         query_str = '?columns=ID,%s' % path
-
         get_uri = uri_parent(self._eobj._uri) + query_str
-        jdata = JsonTable(self._intf._get_json(get_uri)
-                          ).where(ID=self._get_id())
+
+        jdata = JsonTable(self._intf._get_json(get_uri))
+        jdata = jdata.where(ID=self._get_id())
 
         # unfortunately the return headers do not always have the
         # expected name
 
         header = difflib.get_close_matches(path.split('/')[-1],
-                                           jdata.headers()
-                                           )
+                                           jdata.headers())
 
         if header == []:
             header = difflib.get_close_matches(path, jdata.headers())[0]
