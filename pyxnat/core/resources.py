@@ -1448,7 +1448,7 @@ class Project(EObject):
         return [item['alias'] for item in data
                 if item['alias'] and item['ID'] == self._urn]
 
-    def desc(self):
+    def description(self):
         """Returns the description for this project.
 
         Returns
