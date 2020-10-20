@@ -85,7 +85,7 @@ def test_experiment_not_exists():
 @skip_if_no_network
 def test_info_experiment():
     assert isinstance(exp_1, object)
-    expected_output = '<Experiment Object> CENTRAL_E04850 (subject: '\
+    expected_output = '<Experiment Object> CENTRAL_E04850 `001_obscured` (subject: '\
         'CENTRAL_S01791 `001`) (project: surfmask_smpl) 4 scans 1 resource '\
         '(created on 2012-04-10 17:27:25.0) https://central.xnat.org/'\
         'data/projects/surfmask_smpl/subjects/CENTRAL_S01791/experiments/'\

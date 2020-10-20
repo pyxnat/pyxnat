@@ -1588,6 +1588,7 @@ class Experiment(EObject):
 
             # Collecting experiment details
             project_id = data['project']
+            label = self.label()
             subject_id = data['subject_id']
             e = intf.array.experiments(experiment_id=eid,
                                        columns=['subject_label']).data[0]
@@ -1602,7 +1603,7 @@ class Experiment(EObject):
             url = intf._server + self._uri + '?format=html'
 
             # Creating the output string to be returned
-            output = '<{cl} Object> {id} (subject: {subject_id} '\
+            output = '<{cl} Object> {id} `{label}` (subject: {subject_id} '\
                      '`{subject_label}`) (project: {project}) {n_scans} '\
                      'scan{final_s1} {n_res} resource{final_s2} (created on '\
                      '{insert_date}) {url}'
@@ -1610,6 +1611,7 @@ class Experiment(EObject):
             fs = {True: 's', False: ''}
             output = output.format(cl=self.__class__.__name__,
                                    id=eid,
+                                   label=label,
                                    subject_id=subject_id,
                                    subject_label=subject_label,
                                    project=project_id,
