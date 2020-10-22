@@ -8,9 +8,9 @@ fp = op.join(op.dirname(op.abspath(__file__)), 'central.cfg')
 print(fp)
 central = Interface(config=fp)
 
-proj_1 = central.select.project('surfmask_smpl')
-subj_1 = proj_1.subject('CENTRAL_S01791')
-exp_1 = subj_1.experiment('CENTRAL_E04850')
+proj_1 = central.select.project('surfmask_smpl2')
+subj_1 = proj_1.subject('CENTRAL05_S01120')
+exp_1 = subj_1.experiment('CENTRAL05_E02681')
 scan_1 = exp_1.scan('11')
 resource_1 = exp_1.resource('obscure_algorithm_output')
 
@@ -38,10 +38,10 @@ def test_project_not_exists():
 @skip_if_no_network
 def test_info_project():
     assert isinstance(proj_1, object)
-    expected_output = '<Project Object> surfmask_smpl `Surface masking '\
-        'samples` (public) 43 subjects 43 MR experiments (owner: mmilch) '\
-        '(created on 2012-04-05 15:45:30.0) https://central.xnat.org/data/'\
-        'projects/surfmask_smpl?format=html'
+    expected_output = '<Project Object> surfmask_smpl2 `Surface masking '\
+        'samples 2` (private) 1 subject 1 MR experiment (owner: nosetests) '\
+        '(created on 2020-10-22 15:23:39.458) https://central.xnat.org/data/'\
+        'projects/surfmask_smpl2?format=html'
     assert list(sorted(str(proj_1))) == list(sorted(expected_output))
 
 
@@ -62,9 +62,9 @@ def test_subject_not_exists():
 @skip_if_no_network
 def test_info_subject():
     assert isinstance(subj_1, object)
-    expected_output = '<Subject Object> CENTRAL_S01791 `001` (project: '\
-        'surfmask_smpl) (Gender: U) 1 experiment https://central.xnat.org/'\
-        'data/projects/surfmask_smpl/subjects/CENTRAL_S01791?format=html'
+    expected_output = '<Subject Object> CENTRAL05_S01120 `001` (project: '\
+        'surfmask_smpl2) (Gender: U) 1 experiment https://central.xnat.org/'\
+        'data/projects/surfmask_smpl2/subjects/CENTRAL05_S01120?format=html'
     assert list(sorted(str(subj_1))) == list(sorted(expected_output))
 
 
@@ -85,11 +85,11 @@ def test_experiment_not_exists():
 @skip_if_no_network
 def test_info_experiment():
     assert isinstance(exp_1, object)
-    expected_output = '<Experiment Object> CENTRAL_E04850 `001_obscured` (subject: '\
-        'CENTRAL_S01791 `001`) (project: surfmask_smpl) 4 scans 1 resource '\
-        '(created on 2012-04-10 17:27:25.0) https://central.xnat.org/'\
-        'data/projects/surfmask_smpl/subjects/CENTRAL_S01791/experiments/'\
-        'CENTRAL_E04850?format=html'
+    expected_output = '<Experiment Object> CENTRAL05_E02681 `001_obscured` (subject: '\
+        'CENTRAL05_S01120 `001`) (project: surfmask_smpl2) 4 scans 1 resource '\
+        '(created on 2020-10-22 15:24:30.139) https://central.xnat.org/'\
+        'data/projects/surfmask_smpl2/subjects/CENTRAL05_S01120/experiments/'\
+        'CENTRAL05_E02681?format=html'
     assert list(sorted(str(exp_1))) == list(sorted(expected_output))
 
 
@@ -111,8 +111,8 @@ def test_scan_not_exists():
 def test_info_scan():
     assert isinstance(scan_1, object)
     expected_output = '<Scan Object> 11 (`SPGR` 175 frames)  '\
-        'https://central.xnat.org/data/projects/surfmask_smpl/subjects/'\
-        'CENTRAL_S01791/experiments/CENTRAL_E04850/scans/11?format=html'
+        'https://central.xnat.org/data/projects/surfmask_smpl2/subjects/'\
+        'CENTRAL05_S01120/experiments/CENTRAL05_E02681/scans/11?format=html'
     assert list(sorted(str(scan_1))) == list(sorted(expected_output))
 
 
@@ -133,7 +133,7 @@ def test_resource_not_exists():
 @skip_if_no_network
 def test_info_resource():
     assert isinstance(resource_1, object)
-    expected_output = '<Resource Object> 123221564 '\
+    expected_output = '<Resource Object> 123361501 '\
         '`obscure_algorithm_output` (66 files 2.06 GB)'
     assert list(sorted(str(resource_1))) == list(sorted(expected_output))
 
