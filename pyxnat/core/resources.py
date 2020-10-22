@@ -1045,10 +1045,9 @@ class Project(EObject):
             data = interface.select('xnat:projectData').all().data
             data = [e for e in data if e['id'] == project_id][0]
 
-            # Collecting projects details
+            # Collecting project details
             name = data['name']
 
-            # Fetch data subjects
             n_subjects = len(list(self.subjects()))
 
             # Creating the project url
@@ -1587,13 +1586,11 @@ class Experiment(EObject):
             insert_date = data['insert_date']
             n_res = len(list(self.resources()))
 
-            # Fetch data scans
             n_scans = len(list(self.scans()))
 
-            # Creating the project url
             url = intf._server + self._uri + '?format=html'
 
-            # Creating the output string to be returned
+            # Creating the output string
             output = '<{cl} Object> {id} `{label}` (subject: {subject_id} '\
                      '`{subject_label}`) (project: {project}) {n_scans} '\
                      'scan{final_s1} {n_res} resource{final_s2} (created on '\
@@ -1765,18 +1762,17 @@ class Scan(EObject):
     def __repr__(self):
         interface = self._intf
 
-        # Check if subject exists
+        # Check if scan exists
         if self.exists():
             scan_id = self.id()
 
-            # Fetch data scan
+            # Collect scan details
             attrs = ['type', 'frames', 'quality']
             sc_type, n_frames, quality = self.attrs.mget(attrs)
 
-            # Creating the project url
             url = interface._server + self._uri + '?format=html'
 
-            # Creating the output string to be returned
+            # Creating the output string
             output = '<{cl} Object> {id} (`{type}` {n_frames} frames) {quality} {url}'
             output = output.format(cl=self.__class__.__name__,
                                    id=scan_id,
@@ -1828,7 +1824,7 @@ class Resource(EObject):
                         if r['xnat_abstractresource_id'] == resource_id][0]
             fs = sizeof_fmt(float(res_info['file_size']))
 
-            # Creating the output string to be returned
+            # Creating the output string
             output = '<{cl} Object> {id} `{label}` ({fc} files {fs})'
             output = output.format(label=self.label(),
                                    cl=self.__class__.__name__,
