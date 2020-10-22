@@ -66,12 +66,9 @@ def get_element_from_collection(rsc_name):
         Collection = globals()[rsc_name.title() + 's']
 
         return Collection([Element(join_uri(eobj._uri, rsc_name + 's', ID),
-                                   self._intf
-                                   )
-                           for eobj in self
-                           ],
-                          self._intf
-                          )
+                                   self._intf)
+                           for eobj in self],
+                          self._intf)
     return getter
 
 
