@@ -1552,8 +1552,7 @@ class Experiment(EObject):
         if 'subjects' not in items \
                 and 'projects' in items and 'experiments' in items:
             ID = uri_last(cbase)
-            e = interface.array.experiments(experiment_id=ID,
-                                            columns=['subject_id']).data
+            e = interface.array.experiments(experiment_id=ID).data
 
         if len(e) == 1:
             subject_id = e[0]['subject_ID']
@@ -1770,8 +1769,11 @@ class Scan(EObject):
             scan_id = self.id()
 
             # Collect scan details
-            attrs = ['type', 'frames', 'quality']
-            sc_type, n_frames, quality = self.attrs.mget(attrs)
+            attrs = ['ID', 'type', 'frames', 'quality']
+            base_url = uri_parent(self._uri)
+            scans = self._intf._get_json('{}?columns={}'.format(base_url,
+                                                                ','.join(attrs)))
+            scan_info = [r for r in scans if r['ID'] == scan_id][0]
 
             url = interface._server + self._uri + '?format=html'
 
@@ -1779,9 +1781,9 @@ class Scan(EObject):
             output = '<{cl} Object> {id} (`{type}` {n_frames} frames) {quality} {url}'
             output = output.format(cl=self.__class__.__name__,
                                    id=scan_id,
-                                   type=sc_type,
-                                   n_frames=n_frames,
-                                   quality=quality,
+                                   type=scan_info['type'],
+                                   n_frames=scan_info['frames'],
+                                   quality=scan_info['quality'],
                                    url=url)
             return output
         else:
