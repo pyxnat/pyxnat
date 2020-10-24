@@ -44,7 +44,6 @@ def test_users():
 @docker_available
 def test_user_firstname():
     x = Interface(config='.xnat.cfg')
-    print(x._get_json('%s/users' % x._entry))
     assert x.manage.users.firstname('admin') == 'Admin'
 
 
