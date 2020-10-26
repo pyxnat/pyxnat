@@ -1,7 +1,13 @@
+lxml>=4.3.2
+requests>=2.20
+pathlib>=1.0.1
+six>=1.15
+future>=0.16
+# testing
 nose>=1.2.1
 coverage>=3.6
 coveralls
-lxml>=4.3.2
-requests>=2.20
+# extras
 networkx>=2.2
 matplotlib>=2.2
+pandas>=0.24

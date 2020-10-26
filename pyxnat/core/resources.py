@@ -1,5 +1,3 @@
-from __future__ import with_statement
-
 import lxml
 import os
 import os.path as op
