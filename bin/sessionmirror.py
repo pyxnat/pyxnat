@@ -279,30 +279,21 @@ def copy_attrs(src_obj, dest_obj, attr_list):
 def copy_attributes(src_obj, dest_obj):
     '''Copy attributes from src to dest'''
     src_type = src_obj.datatype()
+    types = {'xnat:projectData': PROJ_ATTRS,
+             'xnat:subjectData': SUBJ_ATTRS,
+             'xnat:mrSessionData': MR_EXP_ATTRS,
+             'xnat:petSessionData': PET_EXP_ATTRS,
+             'xnat:ctSessionData': CT_EXP_ATTRS,
+             'xnat:mrScanData': MR_SCAN_ATTRS,
+             'xnat:petScanData': PET_SCAN_ATTRS,
+             'xnat:ctScanData': CT_SCAN_ATTRS,
+             'xnat:scScanData': SC_SCAN_ATTRS,
+             'proc:genProcData': PROC_ATTRS,
+             'xnat:otherDicomScanData': OTHER_DICOM_SCAN_ATTRS}
 
-    if src_type == 'xnat:projectData':
-        copy_attrs(src_obj, dest_obj, PROJ_ATTRS)
-    elif src_type == 'xnat:subjectData':
-        copy_attrs(src_obj, dest_obj, SUBJ_ATTRS)
-    elif src_type == 'xnat:mrSessionData':
-        copy_attrs(src_obj, dest_obj, MR_EXP_ATTRS)
-    elif src_type == 'xnat:petSessionData':
-        copy_attrs(src_obj, dest_obj, PET_EXP_ATTRS)
-    elif src_type == 'xnat:ctSessionData':
-        copy_attrs(src_obj, dest_obj, CT_EXP_ATTRS)
-    elif src_type == 'xnat:mrScanData':
-        copy_attrs(src_obj, dest_obj, MR_SCAN_ATTRS)
-    elif src_type == 'xnat:petScanData':
-        copy_attrs(src_obj, dest_obj, PET_SCAN_ATTRS)
-    elif src_type == 'xnat:ctScanData':
-        copy_attrs(src_obj, dest_obj, CT_SCAN_ATTRS)
-    elif src_type == 'xnat:scScanData':
-        copy_attrs(src_obj, dest_obj, SC_SCAN_ATTRS)
-    elif src_type == 'proc:genProcData':
-        copy_attrs(src_obj, dest_obj, PROC_ATTRS)
-    elif src_type == 'xnat:otherDicomScanData':
-        copy_attrs(src_obj, dest_obj, OTHER_DICOM_SCAN_ATTRS)
-    else:
+    try:
+        copy_attrs(src_obj, dest_obj, types[src_type])
+    except KeyError:
         print('ERROR:cannot copy attributes, unsupported datatype:' + src_type)
 
 
@@ -491,6 +482,7 @@ def copy_session(src_sess, dst_sess, sess_cache_dir):
 
         copy_res(src_res, dst_res, res_cache_dir, use_zip=True)
 
+
 def copy_scan(src_scan, dst_scan, scan_cache_dir):
     '''Copy scan from source XNAT to destination XNAT'''
 
@@ -561,36 +553,37 @@ def copy_res(src_res, dst_res, res_cache_dir, use_zip=False):
         print('INFO:Finished copying resource, %d files copied' % copy_count)
 
 
-def copy_assr(src_assr, dst_assr, assr_cache_dir):
-    '''Copy assessor from source XNAT to destination XNAT'''
+# def copy_assr(src_assr, dst_assr, assr_cache_dir):
+#     '''Copy assessor from source XNAT to destination XNAT'''
+#
+#     # Check type
+#     assr_type = src_assr.datatype()
+#     if assr_type != 'proc:genProcData' and assr_type != 'fs:fsData':
+#         print('WARN:skipping unsupported assessor type: {}'.format(assr_type))
+#         return
+#
+#     if not dst_assr.exists():
+#         print('INFO:uploading assessor attributes as xml')
+#         # Write xml to file
+#         if not op.exists(assr_cache_dir):
+#             os.makedirs(assr_cache_dir)
+#         assr_xml = src_assr.get()
+#         xml_path = op.join(assr_cache_dir, 'assr.xml')
+#         write_xml(assr_xml, xml_path)
+#         dst_assr.create(xml=xml_path, allowDataDeletion=False)
+#
+#     # Process each resource of assr
+#     for src_res in src_assr.out_resources():
+#         res_label = src_res.label()
+#         print('INFO:Processing resource:%s...' % res_label)
+#         dst_res = dst_assr.out_resource(res_label)
+#         res_cache_dir = op.join(assr_cache_dir, res_label)
+#
+#         if res_label == 'SNAPSHOTS':
+#             copy_res(src_res, dst_res, res_cache_dir)
+#         else:
+#             copy_res(src_res, dst_res, res_cache_dir, use_zip=True)
 
-    # Check type
-    assr_type = src_assr.datatype()
-    if assr_type != 'proc:genProcData' and assr_type != 'fs:fsData':
-        print('WARN:skipping unsupported assessor type: {}'.format(assr_type))
-        return
-
-    if not dst_assr.exists():
-        print('INFO:uploading assessor attributes as xml')
-        # Write xml to file
-        if not op.exists(assr_cache_dir):
-            os.makedirs(assr_cache_dir)
-        assr_xml = src_assr.get()
-        xml_path = op.join(assr_cache_dir, 'assr.xml')
-        write_xml(assr_xml, xml_path)
-        dst_assr.create(xml=xml_path, allowDataDeletion=False)
-
-    # Process each resource of assr
-    for src_res in src_assr.out_resources():
-        res_label = src_res.label()
-        print('INFO:Processing resource:%s...' % res_label)
-        dst_res = dst_assr.out_resource(res_label)
-        res_cache_dir = op.join(assr_cache_dir, res_label)
-
-        if res_label == 'SNAPSHOTS':
-            copy_res(src_res, dst_res, res_cache_dir)
-        else:
-            copy_res(src_res, dst_res, res_cache_dir, use_zip=True)
 
 def write_xml(xml_str, file_path, clean_tags=True):
     """Writing XML."""
@@ -657,7 +650,6 @@ def write_xml(xml_str, file_path, clean_tags=True):
         print('ERROR:writing xml file: {}: {}'.format(file_path, str(error)))
 
 
-
 def create_parser():
     import argparse
     """Parse commandline arguments."""
@@ -671,12 +663,12 @@ def create_parser():
         help='Source XNAT configuration file', required=True)
     parser.add_argument('--h2', '--dest_config', dest='dest_config',
         help='Destination XNAT configuration file', required=True)
-    parser.add_argument('-e','--experiment_id',
+    parser.add_argument('-e', '--experiment_id',
         help='Which resource to download? (Entity name/identifier)', required=True)
-    parser.add_argument('-p','--project_id', dest='project_id',
+    parser.add_argument('-p', '--project_id', dest='project_id',
         help='Which project to store the resource in', required=True)
 
-    parser.add_argument('-v','--verbose', dest='verbose', action='store_true',
+    parser.add_argument('-v', '--verbose', dest='verbose', action='store_true',
         default=False, help='Display verbosal information (optional)',
         required=False)
 
