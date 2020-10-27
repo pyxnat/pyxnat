@@ -30,10 +30,7 @@ from .pipelines import Pipelines
 from . import schema
 from . import httputil
 from . import downloadutils
-from . import derivatives
 import types
-import pkgutil
-import inspect
 import six
 from six import string_types, add_metaclass
 if six.PY2:
@@ -127,29 +124,6 @@ class CollectionType(type):
         super(CollectionType, cls).__init__(name, bases, dct)
 
 
-# generic classes
-def __get_modules__(m):
-    modules = []
-    prefix = m.__name__ + '.'
-    for importer, modname, ispkg in pkgutil.iter_modules(m.__path__, prefix):
-        module = __import__(modname, fromlist='dummy')
-        if not ispkg:
-            modules.append(module)
-        else:
-            modules.extend(__get_modules__(module))
-    return modules
-
-
-def __find_all_functions__(m):
-    functions = {}
-    modules = __get_modules__(m)
-    for m in modules:
-        for name, obj in inspect.getmembers(m):
-            if inspect.isfunction(obj):
-                functions.setdefault(m, []).append(obj)
-    return functions
-
-
 class EObject(object):
     """ Generic Object for an element URI.
     """
@@ -170,20 +144,6 @@ class EObject(object):
         self._urt = uri_nextlast(self._uri)
         self._intf = interface
         self.attrs = EAttrs(self)
-
-        functions = __find_all_functions__(derivatives)
-
-        for m, mod_functions in functions.items():
-            is_resource = False
-            if (hasattr(m, 'XNAT_RESOURCE_NAME') and
-                    self._urn == m.XNAT_RESOURCE_NAME) or \
-                    (hasattr(m, 'XNAT_RESOURCE_NAMES') and
-                        self._urn in m.XNAT_RESOURCE_NAMES):
-                is_resource = True
-
-            if is_resource:
-                for f in mod_functions:
-                    setattr(self, f.__name__, types.MethodType(f, self))
 
     def __getstate__(self):
         return {'uri': self._uri,
@@ -1803,6 +1763,28 @@ class Scan(EObject):
 
 @add_metaclass(ElementType)
 class Resource(EObject):
+
+    def __init__(self, cbase, interface):
+        from pyxnat.core.errors import DatabaseError
+        super(Resource, self).__init__(cbase, interface)
+
+        mf = interface._mod_functions.get(self._urn, [])
+        if len(mf) == 0:
+            uri = uri_parent(self._uri)
+            try:
+                d = self._intf._get_json(uri)
+                r = [e for e in d if e['xnat_abstractresource_id'] == self._urn]
+                if len(r) == 1:
+                    label = r[0]['label']
+                    mf = interface._mod_functions.get(label, [])
+            except DatabaseError:
+                print('Warning:', self._uri, 'raising DatabaseError')
+
+        for f in mf:
+            setattr(self, f.__name__, types.MethodType(f, self))
+
+        return None
+
 
     def __repr__(self):
 
