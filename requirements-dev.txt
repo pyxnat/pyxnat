@@ -10,3 +10,4 @@ coveralls
 pandas>=0.24
 networkx>=2.2
 matplotlib>=2.2
+pydicom
