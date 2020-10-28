@@ -955,8 +955,7 @@ class CObject(object):
         else:
             raise ProgrammingError('One in [contraints, template and '
                                    'query] parameters must be correctly '
-                                   'set.'
-                                   )
+                                   'set.')
 
         # _columns = [
         #     'xnat:subjectData/PROJECT',
@@ -1334,8 +1333,7 @@ class Project(EObject):
 
                     group_element = lxml.etree.Element(
                         lxml.etree.QName(tree.nsmap['xnat'], 'definition'),
-                        nsmap=tree.nsmap
-                        )
+                        nsmap=tree.nsmap)
                     group_element.set('ID', group)
                     group_element.set(
                         'data-type', protocol_element.get('data-type'))
@@ -1344,8 +1342,7 @@ class Project(EObject):
                     definitions_element.append(group_element)
                     fields_element = lxml.etree.Element(
                         lxml.etree.QName(tree.nsmap['xnat'], 'fields'),
-                        nsmap=tree.nsmap
-                        )
+                        nsmap=tree.nsmap)
                     group_element.append(fields_element)
 
                 for field, datatype in fields.items():
@@ -1365,8 +1362,7 @@ class Project(EObject):
                             'xmlPath',
                             "xnat:%s/fields/field[name=%s]/field" % (
                                 protocol_element.get(
-                                    'data-type').split(':')[-1], field)
-                            )
+                                    'data-type').split(':')[-1], field))
                         fields_element.append(field_element)
                         update = True
         if update:
@@ -1374,8 +1370,7 @@ class Project(EObject):
                 lxml.etree.tostring(tree).decode('utf-8'),
                 'text/xml',
                 'cust.xml',
-                'cust.xml'
-                )
+                'cust.xml')
 
             uri = self._uri
             if allow_data_deletion:
