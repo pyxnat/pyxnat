@@ -14,7 +14,14 @@ def docker_available(func=None):
     '''
 
     def check_and_raise():
-        x = Interface(config='.xnat.cfg')
+        if 'setup_docker_xnat' in func.__name__:
+            print('Initializing XNAT.')
+            return
+        fp = op.abspath('.xnat.cfg')
+        print(fp, op.isfile(fp))
+
+        x = Interface(config=op.abspath('.xnat.cfg'))
+
         try:
             x.head('')
             list(x.select.projects())
@@ -33,6 +40,57 @@ def docker_available(func=None):
         return newfunc
     else:
         check_and_raise()
+
+@docker_available
+def test_001_setup_docker_xnat():
+    import os
+    import pyxnat
+
+    x = pyxnat.Interface(config='.xnat.cfg')
+
+    try:
+        cmd = 'curl --cookie-jar /tmp/cookie --header "Content-Type: application/x-www-form-urlencoded" '\
+            '--request POST '\
+            '--data "username={user}&password={password}&login=&XNAT_CSRF=" '\
+            'http://localhost/login'.format(user=x._user, password=x._pwd)
+        print(cmd)
+        os.system(cmd)
+
+        cmd = 'curl --cookie /tmp/cookie --header "Content-Type: application/json" '\
+            '--request POST '\
+            '--data \'%s\' '\
+            'http://localhost/xapi/siteConfig'
+
+        cmd2 = cmd % '{"siteId": "XNAT", "siteUrl": "http://localhost", "adminEmail": "fake@fake.fake"}'
+        print(cmd2)
+        os.system(cmd2)
+
+        cmd2 = cmd % '{"archivePath":"/data/xnat/archive","prearchivePath":"/data/xnat/prearchive","cachePath":"/data/xnat/cache","buildPath":"/data/xnat/build","ftpPath":"/data/xnat/ftp","pipelinePath":"/data/xnat/pipeline","inboxPath":"/data/xnat/inbox"}'
+        print(cmd2)
+        os.system(cmd2)
+
+        cmd2 = cmd % '{"requireLogin":true,"userRegistration":false,"enableCsrfToken":true}'
+        print(cmd2)
+        os.system(cmd2)
+
+        cmd2 = cmd % '{"initialized":true}'
+        print(cmd2)
+        os.system(cmd2)
+
+
+        p = x.select.project('nosetests')
+        p.create()
+        for i in range(3, 10):
+            p = x.select.project('nosetests%s' % i)
+            p.create()
+
+        uri = '/data/projects/nosetests'
+        options = {'alias': 'nosetests2'}
+        data = x.put(uri, params=options).text
+
+    except Exception:
+        print('Skipping initialization.')
+        raise SkipTest('Docker-based XNAT initialization failed.')
 
 
 @docker_available
