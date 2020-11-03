@@ -40,7 +40,7 @@ elif six.PY3:
     unicode = str
 
 DEBUG = False
-
+SHOW_URL = True
 # metaclasses
 
 
@@ -1010,9 +1010,6 @@ class Project(EObject):
 
             n_subjects = len(list(self.subjects()))
 
-            # Creating the project url
-            url = interface._server + self._uri + '?format=html'
-
             # Listing experiments
             exp = []
             for e in ['mr', 'ct', 'pet', 'ut']:
@@ -1030,7 +1027,7 @@ class Project(EObject):
             # Creating the output string to be returned
             output = '<{cl} Object> {id} `{label}` ({access}) {n_subjects}'\
                 ' subject{s} {exp} (owner: {owner}) (created on {insert_date}'\
-                ') {url}'
+                ')'
             output = output.format(cl=self.__class__.__name__,
                                    id=project_id,
                                    label=name,
@@ -1039,8 +1036,11 @@ class Project(EObject):
                                    owner='/'.join(owners),
                                    insert_date=data['insert_date'],
                                    access=data['project_access'],
-                                   url=url,
                                    exp=' '.join(exp))
+
+            if SHOW_URL:
+                url = interface._server + self._uri + '?format=html'
+                output += ' ' + url
 
             return output
         else:
@@ -1427,8 +1427,6 @@ class Subject(EObject):
             data = [e for e in data if e['subject_id'] == subject_id][0]
 
             # Collecting subject details
-            url = interface._server + self._uri + '?format=html'
-
             project_id = data['project']
             age = self.attrs.get('age')
             gender = data['gender_text']
@@ -1449,15 +1447,18 @@ class Subject(EObject):
 
             # Creating the output string to be returned
             output = '<{cl} Object> {id} `{label}` (project: {project}) {ag}'\
-                ' {n_expes} experiment{final_s} {url}'
+                ' {n_expes} experiment{final_s}'
             output = output.format(cl=self.__class__.__name__,
                                    label=label,
                                    id=subject_id,
                                    project=project_id,
-                                   url=url,
                                    ag=ag,
                                    n_expes=n_expes,
                                    final_s={True: 's', False: ''}[n_expes > 1])
+
+            if SHOW_URL:
+                url = interface._server + self._uri + '?format=html'
+                output += ' ' + url
 
             return output
         else:
@@ -1571,13 +1572,11 @@ class Experiment(EObject):
 
             n_scans = len(list(self.scans()))
 
-            url = intf._server + self._uri + '?format=html'
-
             # Creating the output string
             output = '<{cl} Object> {id} `{label}` (subject: {subject_id} '\
                      '`{subject_label}`) (project: {project}) {n_scans} '\
                      'scan{final_s1} {n_res} resource{final_s2} (created on '\
-                     '{insert_date}) {url}'
+                     '{insert_date})'
 
             fs = {True: 's', False: ''}
             output = output.format(cl=self.__class__.__name__,
@@ -1586,13 +1585,14 @@ class Experiment(EObject):
                                    subject_id=subject_id,
                                    subject_label=subject_label,
                                    project=project_id,
-                                   url=url,
                                    n_res=n_res,
                                    insert_date=insert_date,
                                    n_scans=n_scans,
                                    final_s1=fs[n_scans > 1],
                                    final_s2=fs[n_res > 1])
-
+            if SHOW_URL:
+                url = intf._server + self._uri + '?format=html'
+                output += ' ' + url
             return output
         else:
             return '<%s Object> %s' % (self.__class__.__name__,
@@ -1754,27 +1754,25 @@ class Scan(EObject):
                                                                 ','.join(attrs)))
             scan_info = [r for r in scans if r['ID'] == scan_id][0]
 
-            url = interface._server + self._uri + '?format=html'
-
             # Creating the output string
-            output = '<{cl} Object> {id} (`{type}` {n_frames} frames) {quality} {url}'
+            output = '<{cl} Object> {id} (`{type}` {n_frames} frames) {quality}'
             output = output.format(cl=self.__class__.__name__,
                                    id=scan_id,
                                    type=scan_info['type'],
                                    n_frames=scan_info['frames'],
-                                   quality=scan_info['quality'],
-                                   url=url)
+                                   quality=scan_info['quality'])
+            if SHOW_URL:
+                url = interface._server + self._uri + '?format=html'
+                output += ' ' + url
             return output
         else:
             return '<%s Object> %s' % (self.__class__.__name__,
-                                       unquote(uri_last(self._uri))
-                                       )
+                                       unquote(uri_last(self._uri)))
 
     def set_param(self, key, value):
         self.attrs.set('%s/parameters/addParam[name=%s]/addField'
                        % (self.datatype(), key),
-                       value
-                       )
+                       value)
 
     def get_param(self, key):
         return self.xpath(
@@ -1810,7 +1808,6 @@ class Resource(EObject):
             setattr(self, f.__name__, types.MethodType(f, self))
 
         return None
-
 
     def __repr__(self):
 
