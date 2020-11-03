@@ -11,4 +11,5 @@ coveralls
 networkx>=2.2
 matplotlib>=2.2
 pandas>=0.24
+pymupdf>=1.18
 pydicom
