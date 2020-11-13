@@ -1,0 +1,302 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>More on Paths &mdash; pyxnat 1.4 documentation</title>
+  
+
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="author" title="About these documents"
+              href="../about.html"/>
+        <link rel="index" title="Index"
+              href="../genindex.html"/>
+        <link rel="search" title="Search" href="../search.html"/>
+    <link rel="top" title="pyxnat 1.4 documentation" href="../index.html"/> 
+
+  
+  <script src="../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> pyxnat
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                1.4
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+                <!-- Local TOC -->
+                <div class="local-toc"><ul>
+<li><a class="reference internal" href="#">More on Paths</a><ul>
+<li><a class="reference internal" href="#absolute-paths">Absolute Paths</a></li>
+<li><a class="reference internal" href="#relative-paths-and-shortcuts">Relative Paths and Shortcuts</a></li>
+</ul>
+</li>
+</ul>
+</div>
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">pyxnat</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+      <li>More on Paths</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/features/paths.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="more-on-paths">
+<h1>More on Paths<a class="headerlink" href="#more-on-paths" title="Permalink to this headline">¶</a></h1>
+<p>The <code class="docutils literal notranslate"><span class="pre">paths</span></code> which are passed as arguments to
+<code class="xref py py-class docutils literal notranslate"><span class="pre">select</span></code> can take different forms. They are
+in fact compatible with native REST calls, except for query strings in
+the URLs (see <a class="reference external" href="http://docs.xnat.org/XNAT+REST+API+Usage">XNAT doc</a>
+and <a class="reference external" href="http://en.wikipedia.org/wiki/Query_string">Wikipedia</a> for more on
+query strings). They also expose additional functionalities and can
+easily generate thousands of queries in a single statement.</p>
+<div class="section" id="absolute-paths">
+<h2>Absolute Paths<a class="headerlink" href="#absolute-paths" title="Permalink to this headline">¶</a></h2>
+<p>A full path to a resource is a sequence of resource level and
+resource_id pairs, whereas a full path to a resource listing is
+a sequence of resource level and resource_id pairs finishing by a
+plural resource level (i.e. with an ‘s’)</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">central</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="s1">&#39;/project/IMAGEN/subject/000055982442&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">central</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="s1">&#39;/project/IMAGEN/subject/000055982442/experiments&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The <code class="xref py py-class docutils literal notranslate"><span class="pre">select</span></code> statement is smart enough to deal
+with <cite>plural</cite> and <cite>singluar</cite> resources names which means that the
+following <code class="docutils literal notranslate"><span class="pre">paths</span></code> are equivalent in <strong>pyxnat</strong>.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">central</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="s1">&#39;/project/IMAGEN/subject/000055982442/experiments&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">central</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="s1">&#39;/project/IMAGEN/subjects/000055982442/experiment&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="relative-paths-and-shortcuts">
+<h2>Relative Paths and Shortcuts<a class="headerlink" href="#relative-paths-and-shortcuts" title="Permalink to this headline">¶</a></h2>
+<p>When browsing resources, some levels are often left without any IDs
+and filled with <code class="docutils literal notranslate"><span class="pre">*</span></code> filters instead, which leads to paths like.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">central</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="s1">&#39;/projects/*/subjects/*/experiments/*&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><strong>pyxnat</strong> offers shorter ways to do it. There are intended to explore
+faster the database from an interactive python shell such as <a class="reference external" href="http://ipython.org/">ipython</a>, but not in production programs where using
+Python string replacement capabilities to generate identifiers is
+always faster. The previous statement is equivalent to the following calls:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">central</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="s1">&#39;/projects/subjects/experiments&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">central</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="s1">&#39;//experiments&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Another example to get all the experiments from a specific project.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">central</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="s1">&#39;/project/IMAGEN//experiments&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">central</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="s1">&#39;/project/IMAGEN/subjects/*/experiments&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The double slash syntax can be used anywhere in the path and any
+number of time to avoid writing unused <cite>levels</cite> in the <code class="docutils literal notranslate"><span class="pre">path</span></code>.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">central</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="s1">&#39;//subjects//assessors&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">central</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="s1">&#39;/projects/*/subjects/*/experiments/*/assessors/*&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>A <code class="docutils literal notranslate"><span class="pre">path</span></code> will generate several <code class="docutils literal notranslate"><span class="pre">paths</span></code> and thus several queries if
+it’s ambiguous and can be interpreted in differents ways. For example the
+path <code class="docutils literal notranslate"><span class="pre">//subjects//assessors//files</span></code> generates:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="o">/</span><span class="n">projects</span><span class="o">/*/</span><span class="n">subjects</span><span class="o">/*/</span><span class="n">experiments</span><span class="o">/*/</span><span class="n">assessors</span><span class="o">/*/</span><span class="n">in_resources</span><span class="o">/*/</span><span class="n">files</span><span class="o">/*</span>
+<span class="o">/</span><span class="n">projects</span><span class="o">/*/</span><span class="n">subjects</span><span class="o">/*/</span><span class="n">experiments</span><span class="o">/*/</span><span class="n">assessors</span><span class="o">/*/</span><span class="n">out_resources</span><span class="o">/*/</span><span class="n">files</span><span class="o">/*</span>
+<span class="o">/</span><span class="n">projects</span><span class="o">/*/</span><span class="n">subjects</span><span class="o">/*/</span><span class="n">experiments</span><span class="o">/*/</span><span class="n">assessors</span><span class="o">/*/</span><span class="n">resources</span><span class="o">/*/</span><span class="n">files</span><span class="o">/*</span>
+</pre></div>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>If you try <code class="docutils literal notranslate"><span class="pre">//files</span></code>, it will generate all the possible
+descendant paths. If the server has a large amount a data it will
+take ages to go through all the resources:</p>
+<blockquote>
+<div><div class="line-block">
+<div class="line">/projects/<em>/subjects/</em>/experiments/<em>/resources/</em>/files/*</div>
+<div class="line">/projects/<em>/subjects/</em>/experiments/<em>/reconstructions/</em>/in_resources/<em>/files/</em></div>
+<div class="line">/projects/<em>/subjects/</em>/experiments/<em>/scans/</em>/resources/<em>/files/</em></div>
+<div class="line">/projects/<em>/subjects/</em>/experiments/<em>/assessors/</em>/out_resources/<em>/files/</em></div>
+<div class="line">/projects/<em>/subjects/</em>/resources/<em>/files/</em></div>
+<div class="line">/projects/<em>/resources/</em>/files/*</div>
+<div class="line">/projects/<em>/subjects/</em>/experiments/<em>/reconstructions/</em>/out_resources/<em>/files/</em></div>
+<div class="line">/projects/<em>/subjects/</em>/experiments/<em>/assessors/</em>/in_resources/<em>/files/</em></div>
+<div class="line">/projects/<em>/subjects/</em>/experiments/<em>/assessors/</em>/resources/<em>/files/</em></div>
+</div>
+</div></blockquote>
+</div>
+</div>
+</div>
+
+
+           </div>
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2010, Yannick Schwartz.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> and ❤️  using a custom <a href="https://github.com/LinxiFan/Sphinx-theme">theme</a> based on <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../',
+            VERSION:'1.4',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="../_static/jquery.js"></script>
+      <script type="text/javascript" src="../_static/underscore.js"></script>
+      <script type="text/javascript" src="../_static/doctools.js"></script>
+      <script type="text/javascript" src="../_static/language_data.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

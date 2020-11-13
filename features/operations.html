@@ -1,0 +1,325 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Operating the database &mdash; pyxnat 1.4 documentation</title>
+  
+
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="author" title="About these documents"
+              href="../about.html"/>
+        <link rel="index" title="Index"
+              href="../genindex.html"/>
+        <link rel="search" title="Search" href="../search.html"/>
+    <link rel="top" title="pyxnat 1.4 documentation" href="../index.html"/> 
+
+  
+  <script src="../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> pyxnat
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                1.4
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+                <!-- Local TOC -->
+                <div class="local-toc"><ul>
+<li><a class="reference internal" href="#">Operating the database</a><ul>
+<li><a class="reference internal" href="#basic-operations">Basic operations</a></li>
+<li><a class="reference internal" href="#custom-datatypes">Custom datatypes</a></li>
+<li><a class="reference internal" href="#multiple-creation">Multiple creation</a></li>
+<li><a class="reference internal" href="#additional-data-at-creation">Additional data at creation</a></li>
+</ul>
+</li>
+</ul>
+</div>
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">pyxnat</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+      <li>Operating the database</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/features/operations.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="operating-the-database">
+<h1>Operating the database<a class="headerlink" href="#operating-the-database" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="basic-operations">
+<h2>Basic operations<a class="headerlink" href="#basic-operations" title="Permalink to this headline">¶</a></h2>
+<p>Common operations for <code class="xref py py-class docutils literal notranslate"><span class="pre">EObject</span></code> objects include creation,
+deletion and existence checking.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">project</span> <span class="o">=</span> <span class="n">central</span><span class="o">.</span><span class="n">select</span><span class="o">.</span><span class="n">project</span><span class="p">(</span><span class="s1">&#39;my_project&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">project</span><span class="o">.</span><span class="n">exists</span><span class="p">()</span>
+<span class="go">False</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">project</span><span class="o">.</span><span class="n">insert</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">project</span><span class="o">.</span><span class="n">exists</span><span class="p">()</span>
+<span class="go">True</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">subject</span> <span class="o">=</span> <span class="n">project</span><span class="o">.</span><span class="n">subject</span><span class="p">(</span><span class="s1">&#39;first_subject&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">subject</span><span class="o">.</span><span class="n">insert</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">subject</span><span class="o">.</span><span class="n">delete</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">subject</span><span class="o">.</span><span class="n">exists</span><span class="p">()</span>
+<span class="go">False</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>previous versions of <strong>pyxnat</strong> documentation mentionned
+<code class="xref py py-func docutils literal notranslate"><span class="pre">create()</span></code> instead of <code class="xref py py-func docutils literal notranslate"><span class="pre">insert()</span></code>
+to create new resources. <code class="xref py py-func docutils literal notranslate"><span class="pre">create()</span></code> still exists and
+will probably never be deprecated.</p>
+</div>
+</div>
+<div class="section" id="custom-datatypes">
+<h2>Custom datatypes<a class="headerlink" href="#custom-datatypes" title="Permalink to this headline">¶</a></h2>
+<p>REST resources are given a default type when they are created but it is
+possible to customize it with a type defined in the XNAT XML Schema(s).</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">experiment</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">experiments</span><span class="o">=</span><span class="s1">&#39;xnat:petSessionData&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">scan</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">scans</span><span class="o">=</span><span class="s1">&#39;xnat:petScanData&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="multiple-creation">
+<h2>Multiple creation<a class="headerlink" href="#multiple-creation" title="Permalink to this headline">¶</a></h2>
+<p>It is also possible to create resources without having to create the
+parent resources first. For example:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">subject</span> <span class="o">=</span> <span class="n">central</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="s1">&#39;/project/PROJECT/subject/SUBJECT&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">subject</span><span class="o">.</span><span class="n">exists</span><span class="p">()</span>
+<span class="go">False</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">experiment</span> <span class="o">=</span> <span class="n">subject</span><span class="o">.</span><span class="n">experiment</span><span class="p">(</span><span class="s1">&#39;EXP&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">experiment</span><span class="o">.</span><span class="n">exists</span><span class="p">()</span>
+<span class="go">False</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">experiment</span><span class="o">.</span><span class="n">insert</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">subject</span><span class="o">.</span><span class="n">exists</span><span class="p">()</span>
+<span class="go">True</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">experiment</span><span class="o">.</span><span class="n">exists</span><span class="p">()</span>
+<span class="go">True</span>
+</pre></div>
+</div>
+<p>Specifiy the datatype on multiple elements in a single statement:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">scan</span> <span class="o">=</span> <span class="n">central</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="s1">&#39;/project/PROJECT/subject/SUBJECT/experiment/EXP/scan/SCAN&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">scan</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">experiments</span><span class="o">=</span><span class="s1">&#39;xnat:mrSessionData&#39;</span><span class="p">,</span> <span class="n">scans</span><span class="o">=</span><span class="s1">&#39;xnat:mrScanData&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="additional-data-at-creation">
+<h2>Additional data at creation<a class="headerlink" href="#additional-data-at-creation" title="Permalink to this headline">¶</a></h2>
+<p>Additional fields can be configured at the resource creation. It can
+be especially useful for datatypes that have some mandatory fields,
+and thus would not be created if not specified (this is not a best
+practice for XML Schema writers though). It also enables users to set
+the resource ID through the REST API instead of just the label (the ID
+in this case is generated automatically).</p>
+<p>Custom ID example:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">experiment</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">experiments</span><span class="o">=</span><span class="s1">&#39;xnat:mrSessionData&#39;</span><span class="p">,</span>
+<span class="go">                      ID=&#39;my_custom_ID&#39;</span>
+<span class="go">                      )</span>
+</pre></div>
+</div>
+<p>With additional fields:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">experiment</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="o">**</span><span class="p">{</span><span class="s1">&#39;experiments&#39;</span><span class="p">:</span><span class="s1">&#39;xnat:mrSessionData&#39;</span><span class="p">,</span>
+<span class="go">                        &#39;ID&#39;:&#39;mr_custom_ID&#39;,</span>
+<span class="go">                        &#39;xnat:mrSessionData/age&#39;:&#39;42&#39;}</span>
+<span class="go">                     )</span>
+</pre></div>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>When using xpath syntax to declare fields, it is
+mandatory to pass the arguments using a dictionnary because of
+the <code class="docutils literal notranslate"><span class="pre">/</span></code> and <code class="docutils literal notranslate"><span class="pre">:</span></code> characters. And do not forget to expand
+the dict with the <code class="docutils literal notranslate"><span class="pre">**</span></code>.</p>
+</div>
+<p>Since you can create different resource levels in a single create call
+in pyxnat, it is also possible to configure those levels in a single
+call. For example if the subject for that experiment was not created,
+you could have specified:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">experiment</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span>
+<span class="gp">... </span>        <span class="o">**</span><span class="p">{</span><span class="s1">&#39;experiments&#39;</span><span class="p">:</span><span class="s1">&#39;xnat:mrSessionData&#39;</span><span class="p">,</span>
+<span class="gp">... </span>           <span class="s1">&#39;ID&#39;</span><span class="p">:</span><span class="s1">&#39;mr_custom_ID&#39;</span><span class="p">,</span>
+<span class="gp">... </span>           <span class="s1">&#39;xnat:mrSessionData/age&#39;</span><span class="p">:</span><span class="s1">&#39;42&#39;</span><span class="p">,</span>
+<span class="gp">... </span>           <span class="s1">&#39;xnat:subjectData/investigator/lastname&#39;</span><span class="p">:</span><span class="s1">&#39;doe&#39;</span><span class="p">,</span>
+<span class="gp">... </span>           <span class="s1">&#39;xnat:subjectData/investigator/firstname&#39;</span><span class="p">:</span><span class="s1">&#39;john&#39;</span><span class="p">,</span>
+<span class="gp">... </span>           <span class="s1">&#39;xnat:subjectData/ID&#39;</span><span class="p">:</span><span class="s1">&#39;subj_custom_ID&#39;</span>
+<span class="gp">... </span>          <span class="p">})</span>
+</pre></div>
+</div>
+</div>
+</div>
+
+
+           </div>
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2010, Yannick Schwartz.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> and ❤️  using a custom <a href="https://github.com/LinxiFan/Sphinx-theme">theme</a> based on <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../',
+            VERSION:'1.4',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="../_static/jquery.js"></script>
+      <script type="text/javascript" src="../_static/underscore.js"></script>
+      <script type="text/javascript" src="../_static/doctools.js"></script>
+      <script type="text/javascript" src="../_static/language_data.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

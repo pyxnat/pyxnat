@@ -1,0 +1,11 @@
+<xnat:MRSession xmlns:xnat="http://nrg.wustl.edu/xnat" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" UID="1.2.840.113619.6.353.212907923981946872822575272779562176668" label="10001" modality="MR" project="nosetests" session_type="tests" xsi:schemaLocation="http://nrg.wustl.edu/workflow http://nrg.wustl.edu/catalog http://nrg.wustl.edu/pipe http://nrg.wustl.edu/scr http://nrg.wustl.edu/arc http://nrg.wustl.edu/val http://nrg.wustl.edu/xnat http://nrg.wustl.edu/newrad http://nrg.wustl.edu/xnat_assessments http://www.nbirn.net/prov https://barcelonabrainimaging.org/schemas/birnprov.xsd http://nrg.wustl.edu/security">
+<xnat:date>2014-12-09</xnat:date>
+<xnat:time>14:23:50</xnat:time>
+<xnat:acquisition_site>Centre Medic Diagnostic Alomar</xnat:acquisition_site>
+<xnat:scanner manufacturer="GE MEDICAL SYSTEMS" model="DISCOVERY MR750w">GEMSGEMS</xnat:scanner>
+<xnat:prearchivePath>/data/xnat/prearchive1/nosetests/20170218_212344921/1432768</xnat:prearchivePath>
+<xnat:dcmPatientId>10001</xnat:dcmPatientId>
+<xnat:dcmPatientName>10001</xnat:dcmPatientName>
+<xnat:dcmPatientBirthDate>1991-04-30</xnat:dcmPatientBirthDate>
+<xnat:fieldStrength>3.0</xnat:fieldStrength>
+</xnat:MRSession>

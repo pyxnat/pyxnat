@@ -1,0 +1,280 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Permission Model &mdash; pyxnat 1.4 documentation</title>
+  
+
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="author" title="About these documents"
+              href="../about.html"/>
+        <link rel="index" title="Index"
+              href="../genindex.html"/>
+        <link rel="search" title="Search" href="../search.html"/>
+    <link rel="top" title="pyxnat 1.4 documentation" href="../index.html"/> 
+
+  
+  <script src="../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> pyxnat
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                1.4
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+                <!-- Local TOC -->
+                <div class="local-toc"><ul>
+<li><a class="reference internal" href="#">Permission Model</a><ul>
+<li><a class="reference internal" href="#project-configuration">Project Configuration</a></li>
+<li><a class="reference internal" href="#resource-sharing">Resource Sharing</a></li>
+</ul>
+</li>
+</ul>
+</div>
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">pyxnat</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+      <li>Permission Model</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/features/permissions.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="permission-model">
+<h1>Permission Model<a class="headerlink" href="#permission-model" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="project-configuration">
+<h2>Project Configuration<a class="headerlink" href="#project-configuration" title="Permalink to this headline">¶</a></h2>
+<p>XNAT permission model uses a number of methods. The first thing is
+the project accessibility. A project can be private, protected or
+public. A private project is visible only by its users, a protected project
+is only accessible by its users and a public project is accessible by
+everyone.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">central</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="s1">&#39;/project/PROJ&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">set_accessibility</span><span class="p">(</span><span class="s1">&#39;public&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">central</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="s1">&#39;/project/PROJ&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">accessibility</span><span class="p">()</span>
+<span class="go">&#39;public&#39;</span>
+</pre></div>
+</div>
+<p>The second thing is user roles within a project. Users can be owners,
+members or collaborators to give read or write access to projects:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">central</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="s1">&#39;/project/PROJ&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">add_user</span><span class="p">(</span><span class="s1">&#39;my_friend&#39;</span><span class="p">,</span> <span class="s1">&#39;member&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">central</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="s1">&#39;/project/PROJ&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">add_user</span><span class="p">(</span><span class="s1">&#39;my_other_friend&#39;</span><span class="p">,</span> <span class="s1">&#39;owner&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="resource-sharing">
+<h2>Resource Sharing<a class="headerlink" href="#resource-sharing" title="Permalink to this headline">¶</a></h2>
+<p>The last thing is the ability to share subjects, experiments and assessors
+accross projects. Subjects shared to a private project enables a user to
+add experiments, or processing results to the subject which would not have
+been possible if the user didn’t have write access to the original project.
+This functionality is also used to share a subject which is scanned across
+multiple studies, but restrain access of its data to the relevant
+investigators.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">subject</span> <span class="o">=</span> <span class="n">interface</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="s1">&#39;/project/project1/subject/subject1&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">subject</span><span class="o">.</span><span class="n">share</span><span class="p">(</span><span class="s1">&#39;project2&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">subject</span><span class="o">.</span><span class="n">unshare</span><span class="p">(</span><span class="s1">&#39;project2&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># to know to in which projects a subject is available</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">subject</span><span class="o">.</span><span class="n">shares</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Almost the same interface is available for collection objects:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">subjects</span> <span class="o">=</span> <span class="n">interface</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="s1">&#39;/project/project1/subjects&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">subjects</span><span class="o">.</span><span class="n">share</span><span class="p">(</span><span class="s1">&#39;project2&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">subjects</span><span class="o">.</span><span class="n">unshare</span><span class="p">(</span><span class="s1">&#39;project2&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># to retrieve the subjects sharing a list of projects</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">subjects</span><span class="o">.</span><span class="n">sharing</span><span class="p">([</span><span class="s1">&#39;project1&#39;</span><span class="p">,</span> <span class="s1">&#39;project2&#39;</span><span class="p">])</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Of course the permissions policies (user level and project
+accessibility) still apply.</p>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">shares</span></code> and <code class="docutils literal notranslate"><span class="pre">sharing</span></code> methods are not implemented in an
+efficient way at the moment. There is another more concerning
+issue: subjects for example are accessible through their ID or
+label. But labels stop working when trying to access a subject
+through a project that is not its orginial one.</p>
+</div>
+</div>
+</div>
+
+
+           </div>
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2010, Yannick Schwartz.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> and ❤️  using a custom <a href="https://github.com/LinxiFan/Sphinx-theme">theme</a> based on <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../',
+            VERSION:'1.4',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="../_static/jquery.js"></script>
+      <script type="text/javascript" src="../_static/underscore.js"></script>
+      <script type="text/javascript" src="../_static/doctools.js"></script>
+      <script type="text/javascript" src="../_static/language_data.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

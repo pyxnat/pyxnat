@@ -1,0 +1,309 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Installation &mdash; pyxnat 1.4 documentation</title>
+  
+
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="author" title="About these documents"
+              href="about.html"/>
+        <link rel="index" title="Index"
+              href="genindex.html"/>
+        <link rel="search" title="Search" href="search.html"/>
+    <link rel="top" title="pyxnat 1.4 documentation" href="index.html"/> 
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="index.html" class="icon icon-home"> pyxnat
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                1.4
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+                <!-- Local TOC -->
+                <div class="local-toc"><ul>
+<li><a class="reference internal" href="#">Installation</a><ul>
+<li><a class="reference internal" href="#python-version-support">Python version support</a></li>
+<li><a class="reference internal" href="#installing-from-pypi">Installing from PyPI</a></li>
+<li><a class="reference internal" href="#prerequisites">Prerequisites</a></li>
+<li><a class="reference internal" href="#the-manual-way">The manual way</a><ul>
+<li><a class="reference internal" href="#installing-in-a-local-environment">Installing in a local environment</a></li>
+<li><a class="reference internal" href="#installing-for-all-users">Installing for all users</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">pyxnat</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+      <li>Installation</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/installing.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <span class="target" id="module-pyxnat"></span><div class="section" id="installation">
+<h1>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="python-version-support">
+<h2>Python version support<a class="headerlink" href="#python-version-support" title="Permalink to this headline">¶</a></h2>
+<p>Officially Python 2.7, 3.6, and 3.7.</p>
+</div>
+<div class="section" id="installing-from-pypi">
+<h2>Installing from PyPI<a class="headerlink" href="#installing-from-pypi" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference internal" href="tutorial.html#module-pyxnat" title="pyxnat"><code class="xref py py-mod docutils literal notranslate"><span class="pre">pyxnat</span></code></a> can be installed via pip from
+<a class="reference external" href="https://pypi.org/project/pyxnat">PyPI</a>.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="n">pyxnat</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="prerequisites">
+<h2>Prerequisites<a class="headerlink" href="#prerequisites" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p><em>python</em> v2.7+</p></li>
+<li><p><a class="reference external" href="https://2.python-requests.org/en/master/">requests</a> v2.20</p></li>
+<li><p><a class="reference external" href="https://lxml.de/">python-lxml</a> v4.3.2+ recommended, earlier versions may work.</p></li>
+</ul>
+<p>For development purposes:</p>
+<ul class="simple">
+<li><p><em>python-nose</em> v1.2.1+ to run the unit tests</p></li>
+<li><p><em>coverage</em> v3.6+</p></li>
+</ul>
+</div>
+<div class="section" id="the-manual-way">
+<h2>The manual way<a class="headerlink" href="#the-manual-way" title="Permalink to this headline">¶</a></h2>
+<p>To install <a class="reference internal" href="tutorial.html#module-pyxnat" title="pyxnat"><code class="xref py py-mod docutils literal notranslate"><span class="pre">pyxnat</span></code></a>, first download the latest tarball (e.g. from
+<a class="reference external" href="http://pypi.python.org/pypi/pyxnat">http://pypi.python.org/pypi/pyxnat</a>) and expand it.</p>
+<div class="section" id="installing-in-a-local-environment">
+<h3>Installing in a local environment<a class="headerlink" href="#installing-in-a-local-environment" title="Permalink to this headline">¶</a></h3>
+<p>If you do not need to install for all users, we strongly suggest that you
+create a local environment and install <a class="reference internal" href="tutorial.html#module-pyxnat" title="pyxnat"><code class="xref py py-mod docutils literal notranslate"><span class="pre">pyxnat</span></code></a> in it. One advantage of
+this method is that you never have to become administrator and thus all
+changes are local and easy to clean up.</p>
+<blockquote>
+<div><ol class="arabic">
+<li><p>First, create the following directory (where <cite>~</cite> is the home folder,
+or any directory that you want to use as a base for
+your local Python environment, and <cite>X</cite> is your Python version
+number, e.g. <cite>2.6</cite>):</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">~/</span><span class="n">usr</span><span class="o">/</span><span class="n">lib</span><span class="o">/</span><span class="n">pythonX</span><span class="o">/</span><span class="n">site</span><span class="o">-</span><span class="n">packages</span>
+</pre></div>
+</div>
+</li>
+<li><p>Second, make sure that you add this directory in your environment
+variable <cite>PYTHONPATH</cite>. Windows users may do this by editing
+your environment variables in the system configuration dialog. Unix
+users may add the following line to their <cite>.bashrc</cite> or any file
+sourced at login:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>export PYTHONPATH=$HOME/usr/lib/python2.6/site-packages:$PYTHONPATH
+</pre></div>
+</div>
+</li>
+<li><p>In the folder resulting from the <a class="reference internal" href="tutorial.html#module-pyxnat" title="pyxnat"><code class="xref py py-mod docutils literal notranslate"><span class="pre">pyxnat</span></code></a> tarball, run the
+following command:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">python</span> <span class="n">setup</span><span class="o">.</span><span class="n">py</span> <span class="n">install</span> <span class="o">--</span><span class="n">prefix</span> <span class="o">~/</span><span class="n">usr</span>
+</pre></div>
+</div>
+<p>You should not be required to become administrator, provided you have
+write access to the destination folder.</p>
+</li>
+</ol>
+</div></blockquote>
+</div>
+<div class="section" id="installing-for-all-users">
+<h3>Installing for all users<a class="headerlink" href="#installing-for-all-users" title="Permalink to this headline">¶</a></h3>
+<p>If you have administrator rights and want to install for all users, all
+you need to do is to go in directory created by expanding the <a class="reference internal" href="tutorial.html#module-pyxnat" title="pyxnat"><code class="xref py py-mod docutils literal notranslate"><span class="pre">pyxnat</span></code></a>
+tarball and run the following line:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">python</span> <span class="n">setup</span><span class="o">.</span><span class="n">py</span> <span class="n">install</span>
+</pre></div>
+</div>
+<p>For Unix users, we suggest that you install in ‘/usr/local’ in
+order not to interfere with your system:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">python</span> <span class="n">setup</span><span class="o">.</span><span class="n">py</span> <span class="n">install</span> <span class="o">--</span><span class="n">prefix</span> <span class="o">/</span><span class="n">usr</span><span class="o">/</span><span class="n">local</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+
+
+           </div>
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2010, Yannick Schwartz.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> and ❤️  using a custom <a href="https://github.com/LinxiFan/Sphinx-theme">theme</a> based on <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'1.4',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+      <script type="text/javascript" src="_static/language_data.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

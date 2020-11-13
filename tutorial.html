@@ -1,0 +1,387 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Getting started &mdash; pyxnat 1.4 documentation</title>
+  
+
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="author" title="About these documents"
+              href="about.html"/>
+        <link rel="index" title="Index"
+              href="genindex.html"/>
+        <link rel="search" title="Search" href="search.html"/>
+    <link rel="top" title="pyxnat 1.4 documentation" href="index.html"/> 
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="index.html" class="icon icon-home"> pyxnat
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                1.4
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+                <!-- Local TOC -->
+                <div class="local-toc"><ul>
+<li><a class="reference internal" href="#">Getting started</a><ul>
+<li><a class="reference internal" href="#prerequisites">Prerequisites</a></li>
+<li><a class="reference internal" href="#setting-up-a-connection">Setting up a connection</a><ul>
+<li><a class="reference internal" href="#alternative-connections">Alternative connections</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#traversing-the-database">Traversing the database</a></li>
+<li><a class="reference internal" href="#operating-the-database">Operating the database</a><ul>
+<li><a class="reference internal" href="#working-with-files">Working with Files</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">pyxnat</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+      <li>Getting started</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/tutorial.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <span class="target" id="module-pyxnat"></span><div class="section" id="getting-started">
+<h1>Getting started<a class="headerlink" href="#getting-started" title="Permalink to this headline">¶</a></h1>
+<p>This tutorial is intended as an introduction on how to work with
+<strong>XNAT</strong> and <a class="reference internal" href="#module-pyxnat" title="pyxnat"><code class="xref py py-mod docutils literal notranslate"><span class="pre">pyxnat</span></code></a>. Reading the <a class="reference external" href="http://docs.xnat.org/">XNAT documentation</a>, especially on the pages on the REST
+Web Services, can be a huge help to deeper understand
+<strong>XNAT</strong> and consequently <a class="reference internal" href="#module-pyxnat" title="pyxnat"><code class="xref py py-mod docutils literal notranslate"><span class="pre">pyxnat</span></code></a> design decisions.</p>
+<div class="section" id="prerequisites">
+<h2>Prerequisites<a class="headerlink" href="#prerequisites" title="Permalink to this headline">¶</a></h2>
+<p>Before starting, make sure that you have the <a class="reference internal" href="#module-pyxnat" title="pyxnat"><code class="xref py py-mod docutils literal notranslate"><span class="pre">pyxnat</span></code></a> distribution
+<a class="reference internal" href="installing.html"><span class="doc">installed</span></a>. In the Python shell, the following
+should run without raising an exception:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">pyxnat</span>
+</pre></div>
+</div>
+<p>This tutorial also assumes that you have access to an XNAT instance.
+You may also use <a class="reference external" href="https://central.xnat.org">XNAT Central</a>, which is a public
+instance managed by the XNAT team and updated on a regular basis.</p>
+</div>
+<div class="section" id="setting-up-a-connection">
+<h2>Setting up a connection<a class="headerlink" href="#setting-up-a-connection" title="Permalink to this headline">¶</a></h2>
+<p>The first step when working with <a class="reference internal" href="#module-pyxnat" title="pyxnat"><code class="xref py py-mod docutils literal notranslate"><span class="pre">pyxnat</span></code></a> is to connect to an XNAT
+instance with <code class="xref py py-class docutils literal notranslate"><span class="pre">Interface</span></code>. For this, you will need valid
+credentials. Make sure you have them or request them through the web interface
+of the targeted host.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pyxnat</span> <span class="kn">import</span> <span class="n">Interface</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">central</span> <span class="o">=</span> <span class="n">Interface</span><span class="p">(</span><span class="n">server</span><span class="o">=</span><span class="s2">&quot;https://central.xnat.org&quot;</span><span class="p">,</span>
+<span class="gp">... </span>                    <span class="n">user</span><span class="o">=</span><span class="s1">&#39;my_login&#39;</span><span class="p">,</span>
+<span class="gp">... </span>              <span class="n">password</span><span class="o">=</span><span class="s1">&#39;my_pass&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Depending on the server configuration, you may have to include the port
+in the server URL, as well as the name of the XNAT <cite>tomcat</cite> application.
+You might end up with something like:
+<cite>http://server_ip:port/xnat</cite></p>
+</div>
+<div class="section" id="alternative-connections">
+<h3>Alternative connections<a class="headerlink" href="#alternative-connections" title="Permalink to this headline">¶</a></h3>
+<p>If at least one of server, user and password arguments is missing,
+the user will be prompted for it (them). In this mode, a connection
+to the server will be attempted at the object creation and will raise
+an exception if something is wrong.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">central</span> <span class="o">=</span> <span class="n">Interface</span><span class="p">(</span><span class="n">server</span><span class="o">=</span><span class="s2">&quot;https://central.xnat.org&quot;</span><span class="p">)</span>
+<span class="go">    User:my_login</span>
+<span class="go">    Password:</span>
+</pre></div>
+</div>
+<p>There are two types of configuration files that <a class="reference internal" href="#module-pyxnat" title="pyxnat"><code class="xref py py-mod docutils literal notranslate"><span class="pre">pyxnat</span></code></a> uses.
+The first one is used with the <cite>config</cite> parameter.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">central</span> <span class="o">=</span> <span class="n">Interface</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="s1">&#39;central.cfg&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The easiest way to create this configuration file is to use the
+<code class="xref py py-func docutils literal notranslate"><span class="pre">save_config()</span></code> method on an existing interface.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">central</span><span class="o">.</span><span class="n">save_config</span><span class="p">(</span><span class="s1">&#39;central.cfg&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The second one is the XNAT format config file, which is placed at a
+default location (i.e. <cite>~/.xnatPass</cite> in Linux). It is used without passing
+any argument to the <code class="xref py py-class docutils literal notranslate"><span class="pre">Interface</span></code> object. It is formatted
+as follows and supports multiple accounts and servers, the active one
+being the one selected by a <code class="docutils literal notranslate"><span class="pre">+</span></code> sign:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>+loginone@http://central.xnat.org=password
+-logintwo@http://central.xnat.org=password
+-logintwo@http://localhost=password
+</pre></div>
+</div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">central</span> <span class="o">=</span> <span class="n">Interface</span><span class="p">()</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>If <code class="xref py py-class docutils literal notranslate"><span class="pre">Interface</span></code> is used without any parameter
+and any configuration file at default location,
+user will be prompted for server, user and password.</p>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>You may prefer not to have your password either displayed onscreen or embedded
+in your programs. Two alternatives for interactive sessions and scripts: if
+you omit any of these three required parameters, the call to Interface(.) will
+prompt for the missing ones, and will not display the password as you enter it
+from the keyboard. Alternately, you can prompt for the password in the same
+way by using Python’s getpass.getpass(.) method, some variations of which are
+demonstrated in examples below.</p>
+<p>You can save an entire configuration to a file and then load it later.
+Note that the configuration file contains the password, so be sure only to
+save this file in an access-protected location.</p>
+</div>
+</div>
+</div>
+<div class="section" id="traversing-the-database">
+<h2>Traversing the database<a class="headerlink" href="#traversing-the-database" title="Permalink to this headline">¶</a></h2>
+<p>Traversing the database requires basic knowledge of XNAT data model.
+This information is available in the
+<code class="xref py py-func docutils literal notranslate"><span class="pre">structure()</span></code> method of the
+<code class="xref py py-class docutils literal notranslate"><span class="pre">inspect</span></code> sub-interface, which prints the
+hierarchical organization of the data and helps constructing valid
+<code class="docutils literal notranslate"><span class="pre">paths</span></code> for accessing the data. The <code class="xref py py-class docutils literal notranslate"><span class="pre">select</span></code>
+sub-interface allows for data selection and basic filtering through
+Python objects or <code class="docutils literal notranslate"><span class="pre">paths</span></code>, more akin to native REST calls.</p>
+<p>Simple requests:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">central</span><span class="o">.</span><span class="n">select</span><span class="o">.</span><span class="n">projects</span><span class="p">()</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
+<span class="go">[..., &#39;CENTRAL_OASIS_CS&#39;, &#39;CENTRAL_OASIS_LONG&#39;, ...]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">central</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="s1">&#39;/projects&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
+<span class="go">[..., &#39;CENTRAL_OASIS_CS&#39;, &#39;CENTRAL_OASIS_LONG&#39;, ...]</span>
+</pre></div>
+</div>
+<p>Nested requests:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">central</span><span class="o">.</span><span class="n">select</span><span class="o">.</span><span class="n">projects</span><span class="p">()</span><span class="o">.</span><span class="n">subjects</span><span class="p">()</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">central</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="s1">&#39;/projects/*/subjects&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">central</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="s1">&#39;/projects/subjects&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">central</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="s1">&#39;//subjects&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
+<span class="go">[&#39;IMAGEN_000000001274&#39;, &#39;IMAGEN_000000075717&#39;, ...,&#39;IMAGEN_000099954902&#39;]</span>
+</pre></div>
+</div>
+<p>Filtered requests:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">central</span><span class="o">.</span><span class="n">select</span><span class="o">.</span><span class="n">projects</span><span class="p">(</span><span class="s1">&#39;*OASIS_CS*&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">central</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="s1">&#39;/projects/*OASIS_CS*&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
+<span class="go">[&#39;CENTRAL_OASIS_CS&#39;]</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="n">central</span><span class="o">.</span><span class="n">select</span><span class="o">.</span><span class="n">project</span><span class="p">(</span><span class="s1">&#39;IMAGEN&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">subjects</span><span class="p">(</span><span class="s1">&#39;*55*42*&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">central</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="s1">&#39;/projects/IMAGEN/subjects/*55*42*&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
+<span class="go">[&#39;IMAGEN_000055203542&#39;, &#39;IMAGEN_000055982442&#39;, &#39;IMAGEN_000097555742&#39;]</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="operating-the-database">
+<h2>Operating the database<a class="headerlink" href="#operating-the-database" title="Permalink to this headline">¶</a></h2>
+<p>Python resource Objects that are retrieved from the
+<code class="xref py py-class docutils literal notranslate"><span class="pre">select</span></code> interface support a range of
+operations to interact and insert data in <strong>XNAT</strong>.
+<code class="xref py py-class docutils literal notranslate"><span class="pre">EObject</span></code> objects support operations for creation, deletion
+and existence checking.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">subject</span><span class="o">.</span><span class="n">insert</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">subject</span><span class="o">.</span><span class="n">exists</span><span class="p">()</span>
+<span class="go">True</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">subject</span><span class="o">.</span><span class="n">delete</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">subject</span><span class="o">.</span><span class="n">exists</span><span class="p">()</span>
+<span class="go">False</span>
+</pre></div>
+</div>
+<div class="section" id="working-with-files">
+<h3>Working with Files<a class="headerlink" href="#working-with-files" title="Permalink to this headline">¶</a></h3>
+<p><strong>XNAT</strong> was built to store images which means it can handle files.
+Files resources in <a class="reference internal" href="#module-pyxnat" title="pyxnat"><code class="xref py py-mod docutils literal notranslate"><span class="pre">pyxnat</span></code></a>
+are just <code class="xref py py-class docutils literal notranslate"><span class="pre">EObject</span></code> objects with a few additional
+methods to upload and download the data.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">file</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
+<span class="go">&#39;&lt;cachedir&gt;/hash_of_file_uri.extension&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">file</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;/tmp/image.nii&#39;</span><span class="p">)</span>
+<span class="go">&#39;/tmp/image.nii&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">file</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="s1">&#39;/tmp/modified_image.nii&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+
+
+           </div>
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2010, Yannick Schwartz.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> and ❤️  using a custom <a href="https://github.com/LinxiFan/Sphinx-theme">theme</a> based on <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'1.4',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+      <script type="text/javascript" src="_static/language_data.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

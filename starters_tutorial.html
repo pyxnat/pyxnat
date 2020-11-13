@@ -1,0 +1,613 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Starters Tutorial &mdash; pyxnat 1.4 documentation</title>
+  
+
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="author" title="About these documents"
+              href="about.html"/>
+        <link rel="index" title="Index"
+              href="genindex.html"/>
+        <link rel="search" title="Search" href="search.html"/>
+    <link rel="top" title="pyxnat 1.4 documentation" href="index.html"/> 
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="index.html" class="icon icon-home"> pyxnat
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                1.4
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+                <!-- Local TOC -->
+                <div class="local-toc"><ul>
+<li><a class="reference internal" href="#">Starters Tutorial</a><ul>
+<li><a class="reference internal" href="#getting-started">Getting started</a></li>
+<li><a class="reference internal" href="#data-selection">Data selection</a></li>
+<li><a class="reference internal" href="#resource-paths">Resource paths</a><ul>
+<li><a class="reference internal" href="#absolute-paths">Absolute paths</a></li>
+<li><a class="reference internal" href="#relative-paths-and-shortcuts">Relative paths and shortcuts</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#resources-operations">Resources operations</a></li>
+<li><a class="reference internal" href="#file-support">File support</a></li>
+<li><a class="reference internal" href="#attributes-support">Attributes support</a></li>
+<li><a class="reference internal" href="#the-search-engine">The search engine</a></li>
+</ul>
+</li>
+</ul>
+</div>
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">pyxnat</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+      <li>Starters Tutorial</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/starters_tutorial.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <span class="target" id="module-pyxnat"></span><div class="section" id="starters-tutorial">
+<h1>Starters Tutorial<a class="headerlink" href="#starters-tutorial" title="Permalink to this headline">¶</a></h1>
+<p>This is a short tutorial going through the main features of this API.
+Depending on the policy of the XNAT server you are using, and your
+user level, you can have read and write access to a specific set of
+resources. During this tutorial, we will use a <cite>fake</cite> standard user
+account on the XNAT central repository, where you will have limited
+access to a number of projects and full access to the projects you
+own.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p><a class="reference external" href="http://central.xnat.org">XNAT Central</a> is a public XNAT repository managed by the XNAT team
+and updated regularly with the latest improvements of the
+development branch.</p>
+</div>
+<div class="section" id="getting-started">
+<h2>Getting started<a class="headerlink" href="#getting-started" title="Permalink to this headline">¶</a></h2>
+<p>Connecting to an XNAT server requires valid credentials so you might want to
+start by requesting those on the web interface of your server.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pyxnat</span> <span class="kn">import</span> <span class="n">Interface</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">central</span> <span class="o">=</span> <span class="n">Interface</span><span class="p">(</span>
+<span class="go">               server=&#39;http://central.xnat.org:8080&#39;,</span>
+<span class="go">               user=&#39;my_login&#39;,</span>
+<span class="go">               password=&#39;my_pass&#39;)</span>
+</pre></div>
+</div>
+<p>It is also possible to define an <code class="xref py py-class docutils literal notranslate"><span class="pre">Interface</span></code> object without
+specifying all the connection settings. In that case <a class="reference internal" href="tutorial.html#module-pyxnat" title="pyxnat"><code class="xref py py-mod docutils literal notranslate"><span class="pre">pyxnat</span></code></a> switches to
+interactive mode and prompts the user for the missing information.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">central</span> <span class="o">=</span> <span class="n">Interface</span><span class="p">(</span><span class="n">server</span><span class="o">=</span><span class="s1">&#39;http://central.xnat.org:8080&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">User</span><span class="p">:</span><span class="n">my_login</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Password</span><span class="p">:</span>
+</pre></div>
+</div>
+<p>You can also use a configuration file. The best way to create the file
+is to use the <code class="docutils literal notranslate"><span class="pre">save_config()</span></code> method on an existing interface.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">central</span><span class="o">.</span><span class="n">save_config</span><span class="p">(</span><span class="s1">&#39;central.cfg&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">central2</span> <span class="o">=</span> <span class="n">Interface</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="s1">&#39;central.cfg&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Depending on the server configuration, you may have to include the port
+in the server URL, as well as the name of the XNAT <cite>tomcat</cite> application.
+You might end up with something like:
+<a class="reference external" href="http://server_ip:port/xnat">http://server_ip:port/xnat</a></p>
+</div>
+<dl class="simple">
+<dt>The main interface class is now divided into logical subinterfaces:</dt><dd><ul class="simple">
+<li><p>data selection</p></li>
+<li><p>general management</p></li>
+<li><p>cache management</p></li>
+<li><p>server instrospection</p></li>
+</ul>
+</dd>
+</dl>
+</div>
+<div class="section" id="data-selection">
+<h2>Data selection<a class="headerlink" href="#data-selection" title="Permalink to this headline">¶</a></h2>
+<p>Now that we have an <cite>Interface</cite> object, we can start browsing the
+server with the <code class="docutils literal notranslate"><span class="pre">select</span></code> subinterface which can be used, either with
+explicit Python objects and methods, or through a <code class="docutils literal notranslate"><span class="pre">path</span></code> describing
+the data.</p>
+<p>Simple requests:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">interface</span><span class="o">.</span><span class="n">select</span><span class="o">.</span><span class="n">projects</span><span class="p">()</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
+<span class="go">[..., &#39;CENTRAL_OASIS_CS&#39;, &#39;CENTRAL_OASIS_LONG&#39;, ...]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">interface</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="s1">&#39;/projects&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
+<span class="go">[..., &#39;CENTRAL_OASIS_CS&#39;, &#39;CENTRAL_OASIS_LONG&#39;, ...]</span>
+</pre></div>
+</div>
+<p>Nested requests:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">interface</span><span class="o">.</span><span class="n">select</span><span class="o">.</span><span class="n">projects</span><span class="p">()</span><span class="o">.</span><span class="n">subjects</span><span class="p">()</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">interface</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="s1">&#39;/projects/*/subjects&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">interface</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="s1">&#39;/projects/subjects&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">interface</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="s1">&#39;//subjects&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
+<span class="go">[&#39;IMAGEN_000000001274&#39;, &#39;IMAGEN_000000075717&#39;, ...,&#39;IMAGEN_000099954902&#39;]</span>
+</pre></div>
+</div>
+<p>Filtered requests:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">interface</span><span class="o">.</span><span class="n">select</span><span class="o">.</span><span class="n">projects</span><span class="p">(</span><span class="s1">&#39;*OASIS_CS*&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">interface</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="s1">&#39;/projects/*OASIS_CS*&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
+<span class="go">[&#39;CENTRAL_OASIS_CS&#39;]</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="n">interface</span><span class="o">.</span><span class="n">select</span><span class="o">.</span><span class="n">project</span><span class="p">(</span><span class="s1">&#39;IMAGEN&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">subjects</span><span class="p">(</span><span class="s1">&#39;*55*42*&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">interface</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="s1">&#39;/projects/IMAGEN/subjects/*55*42*&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
+<span class="go">[&#39;IMAGEN_000055203542&#39;, &#39;IMAGEN_000055982442&#39;, &#39;IMAGEN_000097555742&#39;]</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="resource-paths">
+<h2>Resource paths<a class="headerlink" href="#resource-paths" title="Permalink to this headline">¶</a></h2>
+<p>The resource paths that can be passed as an argument to <code class="docutils literal notranslate"><span class="pre">select</span></code> is
+a powerful tool but can easily generate thousands of queries so one
+has to be careful when using it.</p>
+<div class="section" id="absolute-paths">
+<h3>Absolute paths<a class="headerlink" href="#absolute-paths" title="Permalink to this headline">¶</a></h3>
+<p>A full path to a resource is a sequence of resource level and
+resource_id pairs:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">/</span><span class="n">project</span><span class="o">/</span><span class="n">IMAGEN</span><span class="o">/</span><span class="n">subject</span><span class="o">/</span><span class="n">IMAGEN_000055982442</span>
+</pre></div>
+</div>
+<p>A full path to a resource listing is a sequence of resource level and
+resource_id pairs finishing by a plural resource level (i.e. with an
+‘s’):</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">/</span><span class="n">project</span><span class="o">/</span><span class="n">IMAGEN</span><span class="o">/</span><span class="n">subject</span><span class="o">/</span><span class="n">IMAGEN_000055982442</span><span class="o">/</span><span class="n">experiments</span>
+</pre></div>
+</div>
+<p>The first nice thing here is that you actually don’t have to worry about
+resource level to be plural or singular within the path:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">/</span><span class="n">project</span><span class="o">/</span><span class="n">IMAGEN</span><span class="o">/</span><span class="n">subject</span><span class="o">/</span><span class="n">IMAGEN_000055982442</span>
+<span class="n">EQUALS</span>
+<span class="o">/</span><span class="n">projects</span><span class="o">/</span><span class="n">IMAGEN</span><span class="o">/</span><span class="n">subjects</span><span class="o">/</span><span class="n">IMAGEN_000055982442</span>
+
+<span class="o">/</span><span class="n">project</span><span class="o">/</span><span class="n">IMAGEN</span><span class="o">/</span><span class="n">subject</span><span class="o">/</span><span class="n">IMAGEN_000055982442</span><span class="o">/</span><span class="n">experiments</span>
+<span class="n">EQUALS</span>
+<span class="o">/</span><span class="n">project</span><span class="o">/</span><span class="n">IMAGEN</span><span class="o">/</span><span class="n">subjects</span><span class="o">/</span><span class="n">IMAGEN_000055982442</span><span class="o">/</span><span class="n">experiment</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="relative-paths-and-shortcuts">
+<h3>Relative paths and shortcuts<a class="headerlink" href="#relative-paths-and-shortcuts" title="Permalink to this headline">¶</a></h3>
+<p>When browsing resources, some levels are often left without any IDs
+and filled with <code class="docutils literal notranslate"><span class="pre">*</span></code> filters instead, which leads to paths like:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">/</span><span class="n">projects</span><span class="o">/*/</span><span class="n">subjects</span><span class="o">/*/</span><span class="n">experiments</span><span class="o">/*</span>
+</pre></div>
+</div>
+<p>That can instead be written:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">/</span><span class="n">projects</span><span class="o">/</span><span class="n">subjects</span><span class="o">/</span><span class="n">experiments</span> <span class="n">OR</span> <span class="o">//</span><span class="n">experiments</span>
+</pre></div>
+</div>
+<p>To have all the experiments from a specific project:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">/</span><span class="n">project</span><span class="o">/</span><span class="n">IMAGEN</span><span class="o">//</span><span class="n">experiments</span>
+<span class="n">EQUALS</span>
+<span class="o">/</span><span class="n">project</span><span class="o">/</span><span class="n">IMAGEN</span><span class="o">/</span><span class="n">subjects</span><span class="o">/*/</span><span class="n">experiments</span>
+</pre></div>
+</div>
+<p>The double slash syntax can be used anywhere in the path and any
+number of time:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">//</span><span class="n">subjects</span><span class="o">//</span><span class="n">assessors</span>
+<span class="n">EQUALS</span>
+<span class="o">/</span><span class="n">projects</span><span class="o">/*/</span><span class="n">subjects</span><span class="o">/*/</span><span class="n">experiments</span><span class="o">/*/</span><span class="n">assessors</span><span class="o">/*</span>
+</pre></div>
+</div>
+<p>Sometimes, a path will generate more than one path because it can be
+interpreted in different way:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">//</span><span class="n">subjects</span><span class="o">//</span><span class="n">assessors</span><span class="o">//</span><span class="n">files</span>
+</pre></div>
+</div>
+<p>Generates:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">/</span><span class="n">projects</span><span class="o">/*/</span><span class="n">subjects</span><span class="o">/*/</span><span class="n">experiments</span><span class="o">/*/</span><span class="n">assessors</span><span class="o">/*/</span><span class="n">in_resources</span><span class="o">/*/</span><span class="n">files</span><span class="o">/*</span>
+<span class="o">/</span><span class="n">projects</span><span class="o">/*/</span><span class="n">subjects</span><span class="o">/*/</span><span class="n">experiments</span><span class="o">/*/</span><span class="n">assessors</span><span class="o">/*/</span><span class="n">out_resources</span><span class="o">/*/</span><span class="n">files</span><span class="o">/*</span>
+<span class="o">/</span><span class="n">projects</span><span class="o">/*/</span><span class="n">subjects</span><span class="o">/*/</span><span class="n">experiments</span><span class="o">/*/</span><span class="n">assessors</span><span class="o">/*/</span><span class="n">resources</span><span class="o">/*/</span><span class="n">files</span><span class="o">/*</span>
+</pre></div>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>If you try <code class="docutils literal notranslate"><span class="pre">//files</span></code>, it will generate all the possible descendant paths:</p>
+<div class="line-block">
+<div class="line">/projects/<em>/subjects/</em>/experiments/<em>/resources/</em>/files/*</div>
+<div class="line">/projects/<em>/subjects/</em>/experiments/<em>/reconstructions/</em>/in_resources/<em>/files/</em></div>
+<div class="line">/projects/<em>/subjects/</em>/experiments/<em>/scans/</em>/resources/<em>/files/</em></div>
+<div class="line">/projects/<em>/subjects/</em>/experiments/<em>/assessors/</em>/out_resources/<em>/files/</em></div>
+<div class="line">/projects/<em>/subjects/</em>/resources/<em>/files/</em></div>
+<div class="line">/projects/<em>/resources/</em>/files/*</div>
+<div class="line">/projects/<em>/subjects/</em>/experiments/<em>/reconstructions/</em>/out_resources/<em>/files/</em></div>
+<div class="line">/projects/<em>/subjects/</em>/experiments/<em>/assessors/</em>/in_resources/<em>/files/</em></div>
+<div class="line">/projects/<em>/subjects/</em>/experiments/<em>/assessors/</em>/resources/<em>/files/</em></div>
+</div>
+<p>If the server has decent amount a data it will take ages to go through all the resources.</p>
+</div>
+</div>
+</div>
+<div class="section" id="resources-operations">
+<h2>Resources operations<a class="headerlink" href="#resources-operations" title="Permalink to this headline">¶</a></h2>
+<p>Several operations are accessible for every resource level. The most
+important are for creating new resources, deleting
+existing ones and testing whether a given resource exists or not:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">my_project</span> <span class="o">=</span> <span class="n">central</span><span class="o">.</span><span class="n">select</span><span class="o">.</span><span class="n">project</span><span class="p">(</span><span class="s1">&#39;my_project&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">my_project</span><span class="o">.</span><span class="n">exists</span><span class="p">()</span>
+<span class="go">False</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">my_project</span><span class="o">.</span><span class="n">create</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">my_project</span><span class="o">.</span><span class="n">exists</span><span class="p">()</span>
+<span class="go">True</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">subject</span> <span class="o">=</span> <span class="n">my_project</span><span class="o">.</span><span class="n">subject</span><span class="p">(</span><span class="s1">&#39;first_subject&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">subject</span><span class="o">.</span><span class="n">create</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">subject</span><span class="o">.</span><span class="n">delete</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">subject</span><span class="o">.</span><span class="n">exists</span><span class="p">()</span>
+<span class="go">False</span>
+</pre></div>
+</div>
+<p>An optional keyword argument is available to specify the datatype from
+the XNAT schema. The keyword must match the name of the REST level.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">subject</span><span class="o">.</span><span class="n">create</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">subject</span><span class="o">.</span><span class="n">experiment</span><span class="p">(</span><span class="s1">&#39;pet_session&#39;</span>
+<span class="go">          ).create(experiments=&#39;xnat:petSessionData&#39;)</span>
+</pre></div>
+</div>
+<p>It is also possible to create resources without having to create the
+parent resources first. For example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">central</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="s1">&#39;/project/PROJECT/subject/SUBJECT&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">exists</span><span class="p">()</span>
+<span class="go">False</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">central</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="s1">&#39;/project/PROJECT/subject/SUBJECT/experiment/EXP&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">exists</span><span class="p">()</span>
+<span class="go">False</span>
+</pre></div>
+</div>
+<p>Specifiy the datatype on multiple levels:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">central</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="s1">&#39;/project/PROJECT/subject/SUBJECT/experiment/EXP/scan/SCAN&#39;</span>
+<span class="go">                  ).create(experiments=&#39;xnat:mrSessionData&#39;, scans=&#39;xnat:mrScanData&#39;)</span>
+</pre></div>
+</div>
+<p>Use default datatypes:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">central</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="s1">&#39;/project/PROJECT/subject/SUBJECT/experiment/EXP/scan/SCAN&#39;</span>
+<span class="go">                  ).create()</span>
+</pre></div>
+</div>
+<p>Additional fields can be configured at the resource creation. It can
+be especially useful for datatypes that have some mandatory fields,
+and thus would not be created if not specified (this is not a best
+practice for XML Schema writers though). It also enables users to set
+the resource ID through the REST API instead of just the label (the ID
+in this case is generated automatically).</p>
+<p>Custom ID example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">experiment</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">experiments</span><span class="o">=</span><span class="s1">&#39;xnat:mrSessionData&#39;</span><span class="p">,</span>
+<span class="go">                      ID=&#39;my_custom_ID&#39;</span>
+<span class="go">                     )</span>
+</pre></div>
+</div>
+<p>With additional fields:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">experiment</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="o">**</span><span class="p">{</span><span class="s1">&#39;experiments&#39;</span><span class="p">:</span><span class="s1">&#39;xnat:mrSessionData&#39;</span><span class="p">,</span>
+<span class="go">                         &#39;ID&#39;:&#39;mr_custom_ID&#39;,</span>
+<span class="go">                         &#39;xnat:mrSessionData/age&#39;:&#39;42&#39;}</span>
+<span class="go">                      )</span>
+</pre></div>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>When using xpath syntax to declare fields, it is
+mandatory to pass the arguments using a dictionnary because of
+the <code class="docutils literal notranslate"><span class="pre">/</span></code> and <code class="docutils literal notranslate"><span class="pre">:</span></code> characters. And do not forget to expand
+the dict with the <code class="docutils literal notranslate"><span class="pre">**</span></code>.</p>
+</div>
+<p>Since you can create different resource levels in a single create call
+in pyxnat, it is also possible to configure those levels in a single
+call. For example if the subject for that experiment was not created,
+you could have specified:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">experiment</span><span class="o">.</span><span class="n">create</span><span class="p">(</span>
+<span class="go">            **{&#39;experiments&#39;:&#39;xnat:mrSessionData&#39;,</span>
+<span class="go">               &#39;ID&#39;:&#39;mr_custom_ID&#39;,</span>
+<span class="go">               &#39;xnat:mrSessionData/age&#39;:&#39;42&#39;,</span>
+<span class="go">               &#39;xnat:subjectData/investigator/lastname&#39;:&#39;doe&#39;,</span>
+<span class="go">               &#39;xnat:subjectData/investigator/firstname&#39;:&#39;john&#39;,</span>
+<span class="go">               &#39;xnat:subjectData/ID&#39;:&#39;subj_custom_ID&#39;</span>
+<span class="go">              })</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="file-support">
+<h2>File support<a class="headerlink" href="#file-support" title="Permalink to this headline">¶</a></h2>
+<p>It is possible to upload and then download files at every REST resource level:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">my_project</span><span class="o">.</span><span class="n">files</span><span class="p">()</span>
+<span class="go">[]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">my_project</span><span class="o">.</span><span class="n">file</span><span class="p">(</span><span class="s1">&#39;image.nii&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="s1">&#39;/tmp/image.nii&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># you can add any of the following arguments to give additional</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># information on the file you are uploading</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">my_project</span><span class="o">.</span><span class="n">file</span><span class="p">(</span><span class="s1">&#39;image.nii&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">put</span><span class="p">(</span> <span class="s1">&#39;/tmp/image.nii&#39;</span><span class="p">,</span>
+<span class="go">                                      content=&#39;T1&#39;,</span>
+<span class="go">                                      format=&#39;NIFTI&#39;</span>
+<span class="go">                                      tags=&#39;image test&#39;</span>
+<span class="go">                                    )</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">my_project</span><span class="o">.</span><span class="n">resource</span><span class="p">(</span><span class="s1">&#39;NIFTI&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">file</span><span class="p">(</span><span class="s1">&#39;image.nii&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">size</span><span class="p">()</span>
+<span class="go">98098</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">my_project</span><span class="o">.</span><span class="n">resource</span><span class="p">(</span><span class="s1">&#39;NIFTI&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">file</span><span class="p">(</span><span class="s1">&#39;image.nii&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">content</span><span class="p">()</span>
+<span class="go">&#39;T1&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">my_project</span><span class="o">.</span><span class="n">resource</span><span class="p">(</span><span class="s1">&#39;NIFTI&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">file</span><span class="p">(</span><span class="s1">&#39;image.nii&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">format</span><span class="p">()</span>
+<span class="go">&#39;NIFTI&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">my_project</span><span class="o">.</span><span class="n">resource</span><span class="p">(</span><span class="s1">&#39;NIFTI&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">file</span><span class="p">(</span><span class="s1">&#39;image.nii&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">tags</span><span class="p">()</span>
+<span class="go">&#39;image test&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">my_project</span><span class="o">.</span><span class="n">resource</span><span class="p">(</span><span class="s1">&#39;NIFTI&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">file</span><span class="p">(</span><span class="s1">&#39;image.nii&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
+<span class="go">&#39;~/.store/nosetests@central.xnat.org/c7a5b961fc504ffc9aa292f76d75fb0c_image.nii&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">my_project</span><span class="o">.</span><span class="n">file</span><span class="p">(</span><span class="s1">&#39;image.nii&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">get_copy</span><span class="p">()</span>
+<span class="go">&#39;~/.store/nosetests@central.xnat.org/workspace/projects/Volatile/resources/123150742/files/image.nii&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">my_project</span><span class="o">.</span><span class="n">file</span><span class="p">(</span><span class="s1">&#39;image.nii&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">get_copy</span><span class="p">(</span><span class="s1">&#39;/tmp/test.nii&#39;</span><span class="p">)</span>
+<span class="go">&#39;/tmp/test.nii&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># the resource level can be used to group files</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">my_project</span><span class="o">.</span><span class="n">resource</span><span class="p">(</span><span class="s1">&#39;ANALYZE&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">file</span><span class="p">(</span><span class="s1">&#39;image.hdr&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="s1">&#39;/tmp/image.hdr&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">my_project</span><span class="o">.</span><span class="n">resource</span><span class="p">(</span><span class="s1">&#39;ANALYZE&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">file</span><span class="p">(</span><span class="s1">&#39;image.img&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="s1">&#39;/tmp/image.img&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">my_project</span><span class="o">.</span><span class="n">resources</span><span class="p">()</span>
+<span class="go">[&#39;NIFTI&#39;, &#39;ANALYZE&#39;]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">my_project</span><span class="o">.</span><span class="n">resource</span><span class="p">(</span><span class="s1">&#39;ANALYZE&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">files</span><span class="p">()</span>
+<span class="go">[&#39;image.hdr&#39;, &#39;image.img&#39;]</span>
+</pre></div>
+</div>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>New since 0.7, the default <code class="docutils literal notranslate"><span class="pre">get()</span></code> method on a file can be given
+a custom path. It will still be handled and tracked by the cache in
+the same way as other files.</p>
+</div>
+</div>
+<div class="section" id="attributes-support">
+<h2>Attributes support<a class="headerlink" href="#attributes-support" title="Permalink to this headline">¶</a></h2>
+<p>Each resource level also has a set of metadata fields that can be
+informed. This set of fields depends on the resource level and on its
+type in the XNAT schema.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># use hard-coded shortcuts from the REST API</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">my_project</span><span class="o">.</span><span class="n">attrs</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s1">&#39;secondary_ID&#39;</span><span class="p">,</span> <span class="s1">&#39;myproject&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">my_project</span><span class="o">.</span><span class="n">attrs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;secondary_ID&#39;</span><span class="p">)</span>
+<span class="go">&#39;myproject&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># use XPATH from standard or custom XNAT Schema</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">my_project</span><span class="o">.</span><span class="n">attrs</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s1">&#39;xnat:projectData/keywords&#39;</span><span class="p">,</span> <span class="s1">&#39;test project&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">my_project</span><span class="o">.</span><span class="n">attrs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;xnat:projectData/keywords&#39;</span><span class="p">)</span>
+<span class="go">&#39;test project&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># get or set multiple attributes in a single request to improve performance</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">my_project</span><span class="o">.</span><span class="n">attrs</span><span class="o">.</span><span class="n">mset</span><span class="p">({</span><span class="s1">&#39;xnat:projectData/keywords&#39;</span><span class="p">:</span><span class="s1">&#39;test project&#39;</span><span class="p">,</span> <span class="s1">&#39;secondary_ID&#39;</span><span class="p">:</span><span class="s1">&#39;myproject&#39;</span><span class="p">})</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">my_project</span><span class="o">.</span><span class="n">attrs</span><span class="o">.</span><span class="n">mget</span><span class="p">([</span><span class="s1">&#39;xnat:projectData/keywords&#39;</span><span class="p">,</span> <span class="s1">&#39;secondary_ID&#39;</span><span class="p">])</span>
+<span class="go">[&#39;test porject&#39;, &#39;myproject&#39;]</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="the-search-engine">
+<h2>The search engine<a class="headerlink" href="#the-search-engine" title="Permalink to this headline">¶</a></h2>
+<p>The XNAT search engine can be queried via the REST model. It can be
+used to retrieve a specific subset of REST resources or a table
+containing the relevant values. The following queries find all the
+subjects that are within <cite>my_project</cite> older than 14:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">constraints</span> <span class="o">=</span> <span class="p">[(</span><span class="s1">&#39;xnat:subjectData/SUBJECT_ID&#39;</span><span class="p">,</span><span class="s1">&#39;LIKE&#39;</span><span class="p">,</span><span class="s1">&#39;%&#39;</span><span class="p">),</span>
+<span class="go">                  (&#39;xnat:subjectData/PROJECT&#39;, &#39;=&#39;, &#39;my_project&#39;),</span>
+<span class="go">                  &#39;OR&#39;,</span>
+<span class="go">                  [(&#39;xnat:subjectData/AGE&#39;,&#39;&gt;&#39;,&#39;14&#39;),</span>
+<span class="go">                   &#39;AND&#39;</span>
+<span class="go">                   ]</span>
+<span class="go">                  ]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># retrieve experiments</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">interface</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="s1">&#39;//experiments&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">constraints</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># retrieve table with one subject per row and the columns SUBJECT_ID and AGE</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">interface</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="s1">&#39;xnat:subjectData&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;xnat:subjectData/SUBJECT_ID&#39;</span><span class="p">,</span> <span class="s1">&#39;xnat:subjectData/AGE&#39;</span><span class="p">])</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">constraints</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>See the <code class="docutils literal notranslate"><span class="pre">Search</span></code>, <code class="docutils literal notranslate"><span class="pre">SeachManager</span></code> and <code class="docutils literal notranslate"><span class="pre">CObject</span></code> classes reference
+documentation for further details.</p>
+<p>To get the searchable types and fields to put in the constraints, rows
+and columns parameters, use the <code class="docutils literal notranslate"><span class="pre">Interface.inspect.datatypes</span></code>
+method:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">central</span><span class="o">.</span><span class="n">inspect</span><span class="o">.</span><span class="n">datatypes</span><span class="p">(</span><span class="n">optional_filter</span><span class="p">)</span>
+<span class="go">[..., &#39;xnat:subjectData&#39;, &#39;xnat:projectData&#39;, &#39;xnat:mrSessionData&#39;,  ...]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">central</span><span class="o">.</span><span class="n">inspect</span><span class="o">.</span><span class="n">datatypes</span><span class="p">(</span><span class="s1">&#39;xnat:subjectData&#39;</span><span class="p">,</span> <span class="n">optional_filter</span><span class="p">)</span>
+<span class="go">[&#39;xnat:subjectData/SUBJECT_ID&#39;,</span>
+<span class="go"> &#39;xnat:subjectData/INSERT_DATE&#39;,</span>
+<span class="go"> &#39;xnat:subjectData/INSERT_USER&#39;,</span>
+<span class="go"> &#39;xnat:subjectData/GENDER_TEXT&#39;,</span>
+<span class="go"> ...]</span>
+</pre></div>
+</div>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<dl>
+<dt>How to get all the results in a query?</dt><dd><div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">interface</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="s1">&#39;xnat:subjectData&#39;</span><span class="p">,</span>
+<span class="go">                         [&#39;xnat:subjectData/SUBJECT_ID&#39;,</span>
+<span class="go">                          &#39;xnat:subjectData/AGE&#39;]).all()</span>
+</pre></div>
+</div>
+</dd>
+</dl>
+</div>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<dl>
+<dt>How to get all the columns from a datatype?</dt><dd><div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">table</span> <span class="o">=</span> <span class="n">interface</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="s1">&#39;xnat:subjectData&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd>
+</dl>
+</div>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<dl>
+<dt>Then to get everything:</dt><dd><div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">table</span> <span class="o">=</span> <span class="n">interface</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="s1">&#39;xnat:subjectData&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+</pre></div>
+</div>
+</dd>
+</dl>
+</div>
+</div>
+</div>
+
+
+           </div>
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2010, Yannick Schwartz.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> and ❤️  using a custom <a href="https://github.com/LinxiFan/Sphinx-theme">theme</a> based on <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'1.4',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+      <script type="text/javascript" src="_static/language_data.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

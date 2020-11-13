@@ -1,0 +1,579 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Advanced Tutorial &mdash; pyxnat 1.4 documentation</title>
+  
+
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="author" title="About these documents"
+              href="about.html"/>
+        <link rel="index" title="Index"
+              href="genindex.html"/>
+        <link rel="search" title="Search" href="search.html"/>
+    <link rel="top" title="pyxnat 1.4 documentation" href="index.html"/> 
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="index.html" class="icon icon-home"> pyxnat
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                1.4
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+                <!-- Local TOC -->
+                <div class="local-toc"><ul>
+<li><a class="reference internal" href="#">Advanced Tutorial</a><ul>
+<li><a class="reference internal" href="#introspection">Introspection</a><ul>
+<li><a class="reference internal" href="#searchable-datatypes-and-fields">Searchable datatypes and fields</a></li>
+<li><a class="reference internal" href="#rest-hierarchy">REST hierarchy</a></li>
+<li><a class="reference internal" href="#naming-conventions">Naming conventions</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#sharing">Sharing</a></li>
+<li><a class="reference internal" href="#search-templates">Search templates</a></li>
+<li><a class="reference internal" href="#provenance-definition">Provenance definition</a></li>
+</ul>
+</li>
+</ul>
+</div>
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">pyxnat</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+      <li>Advanced Tutorial</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/advanced_tutorial.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <span class="target" id="module-pyxnat"></span><div class="section" id="advanced-tutorial">
+<h1>Advanced Tutorial<a class="headerlink" href="#advanced-tutorial" title="Permalink to this headline">¶</a></h1>
+<p>This advanced tutorial is not much more complicated than the one for beginners.
+It only reviews parts of the API that may be less used (not
+that they are less useful!) and that are more likely to change in
+future releases.</p>
+<div class="section" id="introspection">
+<h2>Introspection<a class="headerlink" href="#introspection" title="Permalink to this headline">¶</a></h2>
+<dl class="simple">
+<dt>In order to browse a database people have to be aware of:</dt><dd><ul class="simple">
+<li><p>the REST hierarchy</p></li>
+<li><p>schema types and fields</p></li>
+<li><p>values of fields and resources within a project</p></li>
+</ul>
+</dd>
+</dl>
+<p>The idea of this interface is to help users find their way around a
+XNAT server by making it easier to gather the preceding information.</p>
+<div class="section" id="searchable-datatypes-and-fields">
+<h3>Searchable datatypes and fields<a class="headerlink" href="#searchable-datatypes-and-fields" title="Permalink to this headline">¶</a></h3>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># simple datatypes listing</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">central</span><span class="o">.</span><span class="n">inspect</span><span class="o">.</span><span class="n">datatypes</span><span class="p">()</span>
+<span class="go">[..., &#39;xnat:subjectData&#39;, &#39;xnat:projectData&#39;, &#39;xnat:mrSessionData&#39;,  ...]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># datatypes listing with filter</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">central</span><span class="o">.</span><span class="n">inspect</span><span class="o">.</span><span class="n">datatypes</span><span class="p">(</span><span class="s1">&#39;cnda:*&#39;</span><span class="p">)</span>
+<span class="go">[&#39;cnda:manualVolumetryData&#39;,</span>
+<span class="go"> &#39;cnda:clinicalAssessmentData&#39;,</span>
+<span class="go"> &#39;cnda:psychometricsData&#39;,</span>
+<span class="go"> &#39;cnda:dtiData&#39;,</span>
+<span class="go"> &#39;cnda:atlasScalingFactorData&#39;,</span>
+<span class="go"> &#39;cnda:segmentationFastData&#39;,</span>
+<span class="go"> &#39;cnda:modifiedScheltensData&#39;]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># simple fields listing</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">central</span><span class="o">.</span><span class="n">inspect</span><span class="o">.</span><span class="n">datatypes</span><span class="p">(</span><span class="s1">&#39;xnat:subjectData&#39;</span><span class="p">)</span>
+<span class="go">[&#39;xnat:subjectData/SUBJECT_ID&#39;,</span>
+<span class="go"> &#39;xnat:subjectData/INSERT_DATE&#39;,</span>
+<span class="go"> &#39;xnat:subjectData/INSERT_USER&#39;,</span>
+<span class="go"> &#39;xnat:subjectData/GENDER_TEXT&#39;,</span>
+<span class="go"> ...]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># field listing with filter</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">central</span><span class="o">.</span><span class="n">inspect</span><span class="o">.</span><span class="n">datatypes</span><span class="p">(</span><span class="s1">&#39;xnat:subjectData&#39;</span><span class="p">,</span> <span class="s1">&#39;*ID*&#39;</span><span class="p">)</span>
+<span class="go">[&#39;xnat:subjectData/SUBJECT_ID&#39;, &#39;xnat:subjectData/ADD_IDS&#39;]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># field listing on multiple types</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">central</span><span class="o">.</span><span class="n">inspect</span><span class="o">.</span><span class="n">datatypes</span><span class="p">(</span><span class="s1">&#39;cnda:*&#39;</span><span class="p">,</span> <span class="s1">&#39;EXPT_ID&#39;</span><span class="p">)</span>
+<span class="go">[&#39;cnda:manualVolumetryData/EXPT_ID&#39;,</span>
+<span class="go"> &#39;cnda:clinicalAssessmentData/EXPT_ID&#39;,</span>
+<span class="go"> &#39;cnda:psychometricsData/EXPT_ID&#39;,</span>
+<span class="go"> &#39;cnda:dtiData/EXPT_ID&#39;,</span>
+<span class="go"> &#39;cnda:atlasScalingFactorData/EXPT_ID&#39;,</span>
+<span class="go"> &#39;cnda:segmentationFastData/EXPT_ID&#39;,</span>
+<span class="go"> &#39;cnda:modifiedScheltensData/EXPT_ID&#39;]</span>
+</pre></div>
+</div>
+<p>To known what values fields can take in the database:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">central</span><span class="o">.</span><span class="n">inspect</span><span class="o">.</span><span class="n">field_values</span><span class="p">(</span><span class="s1">&#39;xnat:mrSessionData/SESSION_ID&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="rest-hierarchy">
+<h3>REST hierarchy<a class="headerlink" href="#rest-hierarchy" title="Permalink to this headline">¶</a></h3>
+<p><a class="reference internal" href="tutorial.html#module-pyxnat" title="pyxnat"><code class="xref py py-mod docutils literal notranslate"><span class="pre">pyxnat</span></code></a> does not support all the REST resources. The reasons for this
+is that, some of these resources are still experimental, or do not
+work exactly the same way which would make it difficult to provide a
+consistent interface at the Python level. However support for these
+exotic resources will increase in future releases. A good way to know
+what is the supported REST hierarchy is to use the following method:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">central</span><span class="o">.</span><span class="n">inspect</span><span class="o">.</span><span class="n">structure</span><span class="p">()</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><dl class="simple">
+<dt>PROJECTS</dt><dd><ul>
+<li><dl class="simple">
+<dt>SUBJECTS</dt><dd><ul>
+<li><dl class="simple">
+<dt>EXPERIMENTS</dt><dd><ul>
+<li><dl class="simple">
+<dt>ASSESSORS</dt><dd><ul>
+<li><dl class="simple">
+<dt>RESOURCES</dt><dd><ul>
+<li><p>FILES</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>IN_RESOURCES</dt><dd><ul>
+<li><p>FILES</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>OUT_RESOURCES</dt><dd><ul>
+<li><p>FILES</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>RECONSTRUCTIONS</dt><dd><ul>
+<li><dl class="simple">
+<dt>IN_RESOURCES</dt><dd><ul>
+<li><p>FILES</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>OUT_RESOURCES</dt><dd><ul>
+<li><p>FILES</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>SCANS</dt><dd><ul>
+<li><dl class="simple">
+<dt>RESOURCES</dt><dd><ul>
+<li><p>FILES</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>RESOURCES</dt><dd><ul>
+<li><p>FILES</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>RESOURCES</dt><dd><ul>
+<li><p>FILES</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>RESOURCES</dt><dd><ul>
+<li><p>FILES</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+</div>
+<div class="section" id="naming-conventions">
+<h3>Naming conventions<a class="headerlink" href="#naming-conventions" title="Permalink to this headline">¶</a></h3>
+<p>Administrators usually use a consistent vocabulary across single
+projects, that maps to XNAT datatypes. A new feature in introduced in
+0.6 and improved in 0.7 is to be able to define a mapping so that
+specific name patterns can be used to cast a resource when creating a
+new one.</p>
+<p>For example with the following mapping:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="s1">&#39;/projects/my_project/subjects/*/experiments/SessionA_*&#39;</span><span class="p">:</span><span class="s1">&#39;xnat:mrSessionData&#39;</span>
+</pre></div>
+</div>
+<p>Creating an experiment in <code class="docutils literal notranslate"><span class="pre">my_project</span></code> that matches <cite>Session_*</cite>, creates an <cite>xnat:mrSessionData</cite>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">central</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="s1">&#39;/projects/my_project/subjects/*/experiments/SessionA_new&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">create</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>In the 0.7, it is no longer up to the user to manually save and load
+the mapping file. Files are created automatically and the mappings are
+discovered <cite>on the fly</cite> when queries are issued on the server. Files
+are loaded at the <code class="docutils literal notranslate"><span class="pre">Interface</span></code> creation and the mappings are updated
+regularly. This functionality can be configured with the following
+method:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># activate (default)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">central</span><span class="o">.</span><span class="n">inspect</span><span class="o">.</span><span class="n">set_autolearn</span><span class="p">(</span><span class="s1">&#39;True&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># setup update frequency</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">central</span><span class="o">.</span><span class="n">inspect</span><span class="o">.</span><span class="n">set_autolearn</span><span class="p">(</span><span class="n">tick</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>When a mapping is available, re-running the <code class="docutils literal notranslate"><span class="pre">rest_hierarchy</span></code> method will display additional information such as:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">-</span> <span class="n">PROJECTS</span>
+    <span class="o">+</span> <span class="n">SUBJECTS</span>
+        <span class="o">+</span> <span class="n">EXPERIMENTS</span>
+          <span class="o">-----------</span>
+        <span class="o">-</span> <span class="n">xnat</span><span class="p">:</span><span class="n">mrSessionData</span>
+        <span class="o">-</span> <span class="n">xnat</span><span class="p">:</span><span class="n">petSessionData</span>
+            <span class="o">+</span><span class="n">ASSESSORS</span>
+            <span class="o">....</span>
+</pre></div>
+</div>
+<p>There are additional methods to visualize and display the mappings:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">central</span><span class="o">.</span><span class="n">inspect</span><span class="o">.</span><span class="n">experiment_types</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">central</span><span class="o">.</span><span class="n">inspect</span><span class="o">.</span><span class="n">assessor_types</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">central</span><span class="o">.</span><span class="n">inspect</span><span class="o">.</span><span class="n">scan_types</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">central</span><span class="o">.</span><span class="n">inspect</span><span class="o">.</span><span class="n">reconstruction_types</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Methods also allow to have a quick look on the values at those levels
+on the database:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">central</span><span class="o">.</span><span class="n">inspect</span><span class="o">.</span><span class="n">experiment_values</span><span class="p">(</span><span class="s1">&#39;xnat:mrSessionData&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">central</span><span class="o">.</span><span class="n">inspect</span><span class="o">.</span><span class="n">assessor_values</span><span class="p">(</span><span class="s1">&#39;xnat:mrSessionData&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">central</span><span class="o">.</span><span class="n">inspect</span><span class="o">.</span><span class="n">scan_values</span><span class="p">(</span><span class="s1">&#39;xnat:mrSessionData&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">central</span><span class="o">.</span><span class="n">inspect</span><span class="o">.</span><span class="n">reconstruction_values</span><span class="p">(</span><span class="s1">&#39;xnat:mrSessionData&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>For more details check the reference documentation.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>With <code class="docutils literal notranslate"><span class="pre">networkx</span></code> and <code class="docutils literal notranslate"><span class="pre">matplotlib</span></code> installed, a <code class="docutils literal notranslate"><span class="pre">draw</span></code>
+subinterface will be made available to display some data from the
+inspect subinterface as a graph:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">central</span><span class="o">.</span><span class="n">draw</span><span class="o">.</span><span class="n">experiments</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">central</span><span class="o">.</span><span class="n">draw</span><span class="o">.</span><span class="n">assessors</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">central</span><span class="o">.</span><span class="n">draw</span><span class="o">.</span><span class="n">scans</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">central</span><span class="o">.</span><span class="n">draw</span><span class="o">.</span><span class="n">reconstructions</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">central</span><span class="o">.</span><span class="n">draw</span><span class="o">.</span><span class="n">architecture</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">central</span><span class="o">.</span><span class="n">draw</span><span class="o">.</span><span class="n">field_values</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="section" id="sharing">
+<h2>Sharing<a class="headerlink" href="#sharing" title="Permalink to this headline">¶</a></h2>
+<p>It is possible to share <code class="docutils literal notranslate"><span class="pre">Subjects</span></code>, <code class="docutils literal notranslate"><span class="pre">Experiments</span></code> and
+<code class="docutils literal notranslate"><span class="pre">Assessors</span></code> via the REST API.  The methods to control sharing are:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">subject</span> <span class="o">=</span> <span class="n">interface</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="s1">&#39;/project/project1/subject/subject1&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">subject</span><span class="o">.</span><span class="n">share</span><span class="p">(</span><span class="s1">&#39;project2&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">subject</span><span class="o">.</span><span class="n">unshare</span><span class="p">(</span><span class="s1">&#39;project2&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># to know to in which projects a subject is available</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">subject</span><span class="o">.</span><span class="n">shares</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Almost the same interface is available for collection objects:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">subjects</span> <span class="o">=</span> <span class="n">interface</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="s1">&#39;/project/project1/subjects&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">subjects</span><span class="o">.</span><span class="n">share</span><span class="p">(</span><span class="s1">&#39;project2&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">subjects</span><span class="o">.</span><span class="n">unshare</span><span class="p">(</span><span class="s1">&#39;project2&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># to retrieve the subjects sharing a list of projects</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">subjects</span><span class="o">.</span><span class="n">sharing</span><span class="p">([</span><span class="s1">&#39;project1&#39;</span><span class="p">,</span> <span class="s1">&#39;project2&#39;</span><span class="p">])</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Of course the permissions policies (user level and project
+accessibility)still apply.</p>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">shares</span></code> and <code class="docutils literal notranslate"><span class="pre">sharing</span></code> methods are not implemented in an
+efficient way at the moment. There is another more concerning
+issue: subjects for example are accessible through their ID or
+label. But labels stop working when trying to access a subject
+through a project that is not its orginial one.</p>
+</div>
+</div>
+<div class="section" id="search-templates">
+<h2>Search templates<a class="headerlink" href="#search-templates" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference internal" href="tutorial.html#module-pyxnat" title="pyxnat"><code class="xref py py-mod docutils literal notranslate"><span class="pre">pyxnat</span></code></a> is also able to define templates to use with XNAT search engine.
+They work basically the same way as usual searches but instead of defining
+values to filter the data, one need to define keywords to replace them later
+with the actual values:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">contraints</span> <span class="o">=</span> <span class="p">[(</span><span class="s1">&#39;xnat:subjectData/SUBJECT_ID&#39;</span><span class="p">,</span><span class="s1">&#39;LIKE&#39;</span><span class="p">,</span><span class="s1">&#39;subject_id&#39;</span><span class="p">),</span>
+<span class="go">                  (&#39;xnat:subjectData/PROJECT&#39;, &#39;=&#39;, &#39;project_id&#39;),</span>
+<span class="go">                  &#39;OR&#39;,</span>
+<span class="go">                  [(&#39;xnat:subjectData/AGE&#39;,&#39;&gt;&#39;,&#39;age&#39;),</span>
+<span class="go">                   &#39;AND&#39;</span>
+<span class="go">                   ]</span>
+<span class="go">                  ]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">columns</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;xnat:subjectData/PROJECT&#39;</span><span class="p">,</span> <span class="s1">&#39;xnat:subjectData/SUBJECT_ID&#39;</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">interface</span><span class="o">.</span><span class="n">manage</span><span class="o">.</span><span class="n">search</span><span class="o">.</span><span class="n">save_template</span><span class="p">(</span><span class="s1">&#39;name&#39;</span><span class="p">,</span>
+<span class="go">                                           &#39;xnat:subjectData&#39;,</span>
+<span class="go">                                           columns,</span>
+<span class="go">                                           criteria,</span>
+<span class="go">                                           sharing=&#39;public&#39;,</span>
+<span class="go">                                           description=&#39;my first template&#39;</span>
+<span class="go">                                           )</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">interface</span><span class="o">.</span><span class="n">manage</span><span class="o">.</span><span class="n">search</span><span class="o">.</span><span class="n">use_template</span><span class="p">(</span><span class="s1">&#39;name&#39;</span><span class="p">,</span>
+<span class="go">                                         {&#39;subject_id&#39;:&#39;%&#39;,</span>
+<span class="go">                                          &#39;project_id&#39;:&#39;my_project&#39;,</span>
+<span class="go">                                          &#39;age&#39;:&#39;42&#39;</span>
+<span class="go">                                          }</span>
+<span class="go">                                         )</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">interface</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="o">...</span><span class="p">)</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">template</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;name&#39;</span><span class="p">,</span>
+<span class="go">                                          {&#39;subject_id&#39;:&#39;%&#39;,</span>
+<span class="go">                                          &#39;project_id&#39;:&#39;my_project&#39;,</span>
+<span class="go">                                          &#39;age&#39;:&#39;42&#39;}</span>
+<span class="go">                                          )</span>
+<span class="go">                                )</span>
+</pre></div>
+</div>
+<p>And now it is also possible to reuse saved searches in the where clause in the
+same way as the templates. It means that you reuse the constraints but not the
+data selection which still changes:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">interface</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="o">...</span><span class="p">)</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">query</span><span class="o">=</span><span class="s1">&#39;saved_name&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="provenance-definition">
+<h2>Provenance definition<a class="headerlink" href="#provenance-definition" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference internal" href="tutorial.html#module-pyxnat" title="pyxnat"><code class="xref py py-mod docutils literal notranslate"><span class="pre">pyxnat</span></code></a> 0.8 introduces a way to store provenance i.e. to describe the steps
+that were performed on an initial data to produce this one. Reconstructions
+and assessors only can be annotated with provenance information:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">prov</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;program&#39;</span><span class="p">:</span><span class="s1">&#39;young&#39;</span><span class="p">,</span>
+<span class="go">            &#39;timestamp&#39;:&#39;2011-03-01T12:01:01.897987&#39;,</span>
+<span class="go">            &#39;user&#39;:&#39;angus&#39;,</span>
+<span class="go">            &#39;machine&#39;:&#39;war&#39;,</span>
+<span class="go">            &#39;platform&#39;:&#39;linux&#39;,</span>
+<span class="go">            }</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">element</span><span class="o">.</span><span class="n">provenance</span><span class="o">.</span><span class="n">attach</span><span class="p">(</span><span class="n">prov</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">element</span><span class="o">.</span><span class="n">provenance</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">element</span><span class="o">.</span><span class="n">dettach</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>The provenance <code class="xref py py-meth docutils literal notranslate"><span class="pre">Provenance.attach()</span></code> method adds new steps with each call, unless the <cite>overwrite</cite>
+parameter is set to <cite>True</cite>. The following keywords for the provenance dictionary
+are available:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>program</p></li>
+<li><p>program_version</p></li>
+<li><p>program_arguments</p></li>
+<li><p>timestamp</p></li>
+<li><p>cvs</p></li>
+<li><p>user</p></li>
+<li><p>machine</p></li>
+<li><p>platform</p></li>
+<li><p>platform_version</p></li>
+<li><p>compiler</p></li>
+<li><p>compiler_version</p></li>
+</ul>
+</div></blockquote>
+</div>
+</div>
+
+
+           </div>
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2010, Yannick Schwartz.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> and ❤️  using a custom <a href="https://github.com/LinxiFan/Sphinx-theme">theme</a> based on <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'1.4',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+      <script type="text/javascript" src="_static/language_data.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

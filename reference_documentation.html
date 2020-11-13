@@ -1,0 +1,2273 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Reference documentation &mdash; pyxnat 1.4 documentation</title>
+  
+
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="author" title="About these documents"
+              href="about.html"/>
+        <link rel="index" title="Index"
+              href="genindex.html"/>
+        <link rel="search" title="Search" href="search.html"/>
+    <link rel="top" title="pyxnat 1.4 documentation" href="index.html"/> 
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="index.html" class="icon icon-home"> pyxnat
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                1.4
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+                <!-- Local TOC -->
+                <div class="local-toc"><ul>
+<li><a class="reference internal" href="#">Reference documentation</a><ul>
+<li><a class="reference internal" href="#the-interface-class">The <cite>Interface</cite> class</a></li>
+<li><a class="reference internal" href="#the-select-class">The <cite>Select</cite> class</a></li>
+<li><a class="reference internal" href="#the-inspect-class">The <cite>Inspect</cite> class</a></li>
+<li><a class="reference internal" href="#the-searchmanager-class">The <cite>SearchManager</cite> class</a></li>
+<li><a class="reference internal" href="#the-search-class">The <cite>Search</cite> class</a></li>
+<li><a class="reference internal" href="#the-eobject-class">The <cite>EObject</cite> class</a></li>
+<li><a class="reference internal" href="#the-cobject-class">The <cite>CObject</cite> class</a></li>
+<li><a class="reference internal" href="#the-project-class">The <cite>Project</cite> class</a></li>
+<li><a class="reference internal" href="#the-file-class">The <cite>File</cite> class</a></li>
+<li><a class="reference internal" href="#the-attributes-class">The <cite>Attributes</cite> class</a></li>
+<li><a class="reference internal" href="#the-provenance-class">The <cite>Provenance</cite> class</a></li>
+<li><a class="reference internal" href="#the-users-class">The <cite>Users</cite> class</a></li>
+<li><a class="reference internal" href="#the-inspector-class">The <cite>Inspector</cite> class</a></li>
+<li><a class="reference internal" href="#the-schemamanager-class">The <cite>SchemaManager</cite> class</a></li>
+</ul>
+</li>
+</ul>
+</div>
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">pyxnat</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+      <li>Reference documentation</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/reference_documentation.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="reference-documentation">
+<h1>Reference documentation<a class="headerlink" href="#reference-documentation" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="the-interface-class">
+<h2>The <cite>Interface</cite> class<a class="headerlink" href="#the-interface-class" title="Permalink to this headline">¶</a></h2>
+<dl class="py class">
+<dt id="pyxnat.core.Interface">
+<em class="property">class </em><code class="sig-prename descclassname">pyxnat.core.</code><code class="sig-name descname">Interface</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">server</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">user</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">password</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">config</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">anonymous</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">proxy</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">verify</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyxnat.core.Interface" title="Permalink to this definition">¶</a></dt>
+<dd><p>Main entry point to access an XNAT server.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">central</span> <span class="o">=</span> <span class="n">Interface</span><span class="p">(</span><span class="n">server</span><span class="o">=</span><span class="s1">&#39;http://central.xnat.org:8080&#39;</span><span class="p">,</span>
+<span class="go">                        user=&#39;login&#39;,</span>
+<span class="go">                        password=&#39;pwd&#39;)</span>
+</pre></div>
+</div>
+<p>Or with config file:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">central</span> <span class="o">=</span> <span class="n">Interface</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="s1">&#39;/home/me/.xnat.cfg&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Or for interactive use:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">central</span> <span class="o">=</span> <span class="n">Interface</span><span class="p">(</span><span class="s1">&#39;http://central.xnat.org&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The interactive mode is triggered whenever an argument (between
+server, user or password) is missing. In interactive mode pyxnat
+will check that connection settings are valid.</p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Proxy support requires the socks module be installed. This can be
+installed via pip:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>`pip install SocksiPy-branch`
+</pre></div>
+</div>
+</div>
+<p>Or anonymously (unauthenticated):</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">central</span> <span class="o">=</span> <span class="n">Interface</span><span class="p">(</span><span class="s1">&#39;http://central.xnat.org&#39;</span><span class="p">,</span> <span class="n">anonymous</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+<dl class="py method">
+<dt id="pyxnat.core.Interface.close_jsession">
+<code class="sig-name descname">close_jsession</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pyxnat.core.Interface.close_jsession" title="Permalink to this definition">¶</a></dt>
+<dd><p>Closes the session with XNAT server and consumes the JSESSIONID token.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="pyxnat.core.Interface.delete">
+<code class="sig-name descname">delete</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">uri</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyxnat.core.Interface.delete" title="Permalink to this definition">¶</a></dt>
+<dd><p>Wrapper around requests.delete()
+returns rquests.response object</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="pyxnat.core.Interface.disconnect">
+<code class="sig-name descname">disconnect</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pyxnat.core.Interface.disconnect" title="Permalink to this definition">¶</a></dt>
+<dd><p>Tell XNAT to disconnect this session</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="pyxnat.core.Interface.get">
+<code class="sig-name descname">get</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">uri</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyxnat.core.Interface.get" title="Permalink to this definition">¶</a></dt>
+<dd><p>Wrapper around requests.get()
+returns rquests.response object</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="pyxnat.core.Interface.head">
+<code class="sig-name descname">head</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">uri</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyxnat.core.Interface.head" title="Permalink to this definition">¶</a></dt>
+<dd><p>Wrapper around requests.head()
+returns rquests.response object</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="pyxnat.core.Interface.load_config">
+<code class="sig-name descname">load_config</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">location</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyxnat.core.Interface.load_config" title="Permalink to this definition">¶</a></dt>
+<dd><p>Loads a configuration file and replaces current connection
+parameters.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This method raises NotImplementedError for an anonymous
+interface.</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>location</strong> (<em>string</em>) – Configuration file path.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="pyxnat.core.Interface.post">
+<code class="sig-name descname">post</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">uri</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyxnat.core.Interface.post" title="Permalink to this definition">¶</a></dt>
+<dd><p>Wrapper around requests.post()
+returns rquests.response object</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="pyxnat.core.Interface.put">
+<code class="sig-name descname">put</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">uri</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyxnat.core.Interface.put" title="Permalink to this definition">¶</a></dt>
+<dd><p>Wrapper around requests.put()
+returns rquests.response object</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="pyxnat.core.Interface.save_config">
+<code class="sig-name descname">save_config</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">location</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyxnat.core.Interface.save_config" title="Permalink to this definition">¶</a></dt>
+<dd><p>Saves current configuration - including password - in a file.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Since the password is saved as well, make sure the file
+is saved at a safe location with appropriate permissions.</p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This method raises NotImplementedError for an anonymous
+interface.</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>location</strong> (<em>string</em>) – Destination config file.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="pyxnat.core.Interface.version">
+<code class="sig-name descname">version</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pyxnat.core.Interface.version" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get version of the currently running XNAT instance.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="the-select-class">
+<h2>The <cite>Select</cite> class<a class="headerlink" href="#the-select-class" title="Permalink to this headline">¶</a></h2>
+<dl class="py class">
+<dt id="pyxnat.core.select.Select">
+<em class="property">class </em><code class="sig-prename descclassname">pyxnat.core.select.</code><code class="sig-name descname">Select</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">interface</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyxnat.core.select.Select" title="Permalink to this definition">¶</a></dt>
+<dd><p>Data selection interface. Callable object that indicates the
+data to be returned to the user.</p>
+<p class="rubric">Examples</p>
+<dl>
+<dt>Select with a path:</dt><dd><div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">interface</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="s1">&#39;/projects/myproj/subjects&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
+</pre></div>
+</div>
+</dd>
+<dt>Select with a datatype:</dt><dd><div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">columns</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;xnat:subjectData/PROJECT&#39;</span><span class="p">,</span>
+<span class="go">               &#39;xnat:subjectData/SUBJECT_ID&#39;</span>
+<span class="go">               ]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">criteria</span> <span class="o">=</span> <span class="p">[(</span><span class="s1">&#39;xnat:subjectData/SUBJECT_ID&#39;</span><span class="p">,</span> <span class="s1">&#39;LIKE&#39;</span><span class="p">,</span> <span class="s1">&#39;*&#39;</span><span class="p">),</span>
+<span class="go">                &#39;AND&#39;</span>
+<span class="go">                ]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">interface</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="s1">&#39;xnat:subjectData&#39;</span><span class="p">,</span> <span class="n">columns</span>
+<span class="go">            ).where(criteria)</span>
+</pre></div>
+</div>
+</dd>
+</dl>
+<dl class="py method">
+<dt id="pyxnat.core.select.Select.__call__">
+<code class="sig-name descname">__call__</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">datatype_or_path</span></em>, <em class="sig-param"><span class="n">columns</span><span class="o">=</span><span class="default_value">[]</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyxnat.core.select.Select.__call__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Select clause to specify what type of data is to be returned.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>datatype_or_path</strong> (<em>string</em>) – <dl class="simple">
+<dt>Can either be a resource path or a datatype:</dt><dd><ul>
+<li><p>when a path, REST resources are returned, the
+<cite>columns</cite> argument is useless.</p></li>
+<li><p>when a datatype, a search Object is returned,
+the <cite>columns</cite> argument has to be specified.</p></li>
+</ul>
+</dd>
+</dl>
+</p></li>
+<li><p><strong>columns</strong> (<em>list</em>) – List of fieldtypes e.g. xnat:subjectData/SUBJECT_ID
+Datatype and columns are used to specify the search table
+that has to be returned. Use the method <cite>where</cite> on the
+<cite>Search</cite> object to trigger a search on the database.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="pyxnat.core.select.Select.project">
+<code class="sig-name descname">project</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">ID</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyxnat.core.select.Select.project" title="Permalink to this definition">¶</a></dt>
+<dd><p>Access a particular project.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>ID</strong> (<em>string</em>) – ID of the project.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="pyxnat.core.select.Select.projects">
+<code class="sig-name descname">projects</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">id_filter</span><span class="o">=</span><span class="default_value">'*'</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyxnat.core.select.Select.projects" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the list of all visible projects for the server.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>id_filter</strong> (<em>string</em>) – Name pattern to filter the returned projects.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="the-inspect-class">
+<h2>The <cite>Inspect</cite> class<a class="headerlink" href="#the-inspect-class" title="Permalink to this headline">¶</a></h2>
+<dl class="py class">
+<dt id="pyxnat.core.help.Inspector">
+<em class="property">class </em><code class="sig-prename descclassname">pyxnat.core.help.</code><code class="sig-name descname">Inspector</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">interface</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyxnat.core.help.Inspector" title="Permalink to this definition">¶</a></dt>
+<dd><p>Database introspection interface.</p>
+<dl class="py method">
+<dt id="pyxnat.core.help.Inspector.assessor_types">
+<code class="sig-name descname">assessor_types</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pyxnat.core.help.Inspector.assessor_types" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the datatypes used at the assessor level in this
+database.</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#id12" title="pyxnat.core.help.Inspector.set_autolearn"><code class="xref py py-func docutils literal notranslate"><span class="pre">Inspector.set_autolearn()</span></code></a></p>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt id="pyxnat.core.help.Inspector.assessor_values">
+<code class="sig-name descname">assessor_values</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">experiment_type</span></em>, <em class="sig-param"><span class="n">project</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyxnat.core.help.Inspector.assessor_values" title="Permalink to this definition">¶</a></dt>
+<dd><p>Look for the values at the assessor level for a given experiment
+type in the database.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The experiment type should be one of
+Inspector.experiment_types()</p>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Depending on the number of elements the operation may
+take a while.</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>datatype</strong> (<em>string</em>) – An experiment type. eg: xnat:mrsessiondata</p></li>
+<li><p><strong>project</strong> (<em>string</em>) – Optional. Restrict operation to a project.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="pyxnat.core.help.Inspector.datatypes">
+<code class="sig-name descname">datatypes</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">pattern</span><span class="o">=</span><span class="default_value">'*'</span></em>, <em class="sig-param"><span class="n">fields_pattern</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyxnat.core.help.Inspector.datatypes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Discovers the datatypes and datafields of the database.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>pattern</strong> (<em>string</em>) – Pattern for the datatype. May include wildcards.</p></li>
+<li><p><strong>fields_pattern</strong> (<em>string</em>) – <ul>
+<li><p>Pattern for the datafields – may include wildcards.</p></li>
+<li><p>If specified, datafields will be returned instead of
+datatypes.</p></li>
+</ul>
+</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>list</strong></p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>datatypes or datafields depending on the argument usage.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="pyxnat.core.help.Inspector.experiment_types">
+<code class="sig-name descname">experiment_types</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pyxnat.core.help.Inspector.experiment_types" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the datatypes used at the experiment level in this
+database.</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#id12" title="pyxnat.core.help.Inspector.set_autolearn"><code class="xref py py-func docutils literal notranslate"><span class="pre">Inspector.set_autolearn()</span></code></a></p>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt id="pyxnat.core.help.Inspector.experiment_values">
+<code class="sig-name descname">experiment_values</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">datatype</span></em>, <em class="sig-param"><span class="n">project</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyxnat.core.help.Inspector.experiment_values" title="Permalink to this definition">¶</a></dt>
+<dd><p>Look for the values a the experiment level for a given datatype
+in the database.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The  datatype should be one of Inspector.experiment_types()</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>datatype</strong> (<em>string</em>) – An experiment type. eg: xnat:mrsessiondata</p></li>
+<li><p><strong>project</strong> (<em>string</em>) – Optional. Restrict operation to a project.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="pyxnat.core.help.Inspector.field_values">
+<code class="sig-name descname">field_values</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">field_name</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyxnat.core.help.Inspector.field_values" title="Permalink to this definition">¶</a></dt>
+<dd><p>Look for the values a specific datafield takes in the database.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="pyxnat.core.help.Inspector.project_values">
+<code class="sig-name descname">project_values</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pyxnat.core.help.Inspector.project_values" title="Permalink to this definition">¶</a></dt>
+<dd><p>Look for the values a the project level in the database.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Is equivalent to interface.select.projects().get()</p>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt id="pyxnat.core.help.Inspector.reconstruction_types">
+<code class="sig-name descname">reconstruction_types</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pyxnat.core.help.Inspector.reconstruction_types" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the datatypes used at the reconstruction level in this
+database.</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#id12" title="pyxnat.core.help.Inspector.set_autolearn"><code class="xref py py-func docutils literal notranslate"><span class="pre">Inspector.set_autolearn()</span></code></a></p>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt id="pyxnat.core.help.Inspector.reconstruction_values">
+<code class="sig-name descname">reconstruction_values</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">experiment_type</span></em>, <em class="sig-param"><span class="n">project</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyxnat.core.help.Inspector.reconstruction_values" title="Permalink to this definition">¶</a></dt>
+<dd><p>Look for the values at the reconstruction level for a given
+experiment type in the database.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The experiment type should be one of
+Inspector.experiment_types()</p>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Depending on the number of elements the operation may
+take a while.</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>datatype</strong> (<em>string</em>) – An experiment type.</p></li>
+<li><p><strong>project</strong> (<em>string</em>) – Optional. Restrict operation to a project.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="pyxnat.core.help.Inspector.scan_types">
+<code class="sig-name descname">scan_types</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pyxnat.core.help.Inspector.scan_types" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the datatypes used at the scan level in this
+database.</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#id12" title="pyxnat.core.help.Inspector.set_autolearn"><code class="xref py py-func docutils literal notranslate"><span class="pre">Inspector.set_autolearn()</span></code></a></p>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt id="pyxnat.core.help.Inspector.scan_values">
+<code class="sig-name descname">scan_values</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">experiment_type</span></em>, <em class="sig-param"><span class="n">project</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyxnat.core.help.Inspector.scan_values" title="Permalink to this definition">¶</a></dt>
+<dd><p>Look for the values at the scan level for a given experiment
+type in the database.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The experiment type should be one of
+Inspector.experiment_types()</p>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Depending on the number of elements the operation may
+take a while.</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>datatype</strong> (<em>string</em>) – An experiment type.</p></li>
+<li><p><strong>project</strong> (<em>string</em>) – Optional. Restrict operation to a project.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="pyxnat.core.help.Inspector.set_autolearn">
+<code class="sig-name descname">set_autolearn</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">auto</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">tick</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyxnat.core.help.Inspector.set_autolearn" title="Permalink to this definition">¶</a></dt>
+<dd><p>Once in a while queries will persist additional
+information on the server. This information is available
+through the following methods of this class:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>experiment_types</p></li>
+<li><p>assessor_types</p></li>
+<li><p>scan_types</p></li>
+<li><p>reconstruction_types</p></li>
+</ul>
+</div></blockquote>
+<p>It is also transparently used in insert operations.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>auto</strong> (<em>boolean</em>) – True to enable auto learn. False to disable.</p></li>
+<li><p><strong>tick</strong> (<em>int</em>) – Every ‘tick’ seconds, if a query is issued, additional
+information will be persisted.</p></li>
+</ul>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><code class="xref py py-func docutils literal notranslate"><span class="pre">EObject.insert()</span></code></p>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt id="pyxnat.core.help.Inspector.structure">
+<code class="sig-name descname">structure</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pyxnat.core.help.Inspector.structure" title="Permalink to this definition">¶</a></dt>
+<dd><p>Displays the keywords structure used in XNAT REST API.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="pyxnat.core.help.Inspector.subject_values">
+<code class="sig-name descname">subject_values</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">project</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyxnat.core.help.Inspector.subject_values" title="Permalink to this definition">¶</a></dt>
+<dd><p>Look for the values a the subject level in the database.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Is equivalent to interface.select(‘//subjects’).get()</p>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="the-searchmanager-class">
+<h2>The <cite>SearchManager</cite> class<a class="headerlink" href="#the-searchmanager-class" title="Permalink to this headline">¶</a></h2>
+<dl class="py class">
+<dt id="pyxnat.core.search.SearchManager">
+<em class="property">class </em><code class="sig-prename descclassname">pyxnat.core.search.</code><code class="sig-name descname">SearchManager</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">interface</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyxnat.core.search.SearchManager" title="Permalink to this definition">¶</a></dt>
+<dd><p>Search interface.
+Handles operations to save and get back searches on the server.</p>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">row</span> <span class="o">=</span> <span class="s1">&#39;xnat:subjectData&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">columns</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;xnat:subjectData/PROJECT&#39;</span><span class="p">,</span>
+<span class="go">               &#39;xnat:subjectData/SUBJECT_ID&#39;</span>
+<span class="go">               ]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">criteria</span> <span class="o">=</span> <span class="p">[(</span><span class="s1">&#39;xnat:subjectData/SUBJECT_ID&#39;</span><span class="p">,</span> <span class="s1">&#39;LIKE&#39;</span><span class="p">,</span> <span class="s1">&#39;*&#39;</span><span class="p">),</span>
+<span class="go">                &#39;AND&#39;</span>
+<span class="go">                ]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">interface</span><span class="o">.</span><span class="n">manage</span><span class="o">.</span><span class="n">search</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="s1">&#39;mysearch&#39;</span><span class="p">,</span> <span class="n">row</span><span class="p">,</span> <span class="n">columns</span><span class="p">,</span>
+<span class="go">                                 criteria, sharing=&#39;public&#39;,</span>
+<span class="go">                                 description=&#39;my first search&#39;</span>
+<span class="go">                                 )</span>
+</pre></div>
+</div>
+<dl class="py method">
+<dt id="pyxnat.core.search.SearchManager.delete">
+<code class="sig-name descname">delete</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyxnat.core.search.SearchManager.delete" title="Permalink to this definition">¶</a></dt>
+<dd><p>Removes the search from the server.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="pyxnat.core.search.SearchManager.delete_template">
+<code class="sig-name descname">delete_template</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyxnat.core.search.SearchManager.delete_template" title="Permalink to this definition">¶</a></dt>
+<dd><p>Deletes a search template.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="pyxnat.core.search.SearchManager.get">
+<code class="sig-name descname">get</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span></em>, <em class="sig-param"><span class="n">out_format</span><span class="o">=</span><span class="default_value">'results'</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyxnat.core.search.SearchManager.get" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the results of the query saved on the XNAT server or
+the query itself to know what it does.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<em>string</em>) – Name of the saved search. An exception is raised if the name
+does not exist.</p></li>
+<li><p><strong>out_format</strong> (<em>string</em>) – <dl class="simple">
+<dt>Can take the following values:</dt><dd><ul>
+<li><p>results to download the results of the search</p></li>
+<li><p>xml to download the XML document defining the search</p></li>
+<li><p>query to get the pyxnat representation of the search</p></li>
+</ul>
+</dd>
+</dl>
+</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="pyxnat.core.search.SearchManager.get_template">
+<code class="sig-name descname">get_template</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span></em>, <em class="sig-param"><span class="n">as_xml</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyxnat.core.search.SearchManager.get_template" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get a saved template, either as an xml document, or as a pyxnat
+representation, with the keys to be used in the template
+between the parentheses in %()s.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<em>str</em>) – Name under which the template is saved</p></li>
+<li><p><strong>as_xml</strong> (<em>boolean</em>) – If True returns an XML document, else return a list of
+constraints. Defaults to False.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="pyxnat.core.search.SearchManager.save">
+<code class="sig-name descname">save</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span></em>, <em class="sig-param"><span class="n">row</span></em>, <em class="sig-param"><span class="n">columns</span></em>, <em class="sig-param"><span class="n">constraints</span></em>, <em class="sig-param"><span class="n">sharing</span><span class="o">=</span><span class="default_value">'private'</span></em>, <em class="sig-param"><span class="n">description</span><span class="o">=</span><span class="default_value">''</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyxnat.core.search.SearchManager.save" title="Permalink to this definition">¶</a></dt>
+<dd><p>Saves a query on the XNAT server.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<em>string</em>) – Name of the query displayed on the Web Interface and
+used to get back the results.</p></li>
+<li><p><strong>row</strong> (<em>string</em>) – Datatype from <cite>Interface.inspect.datatypes()</cite>.
+Usually <code class="docutils literal notranslate"><span class="pre">xnat:subjectData</span></code></p></li>
+<li><p><strong>columns</strong> (<em>list</em>) – List of data fields from
+<cite>Interface.inspect.datatypes(‘*’, ‘*’)</cite></p></li>
+<li><p><strong>constraints</strong> (<em>list</em>) – See also: <cite>Search.where()</cite></p></li>
+<li><p><strong>sharing</strong> (<em>string | list</em>) – Define by whom the query is visible.
+If sharing is a string it may be either
+<code class="docutils literal notranslate"><span class="pre">private</span></code> or <code class="docutils literal notranslate"><span class="pre">public</span></code>.
+Otherwise a list of valid logins for the XNAT server
+from <cite>Interface.users()</cite>.</p></li>
+</ul>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#pyxnat.core.search.Search.where" title="pyxnat.core.search.Search.where"><code class="xref py py-func docutils literal notranslate"><span class="pre">Search.where()</span></code></a></p>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt id="pyxnat.core.search.SearchManager.save_template">
+<code class="sig-name descname">save_template</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span></em>, <em class="sig-param"><span class="n">row</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">columns</span><span class="o">=</span><span class="default_value">[]</span></em>, <em class="sig-param"><span class="n">constraints</span><span class="o">=</span><span class="default_value">[]</span></em>, <em class="sig-param"><span class="n">sharing</span><span class="o">=</span><span class="default_value">'private'</span></em>, <em class="sig-param"><span class="n">description</span><span class="o">=</span><span class="default_value">''</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyxnat.core.search.SearchManager.save_template" title="Permalink to this definition">¶</a></dt>
+<dd><p>Define and save a search template. Same as the save method, but
+the values in the constraints are used as keywords for value
+replacement when using the template.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<em>string</em>) – Name under which the template is save in XNAT. A template is
+prepended to the name so that it appear clearly as a template
+on the web interface.</p></li>
+<li><p><strong>row</strong> (<em>string</em>) – Datatype from <cite>Interface.inspect.datatypes()</cite>.
+Usually <code class="docutils literal notranslate"><span class="pre">xnat:subjectData</span></code></p></li>
+<li><p><strong>columns</strong> (<em>list</em>) – List of data fields from
+<cite>Interface.inspect.datatypes(‘*’, ‘*’)</cite></p></li>
+<li><p><strong>constraints</strong> (<em>list</em>) – See also: <cite>Search.where()</cite>, values are keywords for the
+template</p></li>
+<li><p><strong>sharing</strong> (<em>string | list</em>) – Define by whom the query is visible.
+If sharing is a string it may be either
+<code class="docutils literal notranslate"><span class="pre">private</span></code> or <code class="docutils literal notranslate"><span class="pre">public</span></code>.
+Otherwise a list of valid logins for the XNAT server
+from <cite>Interface.users()</cite>.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="pyxnat.core.search.SearchManager.saved">
+<code class="sig-name descname">saved</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">with_description</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyxnat.core.search.SearchManager.saved" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the names of accessible saved search on the server.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="pyxnat.core.search.SearchManager.saved_templates">
+<code class="sig-name descname">saved_templates</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">with_description</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyxnat.core.search.SearchManager.saved_templates" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the names of accessible saved search templates on the server.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="pyxnat.core.search.SearchManager.use_template">
+<code class="sig-name descname">use_template</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span></em>, <em class="sig-param"><span class="n">values</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyxnat.core.search.SearchManager.use_template" title="Permalink to this definition">¶</a></dt>
+<dd><p>Performs a search query using a previously saved template.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<em>string</em>) – Name of the template.</p></li>
+<li><p><strong>values</strong> (<em>dict</em>) – Values to put in the template, get the valid keys using
+the get_template method.</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">interface</span><span class="o">.</span><span class="n">manage</span><span class="o">.</span><span class="n">search</span><span class="o">.</span><span class="n">use_template</span><span class="p">(</span><span class="n">name</span><span class="p">,</span>
+<span class="go">              {&#39;subject_id&#39;:&#39;ID&#39;,</span>
+<span class="go">               &#39;age&#39;:&#39;32&#39;</span>
+<span class="go">               })</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="the-search-class">
+<h2>The <cite>Search</cite> class<a class="headerlink" href="#the-search-class" title="Permalink to this headline">¶</a></h2>
+<dl class="py class">
+<dt id="pyxnat.core.search.Search">
+<em class="property">class </em><code class="sig-prename descclassname">pyxnat.core.search.</code><code class="sig-name descname">Search</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">row</span></em>, <em class="sig-param"><span class="n">columns</span></em>, <em class="sig-param"><span class="n">interface</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyxnat.core.search.Search" title="Permalink to this definition">¶</a></dt>
+<dd><p>Define constraints to make a complex search on the database.</p>
+<p>This <a class="reference internal" href="#pyxnat.core.search.Search" title="pyxnat.core.search.Search"><code class="xref py py-class docutils literal notranslate"><span class="pre">Search</span></code></a> is available at different places throughout
+the API:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">interface</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="n">DATA_SELECTION</span><span class="p">)</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">QUERY</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">interface</span><span class="o">.</span><span class="n">manage</span><span class="o">.</span><span class="n">search</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="s1">&#39;name&#39;</span><span class="p">,</span> <span class="n">TABLE_DEFINITION</span><span class="p">,</span> <span class="n">QUERY</span><span class="p">)</span>
+</pre></div>
+</div>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">query</span> <span class="o">=</span> <span class="p">[(</span><span class="s1">&#39;xnat:subjectData/SUBJECT_ID&#39;</span><span class="p">,</span> <span class="s1">&#39;LIKE&#39;</span><span class="p">,</span> <span class="s1">&#39;%&#39;</span><span class="p">),</span>
+<span class="go">             (&#39;xnat:projectData/ID&#39;, &#39;=&#39;, &#39;my_project&#39;),</span>
+<span class="go">             [(&#39;xnat:subjectData/AGE&#39;, &#39;&gt;&#39;, &#39;14&#39;),</span>
+<span class="go">               &#39;AND&#39;</span>
+<span class="go">              ],</span>
+<span class="go">             &#39;OR&#39;</span>
+<span class="go">            ]</span>
+</pre></div>
+</div>
+<dl class="py method">
+<dt id="pyxnat.core.search.Search.where">
+<code class="sig-name descname">where</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">constraints</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">template</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">query</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyxnat.core.search.Search.where" title="Permalink to this definition">¶</a></dt>
+<dd><p>Triggers the search.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>contraints</strong> (<em>list</em>) – <dl class="simple">
+<dt>A query is an unordered list that contains</dt><dd><ul class="simple">
+<li><p>1 or more constraints</p></li>
+<li><p>0 or more sub-queries (lists as this one)</p></li>
+<li><dl class="simple">
+<dt>1 comparison method between the constraints</dt><dd><p>(‘AND’ or ‘OR’)</p>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+<dt>A constraint is an ordered tuple that contains</dt><dd><ul class="simple">
+<li><p>1 valid searchable_type/searchable_field</p></li>
+<li><p>1 operator among ‘=’, ‘&lt;’, ‘&gt;’, ‘&lt;=’, ‘&gt;=’, ‘LIKE’</p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>results</strong> – An table-like object containing the results. It is
+basically a list of dictionaries that has additional
+helper methods.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>JsonTable object</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="the-eobject-class">
+<h2>The <cite>EObject</cite> class<a class="headerlink" href="#the-eobject-class" title="Permalink to this headline">¶</a></h2>
+<dl class="py class">
+<dt id="pyxnat.core.resources.EObject">
+<em class="property">class </em><code class="sig-prename descclassname">pyxnat.core.resources.</code><code class="sig-name descname">EObject</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">uri</span></em>, <em class="sig-param"><span class="n">interface</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyxnat.core.resources.EObject" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generic Object for an element URI.</p>
+<dl class="py method">
+<dt id="pyxnat.core.resources.EObject.children">
+<code class="sig-name descname">children</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">show_names</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyxnat.core.resources.EObject.children" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the children levels of this element.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>show_name</strong> (<em>boolean</em>) – If True returns a list of strings. If False returns a
+collection object referencing all child objects of
+this elements.</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">subject_object</span><span class="o">.</span><span class="n">children</span><span class="p">()</span>
+<span class="go">[&#39;experiments&#39;, &#39;resources&#39;]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">subject_object</span><span class="o">.</span><span class="n">children</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+<span class="go">&lt;Collection Object&gt; 170976556</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt id="pyxnat.core.resources.EObject.create">
+<code class="sig-name descname">create</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">params</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyxnat.core.resources.EObject.create" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates the element if it does not exists.
+Any non-existing ancestor will be created as well.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>An element resource both have an ID and a label that
+can be used to access it. At the moment, XNAT REST API
+defines the label when creating an element, but not
+the ID, which is generated. It means that the <cite>name</cite>
+given to a resource may not appear when listing the
+resources because the IDs will appear, not the labels.</p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>To set up additional variables for the element at its
+creation it is possible to use shortcuts defined in the
+XNAT REST documentation or xpath in the schema:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><cite>element.create(ID=’theid’)</cite></p></li>
+<li><p><cite>subject.create(**{‘xnat:subjectData/ID’:’theid’})</cite></p></li>
+</ul>
+</div></blockquote>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>params</strong> (<em>keywords</em>) – <ul>
+<li><p>Specify the datatype of the element resource and of
+any ancestor that may need to be created. The
+keywords correspond to the levels in the REST
+hierarchy, see Interface.inspect.architecture()</p></li>
+<li><p>If an element is created with no specified type:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>if its name matches a naming convention, this type
+will be used</p></li>
+<li><p>else a default type is defined in the schema module</p></li>
+</ul>
+</div></blockquote>
+</li>
+<li><p>To give the ID the same value as the label use
+use_label=True e.g element.create(use_label=True)</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">interface</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="s1">&#39;/project/PROJECT/subject&#39;</span>
+<span class="go">                     &#39;/SUBJECT/experiment/EXP/scan/SCAN&#39;</span>
+<span class="go">            ).create(experiments=&#39;xnat:mrSessionData&#39;,</span>
+<span class="go">                     scans=&#39;xnat:mrScanData&#39;</span>
+<span class="go">                     )</span>
+</pre></div>
+</div>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#pyxnat.core.resources.EObject.id" title="pyxnat.core.resources.EObject.id"><code class="xref py py-func docutils literal notranslate"><span class="pre">EObject.id()</span></code></a>, <a class="reference internal" href="#pyxnat.core.resources.EObject.label" title="pyxnat.core.resources.EObject.label"><code class="xref py py-func docutils literal notranslate"><span class="pre">EObject.label()</span></code></a>, <a class="reference internal" href="#pyxnat.core.resources.EObject.datatype" title="pyxnat.core.resources.EObject.datatype"><code class="xref py py-func docutils literal notranslate"><span class="pre">EObject.datatype()</span></code></a></p>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt id="pyxnat.core.resources.EObject.datatype">
+<code class="sig-name descname">datatype</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pyxnat.core.resources.EObject.datatype" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the type defined in the XNAT schema for this element
+resource.</p>
+<blockquote>
+<div><table class="docutils align-default">
+<colgroup>
+<col style="width: 41%" />
+<col style="width: 59%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>EObject</p></th>
+<th class="head"><p>possible xsi types</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Project</p></td>
+<td><p>xnat:projectData</p></td>
+</tr>
+<tr class="row-odd"><td><p>Subject</p></td>
+<td><p>xnat:subjectData</p></td>
+</tr>
+<tr class="row-even"><td><p>Experiment</p></td>
+<td><p>xnat:mrSessionData
+xnat:petSessionData</p></td>
+</tr>
+</tbody>
+</table>
+</div></blockquote>
+</dd></dl>
+
+<dl class="py method">
+<dt id="pyxnat.core.resources.EObject.delete">
+<code class="sig-name descname">delete</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">delete_files</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyxnat.core.resources.EObject.delete" title="Permalink to this definition">¶</a></dt>
+<dd><p>Deletes an element resource.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>delete_files</strong> (<em>boolean</em>) – Tells if files attached to the element resources are
+removed as well from the server filesystem.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="pyxnat.core.resources.EObject.exists">
+<code class="sig-name descname">exists</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">consistent</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyxnat.core.resources.EObject.exists" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test whether an element resource exists.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="pyxnat.core.resources.EObject.get">
+<code class="sig-name descname">get</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pyxnat.core.resources.EObject.get" title="Permalink to this definition">¶</a></dt>
+<dd><p>Retrieves the XML document corresponding to this element.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="pyxnat.core.resources.EObject.id">
+<code class="sig-name descname">id</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pyxnat.core.resources.EObject.id" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the element resource id.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="pyxnat.core.resources.EObject.insert">
+<code class="sig-name descname">insert</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">params</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyxnat.core.resources.EObject.insert" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates the element if it does not exists.
+Any non-existing ancestor will be created as well.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>An element resource both have an ID and a label that
+can be used to access it. At the moment, XNAT REST API
+defines the label when creating an element, but not
+the ID, which is generated. It means that the <cite>name</cite>
+given to a resource may not appear when listing the
+resources because the IDs will appear, not the labels.</p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>To set up additional variables for the element at its
+creation it is possible to use shortcuts defined in the
+XNAT REST documentation or xpath in the schema:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><cite>element.create(ID=’theid’)</cite></p></li>
+<li><p><cite>subject.create(**{‘xnat:subjectData/ID’:’theid’})</cite></p></li>
+</ul>
+</div></blockquote>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>params</strong> (<em>keywords</em>) – <ul>
+<li><p>Specify the datatype of the element resource and of
+any ancestor that may need to be created. The
+keywords correspond to the levels in the REST
+hierarchy, see Interface.inspect.architecture()</p></li>
+<li><p>If an element is created with no specified type:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>if its name matches a naming convention, this type
+will be used</p></li>
+<li><p>else a default type is defined in the schema module</p></li>
+</ul>
+</div></blockquote>
+</li>
+<li><p>To give the ID the same value as the label use
+use_label=True e.g element.create(use_label=True)</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">interface</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="s1">&#39;/project/PROJECT/subject&#39;</span>
+<span class="go">                     &#39;/SUBJECT/experiment/EXP/scan/SCAN&#39;</span>
+<span class="go">            ).create(experiments=&#39;xnat:mrSessionData&#39;,</span>
+<span class="go">                     scans=&#39;xnat:mrScanData&#39;</span>
+<span class="go">                     )</span>
+</pre></div>
+</div>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#pyxnat.core.resources.EObject.id" title="pyxnat.core.resources.EObject.id"><code class="xref py py-func docutils literal notranslate"><span class="pre">EObject.id()</span></code></a>, <a class="reference internal" href="#pyxnat.core.resources.EObject.label" title="pyxnat.core.resources.EObject.label"><code class="xref py py-func docutils literal notranslate"><span class="pre">EObject.label()</span></code></a>, <a class="reference internal" href="#pyxnat.core.resources.EObject.datatype" title="pyxnat.core.resources.EObject.datatype"><code class="xref py py-func docutils literal notranslate"><span class="pre">EObject.datatype()</span></code></a></p>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt id="pyxnat.core.resources.EObject.label">
+<code class="sig-name descname">label</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pyxnat.core.resources.EObject.label" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the element resource label.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="pyxnat.core.resources.EObject.tag">
+<code class="sig-name descname">tag</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyxnat.core.resources.EObject.tag" title="Permalink to this definition">¶</a></dt>
+<dd><p>Tag the element.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="pyxnat.core.resources.EObject.untag">
+<code class="sig-name descname">untag</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyxnat.core.resources.EObject.untag" title="Permalink to this definition">¶</a></dt>
+<dd><p>Remove a tag for the element.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="the-cobject-class">
+<h2>The <cite>CObject</cite> class<a class="headerlink" href="#the-cobject-class" title="Permalink to this headline">¶</a></h2>
+<dl class="py class">
+<dt id="pyxnat.core.resources.CObject">
+<em class="property">class </em><code class="sig-prename descclassname">pyxnat.core.resources.</code><code class="sig-name descname">CObject</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">cbase</span></em>, <em class="sig-param"><span class="n">interface</span></em>, <em class="sig-param"><span class="n">pattern</span><span class="o">=</span><span class="default_value">'*'</span></em>, <em class="sig-param"><span class="n">nested</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">id_header</span><span class="o">=</span><span class="default_value">'ID'</span></em>, <em class="sig-param"><span class="n">columns</span><span class="o">=</span><span class="default_value">[]</span></em>, <em class="sig-param"><span class="n">filters</span><span class="o">=</span><span class="default_value">{}</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyxnat.core.resources.CObject" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generic Object for a collection resource.</p>
+<p>A collection resource is a list of element resources. There is
+however several ways to obtain such a list:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>a collection URI e.g. /REST/projects</p></li>
+<li><p>a list of element URIs</p></li>
+<li><dl class="simple">
+<dt>a list of collections</dt><dd><p>e.g. /REST/projects/ONE/subjects <strong>AND</strong>
+/REST/projects/TWO/subjects</p>
+</dd>
+</dl>
+</li>
+<li><p>a list of element objects</p></li>
+<li><p>a list a collection objects</p></li>
+</ul>
+</div></blockquote>
+<p>Collections objects built in different ways share the same behavior:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>they behave as iterators, which enables a lazy access to
+the data</p></li>
+<li><p>they always yield EObjects</p></li>
+<li><p>they can be nested with any other collection</p></li>
+</ul>
+</div></blockquote>
+<p class="rubric">Examples</p>
+<dl>
+<dt>No access to the data:</dt><dd><div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">interface</span><span class="o">.</span><span class="n">select</span><span class="o">.</span><span class="n">projects</span><span class="p">()</span>
+<span class="go">&lt;Collection Object&gt; 173667084</span>
+</pre></div>
+</div>
+</dd>
+<dt>Lazy access to the data:</dt><dd><div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">project</span> <span class="ow">in</span> <span class="n">interface</span><span class="o">.</span><span class="n">select</span><span class="o">.</span><span class="n">projects</span><span class="p">():</span>
+<span class="gp">&gt;&gt;&gt; </span>    <span class="nb">print</span> <span class="n">project</span>
+</pre></div>
+</div>
+</dd>
+<dt>Nesting:</dt><dd><div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">subject</span> <span class="ow">in</span> <span class="n">interface</span><span class="o">.</span><span class="n">select</span><span class="o">.</span><span class="n">projects</span><span class="p">()</span><span class="o">.</span><span class="n">subjects</span><span class="p">():</span>
+<span class="gp">&gt;&gt;&gt; </span>    <span class="nb">print</span> <span class="n">subject</span>
+</pre></div>
+</div>
+</dd>
+</dl>
+<dl class="py method">
+<dt id="pyxnat.core.resources.CObject.fetchall">
+<code class="sig-name descname">fetchall</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyxnat.core.resources.CObject.fetchall" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns every element.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>If a collection needs to issue thousands of queries it may
+be better to access the resources within a <cite>for-loop</cite>.</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>args</strong> (<em>strings</em>) – <ul class="simple">
+<li><p>Specify the information to return for the elements
+within ID, label and Object.</p></li>
+<li><p>Any combination of ID, label and obj is valid, if
+more than one is given, a list of tuple is returned
+instead of a list.</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="pyxnat.core.resources.CObject.fetchone">
+<code class="sig-name descname">fetchone</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pyxnat.core.resources.CObject.fetchone" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the first element of the collection.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="pyxnat.core.resources.CObject.first">
+<code class="sig-name descname">first</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pyxnat.core.resources.CObject.first" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the first element of the collection.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="pyxnat.core.resources.CObject.get">
+<code class="sig-name descname">get</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyxnat.core.resources.CObject.get" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns every element.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>If a collection needs to issue thousands of queries it may
+be better to access the resources within a <cite>for-loop</cite>.</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>args</strong> (<em>strings</em>) – <ul class="simple">
+<li><p>Specify the information to return for the elements
+within ID, label and Object.</p></li>
+<li><p>Any combination of ID, label and obj is valid, if
+more than one is given, a list of tuple is returned
+instead of a list.</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="pyxnat.core.resources.CObject.tag">
+<code class="sig-name descname">tag</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyxnat.core.resources.CObject.tag" title="Permalink to this definition">¶</a></dt>
+<dd><p>Tag the collection.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="pyxnat.core.resources.CObject.untag">
+<code class="sig-name descname">untag</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyxnat.core.resources.CObject.untag" title="Permalink to this definition">¶</a></dt>
+<dd><p>Remove the tag from the collection.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="pyxnat.core.resources.CObject.where">
+<code class="sig-name descname">where</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">constraints</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">template</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">query</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyxnat.core.resources.CObject.where" title="Permalink to this definition">¶</a></dt>
+<dd><p>Only the element objects whose subject that are matching the
+constraints will be returned. It means that it is not possible
+to use this method on an element that is not linked to a
+subject, such as a project.</p>
+<p class="rubric">Examples</p>
+<dl>
+<dt>The <code class="docutils literal notranslate"><span class="pre">where</span></code> clause should be on the first select:</dt><dd><div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">experiment</span> <span class="ow">in</span> <span class="n">interface</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="s1">&#39;//experiments&#39;</span>
+<span class="go">         ).where([(&#39;atest/FIELD&#39;, &#39;=&#39;, &#39;value&#39;), &#39;AND&#39;]):</span>
+<span class="gp">&gt;&gt;&gt; </span>     <span class="nb">print</span> <span class="n">experiment</span>
+</pre></div>
+</div>
+</dd>
+<dt>Do <strong>NOT</strong> do this:</dt><dd><div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">experiment</span> <span class="ow">in</span> <span class="n">interface</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="s1">&#39;//experiments&#39;</span><span class="p">):</span>
+<span class="go">        for assessor in experiment.assessors(</span>
+<span class="go">            ).where([(&#39;atest/FIELD&#39;, &#39;=&#39;, &#39;value&#39;), &#39;AND&#39;]):</span>
+<span class="gp">&gt;&gt;&gt; </span>        <span class="nb">print</span> <span class="n">assessor</span>
+</pre></div>
+</div>
+</dd>
+<dt>Or this:</dt><dd><div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">project</span> <span class="ow">in</span> <span class="n">interface</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="s1">&#39;//projects&#39;</span>
+<span class="go">        ).where([(&#39;atest/FIELD&#39;, &#39;=&#39;, &#39;value&#39;), &#39;AND&#39;]):</span>
+<span class="gp">&gt;&gt;&gt; </span>    <span class="nb">print</span> <span class="n">project</span>
+</pre></div>
+</div>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><code class="xref py py-func docutils literal notranslate"><span class="pre">search.Search()</span></code></p>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="the-project-class">
+<h2>The <cite>Project</cite> class<a class="headerlink" href="#the-project-class" title="Permalink to this headline">¶</a></h2>
+<dl class="py class">
+<dt id="pyxnat.core.resources.Project">
+<em class="property">class </em><code class="sig-prename descclassname">pyxnat.core.resources.</code><code class="sig-name descname">Project</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">uri</span></em>, <em class="sig-param"><span class="n">interface</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyxnat.core.resources.Project" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="py method">
+<dt id="pyxnat.core.resources.Project.accessibility">
+<code class="sig-name descname">accessibility</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pyxnat.core.resources.Project.accessibility" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets project accessibility.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="pyxnat.core.resources.Project.add_custom_variables">
+<code class="sig-name descname">add_custom_variables</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">custom_variables</span></em>, <em class="sig-param"><span class="n">allow_data_deletion</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyxnat.core.resources.Project.add_custom_variables" title="Permalink to this definition">¶</a></dt>
+<dd><p>Adds a custom variable to a specified group</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>custom_variables</strong> (<em>a dictionary</em>) – </p></li>
+<li><p><strong>allow_data_deletion</strong> (<em>a boolean</em>) – </p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">variables</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;Subjects&#39;</span> <span class="p">:</span> <span class="p">{</span><span class="s1">&#39;newgroup&#39;</span> <span class="p">:</span> <span class="p">{</span><span class="s1">&#39;foo&#39;</span> <span class="p">:</span> <span class="s1">&#39;string&#39;</span><span class="p">,</span>
+<span class="go">    &#39;bar&#39;: &#39;int&#39;}}}</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">project</span><span class="o">.</span><span class="n">add_custom_variables</span><span class="p">(</span><span class="n">variables</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt id="pyxnat.core.resources.Project.add_user">
+<code class="sig-name descname">add_user</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">login</span></em>, <em class="sig-param"><span class="n">role</span><span class="o">=</span><span class="default_value">'member'</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyxnat.core.resources.Project.add_user" title="Permalink to this definition">¶</a></dt>
+<dd><p>Adds a user to the project. The user must already exist on
+the server.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>login</strong> (<em>string</em>) – Valid username for the XNAT database.</p></li>
+<li><p><strong>role</strong> (<em>owner | member | collaborator</em>) – <dl class="simple">
+<dt>The user level for this project:</dt><dd><ul>
+<li><p>owner: read and write access, as well as
+administrative privileges such as adding and removing
+users.</p></li>
+<li><p>member: read access and can create new resources but
+not remove them.</p></li>
+<li><p>collaborator: read access only.</p></li>
+</ul>
+</dd>
+</dl>
+</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="pyxnat.core.resources.Project.aliases">
+<code class="sig-name descname">aliases</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pyxnat.core.resources.Project.aliases" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the aliases for this project.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p></p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>List of aliases</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="pyxnat.core.resources.Project.collaborators">
+<code class="sig-name descname">collaborators</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pyxnat.core.resources.Project.collaborators" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets collaborator of this project.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="pyxnat.core.resources.Project.current_arc">
+<code class="sig-name descname">current_arc</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pyxnat.core.resources.Project.current_arc" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets project current archive folder on the server.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="pyxnat.core.resources.Project.datatype">
+<code class="sig-name descname">datatype</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pyxnat.core.resources.Project.datatype" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the type defined in the XNAT schema for this element
+resource.</p>
+<blockquote>
+<div><table class="docutils align-default">
+<colgroup>
+<col style="width: 41%" />
+<col style="width: 59%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>EObject</p></th>
+<th class="head"><p>possible xsi types</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Project</p></td>
+<td><p>xnat:projectData</p></td>
+</tr>
+<tr class="row-odd"><td><p>Subject</p></td>
+<td><p>xnat:subjectData</p></td>
+</tr>
+<tr class="row-even"><td><p>Experiment</p></td>
+<td><p>xnat:mrSessionData
+xnat:petSessionData</p></td>
+</tr>
+</tbody>
+</table>
+</div></blockquote>
+</dd></dl>
+
+<dl class="py method">
+<dt id="pyxnat.core.resources.Project.description">
+<code class="sig-name descname">description</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pyxnat.core.resources.Project.description" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the description for this project.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p></p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>Description (string) of the project.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="pyxnat.core.resources.Project.get_custom_variables">
+<code class="sig-name descname">get_custom_variables</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pyxnat.core.resources.Project.get_custom_variables" title="Permalink to this definition">¶</a></dt>
+<dd><p>Retrieves custom variables as a dictionary</p>
+<p>It has the format {studyProtocol: { setname : {field: type, …}}}</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="pyxnat.core.resources.Project.last_modified">
+<code class="sig-name descname">last_modified</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pyxnat.core.resources.Project.last_modified" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets the last modified dates for all the project subjects.</p>
+<p>If any element related to a subject changes, experiment,
+variable, scan, image etc… the date will be changed.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="pyxnat.core.resources.Project.members">
+<code class="sig-name descname">members</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pyxnat.core.resources.Project.members" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets members of this project.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="pyxnat.core.resources.Project.owners">
+<code class="sig-name descname">owners</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pyxnat.core.resources.Project.owners" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets owners of this project.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="pyxnat.core.resources.Project.prearchive_code">
+<code class="sig-name descname">prearchive_code</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pyxnat.core.resources.Project.prearchive_code" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets project prearchive code.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="pyxnat.core.resources.Project.quarantine_code">
+<code class="sig-name descname">quarantine_code</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pyxnat.core.resources.Project.quarantine_code" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets project quarantine code.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="pyxnat.core.resources.Project.remove_user">
+<code class="sig-name descname">remove_user</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">login</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyxnat.core.resources.Project.remove_user" title="Permalink to this definition">¶</a></dt>
+<dd><p>Removes a user from the project.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>login</strong> (<em>string</em>) – Valid username for the XNAT database.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="pyxnat.core.resources.Project.set_accessibility">
+<code class="sig-name descname">set_accessibility</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">accessibility</span><span class="o">=</span><span class="default_value">'protected'</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyxnat.core.resources.Project.set_accessibility" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets project accessibility.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Write access is given or not by the user level for a
+specific project.</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>accessibility</strong> (<em>public | protected | private</em>) – <dl class="simple">
+<dt>Sets the project accessibility:</dt><dd><ul class="simple">
+<li><p>public: the project is visible and provides read
+access for anyone.</p></li>
+<li><p>protected: the project is visible by anyone but the
+data is accessible for allowed users only.</p></li>
+<li><p>private: the project is visible by allowed users only.</p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="pyxnat.core.resources.Project.set_prearchive_code">
+<code class="sig-name descname">set_prearchive_code</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">code</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyxnat.core.resources.Project.set_prearchive_code" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets project prearchive code.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>code</strong> (<em>0 to 4</em>) – </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="pyxnat.core.resources.Project.set_quarantine_code">
+<code class="sig-name descname">set_quarantine_code</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">code</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyxnat.core.resources.Project.set_quarantine_code" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets project quarantine code.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>code</strong> (<em>0 to 1</em>) – </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="pyxnat.core.resources.Project.set_subfolder_in_current_arc">
+<code class="sig-name descname">set_subfolder_in_current_arc</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">subfolder</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyxnat.core.resources.Project.set_subfolder_in_current_arc" title="Permalink to this definition">¶</a></dt>
+<dd><p>Changes project current archive subfolder on the server.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="pyxnat.core.resources.Project.user_role">
+<code class="sig-name descname">user_role</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">login</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyxnat.core.resources.Project.user_role" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets the user level of the user for this project.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>login</strong> (<em>string</em>) – A user of the project.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>string</strong></p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>owner | member | collaborator</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="pyxnat.core.resources.Project.users">
+<code class="sig-name descname">users</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pyxnat.core.resources.Project.users" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets all registered users for this project.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="the-file-class">
+<h2>The <cite>File</cite> class<a class="headerlink" href="#the-file-class" title="Permalink to this headline">¶</a></h2>
+<dl class="py class">
+<dt id="pyxnat.core.resources.File">
+<em class="property">class </em><code class="sig-prename descclassname">pyxnat.core.resources.</code><code class="sig-name descname">File</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">uri</span></em>, <em class="sig-param"><span class="n">interface</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyxnat.core.resources.File" title="Permalink to this definition">¶</a></dt>
+<dd><p>EObject for files stored in XNAT.</p>
+<dl class="py method">
+<dt id="pyxnat.core.resources.File.attributes">
+<code class="sig-name descname">attributes</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pyxnat.core.resources.File.attributes" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="simple">
+<dt>Files attributes include:</dt><dd><ul class="simple">
+<li><p>URI</p></li>
+<li><p>Name</p></li>
+<li><p>Size in bytes</p></li>
+<li><p>path (relative to the parent resource)</p></li>
+<li><p>file_tags</p></li>
+<li><p>file_format</p></li>
+<li><p>file_content</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><strong>dict</strong></p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>a dictionary with the file attributes</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="pyxnat.core.resources.File.content">
+<code class="sig-name descname">content</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pyxnat.core.resources.File.content" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets the file content description.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="pyxnat.core.resources.File.create">
+<code class="sig-name descname">create</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">src</span></em>, <em class="sig-param"><span class="n">format</span><span class="o">=</span><span class="default_value">'U'</span></em>, <em class="sig-param"><span class="n">content</span><span class="o">=</span><span class="default_value">'U'</span></em>, <em class="sig-param"><span class="n">tags</span><span class="o">=</span><span class="default_value">'U'</span></em>, <em class="sig-param"><span class="n">overwrite</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">datatypes</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyxnat.core.resources.File.create" title="Permalink to this definition">¶</a></dt>
+<dd><p>Uploads a file to XNAT.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>src</strong> (<em>string</em>) – Location of the local file to upload or the actual content
+to upload.</p></li>
+<li><p><strong>format</strong> (<em>string</em>) – Optional parameter to specify the file format.
+Defaults to ‘U’.</p></li>
+<li><p><strong>content</strong> (<em>string</em>) – Optional parameter to specify the file content.
+Defaults to ‘U’.</p></li>
+<li><p><strong>tags</strong> (<em>string</em>) – Optional parameter to specify tags for the file.
+Defaults to ‘U’.</p></li>
+<li><p><strong>overwrite</strong> (<em>boolean</em>) – Optional parameter to specify if the file should be
+overwritten. Defaults to False.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="pyxnat.core.resources.File.delete">
+<code class="sig-name descname">delete</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pyxnat.core.resources.File.delete" title="Permalink to this definition">¶</a></dt>
+<dd><p>Deletes the file on the server.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="pyxnat.core.resources.File.format">
+<code class="sig-name descname">format</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pyxnat.core.resources.File.format" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets the file format.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="pyxnat.core.resources.File.get">
+<code class="sig-name descname">get</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">dest</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyxnat.core.resources.File.get" title="Permalink to this definition">¶</a></dt>
+<dd><p>Downloads the file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>dest</strong> (<em>string | None</em>) – <ul class="simple">
+<li><dl class="simple">
+<dt>If dest is None, then the user’s Downloads directory is used</dt><dd><p>as the default download location.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>Else the file is downloaded at the requested location.</dt><dd><p>Path should include the file name.
+eg: /path/to/file.txt</p>
+</dd>
+</dl>
+</li>
+</ul>
+</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>string</strong></p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>the file location.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="pyxnat.core.resources.File.get_copy">
+<code class="sig-name descname">get_copy</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">dest</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyxnat.core.resources.File.get_copy" title="Permalink to this definition">¶</a></dt>
+<dd><p>Downloads the file to the cache directory but creates a copy at
+the specified location.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>dest</strong> (<em>string | None</em>) – <ul class="simple">
+<li><p>file path for the copy</p></li>
+<li><p>if None a copy is created at a default location based
+on the file URI on the server</p></li>
+</ul>
+</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>string</strong></p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>the copy location.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="pyxnat.core.resources.File.insert">
+<code class="sig-name descname">insert</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">src</span></em>, <em class="sig-param"><span class="n">format</span><span class="o">=</span><span class="default_value">'U'</span></em>, <em class="sig-param"><span class="n">content</span><span class="o">=</span><span class="default_value">'U'</span></em>, <em class="sig-param"><span class="n">tags</span><span class="o">=</span><span class="default_value">'U'</span></em>, <em class="sig-param"><span class="n">overwrite</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">datatypes</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyxnat.core.resources.File.insert" title="Permalink to this definition">¶</a></dt>
+<dd><p>Uploads a file to XNAT.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>src</strong> (<em>string</em>) – Location of the local file to upload or the actual content
+to upload.</p></li>
+<li><p><strong>format</strong> (<em>string</em>) – Optional parameter to specify the file format.
+Defaults to ‘U’.</p></li>
+<li><p><strong>content</strong> (<em>string</em>) – Optional parameter to specify the file content.
+Defaults to ‘U’.</p></li>
+<li><p><strong>tags</strong> (<em>string</em>) – Optional parameter to specify tags for the file.
+Defaults to ‘U’.</p></li>
+<li><p><strong>overwrite</strong> (<em>boolean</em>) – Optional parameter to specify if the file should be
+overwritten. Defaults to False.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="pyxnat.core.resources.File.labels">
+<code class="sig-name descname">labels</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pyxnat.core.resources.File.labels" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets the file labels.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="pyxnat.core.resources.File.last_modified">
+<code class="sig-name descname">last_modified</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pyxnat.core.resources.File.last_modified" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets the file last-modified date.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="pyxnat.core.resources.File.put">
+<code class="sig-name descname">put</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">src</span></em>, <em class="sig-param"><span class="n">format</span><span class="o">=</span><span class="default_value">'U'</span></em>, <em class="sig-param"><span class="n">content</span><span class="o">=</span><span class="default_value">'U'</span></em>, <em class="sig-param"><span class="n">tags</span><span class="o">=</span><span class="default_value">'U'</span></em>, <em class="sig-param"><span class="n">overwrite</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">datatypes</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyxnat.core.resources.File.put" title="Permalink to this definition">¶</a></dt>
+<dd><p>Uploads a file to XNAT.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>src</strong> (<em>string</em>) – Location of the local file to upload or the actual content
+to upload.</p></li>
+<li><p><strong>format</strong> (<em>string</em>) – Optional parameter to specify the file format.
+Defaults to ‘U’.</p></li>
+<li><p><strong>content</strong> (<em>string</em>) – Optional parameter to specify the file content.
+Defaults to ‘U’.</p></li>
+<li><p><strong>tags</strong> (<em>string</em>) – Optional parameter to specify tags for the file.
+Defaults to ‘U’.</p></li>
+<li><p><strong>overwrite</strong> (<em>boolean</em>) – Optional parameter to specify if the file should be
+overwritten. Defaults to False.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="pyxnat.core.resources.File.size">
+<code class="sig-name descname">size</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pyxnat.core.resources.File.size" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets the file size.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="the-attributes-class">
+<h2>The <cite>Attributes</cite> class<a class="headerlink" href="#the-attributes-class" title="Permalink to this headline">¶</a></h2>
+<dl class="py class">
+<dt id="pyxnat.core.attributes.EAttrs">
+<em class="property">class </em><code class="sig-prename descclassname">pyxnat.core.attributes.</code><code class="sig-name descname">EAttrs</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">eobj</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyxnat.core.attributes.EAttrs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Accessor class to resource fields.</p>
+<p>Help to retrieve the attributes paths relevant to this element:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>   <span class="o">&gt;&gt;&gt;</span> <span class="n">subject</span><span class="o">.</span><span class="n">attrs</span><span class="p">()</span>
+   <span class="p">[</span><span class="s1">&#39;xnat:subjectData/sharing&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;xnat:subjectData/sharing/share&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;xnat:subjectData/resources&#39;</span><span class="p">,</span>
+    <span class="o">...</span>
+    <span class="s1">&#39;xnat:subjectData/experiments/experiment&#39;</span>
+    <span class="p">]</span>
+
+<span class="n">All</span> <span class="n">paths</span> <span class="n">are</span> <span class="ow">not</span> <span class="n">valid</span> <span class="n">but</span> <span class="n">they</span> <span class="n">give</span> <span class="n">an</span> <span class="n">indication</span> <span class="n">of</span> <span class="n">what</span>
+<span class="ow">is</span> <span class="n">available</span><span class="o">.</span> <span class="n">To</span> <span class="n">retrieve</span> <span class="n">the</span> <span class="n">paths</span><span class="p">,</span> <span class="n">the</span> <span class="n">corresponding</span>
+<span class="n">schemas</span> <span class="n">must</span> <span class="n">be</span> <span class="n">downloaded</span> <span class="n">first</span> <span class="n">through</span> <span class="n">the</span> <span class="n">schema</span>
+<span class="n">management</span> <span class="n">interface</span> <span class="ow">in</span> <span class="n">order</span> <span class="n">to</span> <span class="n">be</span> <span class="n">parsed</span><span class="p">::</span>
+
+    <span class="o">&gt;&gt;&gt;</span> <span class="n">interface</span><span class="o">.</span><span class="n">manage</span><span class="o">.</span><span class="n">schemas</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s1">&#39;xnat.xsd&#39;</span><span class="p">)</span>
+    <span class="o">&gt;&gt;&gt;</span> <span class="n">interface</span><span class="o">.</span><span class="n">manage</span><span class="o">.</span><span class="n">schemas</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s1">&#39;myschema/myschema.xsd&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<dl class="py method">
+<dt id="pyxnat.core.attributes.EAttrs.get">
+<code class="sig-name descname">get</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">path</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyxnat.core.attributes.EAttrs.get" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get an attribute value.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The value is always returned in a Python string. It must
+be explicitly casted or transformed if needed.</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>path</strong> (<em>string</em>) – The xpath of the attribute relative to the element.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>A string containing the value.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="pyxnat.core.attributes.EAttrs.mget">
+<code class="sig-name descname">mget</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">paths</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyxnat.core.attributes.EAttrs.mget" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set multiple attributes at once.</p>
+<p>It is more efficient to use this method instead of
+multiple times the <cite>get()</cite> method when getting more than
+one attribute because only a single HTTP call is issued to
+the server.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>paths</strong> (<em>list</em>) – List of attributes’ paths.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>list</strong> (<em>ordered list of values (in the order of the</em>)</p></li>
+<li><p><em>requested paths)</em></p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="pyxnat.core.attributes.EAttrs.mset">
+<code class="sig-name descname">mset</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">dict_attrs</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyxnat.core.attributes.EAttrs.mset" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set multiple attributes at once.</p>
+<p>It is more efficient to use this method instead of
+multiple times the <cite>set()</cite> method when setting more than
+one attribute because only a single HTTP call is issued to
+the server.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>dict_attrs</strong> (<em>dict</em>) – The dict of key values to set. It follows the same
+principles as the single <cite>set()</cite> method.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="pyxnat.core.attributes.EAttrs.set">
+<code class="sig-name descname">set</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">path</span></em>, <em class="sig-param"><span class="n">value</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyxnat.core.attributes.EAttrs.set" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set an attribute.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>path</strong> (<em>string</em>) – The xpath of the attribute relative to the element.</p></li>
+<li><p><strong>value</strong> (<em>string</em>) – The attribute’s value. Note that the python type is
+always a string but the content of the value must
+match what is defined in the schema.
+e.g. an element defined as a float in the schema
+must be given a string containing a number, a
+valid date must follow the ISO 8601 which is the
+standard representation for dates and times
+established by the W3C.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="the-provenance-class">
+<h2>The <cite>Provenance</cite> class<a class="headerlink" href="#the-provenance-class" title="Permalink to this headline">¶</a></h2>
+<dl class="py class">
+<dt id="pyxnat.core.provenance.Provenance">
+<em class="property">class </em><code class="sig-prename descclassname">pyxnat.core.provenance.</code><code class="sig-name descname">Provenance</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">eobject</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyxnat.core.provenance.Provenance" title="Permalink to this definition">¶</a></dt>
+<dd><p>Class to annotate processed data with provenance information.
+The following parameters are available:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>program</p></li>
+<li><p>program_version</p></li>
+<li><p>program_arguments</p></li>
+<li><p>timestamp</p></li>
+<li><p>cvs</p></li>
+<li><p>user</p></li>
+<li><p>machine</p></li>
+<li><p>platform</p></li>
+<li><p>platform_version</p></li>
+<li><p>compiler</p></li>
+<li><p>compiler_version</p></li>
+</ul>
+</div></blockquote>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">prov</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;program&#39;</span><span class="p">:</span><span class="s1">&#39;young&#39;</span><span class="p">,</span>
+<span class="go">            &#39;timestamp&#39;:&#39;2011-03-01T12:01:01.897987&#39;,</span>
+<span class="go">            &#39;user&#39;:&#39;angus&#39;,</span>
+<span class="go">            &#39;machine&#39;:&#39;war&#39;,</span>
+<span class="go">            &#39;platform&#39;:&#39;linux&#39;,</span>
+<span class="go">            }</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">element</span><span class="o">.</span><span class="n">provenance</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">prov</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">element</span><span class="o">.</span><span class="n">provenance</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">element</span><span class="o">.</span><span class="n">delete</span><span class="p">()</span>
+</pre></div>
+</div>
+<dl class="py method">
+<dt id="pyxnat.core.provenance.Provenance.delete">
+<code class="sig-name descname">delete</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pyxnat.core.provenance.Provenance.delete" title="Permalink to this definition">¶</a></dt>
+<dd><p>Removes the provenance attached to this object.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>doesn’t work because of a bug with the allowDataDeletion
+flag in XNAT</p>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt id="pyxnat.core.provenance.Provenance.get">
+<code class="sig-name descname">get</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pyxnat.core.provenance.Provenance.get" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets all the provenance information for that object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p></p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>A list of dicts.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="pyxnat.core.provenance.Provenance.set">
+<code class="sig-name descname">set</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">process_steps</span></em>, <em class="sig-param"><span class="n">overwrite</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyxnat.core.provenance.Provenance.set" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set provenance information for the data within this element.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>If some required parameters are not provided, theses
+parameters will be extracted from the current machine
+and set automatically. Those parameters are:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>machine</p></li>
+<li><p>platform</p></li>
+<li><p>timestamp</p></li>
+<li><p>user</p></li>
+</ul>
+</div></blockquote>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>overwrite option doesn’t work because of a bug with the
+allowDataDeletion flag in XNAT</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>process_steps</strong> (<em>list</em><em> or </em><em>dict</em>) – dict or list of dicts to define the processing steps
+of the data. The minimum set of information to give
+is: program, timestamp, user, machine and platform. More
+keywords in the class documentation.</p></li>
+<li><p><strong>overwrite</strong> (<em>boolean</em>) – If False the process_steps are added to the existing ones.
+Else the processing steps overwrite any existing provenance.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="the-users-class">
+<h2>The <cite>Users</cite> class<a class="headerlink" href="#the-users-class" title="Permalink to this headline">¶</a></h2>
+<dl class="py class">
+<dt id="pyxnat.core.users.Users">
+<em class="property">class </em><code class="sig-prename descclassname">pyxnat.core.users.</code><code class="sig-name descname">Users</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">interface</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyxnat.core.users.Users" title="Permalink to this definition">¶</a></dt>
+<dd><p>Database user management interface. It is used to retrieve information
+on users registered on a server.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>At the moment user creation and deletion is not supported through
+the REST API but it will be at some point.</p>
+</div>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">interface</span><span class="o">.</span><span class="n">manage</span><span class="o">.</span><span class="n">users</span><span class="p">()</span>
+<span class="go">[&#39;list_of_users&#39;]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">interface</span><span class="o">.</span><span class="n">manage</span><span class="o">.</span><span class="n">users</span><span class="o">.</span><span class="n">firstname</span><span class="p">(</span><span class="s1">&#39;nosetests&#39;</span><span class="p">)</span>
+<span class="go">&#39;nose&#39;</span>
+</pre></div>
+</div>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><code class="xref py py-func docutils literal notranslate"><span class="pre">Project.users()</span></code>, <code class="xref py py-func docutils literal notranslate"><span class="pre">Project.add_user()</span></code>, <code class="xref py py-func docutils literal notranslate"><span class="pre">Project.remove_user()</span></code></p>
+</div>
+<dl class="py method">
+<dt id="pyxnat.core.users.Users.email">
+<code class="sig-name descname">email</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">login</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyxnat.core.users.Users.email" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the email of the user.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="pyxnat.core.users.Users.firstname">
+<code class="sig-name descname">firstname</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">login</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyxnat.core.users.Users.firstname" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the firstname of the user.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="pyxnat.core.users.Users.id">
+<code class="sig-name descname">id</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">login</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyxnat.core.users.Users.id" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the id of the user.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="pyxnat.core.users.Users.lastname">
+<code class="sig-name descname">lastname</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">login</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyxnat.core.users.Users.lastname" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the lastname of the user.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="pyxnat.core.users.Users.resources">
+<code class="sig-name descname">resources</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pyxnat.core.users.Users.resources" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the resources of the user.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="the-inspector-class">
+<h2>The <cite>Inspector</cite> class<a class="headerlink" href="#the-inspector-class" title="Permalink to this headline">¶</a></h2>
+<dl class="py class">
+<dt id="id0">
+<em class="property">class </em><code class="sig-prename descclassname">pyxnat.core.help.</code><code class="sig-name descname">Inspector</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">interface</span></em><span class="sig-paren">)</span><a class="headerlink" href="#id0" title="Permalink to this definition">¶</a></dt>
+<dd><p>Database introspection interface.</p>
+<dl class="py method">
+<dt id="id1">
+<code class="sig-name descname">assessor_types</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#id1" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the datatypes used at the assessor level in this
+database.</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#id12" title="pyxnat.core.help.Inspector.set_autolearn"><code class="xref py py-func docutils literal notranslate"><span class="pre">Inspector.set_autolearn()</span></code></a></p>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt id="id2">
+<code class="sig-name descname">assessor_values</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">experiment_type</span></em>, <em class="sig-param"><span class="n">project</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#id2" title="Permalink to this definition">¶</a></dt>
+<dd><p>Look for the values at the assessor level for a given experiment
+type in the database.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The experiment type should be one of
+Inspector.experiment_types()</p>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Depending on the number of elements the operation may
+take a while.</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>datatype</strong> (<em>string</em>) – An experiment type. eg: xnat:mrsessiondata</p></li>
+<li><p><strong>project</strong> (<em>string</em>) – Optional. Restrict operation to a project.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="id3">
+<code class="sig-name descname">datatypes</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">pattern</span><span class="o">=</span><span class="default_value">'*'</span></em>, <em class="sig-param"><span class="n">fields_pattern</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#id3" title="Permalink to this definition">¶</a></dt>
+<dd><p>Discovers the datatypes and datafields of the database.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>pattern</strong> (<em>string</em>) – Pattern for the datatype. May include wildcards.</p></li>
+<li><p><strong>fields_pattern</strong> (<em>string</em>) – <ul>
+<li><p>Pattern for the datafields – may include wildcards.</p></li>
+<li><p>If specified, datafields will be returned instead of
+datatypes.</p></li>
+</ul>
+</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>list</strong></p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>datatypes or datafields depending on the argument usage.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="id4">
+<code class="sig-name descname">experiment_types</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#id4" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the datatypes used at the experiment level in this
+database.</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#id12" title="pyxnat.core.help.Inspector.set_autolearn"><code class="xref py py-func docutils literal notranslate"><span class="pre">Inspector.set_autolearn()</span></code></a></p>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt id="id5">
+<code class="sig-name descname">experiment_values</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">datatype</span></em>, <em class="sig-param"><span class="n">project</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#id5" title="Permalink to this definition">¶</a></dt>
+<dd><p>Look for the values a the experiment level for a given datatype
+in the database.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The  datatype should be one of Inspector.experiment_types()</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>datatype</strong> (<em>string</em>) – An experiment type. eg: xnat:mrsessiondata</p></li>
+<li><p><strong>project</strong> (<em>string</em>) – Optional. Restrict operation to a project.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="id6">
+<code class="sig-name descname">field_values</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">field_name</span></em><span class="sig-paren">)</span><a class="headerlink" href="#id6" title="Permalink to this definition">¶</a></dt>
+<dd><p>Look for the values a specific datafield takes in the database.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="id7">
+<code class="sig-name descname">project_values</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#id7" title="Permalink to this definition">¶</a></dt>
+<dd><p>Look for the values a the project level in the database.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Is equivalent to interface.select.projects().get()</p>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt id="id8">
+<code class="sig-name descname">reconstruction_types</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#id8" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the datatypes used at the reconstruction level in this
+database.</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#id12" title="pyxnat.core.help.Inspector.set_autolearn"><code class="xref py py-func docutils literal notranslate"><span class="pre">Inspector.set_autolearn()</span></code></a></p>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt id="id9">
+<code class="sig-name descname">reconstruction_values</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">experiment_type</span></em>, <em class="sig-param"><span class="n">project</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#id9" title="Permalink to this definition">¶</a></dt>
+<dd><p>Look for the values at the reconstruction level for a given
+experiment type in the database.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The experiment type should be one of
+Inspector.experiment_types()</p>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Depending on the number of elements the operation may
+take a while.</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>datatype</strong> (<em>string</em>) – An experiment type.</p></li>
+<li><p><strong>project</strong> (<em>string</em>) – Optional. Restrict operation to a project.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="id10">
+<code class="sig-name descname">scan_types</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#id10" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the datatypes used at the scan level in this
+database.</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#id12" title="pyxnat.core.help.Inspector.set_autolearn"><code class="xref py py-func docutils literal notranslate"><span class="pre">Inspector.set_autolearn()</span></code></a></p>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt id="id11">
+<code class="sig-name descname">scan_values</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">experiment_type</span></em>, <em class="sig-param"><span class="n">project</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#id11" title="Permalink to this definition">¶</a></dt>
+<dd><p>Look for the values at the scan level for a given experiment
+type in the database.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The experiment type should be one of
+Inspector.experiment_types()</p>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Depending on the number of elements the operation may
+take a while.</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>datatype</strong> (<em>string</em>) – An experiment type.</p></li>
+<li><p><strong>project</strong> (<em>string</em>) – Optional. Restrict operation to a project.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="id12">
+<code class="sig-name descname">set_autolearn</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">auto</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">tick</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#id12" title="Permalink to this definition">¶</a></dt>
+<dd><p>Once in a while queries will persist additional
+information on the server. This information is available
+through the following methods of this class:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>experiment_types</p></li>
+<li><p>assessor_types</p></li>
+<li><p>scan_types</p></li>
+<li><p>reconstruction_types</p></li>
+</ul>
+</div></blockquote>
+<p>It is also transparently used in insert operations.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>auto</strong> (<em>boolean</em>) – True to enable auto learn. False to disable.</p></li>
+<li><p><strong>tick</strong> (<em>int</em>) – Every ‘tick’ seconds, if a query is issued, additional
+information will be persisted.</p></li>
+</ul>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><code class="xref py py-func docutils literal notranslate"><span class="pre">EObject.insert()</span></code></p>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt id="id13">
+<code class="sig-name descname">structure</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#id13" title="Permalink to this definition">¶</a></dt>
+<dd><p>Displays the keywords structure used in XNAT REST API.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="id14">
+<code class="sig-name descname">subject_values</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">project</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#id14" title="Permalink to this definition">¶</a></dt>
+<dd><p>Look for the values a the subject level in the database.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Is equivalent to interface.select(‘//subjects’).get()</p>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="the-schemamanager-class">
+<h2>The <cite>SchemaManager</cite> class<a class="headerlink" href="#the-schemamanager-class" title="Permalink to this headline">¶</a></h2>
+<dl class="py class">
+<dt id="pyxnat.core.manage.SchemaManager">
+<em class="property">class </em><code class="sig-prename descclassname">pyxnat.core.manage.</code><code class="sig-name descname">SchemaManager</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">interface</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyxnat.core.manage.SchemaManager" title="Permalink to this definition">¶</a></dt>
+<dd><p>Management interface for XNAT schemas.</p>
+<p>The aim is to provide a minimal set of functionalities to parse
+and look at XNAT schemas.</p>
+<dl class="py method">
+<dt id="pyxnat.core.manage.SchemaManager.add">
+<code class="sig-name descname">add</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">url</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyxnat.core.manage.SchemaManager.add" title="Permalink to this definition">¶</a></dt>
+<dd><p>Loads an additional schema.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>url</strong> (<em>str</em>) – <dl class="simple">
+<dt>url of the schema relative to the server.</dt><dd><p>e.g. for
+<a class="reference external" href="http://central.xnat.org/xapi/schemas/xnat">http://central.xnat.org/xapi/schemas/xnat</a> give
+<code class="docutils literal notranslate"><span class="pre">/xapi/schemas/xnat</span></code></p>
+</dd>
+</dl>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="pyxnat.core.manage.SchemaManager.remove">
+<code class="sig-name descname">remove</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyxnat.core.manage.SchemaManager.remove" title="Permalink to this definition">¶</a></dt>
+<dd><p>Removes a schema.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+</div>
+
+
+           </div>
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2010, Yannick Schwartz.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> and ❤️  using a custom <a href="https://github.com/LinxiFan/Sphinx-theme">theme</a> based on <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'1.4',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+      <script type="text/javascript" src="_static/language_data.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>
