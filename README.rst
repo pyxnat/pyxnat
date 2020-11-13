@@ -12,7 +12,8 @@ pyxnat
     :target: https://pypi.org/project/pyxnat
 .. image:: https://img.shields.io/pypi/v/pyxnat.svg
     :target: https://pypi.org/project/pyxnat
-
+    
+.. image:: https://gitlab.com/xgrg/tweetit/-/raw/master/resources/008-pyxnat-v1.4.gif?inline=false
 
 Where to get it
 ===============
