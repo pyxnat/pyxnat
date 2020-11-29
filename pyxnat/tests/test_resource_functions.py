@@ -38,3 +38,11 @@ def test_scandate():
     s = e2.scans().first()
     r = s.resource('DICOM')
     assert(r.scandate() == '2008-05-06')
+
+
+def test_pet_quantification():
+    r = e1.resource('PET_QUANTIFICATION')
+    c1 = r.centiloids()
+    c2 = r.centiloids(False)
+    assert(c1 == -6.731959667125082)
+    assert(c2 == -7.958670071142706)
