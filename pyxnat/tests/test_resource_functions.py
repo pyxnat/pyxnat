@@ -46,3 +46,9 @@ def test_pet_quantification():
     c2 = r.centiloids(False)
     assert(c1 == -6.731959667125082)
     assert(c2 == -7.958670071142706)
+
+
+def test_bamos_volume():
+    r = e1.resource('BAMOS')
+    v = r.volume()
+    assert(v == 4874.005882622703)
