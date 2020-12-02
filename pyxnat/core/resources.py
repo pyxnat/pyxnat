@@ -1825,7 +1825,9 @@ class Resource(EObject):
             resources = self._intf._get_json(base_url)
             res_info = [r for r in resources
                         if r['xnat_abstractresource_id'] == resource_id][0]
-            fs = sizeof_fmt(float(res_info['file_size']))
+            fs = '0.0 B'
+            if res_info['file_size'] != '':
+                fs = sizeof_fmt(float(res_info['file_size']))
 
             # Creating the output string
             output = '<{cl} Object> {id} `{label}` ({fc} files {fs})'
