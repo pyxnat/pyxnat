@@ -51,7 +51,11 @@ setuptools.setup(name='bbrc-pyxnat',
                  scripts=['bin/sessionmirror.py'],
                  install_requires=['lxml>=4.3',
                                    'requests>=2.20',
-                                   'pathlib>=1.0'],
+                                   'pathlib>=1.0',
+                                   'pandas>=0.24',
+                                   'pymupdf>=1.18',
+                                   'pydicom',
+                                   'nibabel>=3.1'],
                  package_data={'pyxnat': ['README.rst'], },
 
                  )
