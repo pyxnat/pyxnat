@@ -53,7 +53,11 @@ setuptools.setup(name='bbrc-pyxnat',
                                    'requests>=2.20',
                                    'pathlib>=1.0',
                                    'six>=1.15',
-                                   'future>=0.16'],
+                                   'future>=0.16',
+                                   'pandas>=0.24',
+                                   'pymupdf>=1.18',
+                                   'pydicom',
+                                   'nibabel>=3.1'],
                  package_data={'pyxnat': ['README.rst'], },
 
                  )
