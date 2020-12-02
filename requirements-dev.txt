@@ -1,6 +1,10 @@
 lxml>=4.3.2
 requests>=2.20
 pathlib>=1.0.1
+pandas>=0.24
+pymupdf>=1.18
+pydicom
+nibabel>=3.1
 # testing
 pytest>=7.1
 pytest-cov>=4.0
