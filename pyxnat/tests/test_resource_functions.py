@@ -52,9 +52,11 @@ def test_ftm_quantification():
 def test_fdg_quantification():
     r = e1.resource('FDG_QUANTIFICATION')
     c1 = r.landau_signature()
+    v1 = float(c1.query('region == "landau_Composite"')['value'])
     c2 = r.landau_signature(optimized=False)
-    assert(c1 == 1.2596989870071411)
-    assert(c2 == 1.2491936683654783)
+    v2 = float(c2.query('region == "landau_Composite"')['value'])
+    assert(v1 == 1.2596989870071411)
+    assert(v2 == 1.2491936683654783)
 
 
 def test_bamos_volume():
