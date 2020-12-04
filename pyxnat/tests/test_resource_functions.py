@@ -40,12 +40,20 @@ def test_scandate():
     assert(r.scandate() == '2008-05-06')
 
 
-def test_pet_quantification():
-    r = e1.resource('PET_QUANTIFICATION')
+def test_ftm_quantification():
+    r = e1.resource('FTM_QUANTIFICATION')
     c1 = r.centiloids()
     c2 = r.centiloids(False)
     assert(c1 == -6.731959667125082)
     assert(c2 == -7.958670071142706)
+
+
+def test_fdg_quantification():
+    r = e1.resource('FDG_QUANTIFICATION')
+    c1 = r.landau_signature()
+    c2 = r.landau_signature(optimized=False)
+    assert(c1 == 1.2596989870071411)
+    assert(c2 == 1.2491936683654783)
 
 
 def test_bamos_volume():
