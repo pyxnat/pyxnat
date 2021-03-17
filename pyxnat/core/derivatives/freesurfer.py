@@ -1,13 +1,37 @@
-XNAT_RESOURCE_NAMES = ['FREESURFER6', 'FREESURFER6_HIRES']
+XNAT_RESOURCE_NAMES = ['FREESURFER6', 'FREESURFER6_HIRES', 'FREESURFER7']
 
 
-def hippoSfVolumes(self, mode='T1'):
-    ''' Returns hippocampal subfield volumetry as estimated by FreeSurfer
-    `recon-all`.'''
+def amygNucVolumes(self, mode='T1'):
+    """Returns amygdala nuclei volumetry as estimated by FreeSurfer
+    `recon-all`."""
     import pandas as pd
 
     table = []
-    files = list(self.files('*h.hippoSfVolumes-%s.v10.txt' % mode))
+    files = list(self.files('*h.amygNucVolumes-%s.v*.txt' % mode))
+    for f in files:
+        uri = f._uri
+
+        res = self._intf.get(uri).text.split('\n')
+        d1 = dict([each.split(' ') for each in res[:-1]])
+        d2 = dict([('%s' % k, float(v))
+                  for k, v in d1.items()])
+
+        side = {'l': 'left', 'r': 'right'}[uri.split('/')[-1][0]]
+        for region, value in d2.items():
+            row = [side, region, value]
+            table.append(row)
+
+    columns = ['side', 'region', 'value']
+    return pd.DataFrame(table, columns=columns)
+
+
+def hippoSfVolumes(self, mode='T1'):
+    """Returns hippocampal subfield volumetry as estimated by FreeSurfer
+    `recon-all`."""
+    import pandas as pd
+
+    table = []
+    files = list(self.files('*h.hippoSfVolumes-%s.v*.txt' % mode))
     for f in files:
         uri = f._uri
 
@@ -26,7 +50,7 @@ def hippoSfVolumes(self, mode='T1'):
 
 
 def aparc(self, atlas='desikan-killiany'):
-    ''' Returns cortical features as estimated by FreeSurfer `recon-all`.'''
+    """Returns cortical features as estimated by FreeSurfer `recon-all`."""
 
     import pandas as pd
 
@@ -112,6 +136,9 @@ def aseg(self):
                'CerebralWhiteMatterVol', 'SubCortGrayVol', 'TotalGrayVol',
                'SupraTentorialVol', 'SupraTentorialVolNotVent',
                'SupraTentorialVolNotVentVox', 'MaskVol', 'eTIV']
+    if self.label() == 'FREESURFER7':
+        deprecated = ['BrainSegVolNotVentSurf', 'SupraTentorialVolNotVentVox']
+        volumes = [v for v in volumes if v not in deprecated]
 
     unitless = ['BrainSegVol-to-eTIV', 'MaskVol-to-eTIV', 'lhSurfaceHoles',
                 'rhSurfaceHoles', 'SurfaceHoles']
