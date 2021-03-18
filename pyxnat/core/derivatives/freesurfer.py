@@ -6,6 +6,9 @@ def amygNucVolumes(self, mode='T1'):
     `recon-all`."""
     import pandas as pd
 
+    if self.label().startswith('FREESURFER6'):
+        raise NotImplementedError('Not available in FreeSurfer 6')
+
     table = []
     files = list(self.files('*h.amygNucVolumes-%s.v*.txt' % mode))
     for f in files:
