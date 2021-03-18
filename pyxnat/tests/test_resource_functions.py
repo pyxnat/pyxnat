@@ -63,3 +63,38 @@ def test_bamos_volume():
     r = e1.resource('BAMOS')
     v = r.volume()
     assert(v == 4874.005882622703)
+
+
+def test_freesurfer7_amygNucVolumes():
+    r = e1.resource('FREESURFER7')
+    hv = r.amygNucVolumes()
+    assert (hv.shape == (20, 3))
+    q = 'region=="Whole_amygdala" & side=="left"'
+    v = hv.query(q)['value'].tolist()[0]
+    assert(v == 1426.132879)
+
+
+def test_freesurfer7_hippoSfVolumes():
+    r = e1.resource('FREESURFER7')
+    hv = r.hippoSfVolumes()
+    assert (hv.shape == (44, 3))
+    q = 'region=="Whole_hippocampus" & side=="left"'
+    v = hv.query(q)['value'].tolist()[0]
+    assert(v == 2853.846782)
+
+
+def test_freesurfer7_aparc():
+    r = e1.resource('FREESURFER7')
+    hv = r.aparc()
+    assert (hv.shape == (632, 4))
+    q = 'region=="supramarginal" & side=="left" & measurement=="CurvInd"'
+    v = hv.query(q)['value'].tolist()[0]
+    assert(v == '5.0')
+
+
+def test_freesurfer7_aseg():
+    r = e1.resource('FREESURFER7')
+    hv = r.aseg()
+    assert (hv.shape == (424, 3))
+    v = hv.query('region=="BrainSegVol"')['value'].tolist()[0]
+    assert(v == 906719.90625)
