@@ -37,18 +37,18 @@ def pdf(self, name):
 
     """
     files = list(self.files())
-    pdf = {each._uri.split('/')[-1]: each for each in files
-           if name in each._uri.split('/')[-1] and
-           each._uri.split('/')[-1].endswith('.pdf')}
+    pdf_file = {each._uri.split('/')[-1]: each for each in files
+                if name in each._uri.split('/')[-1] and
+                each._uri.split('/')[-1].endswith('.pdf')}
 
-    if len(pdf.items()) == 0:
+    if len(pdf_file.items()) == 0:
         raise Exception('No %s found' % name)
 
-    keys = list(pdf.keys())
+    keys = list(pdf_file.keys())
     if len(keys) != 1:
         raise Exception('Multiple matching reports found (%s)' % keys)
 
-    f = pdf[list(pdf.keys())[0]]
+    f = pdf_file[list(pdf_file.keys())[0]]
     return f
 
 
@@ -85,11 +85,11 @@ def download_snapshot(self, name, fp):
             images.append(fp_snap)
         return images
 
-    pdf = self.pdf(name)
+    pdf_file = self.pdf(name)
 
     f, fp1 = tempfile.mkstemp(suffix='.pdf')
     os.close(f)
-    pdf.get(dest=fp1)
+    pdf_file.get(dest=fp1)
 
     snaps = extract_snapshots(fp1)
 
@@ -108,4 +108,5 @@ def download_snapshot(self, name, fp):
         os.system(cmd)
         files.append(fp2)
 
+    os.remove(fp1)
     return files

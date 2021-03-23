@@ -10,7 +10,6 @@ def scandate(self):
 
     f = list(self.files())[0]
 
-    fp = op.join(tempfile.gettempdir(), 'test.dcm')
     fd, fp = tempfile.mkstemp(suffix='.dcm')
     os.close(fd)
     f.get(dest=fp)
