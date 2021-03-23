@@ -2,6 +2,7 @@ XNAT_RESOURCE_NAMES = ['SPM12_SEGMENT', 'SPM12_SEGMENT_T1T2']
 
 
 def volumes(self):
+    import os
     import tempfile
     import nibabel as nib
     import numpy as np
@@ -18,6 +19,7 @@ def volumes(self):
         v = np.sum(d.dataobj) * size
         vols.append((kls, v))
 
+    os.remove(fp)
     return dict(vols)
 
 

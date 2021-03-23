@@ -15,4 +15,6 @@ def volume(self):
     d = nib.load(fp)
     size = np.prod(d.header['pixdim'].tolist()[:4])
     v = np.sum(d.dataobj) * size
+
+    os.remove(fp)
     return v
