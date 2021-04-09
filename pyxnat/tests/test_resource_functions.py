@@ -62,7 +62,21 @@ def test_fdg_quantification():
 def test_bamos_volume():
     r = e1.resource('BAMOS')
     v = r.volume()
-    assert(v == 33599.94964499201)
+    assert(v == 33620.32498628937)
+
+
+def test_bamos_stats():
+    r = e1.resource('BAMOS')
+    v = r.stats()
+    print(sum(v['volume']))
+    assert(sum(v['volume']) == 33620.32429030311)
+    r.bullseye_plot(stats=v)
+
+
+def test_bamos_n_lesion():
+    r = e1.resource('BAMOS')
+    v = r.n_lesions()
+    assert(v == 296)
 
 
 def test_freesurfer7_amygNucVolumes():
