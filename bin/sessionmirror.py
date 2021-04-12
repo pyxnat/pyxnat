@@ -179,8 +179,8 @@ PET_EXP_ATTRS = [
     'xnat:petSessionData/patientID',
     'xnat:petSessionData/patientName',
     'xnat:petSessionData/stabilization',
-    'xnat:petSessionData/start_time/scan',
-    'xnat:petSessionData/start_time/injection',
+    # 'xnat:petSessionData/start_time/scan',
+    # 'xnat:petSessionData/start_time/injection',
     'xnat:petSessionData/tracer/name',
     'xnat:petSessionData/tracer/startTime',
     'xnat:petSessionData/tracer/dose',
@@ -189,8 +189,8 @@ PET_EXP_ATTRS = [
     'xnat:petSessionData/tracer/intermediate',
     'xnat:petSessionData/tracer/isotope',
     'xnat:petSessionData/tracer/isotope/half-life',
-    'xnat:petSessionData/tracer/transmissions',
-    'xnat:petSessionData/tracer/transmissions/startTime'
+    'xnat:petSessionData/tracer/transmissions'
+    # 'xnat:petSessionData/tracer/transmissions/startTime'
 ]
 
 CT_EXP_ATTRS = [
@@ -439,8 +439,6 @@ def is_empty_resource(_res):
 def copy_session(src_sess, dst_sess, sess_cache_dir):
     '''Copy XNAT session from source to destination'''
 
-    print(dst_sess.exists())
-    print(dst_sess._uri)
     print('INFO:uploading session attributes as xml')
     # Write xml to file
     if not op.exists(sess_cache_dir):
@@ -448,7 +446,6 @@ def copy_session(src_sess, dst_sess, sess_cache_dir):
     sess_xml = src_sess.get()
     xml_path = op.join(sess_cache_dir, 'sess.xml')
     write_xml(sess_xml, xml_path)
-    print(xml_path)
 
     sess_type = src_sess.datatype()
     dst_sess.create(experiments=sess_type)
@@ -467,9 +464,9 @@ def copy_session(src_sess, dst_sess, sess_cache_dir):
     for src_assr in src_sess.assessors():
         assr_label = src_assr.label()
         print('INFO:Processing assessor:%s:...' % assr_label)
-        dst_assr = dst_sess.assessor(assr_label)
-        assr_cache_dir = op.join(sess_cache_dir, assr_label)
-        copy_assr(src_assr, dst_assr, assr_cache_dir)
+        # dst_assr = dst_sess.assessor(assr_label)
+        # assr_cache_dir = op.join(sess_cache_dir, assr_label)
+        # copy_assr(src_assr, dst_assr, assr_cache_dir)
 
     for src_res in src_sess.resources().fetchall('obj'):
         res_label = src_res.label()
@@ -488,7 +485,7 @@ def copy_scan(src_scan, dst_scan, scan_cache_dir):
 
     scan_type = src_scan.datatype()
     if scan_type == '':
-             scan_type = 'xnat:otherDicomScanData'
+        scan_type = 'xnat:otherDicomScanData'
     dst_scan.create(scans=scan_type)
     copy_attributes(src_scan, dst_scan)
 
@@ -496,7 +493,7 @@ def copy_scan(src_scan, dst_scan, scan_cache_dir):
     for src_res in src_scan.resources().fetchall('obj'):
         res_label = src_res.label()
 
-        print('INFO:Processing resource:%s...' % (res_label))
+        print('INFO:Processing resource:%s...' % res_label)
 
         dst_res = dst_scan.resource(res_label)
 
@@ -653,27 +650,28 @@ def write_xml(xml_str, file_path, clean_tags=True):
 def create_parser():
     import argparse
     """Parse commandline arguments."""
-    parser = argparse.ArgumentParser(description='Downloads a given experiment/'\
-        'session from an XNAT instance and uploads it to an independent one. '\
-        'Only DICOM resources will be imported. \n\n'\
-        'More information at: https://wiki.xnat.org/docs16/4-developer-documen'\
-        'tation/xnat-rest-api-directory/data-services-import',
+    arg_parser = argparse.ArgumentParser(
+        description='Downloads a given experiment/session from an XNAT instance '
+                    'and uploads it to an independent one. Only DICOM resources '
+                    'will be imported.',
         formatter_class=argparse.RawTextHelpFormatter)
-    parser.add_argument('--h1', '--source_config', dest='source_config',
+    arg_parser.add_argument(
+        '--h1', '--source_config', dest='source_config',
         help='Source XNAT configuration file', required=True)
-    parser.add_argument('--h2', '--dest_config', dest='dest_config',
-        help='Destination XNAT configuration file', required=True)
-    parser.add_argument('-e', '--experiment_id',
-        help='Which resource to download? (Entity name/identifier)', required=True)
-    parser.add_argument('-p', '--project_id', dest='project_id',
-        help='Which project to store the resource in', required=True)
+    arg_parser.add_argument(
+        '--h2', '--dest_config', dest='dest_config', required=True,
+        help='Destination XNAT configuration file')
+    arg_parser.add_argument(
+        '-e', '--experiment_id', required=True,
+        help='Which resource to download? (Entity name/identifier)')
+    arg_parser.add_argument(
+        '-p', '--project_id', dest='project_id', required=True,
+        help='Which project to store the resource in')
+    arg_parser.add_argument(
+        '-v', '--verbose', dest='verbose', action='store_true', default=False,
+        help='Display verbosal information (optional)', required=False)
 
-    parser.add_argument('-v', '--verbose', dest='verbose', action='store_true',
-        default=False, help='Display verbosal information (optional)',
-        required=False)
-
-    return parser
-
+    return arg_parser
 
 
 def main(args):
@@ -682,13 +680,12 @@ def main(args):
 
     columns = ['subject_label', 'label']
     e1 = x1.array.experiments(experiment_id=args.experiment_id,
-        columns=columns).data[0]
+                              columns=columns).data[0]
     p = x2.select.project(args.project_id)
     s = p.subject(e1['subject_label'])
     if not s.exists():
-       s.create()
+        s.create()
     e = s.experiment(e1['label'])
-    e.create()
 
     src_sess = x1.select.project(e1['project']).subject(e1['subject_ID']).experiment(e1['ID'])
     dst_sess = e
@@ -698,5 +695,5 @@ def main(args):
 
 if __name__ == '__main__':
     parser = create_parser()
-    args = parser.parse_args()
-    main(args)
+    arguments = parser.parse_args()
+    main(arguments)
