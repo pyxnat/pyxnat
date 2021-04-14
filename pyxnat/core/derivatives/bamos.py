@@ -74,21 +74,6 @@ def stats(self):
         os.unlink(fp)
         return cc, d1, d2, les, size
 
-    def _load_dummy_():
-        fp = '/tmp/BBRC_E00048/BAMOS/Connect_WS3WT3WC1Lesion_040510140217994_corr.nii.gz'
-        cc = np.array(nib.load(fp).dataobj)
-        fp = '/tmp/BBRC_E00048/BAMOS/CorrectLesion_040510140217994.nii.gz'
-        d = nib.load(fp)
-        size = np.prod(d.header['pixdim'].tolist()[:4])
-        les = np.array(d.dataobj)
-
-        fp = '/tmp/BBRC_E00048/BAMOS/Layers_040510140217994.nii.gz'
-        d1 = np.array(nib.load(fp).dataobj)
-
-        fp = '/tmp/BBRC_E00048/BAMOS/Lobes_040510140217994.nii.gz'
-        d2 = np.array(nib.load(fp).dataobj)
-        return cc, d1, d2, les, size
-
     def _roistats_from_map(m, atlas1, atlas2, func=np.mean):
         import itertools
         assert(m.shape == atlas1.shape)
@@ -112,7 +97,6 @@ def stats(self):
                 data.append(stats[(depth, BAMOS_LABELS[label])])
         return data
 
-    #cc, d1, d2, les, size = _load_dummy_()
     cc, d1, d2, les, size = _download_data_(self)
     d1[d1 == 5] = 4  # Merging layer 5 with layer 4
 
