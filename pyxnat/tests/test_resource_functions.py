@@ -97,3 +97,15 @@ def test_freesurfer7_aseg():
     assert (hv.shape == (424, 3))
     v = hv.query('region=="BrainSegVol"')['value'].tolist()[0]
     assert(v == 906719.90625)
+
+
+def test_spm12_volumes():
+    r = e1.resource('SPM12_SEGMENT')
+    v = r.volumes()
+    assert(v['c1'] > v['c2'] > v['c3'])
+
+
+def test_cat12_volumes():
+    r = e1.resource('CAT12_SEGMENT')
+    v = r.volumes()
+    assert(v['mri/p1'] > v['mri/p2'] > v['mri/p3'])
