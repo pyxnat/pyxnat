@@ -89,24 +89,44 @@ def aparc(self, atlas='desikan-killiany'):
 
         res2 = [e for e in res if e.startswith('# Measure ')]
         for each in volumes:
-            m = float([e for e in res2
-                       if each in e.split(', ')[1]][0].split(', ')[-2])
-            table.append([None, 'Volume_mm3', each, m])
+            m = [e for e in res2 if each == e.split(', ')[1]]
+            if len(m) > 1:
+                msg = 'Key %s is ambiguous in file %s (found entries: %s)'\
+                      % (each, f._uri, m)
+                raise Exception(msg)
+            if len(m) == 1:
+                m = float(m[0].split(', ')[-2])
+                table.append([None, 'Volume_mm3', each, m])
 
         for each in thickness:
-            m = float([e for e in res2
-                       if each in e.split(', ')[1]][0].split(', ')[-2])
-            table.append([None, 'Thickness_mm', each, m])
+            m = [e for e in res2 if each == e.split(', ')[1]]
+            if len(m) > 1:
+                msg = 'Key %s is ambiguous in file %s (found entries: %s)'\
+                      % (each, f._uri, m)
+                raise Exception(msg)
+            if len(m) == 1:
+                m = float(m[0].split(', ')[-2])
+                table.append([None, 'Thickness_mm', each, m])
 
         for each in surfaces:
-            m = float([e for e in res2
-                       if each in e.split(', ')[1]][0].split(', ')[-2])
-            table.append([None, 'SurfArea_mm2', each, m])
+            m = [e for e in res2 if each == e.split(', ')[1]]
+            if len(m) > 1:
+                msg = 'Key %s is ambiguous in file %s (found entries: %s)'\
+                      % (each, f._uri, m)
+                raise Exception(msg)
+            if len(m) == 1:
+                m = float(m[0].split(', ')[-2])
+                table.append([None, 'SurfArea_mm2', each, m])
 
         for each in unitless:
-            m = float([e for e in res2
-                       if each in e.split(', ')[1]][0].split(', ')[-2])
-            table.append([None, 'unitless', each, m])
+            m = [e for e in res2 if each == e.split(', ')[1]]
+            if len(m) > 1:
+                msg = 'Key %s is ambiguous in file %s (found entries: %s)'\
+                      % (each, f._uri, m)
+                raise Exception(msg)
+            if len(m) == 1:
+                m = float(m[0].split(', ')[-2])
+                table.append([None, 'unitless', each, m])
 
         res2 = [e for e in res if not e.startswith('#')]
         d2 = [[each for each in e.split(' ') if each != ''] for e in res2]
