@@ -123,3 +123,13 @@ def test_cat12_volumes():
     r = e1.resource('CAT12_SEGMENT')
     v = r.volumes()
     assert(v['mri/p1'] > v['mri/p2'] > v['mri/p3'])
+
+
+def test_donsurf():
+    r = e1.resource('DONSURF')
+    st = r.aparc()
+    left = float(st.query('measurement == "CurvInd" &'\
+                          'region == "insula" & side == "left"')['value'])
+    right = float(st.query('measurement == "CurvInd" &'\
+                           'region == "insula" & side == "right"')['value'])
+    assert(left == 15.7 and right == 15.8)
