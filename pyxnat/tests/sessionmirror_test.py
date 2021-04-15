@@ -4,35 +4,38 @@ import pyxnat
 from . import skip_if_no_network
 
 _modulepath = op.dirname(op.abspath(pyxnat.__file__))
-
 dd = op.join(op.split(_modulepath)[0], 'bin')
 sys.path.append(dd)
 
+cfg = op.join(op.dirname(op.abspath(__file__)), 'central.cfg')
+central = pyxnat.Interface(config=cfg)
+
+src_project = 'nosetests5'
 dest_project = 'testing_new'
 
 
 @skip_if_no_network
 def test_001_sessionmirror():
-    from sessionmirror import create_parser, main
+    from sessionmirror import create_parser, main, subj_compare
+    e = 'CENTRAL02_E01892'
     parser = create_parser()
-    cfg = op.join(op.dirname(op.abspath(__file__)), 'central.cfg')
-    central = pyxnat.Interface(config=cfg)
-    e = 'CENTRAL_E74609'
     args = ['--h1', cfg, '--h2', cfg, '-e', e, '-p', dest_project]
     args = parser.parse_args(args)
     main(args)
-    central.array.experiments(experiment_id=e,
-                              columns=['subject_label']).data[0]
+
+    cols = ['label', 'subject_label']
+    data = central.array.experiments(experiment_id=e, columns=cols).data[0]
+    s1 = central.select.project(src_project).subject(data['subject_label'])
+    s2 = central.select.project(dest_project).subject(data['subject_label'])
+    assert(subj_compare(s1, s2) == 0)
 
 
 @skip_if_no_network
-def test_002_deletesubject():
+def test_002_delete_experiment():
     print('DELETING')
-    cfg = op.join(op.dirname(op.abspath(__file__)), 'central.cfg')
-    central = pyxnat.Interface(config=cfg)
-    e = 'CENTRAL_E74609'
-    e0 = central.array.experiments(experiment_id=e,
-                                   columns=['subject_label', 'label']).data[0]
+    e = 'CENTRAL02_E01892'
+    cols = ['subject_label', 'label']
+    e0 = central.array.experiments(experiment_id=e, columns=cols).data[0]
     subject_label = e0['subject_label']
     experiment_label = e0['label']
     e1 = central.array.experiments(project_id=dest_project,
