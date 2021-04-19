@@ -20,6 +20,8 @@ BAMOS_LABELS = {0: 'background',
 
 
 def volume(self):
+    """ Returns the estimated volume of the identified lesions (i.e. voxels
+    with a value higher than 0.5."""
 
     fd, fp = tempfile.mkstemp(suffix='.nii.gz')
     os.close(fd)
@@ -36,7 +38,7 @@ def volume(self):
 
 def n_lesions(self):
     """ Returns the estimated number of lesions i.e. the # of found connected
-    components in Connect_WS3WT3WC1Lesion*_corr.nii.gz """
+    components in Connect_WS3WT3WC1Lesion*_corr.nii.gz. """
 
     fd, fp = tempfile.mkstemp(suffix='.nii.gz')
     os.close(fd)
@@ -51,6 +53,9 @@ def n_lesions(self):
 
 
 def stats(self):
+    """ Collects descriptive statistics based on the segmented lesions of the
+    white matter, including volumes and number of lesions. A voxel is
+    considered as a part of a lesion if it has a value higher than 0.5."""
     def _download_data_(self):
         fd, fp = tempfile.mkstemp(suffix='.nii.gz')
         os.close(fd)
