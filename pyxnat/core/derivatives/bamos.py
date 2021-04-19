@@ -46,7 +46,7 @@ def n_lesions(self):
     d = nib.load(fp)
     n = len(np.unique(d.dataobj))
 
-    os.unlink(fp)
+    os.remove(fp)
     return n
 
 
@@ -71,7 +71,7 @@ def stats(self):
         f = list(self.files('Lobes_*.nii.gz'))[0]
         f.get(fp)
         d2 = np.array(nib.load(fp).dataobj)
-        os.unlink(fp)
+        os.remove(fp)
         return cc, d1, d2, les, size
 
     def _roistats_from_map(m, atlas1, atlas2, func=np.mean):
