@@ -93,14 +93,6 @@ def stats(self):
                              for (i1, i2) in combinations])
         return label_values
 
-    def _ravel_stats_(stats):
-        ordered_labels = [2, 4, 8, 6, 10, 9, 5, 7, 3, 1]
-
-        data = []
-        for label in ordered_labels:
-            for depth in range(6):
-                data.append(stats[(depth, BAMOS_LABELS[label])])
-        return data
 
     cc, d1, d2, les, size = _download_data_(self)
     d1[d1 == 5] = 4  # Merging layer 5 with layer 4
@@ -158,7 +150,6 @@ def bullseye_plot(self, ax=None, figsize=(12, 8), segBold=[],
 
     # Highlight regions > nth percentile
     if isinstance(segBold, int):
-        labels = [3, 1, 2, 4, 8, 6, 10, 9, 5, 7]
         pc = stats[measurement].quantile(q=segBold/100.0)
         segBold = []
         for _, r in stats.query('%s > @pc' % measurement).iterrows():
