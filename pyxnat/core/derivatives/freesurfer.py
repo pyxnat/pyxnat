@@ -88,45 +88,18 @@ def aparc(self, atlas='desikan-killiany'):
         res = self._intf.get(uri).text.split('\n')
 
         res2 = [e for e in res if e.startswith('# Measure ')]
-        for each in volumes:
-            m = [e for e in res2 if each == e.split(', ')[1]]
-            if len(m) > 1:
-                msg = 'Key %s is ambiguous in file %s (found entries: %s)'\
-                      % (each, f._uri, m)
-                raise ValueError(msg)
-            if len(m) == 1:
-                m = float(m[0].split(', ')[-2])
-                table.append([None, 'Volume_mm3', each, m])
 
-        for each in thickness:
-            m = [e for e in res2 if each == e.split(', ')[1]]
-            if len(m) > 1:
-                msg = 'Key %s is ambiguous in file %s (found entries: %s)'\
-                      % (each, f._uri, m)
-                raise Exception(msg)
-            if len(m) == 1:
-                m = float(m[0].split(', ')[-2])
-                table.append([None, 'Thickness_mm', each, m])
+        measurements = {'Volume_mm3': volumes,
+                        'Thickness_mm': thickness,
+                        'SurfArea_mm2': surfaces,
+                        'unitless': unitless}
 
-        for each in surfaces:
-            m = [e for e in res2 if each == e.split(', ')[1]]
-            if len(m) > 1:
-                msg = 'Key %s is ambiguous in file %s (found entries: %s)'\
-                      % (each, f._uri, m)
-                raise Exception(msg)
-            if len(m) == 1:
-                m = float(m[0].split(', ')[-2])
-                table.append([None, 'SurfArea_mm2', each, m])
-
-        for each in unitless:
-            m = [e for e in res2 if each == e.split(', ')[1]]
-            if len(m) > 1:
-                msg = 'Key %s is ambiguous in file %s (found entries: %s)'\
-                      % (each, f._uri, m)
-                raise Exception(msg)
-            if len(m) == 1:
-                m = float(m[0].split(', ')[-2])
-                table.append([None, 'unitless', each, m])
+        for unit, data in measurements.items():
+            for each in data:
+                m = [e for e in res2 if each == e.split(', ')[1]]
+                if len(m) == 1:
+                    m = float(m[0].split(', ')[-2])
+                    table.append([None, unit, each, m])        
 
         res2 = [e for e in res if not e.startswith('#')]
         d2 = [[each for each in e.split(' ') if each != ''] for e in res2]
