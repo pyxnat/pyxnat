@@ -67,9 +67,11 @@ def test_bamos_volume():
 def test_bamos_stats():
     r = e1.resource('BAMOS')
     v = r.stats()
-    print(sum(v['volume']))
     assert(sum(v['volume']) == 33620.32429030311)
-    r.bullseye_plot(stats=v)
+    fig, ax = r.bullseye_plot(stats=v)
+    
+    import matplotlib
+    assert(isinstance(fig, matplotlib.figure.Figure))
 
 
 def test_bamos_n_lesion():
