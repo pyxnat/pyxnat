@@ -93,7 +93,7 @@ def aparc(self, atlas='desikan-killiany'):
             if len(m) > 1:
                 msg = 'Key %s is ambiguous in file %s (found entries: %s)'\
                       % (each, f._uri, m)
-                raise Exception(msg)
+                raise ValueError(msg)
             if len(m) == 1:
                 m = float(m[0].split(', ')[-2])
                 table.append([None, 'Volume_mm3', each, m])
