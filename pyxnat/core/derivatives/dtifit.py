@@ -9,6 +9,5 @@ def download_maps(self, path):
         res = self._intf.array.experiments(experiment_id=self.parent().id(),
                                            columns=['subject_label']).data[0]
         subject_label = res['subject_label']
-        id = res['ID']
-        fp = '%s_%s_%s.nii.gz' % (subject_label, id, each)
+        fp = '%s_%s_%s.nii.gz' % (subject_label, res['ID'], each)
         list(self.files('*%s.nii.gz' % each))[0].get(op.join(path, fp))
