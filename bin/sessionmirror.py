@@ -179,8 +179,8 @@ PET_EXP_ATTRS = [
     'xnat:petSessionData/patientID',
     'xnat:petSessionData/patientName',
     'xnat:petSessionData/stabilization',
-    # 'xnat:petSessionData/start_time/scan',
-    # 'xnat:petSessionData/start_time/injection',
+    'xnat:petSessionData/start_time_scan',
+    'xnat:petSessionData/start_time_injection',
     'xnat:petSessionData/tracer/name',
     'xnat:petSessionData/tracer/startTime',
     'xnat:petSessionData/tracer/dose',
@@ -190,7 +190,7 @@ PET_EXP_ATTRS = [
     'xnat:petSessionData/tracer/isotope',
     'xnat:petSessionData/tracer/isotope/half-life',
     'xnat:petSessionData/tracer/transmissions'
-    # 'xnat:petSessionData/tracer/transmissions/startTime'
+    'xnat:petSessionData/tracer/transmissions_starttime'
 ]
 
 CT_EXP_ATTRS = [
