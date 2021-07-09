@@ -15,6 +15,7 @@ install:
 script:
     - git clone https://github.com/NrgXnat/xnat-docker-compose
     - cd xnat-docker-compose
+    - git reset --hard 481a4bebfcdc32a1e7
     - sudo docker-compose up -d &> /tmp/docker.log
     - sleep 120
     - tail -100 /tmp/docker.log
