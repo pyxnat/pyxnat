@@ -3,7 +3,7 @@ pyxnat
 =======
 
 .. image:: https://img.shields.io/travis/pyxnat/pyxnat.svg
-    :target: https://travis-ci.org/pyxnat/pyxnat
+    :target: https://travis-ci.com/pyxnat/pyxnat
 .. image:: https://coveralls.io/repos/github/pyxnat/pyxnat/badge.svg?branch=master
     :target: https://coveralls.io/github/pyxnat/pyxnat?branch=master
 .. image:: https://img.shields.io/pypi/dm/pyxnat.svg
@@ -12,7 +12,7 @@ pyxnat
     :target: https://pypi.org/project/pyxnat
 .. image:: https://img.shields.io/pypi/v/pyxnat.svg
     :target: https://pypi.org/project/pyxnat
-    
+
 .. image:: https://gitlab.com/xgrg/tweetit/-/raw/master/resources/008-pyxnat-v1.4.gif?inline=false
 
 Where to get it
