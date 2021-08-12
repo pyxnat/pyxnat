@@ -135,3 +135,30 @@ def test_donsurf():
     right = float(st.query('measurement == "CurvInd" &'\
                            'region == "insula" & side == "right"')['value'])
     assert(left == 15.7 and right == 15.8)
+
+
+def test_freesurfer7_extras_brainstem_volumes():
+    r = e1.resource('FREESURFER7_EXTRAS')
+    bs = r.brainstem_substructures_volumes()
+    assert(bs.shape == (5, 2))
+    q = 'region=="Medulla"'
+    v = bs.query(q)['value'].tolist()[0]
+    assert(v == 4427.713893)
+
+
+def test_freesurfer7_extras_thalamic_volumes():
+    r = e1.resource('FREESURFER7_EXTRAS')
+    tn = r.thalamic_nuclei_volumes()
+    assert(tn.shape == (52, 3))
+    q = 'region=="Whole_thalamus" & side=="left"'
+    v = tn.query(q)['value'].tolist()[0]
+    assert(v == 5248.549485)
+
+
+def test_freesurfer7_extras_hypothalamic_volumes():
+    r = e1.resource('FREESURFER7_EXTRAS')
+    hs = r.hypothalamic_subunits_volumes()
+    assert(hs.shape == (12, 3))
+    q = 'region=="posterior" & side=="right"'
+    v = hs.query(q)['value'].tolist()[0]
+    assert(v == 64.84)
