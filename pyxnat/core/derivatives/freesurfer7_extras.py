@@ -1,21 +1,31 @@
 XNAT_RESOURCE_NAMES = ['FREESURFER7_EXTRAS']
 
 
+def __extract_volumes(self, filename):
+    f = list(self.files(filename))[0]
+    uri = f._uri
+
+    res = self._intf.get(uri).text.split('\n')
+    if filename.endswith('.csv'):
+        import csv
+        csv_content = list(csv.reader(res, delimiter=','))
+        d1 = dict(zip(csv_content[0], csv_content[1]))
+    else:
+        d1 = dict([each.split(' ') for each in res[:-1]])
+
+    return dict([('%s' % k, float(v))
+                 for k, v in d1.items()
+                 if k != 'subject'])
+
+
 def brainstem_substructures_volumes(self):
     """Returns brainstem substructures volumetry as estimated by the FreeSurfer
     brainstem segmentation module."""
     import pandas as pd
 
     table = []
-    f = list(self.files('*brainstemSsVolumes.v*.txt'))[0]
-    uri = f._uri
-
-    res = self._intf.get(uri).text.split('\n')
-    d1 = dict([each.split(' ') for each in res[:-1]])
-    d2 = dict([('%s' % k, float(v))
-              for k, v in d1.items()])
-
-    for region, value in d2.items():
+    data = __extract_volumes(self, '*brainstemSsVolumes.v*.txt')
+    for region, value in data.items():
         row = [region, value]
         table.append(row)
 
@@ -29,15 +39,8 @@ def thalamic_nuclei_volumes(self):
     import pandas as pd
 
     table = []
-    f = list(self.files('*ThalamicNuclei.v*.T1.volumes.txt'))[0]
-    uri = f._uri
-
-    res = self._intf.get(uri).text.split('\n')
-    d1 = dict([each.split(' ') for each in res[:-1]])
-    d2 = dict([('%s' % k, float(v))
-              for k, v in d1.items()])
-
-    for label, value in d2.items():
+    data = __extract_volumes(self, '*ThalamicNuclei.v*.T1.volumes.txt')
+    for label, value in data.items():
         side, region = label.split('-', 1)
         row = [side.lower(), region, value]
         table.append(row)
@@ -53,17 +56,8 @@ def hypothalamic_subunits_volumes(self):
     import csv
 
     table = []
-    f = list(self.files('*hypothalamic_subunits_volumes.v*.csv'))[0]
-    uri = f._uri
-
-    res = self._intf.get(uri).text.split('\n')
-    csv_content = list(csv.reader(res, delimiter=','))
-    d1 = dict(zip(csv_content[0], csv_content[1]))
-    d2 = dict([('%s' % k, float(v))
-               for k, v in d1.items()
-               if k != 'subject'])
-
-    for label, value in d2.items():
+    data = __extract_volumes(self, '*hypothalamic_subunits_volumes.v*.csv')
+    for label, value in data.items():
         side, region = label.split(' ', 1)
         if side == 'whole':
             region, side = label.split(' ', 1)
