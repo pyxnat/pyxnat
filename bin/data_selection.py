@@ -7,7 +7,7 @@ import pyxnat
 
 project_description = 'Automatically generated project hosting a ' \
                       'selection of existing data for sharing ' \
-                      'purposes. This is not a real study.'
+                      'purposes. This is not a real study. {source}'
 
 
 def generate_project_id(label):
@@ -21,7 +21,7 @@ def generate_project_id(label):
     return project_id
 
 
-def create_project(intf, project_name):
+def create_project(intf, project_name, notebook_url):
     """Create an XNAT project setting by-default attributes."""
 
     p = intf.select.project(project_name)
@@ -33,7 +33,7 @@ def create_project(intf, project_name):
     p.create()
     p.set_accessibility('protected')
     p.set_prearchive_code('4')
-    p.attrs.set('description', project_description)
+    p.attrs.set('description', project_description.format(source=notebook_url))
     p.attrs.set('keywords', 'data_selection')
 
     return p
@@ -113,16 +113,20 @@ def main(args):
         res = args.resources.split(',')
         log.info('Selected resources: {}'.format(res))
 
+    notebook_url = ''
+    if args.notebook_url:
+        notebook_url = args.notebook_url
+
     # create a project for the data selection
     proj = generate_project_id(args.label)
     if args.reuse_project:
         log.info('Reusing project `{}`'.format(proj))
-        p = c2.select.project(proj)
+        p = c1.select.project(proj)
         if not p.exists():
             log.error('Project `{}` not found. Aborting.'.format(proj))
             sys.exit(1)
     else:
-        p = create_project(c2, proj)
+        p = create_project(c2, proj, notebook_url)
 
     # mirror experiments
     for experiment_id in exps:
@@ -176,6 +180,9 @@ def create_parser():
     arg_parser.add_argument(
         '--resources', dest='resources', required=False,
         help='resources included in the data selection (optional)')
+    arg_parser.add_argument(
+        '--notebook_url', dest='notebook_url', required=False,
+        help='link to notebook used for creating the selection list (optional)')
     arg_parser.add_argument(
         '-v', '--verbose', dest='verbose', action='store_true', default=False,
         help='display verbosal information (optional)', required=False)
