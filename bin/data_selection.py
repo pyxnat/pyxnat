@@ -134,9 +134,9 @@ def main(args):
             s.create()
         dst_exp = s.experiment(e['label'])
         if dst_exp.exists():
-            log.error('Experiment `{}` already exists. '
-                      'Aborting.'.format(dst_exp._urn))
-            sys.exit(1)
+            log.warning('Experiment `{}` already exists. '
+                        'Skipping.'.format(dst_exp._urn))
+            continue
         src_exp = c1.select.experiment(e['ID'])
 
         tmp_dir = tempfile.mkdtemp()
