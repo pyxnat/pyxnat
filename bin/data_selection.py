@@ -117,7 +117,7 @@ def main(args):
     proj = generate_project_id(args.label)
     if args.reuse_project:
         log.info('Reusing project `{}`'.format(proj))
-        p = c1.select.project(proj)
+        p = c2.select.project(proj)
         if not p.exists():
             log.error('Project `{}` not found. Aborting.'.format(proj))
             sys.exit(1)
@@ -151,7 +151,7 @@ def create_parser():
     import argparse
     from argparse import RawTextHelpFormatter
 
-    desc = 'Creates a shareable selection of data (replicated in a new project) '\
+    desc = 'Creates a selection of data (replicated in a new project) '\
            'from a set of existing imaging sessions.'
     arg_parser = argparse.ArgumentParser(description=desc,
                                          formatter_class=RawTextHelpFormatter)
