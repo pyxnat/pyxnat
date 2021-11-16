@@ -121,7 +121,7 @@ def main(args):
     proj = generate_project_id(args.label)
     if args.reuse_project:
         log.info('Reusing project `{}`'.format(proj))
-        p = c1.select.project(proj)
+        p = c2.select.project(proj)
         if not p.exists():
             log.error('Project `{}` not found. Aborting.'.format(proj))
             sys.exit(1)
