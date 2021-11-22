@@ -162,3 +162,32 @@ def test_freesurfer7_extras_hypothalamic_volumes():
     q = 'region=="posterior" & side=="right"'
     v = hs.query(q)['value'].tolist()[0]
     assert(v == 64.84)
+
+
+def test_basil_volumes():
+    r = e1.resource('BASIL')
+    v = r.volumes()
+    # assert GM > WM > CSF
+    assert(v['T1_fast_pve_1'] > v['T1_fast_pve_2'] > v['T1_fast_pve_0'])
+
+
+def test_basil_perfusion():
+    r = e1.resource('BASIL')
+    perf = r.perfusion()
+    assert(perf.shape == (12, 3))
+    q = 'pvcorr==True & metric=="perfusion_calib_gm_mean"'
+    gm_perf = perf.query(q)['value'].item()
+    q = 'pvcorr==True & metric=="perfusion_calib_wm_mean"'
+    wm_perf = perf.query(q)['value'].item()
+    assert(gm_perf > wm_perf)
+
+
+def test_basil_regional_stats():
+    r = e1.resource('BASIL')
+    stats = r.regional_stats()
+    assert(stats.shape == (219, 9))
+    q = 'ROI=="GM" & name=="Left Hippocampus"'
+    nvoxels_gm = stats.query(q)['Nvoxels'].item()
+    q = 'ROI=="WM" & name=="Left Hippocampus"'
+    nvoxels_wm = stats.query(q)['Nvoxels'].item()
+    assert(nvoxels_gm > nvoxels_wm)
