@@ -8,7 +8,8 @@ def volumes(self):
     import numpy as np
 
     vols = []
-    _, fp = tempfile.mkstemp(suffix='.nii.gz')
+    fd, fp = tempfile.mkstemp(suffix='.nii.gz')
+    os.close(fd)
 
     names = ['c1', 'c2', 'c3']
     for kls in names:
