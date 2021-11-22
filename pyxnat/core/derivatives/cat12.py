@@ -8,7 +8,8 @@ def volumes(self):
     import numpy as np
 
     vols = []
-    _, fp = tempfile.mkstemp(suffix='.nii.gz')
+    fd, fp = tempfile.mkstemp(suffix='.nii.gz')
+    os.close(fd)
 
     names = ['mri/p1', 'mri/p2', 'mri/p3']
     for kls in names:
