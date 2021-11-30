@@ -33,14 +33,11 @@ def perfusion(self):
         """Some BASIL mean files have typos in their names. This helper
         fixes them so they are consistent with the metric represented."""
 
-        if label == 'arrival_wm_wm_mean':
-            label = 'arrival_wm_mean'
-        elif label == 'perfusion_wm_wm_mean':
-            label = 'perfusion_wm_mean'
-        elif label == 'perfusion_wm_calib_wm_mean':
-            label = 'perfusion_calib_wm_mean'
+        d = {'arrival_wm_wm_mean': 'arrival_wm_mean',
+             'perfusion_wm_wm_mean': 'perfusion_wm_mean',
+             'perfusion_wm_calib_wm_mean': 'perfusion_calib_wm_mean'}
 
-        return label
+        return d.get(label, label)
 
     data = []
 
