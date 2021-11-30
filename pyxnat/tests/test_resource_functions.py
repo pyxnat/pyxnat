@@ -182,9 +182,9 @@ def test_basil_perfusion():
     assert(gm_perf > wm_perf)
 
 
-def test_basil_regional_stats():
+def test_basil_stats():
     r = e1.resource('BASIL')
-    stats = r.regional_stats()
+    stats = r.stats()
     assert(stats.shape == (219, 9))
     q = 'ROI=="GM" & name=="Left Hippocampus"'
     nvoxels_gm = stats.query(q)['Nvoxels'].item()
