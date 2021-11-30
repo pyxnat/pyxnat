@@ -55,14 +55,14 @@ def perfusion(self):
     return pd.DataFrame(data, columns=['metric', 'pvcorr', 'value'])
 
 
-def regional_stats(self):
-    """Summary statistics for the perfusion values within each region in the
-    Harvard-Oxford cortical and subcortical atlases"""
+def stats(self):
+    """Summary statistics for the perfusion values within each region
+    in the Harvard-Oxford cortical and subcortical atlases"""
     import csv
     import pandas as pd
     import os.path as op
 
-    stats = []
+    region_stats = []
 
     stats_files = {'whole_brain': 'region_analysis.csv',
                    'GM': 'region_analysis_gm.csv',
@@ -74,9 +74,9 @@ def regional_stats(self):
             if idx == 0:
                 cols = ['ROI'] + ln
             elif idx > 0:
-                stats.append([roi] + ln)
+                region_stats.append([roi] + ln)
 
-    df = pd.DataFrame(stats, columns=cols)
+    df = pd.DataFrame(region_stats, columns=cols)
     num_cols = ['Nvoxels', 'Mean', 'Std', 'Median',
                 'IQR', 'Precision-weighted mean', 'I2']
     for col in num_cols:
