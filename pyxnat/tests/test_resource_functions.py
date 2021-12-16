@@ -174,7 +174,7 @@ def test_basil_volumes():
 def test_basil_perfusion():
     r = e1.resource('BASIL')
     perf = r.perfusion()
-    assert(perf.shape == (12, 3))
+    assert(perf.shape == (12, 4))
     q = 'pvcorr==True & metric=="perfusion_calib_gm_mean"'
     gm_perf = perf.query(q)['value'].item()
     q = 'pvcorr==True & metric=="perfusion_calib_wm_mean"'
