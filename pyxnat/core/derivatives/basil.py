@@ -43,13 +43,14 @@ def perfusion(self):
 
     mean_files = [f for f in list(self.files('native_space/*.txt'))]
     for f in mean_files:
+        fp = f.attributes()['path']
         key = _fix_label(f.attributes()['Name'].split('.txt')[0])
-        pvcorr = ('pvcorr' in f.attributes()['path'])
+        pvcorr = ('pvcorr' in fp)
         value = float(self._intf.get(f.attributes()['URI']).text.strip())
 
-        data.append([key, pvcorr, value])
+        data.append([key, pvcorr, value, fp])
 
-    return pd.DataFrame(data, columns=['metric', 'pvcorr', 'value'])
+    return pd.DataFrame(data, columns=['metric', 'pvcorr', 'value', 'filepath'])
 
 
 def stats(self):
