@@ -31,7 +31,7 @@ def perfusion(self):
 
     def _fix_label(label):
         """Some BASIL mean files have typos in their names. This helper
-        fixes them so they are consistent with the metric represented."""
+        fixes them so they are consistent with the measurement represented."""
 
         d = {'arrival_wm_wm_mean': 'arrival_wm_mean',
              'perfusion_wm_wm_mean': 'perfusion_wm_mean',
@@ -50,7 +50,7 @@ def perfusion(self):
 
         data.append([key, pvcorr, value, fp])
 
-    return pd.DataFrame(data, columns=['metric', 'pvcorr', 'value', 'filepath'])
+    return pd.DataFrame(data, columns=['measurement', 'pvcorr', 'value', 'filepath'])
 
 
 def stats(self):
@@ -70,7 +70,7 @@ def stats(self):
         content = self._intf.get(f.attributes()['URI']).text.splitlines()
         for idx, ln in enumerate(csv.reader(content)):
             if idx == 0:
-                cols = ['ROI'] + ln
+                cols = ['region_analysis'] + ln
             elif idx > 0:
                 region_stats.append([roi] + ln)
 
