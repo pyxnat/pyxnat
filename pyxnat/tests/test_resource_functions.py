@@ -175,9 +175,9 @@ def test_basil_perfusion():
     r = e1.resource('BASIL')
     perf = r.perfusion()
     assert(perf.shape == (12, 4))
-    q = 'pvcorr==True & metric=="perfusion_calib_gm_mean"'
+    q = 'pvcorr==True & measurement=="perfusion_calib_gm_mean"'
     gm_perf = perf.query(q)['value'].item()
-    q = 'pvcorr==True & metric=="perfusion_calib_wm_mean"'
+    q = 'pvcorr==True & measurement=="perfusion_calib_wm_mean"'
     wm_perf = perf.query(q)['value'].item()
     assert(gm_perf > wm_perf)
 
@@ -186,8 +186,8 @@ def test_basil_stats():
     r = e1.resource('BASIL')
     stats = r.stats()
     assert(stats.shape == (219, 9))
-    q = 'ROI=="GM" & name=="Left Hippocampus"'
+    q = 'region_analysis=="GM" & name=="Left Hippocampus"'
     nvoxels_gm = stats.query(q)['Nvoxels'].item()
-    q = 'ROI=="WM" & name=="Left Hippocampus"'
+    q = 'region_analysis=="WM" & name=="Left Hippocampus"'
     nvoxels_wm = stats.query(q)['Nvoxels'].item()
     assert(nvoxels_gm > nvoxels_wm)
