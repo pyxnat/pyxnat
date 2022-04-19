@@ -189,7 +189,7 @@ PET_EXP_ATTRS = [
     'xnat:petSessionData/tracer/intermediate',
     'xnat:petSessionData/tracer/isotope',
     'xnat:petSessionData/tracer/isotope/half-life',
-    'xnat:petSessionData/tracer/transmissions'
+    'xnat:petSessionData/tracer/transmissions',
     'xnat:petSessionData/tracer/transmissions_starttime'
 ]
 
