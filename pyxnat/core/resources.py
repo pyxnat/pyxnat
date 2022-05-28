@@ -1515,15 +1515,32 @@ class Subject(EObject):
         return Projects(join_uri(self._uri, 'projects'),
                         self._intf, id_filter)
 
-    def share(self, project):
+    def share(self, project, label=None, primary=False):
         """ Share this subject with another project.
 
             Parameters
             ----------
                 project: string
                     The other project name.
+                label: string
+                    New label of subject. If empty the label of the subject will be reused
+                primary: boolean
+                    If True, the primary ownership of the subject will be changed from the original project to the
+                    new project. Logged-in user must have ownership permissions in both projects to change the primary
+                    ownership.
         """
-        self._intf._exec(join_uri(self._uri, 'projects', project), 'PUT')
+        options = []
+        if label:
+            options.append('label=%s' % label)
+        else:
+            options.append('label=%s' % self._urn)
+        if primary:
+            options.append('primary=true')
+
+        options = '?' + '&'.join(options)
+        print(join_uri(self._uri, 'projects', project) + options)
+        self._intf._exec(join_uri(self._uri, 'projects', project) + options, 'PUT')
+
 
     def unshare(self, project):
         """ Remove subject from another project in which it was shared.
@@ -1620,15 +1637,32 @@ class Experiment(EObject):
         return Projects(join_uri(self._uri, 'projects'),
                         self._intf, id_filter)
 
-    def share(self, project):
+    def share(self, project, label=None, primary=False):
         """ Share this experiment with another project.
 
             Parameters
             ----------
                 project: string
                     The other project name.
+                label: string
+                    New label of experiment. If empty the label of the experiment will be reused
+                primary: boolean
+                    If True, the primary ownership of the experiment will be changed from the original project to the
+                    new project. Logged-in user must have ownership permissions in both projects to change the primary
+                    ownership.
         """
-        self._intf._exec(join_uri(self._uri, 'projects', project), 'PUT')
+        options = []
+        if label:
+            options.append('label=%s' % label)
+        else:
+            options.append('label=%s' % self._urn)
+        if primary:
+            options.append('primary=true')
+
+        options = '?' + '&'.join(options)
+        print(join_uri(self._uri, 'projects', project) + options)
+        self._intf._exec(join_uri(self._uri, 'projects', project) + options, 'PUT')
+
 
     def unshare(self, project):
         """ Remove experiment from another project in which it was shared.
@@ -1708,7 +1742,8 @@ class Assessor(EObject):
                 project: string
                     The other project name.
         """
-        self._intf._exec(join_uri(self._uri, 'projects', project), 'PUT')
+        #self._intf._exec(join_uri(self._uri, 'projects', project), 'PUT')
+        self._intf._exec(join_uri(self._uri, 'projects', project) + '?primary=True', 'PUT')
 
     def unshare(self, project):
         """ Remove assessor from another project in which it was shared.
