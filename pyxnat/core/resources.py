@@ -1515,41 +1515,46 @@ class Subject(EObject):
         return Projects(join_uri(self._uri, 'projects'),
                         self._intf, id_filter)
 
-    def share(self, project, label=None, primary=False):
-        """ Share this subject with another project.
+    def share(self, project, label=None):
+        """ Share the subject with another project.
 
             Parameters
             ----------
                 project: string
-                    The other project name.
+                    Target project name.
                 label: string
-                    New label of subject. If empty the label of the subject will be reused
-                primary: boolean
-                    If True, the primary ownership of the subject will be changed from the original project to the
-                    new project. Logged-in user must have ownership permissions in both projects to change the primary
-                    ownership.
+                    Subject label as shared resource. By default, the original
+                    subject label is used.
         """
+        owner_project = self.attrs.get('project')
+        aliases = self._intf.select.project(owner_project).aliases()
+        if project in [owner_project] + aliases:
+            raise ValueError("Cannot share a subject with its owner project.")
+
         options = []
         if label:
             options.append('label=%s' % label)
         else:
-            options.append('label=%s' % self._urn)
-        if primary:
-            options.append('primary=true')
+            options.append('label=%s' % self.label())
 
         options = '?' + '&'.join(options)
 
         self._intf._exec(join_uri(self._uri, 'projects', project) + options, 'PUT')
 
-
     def unshare(self, project):
-        """ Remove subject from another project in which it was shared.
+        """ Unlink subject from a project it was shared with. Subject cannot be
+            unshared from the project that owns it.
 
             Parameters
             ----------
                 project: string
-                    The other project name.
+                    Target project name.
         """
+        owner_project = self.attrs.get('project')
+        aliases = self._intf.select.project(owner_project).aliases()
+        if project in [owner_project] + aliases:
+            raise ValueError("Cannot unlink a subject from its owner project.")
+
         self._intf._exec(join_uri(self._uri, 'projects', project), 'DELETE')
 
 
@@ -1637,41 +1642,46 @@ class Experiment(EObject):
         return Projects(join_uri(self._uri, 'projects'),
                         self._intf, id_filter)
 
-    def share(self, project, label=None, primary=False):
-        """ Share this experiment with another project.
+    def share(self, project, label=None):
+        """ Share the experiment with another project.
 
             Parameters
             ----------
                 project: string
-                    The other project name.
+                    Target project name.
                 label: string
-                    New label of experiment. If empty the label of the experiment will be reused
-                primary: boolean
-                    If True, the primary ownership of the experiment will be changed from the original project to the
-                    new project. Logged-in user must have ownership permissions in both projects to change the primary
-                    ownership.
+                    Experiment label as shared resource. By default, the original
+                    experiment label is used.
         """
+        owner_project = self.attrs.get('project')
+        aliases = self._intf.select.project(owner_project).aliases()
+        if project in [owner_project] + aliases:
+            raise ValueError("Cannot share an experiment with its owner project.")
+
         options = []
         if label:
             options.append('label=%s' % label)
         else:
-            options.append('label=%s' % self._urn)
-        if primary:
-            options.append('primary=true')
+            options.append('label=%s' % self.label())
 
         options = '?' + '&'.join(options)
 
         self._intf._exec(join_uri(self._uri, 'projects', project) + options, 'PUT')
 
-
     def unshare(self, project):
-        """ Remove experiment from another project in which it was shared.
+        """ Unlink experiment from a project it was shared with. Experiment cannot
+            be unshared from the project that owns it.
 
             Parameters
             ----------
                 project: string
-                    The other project name.
+                    Target project name.
         """
+        owner_project = self.attrs.get('project')
+        aliases = self._intf.select.project(owner_project).aliases()
+        if project in [owner_project] + aliases:
+            raise ValueError("Cannot unlink an experiment from its owner project.")
+
         self._intf._exec(join_uri(self._uri, 'projects', project), 'DELETE')
 
     def trigger_pipelines(self):
