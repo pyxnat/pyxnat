@@ -1734,52 +1734,6 @@ class Assessor(EObject):
 
         self.provenance = Provenance(self)
 
-    def shares(self, id_filter='*'):
-        """ Returns the projects sharing this assessor.
-
-            Returns
-            -------
-            Collection object.
-        """
-        return Projects(join_uri(self._uri, 'projects'),
-                        self._intf, id_filter)
-
-    def share(self, project, label=None, primary=False):
-        """ Share this assessor with another project.
-
-            Parameters
-            ----------
-                project: string
-                    The other project name.
-                label: string
-                    New label of assessor. If empty the label of the experiment will be reused
-                primary: boolean
-                    If True, the primary ownership of the assessor will be changed from the original project to the
-                    new project. Logged-in user must have ownership permissions in both projects to change the primary
-                    ownership.
-        """
-        options = []
-        if label:
-            options.append('label=%s' % label)
-        else:
-            options.append('label=%s' % self._urn)
-        if primary:
-            options.append('primary=true')
-
-        options = '?' + '&'.join(options)
-
-        self._intf._exec(join_uri(self._uri, 'projects', project) + options, 'PUT')
-
-    def unshare(self, project):
-        """ Remove assessor from another project in which it was shared.
-
-            Parameters
-            ----------
-                project: string
-                    The other project name.
-        """
-        self._intf._exec(join_uri(self._uri, 'projects', project), 'DELETE')
-
     def set_param(self, key, value):
         self.attrs.set('%s/parameters/addParam[name=%s]/addField'
                        % (self.datatype(), key),
@@ -2455,21 +2409,6 @@ class Experiments(CObject):
 
 @add_metaclass(CollectionType)
 class Assessors(CObject):
-
-    def sharing(self, projects=[]):
-        return Assessors([eobj for eobj in self
-                          if set(projects).issubset(eobj.shares().get())
-                          ],
-                         self._intf
-                         )
-
-    def share(self, project):
-        for eobj in self:
-            eobj.share(project)
-
-    def unshare(self, project):
-        for eobj in self:
-            eobj.unshare(project)
 
     def download(self, dest_dir, type="ALL",
                  name=None, extract=False, safe=False, removeZip=False):
