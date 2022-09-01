@@ -101,55 +101,6 @@ def test_06_multi_create():
     assert scan_2.datatype() == 'xnat:mrScanData'
 
 
-# def test_share_subject():
-#    assert not central.select('/projects/nosetests2'
-#                              '/subjects/%(sid)s' % _id_set1
-#                              ).exists()
-#    subj_1.share('nosetests2')
-#    assert central.select('/projects/nosetests2/subjects/%(sid)s'%_id_set1
-#                              ).exists()
-#    assert set(subj_1.shares().get()) == set(['nosetests', 'nosetests2'])
-
-# def test_share_experiment():
-#    assert not central.select('/projects/nosetests2/subjects/%(sid)s'
-#                          '/experiments/%(eid)s'%_id_set1
-#                          ).exists()
-#    expe_1.share('nosetests2')
-#    assert central.select('/projects/nosetests2/subjects/%(sid)s'
-#                          '/experiments/%(eid)s'%_id_set1
-#                          ).exists()
-#    assert set(expe_1.shares().get()) == set(['nosetests', 'nosetests2'])
-
-# def test_share_assessor():
-#    assert not central.select('/projects/nosetests2/subjects/%(sid)s'
-#                              '/experiments/%(eid)s/assessors/%(aid)s'%_id_set1
-#                              ).exists()
-#    asse_1.share('nosetests2')
-#    assert central.select('/projects/nosetests2/subjects/%(sid)s'
-#                          '/experiments/%(eid)s/assessors/%(aid)s'%_id_set1
-#                          ).exists()
-#    assert set(asse_1.shares().get()) == set(['nosetests', 'nosetests2'])
-
-# def test_unshare_assessor():
-#    asse_1.unshare('nosetests2')
-#    assert not central.select('/projects/nosetests2/subjects/%(sid)s'
-#                              '/experiments/%(eid)s/assessors/%(aid)s'%_id_set1
-#                              ).exists()
-#    assert asse_1.shares().get() == ['nosetests']
-
-# def test_unshare_experiment():
-#    expe_1.unshare('nosetests2')
-#    assert not central.select('/projects/nosetests2/subjects/%(sid)s'
-#                          '/experiments/%(eid)s'%_id_set1
-#                          ).exists()
-#    assert expe_1.shares().get() == ['nosetests']
-
-# def test_unshare_subject():
-#    subj_1.unshare('nosetests2')
-#    assert not central.select('/projects/nosetests2/subjects/%(sid)s'%_id_set1
-#                              ).exists()
-#    assert subj_1.shares().get() == ['nosetests']
-
 @skip_if_no_network
 def test_07_put_file():
     local_path = op.join(_modulepath, 'hello_xnat.txt')
@@ -381,3 +332,59 @@ def test_22_project_description():
     project = central.select.project('nosetests5')
     desc = project.description()
     assert(desc == 'nosetests')
+
+
+@skip_if_no_network
+def test_23_share_subject():
+    target_project = central.select.project('metabase_nosetests')
+
+    shared_subj_1 = target_project.subject(_id_set1['sid'])
+    assert(not shared_subj_1.exists())
+    assert(subj_1.shares().get() == ['nosetests5'])
+
+    subj_1.share('metabase_nosetests')
+    shared_subj_1 = target_project.subject(_id_set1['sid'])
+    assert(shared_subj_1.exists())
+    assert(subj_1.shares().get() == ['nosetests5', 'metabase_nosetests'])
+
+
+@skip_if_no_network
+def test_24_unshare_subject():
+    target_project = central.select.project('metabase_nosetests')
+
+    shared_subj_1 = target_project.subject(_id_set1['sid'])
+    assert(shared_subj_1.exists())
+    assert(subj_1.shares().get() == ['nosetests5', 'metabase_nosetests'])
+
+    subj_1.unshare('metabase_nosetests')
+    shared_subj_1 = target_project.subject(_id_set1['sid'])
+    assert(not shared_subj_1.exists())
+    assert(subj_1.shares().get() == ['nosetests5'])
+
+
+@skip_if_no_network
+def test_25_share_experiment():
+    target_project = central.select.project('metabase_nosetests')
+
+    shared_expe_1 = target_project.experiment(_id_set1['eid'])
+    assert(not shared_expe_1.exists())
+    assert(expe_1.shares().get() == ['nosetests5'])
+
+    expe_1.share('metabase_nosetests')
+    shared_expe_1 = target_project.experiment(_id_set1['eid'])
+    assert(shared_expe_1.exists())
+    assert(expe_1.shares().get() == ['nosetests5', 'metabase_nosetests'])
+
+
+@skip_if_no_network
+def test_26_unshare_experiment():
+    target_project = central.select.project('metabase_nosetests')
+
+    shared_expe_1 = target_project.experiment(_id_set1['eid'])
+    assert(shared_expe_1.exists())
+    assert(expe_1.shares().get() == ['nosetests5', 'metabase_nosetests'])
+
+    expe_1.unshare('metabase_nosetests')
+    shared_expe_1 = target_project.experiment(_id_set1['eid'])
+    assert(not shared_expe_1.exists())
+    assert(expe_1.shares().get() == ['nosetests5'])
