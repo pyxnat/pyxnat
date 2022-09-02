@@ -188,7 +188,7 @@ class Pipeline(object):
             status = None
         else:
             from operator import itemgetter
-            status = sorted(data, key=itemgetter('wrk_workflowData_id')).pop(-1)
+            status = sorted(data, key=lambda x: int(x['wrk_workflowData_id'])).pop(-1)
         return status
 
     def stop(self):
