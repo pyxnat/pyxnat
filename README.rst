@@ -2,8 +2,8 @@
 pyxnat
 =======
 
-.. image:: https://img.shields.io/travis/pyxnat/pyxnat.svg
-    :target: https://travis-ci.com/pyxnat/pyxnat
+..  image:: https://github.com/pyxnat/pyxnat/actions/workflows/ci.yml/badge.svg
+     :target: https://github.com/pyxnat/pyxnat/actions/workflows/ci.yml
 .. image:: https://coveralls.io/repos/github/pyxnat/pyxnat/badge.svg?branch=master
     :target: https://coveralls.io/github/pyxnat/pyxnat?branch=master
 .. image:: https://img.shields.io/pypi/dm/pyxnat.svg
@@ -90,8 +90,8 @@ Finally run the tests with the following command (from the root of the project):
 
     nosetests pyxnat/tests
 
-The file ``.travis.yml`` (used for CI) features these described steps and may be
-referred to for further information.
+The file ``.github/workflows/ci.yml`` (used for CI) features these described
+steps and may be referred to for further information.
 
 
 Building the documentation
