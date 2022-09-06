@@ -2,14 +2,13 @@ python setup.py build_sphinx
 rm -rf /tmp/html
 mv build/sphinx/html /tmp
 
-TARGET_REPO="$TRAVIS_REPO_SLUG"
-GITHUB_REPO=https://${GH_TOKEN}@github.com/${TARGET_REPO}.git
+GITHUB_REPO=https://${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git
 
 git clone "$GITHUB_REPO" &> /dev/null
 git checkout --orphan gh-pages
 git rm --cached -r .
-git config --local user.name "Travis CI"
-git config --local user.email "travis@travis-ci.org"
+git config --local user.email "action@github.com"
+git config --local user.name "GitHub Action"
 
 git remote rm origin
 # Add new "origin" with access token in the git URL for authentication
