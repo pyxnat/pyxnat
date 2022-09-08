@@ -1515,7 +1515,7 @@ class Subject(EObject):
         return Projects(join_uri(self._uri, 'projects'),
                         self._intf, id_filter)
 
-    def share(self, project, label=None):
+    def share(self, project, label=None, primary=False):
         """ Share the subject with another project.
 
             Parameters
@@ -1525,6 +1525,10 @@ class Subject(EObject):
                 label: string
                     Subject label as shared resource. By default, the original
                     subject label is used.
+                primary: boolean
+                    If True, the ownership of the subject will be transferred to
+                    the target project. User must be owner of both projects to
+                    perform this operation.
         """
         owner_project = self.attrs.get('project')
         aliases = self._intf.select.project(owner_project).aliases()
@@ -1536,6 +1540,8 @@ class Subject(EObject):
             options.append('label=%s' % label)
         else:
             options.append('label=%s' % self.label())
+        if primary:
+            options.append('primary=true')
 
         options = '?' + '&'.join(options)
 
@@ -1642,7 +1648,7 @@ class Experiment(EObject):
         return Projects(join_uri(self._uri, 'projects'),
                         self._intf, id_filter)
 
-    def share(self, project, label=None):
+    def share(self, project, label=None, primary=False):
         """ Share the experiment with another project.
 
             Parameters
@@ -1652,6 +1658,10 @@ class Experiment(EObject):
                 label: string
                     Experiment label as shared resource. By default, the original
                     experiment label is used.
+                primary: boolean
+                    If True, the ownership of the subject will be transferred to
+                    the target project. User must be owner of both projects to
+                    perform this operation.
         """
         owner_project = self.attrs.get('project')
         aliases = self._intf.select.project(owner_project).aliases()
@@ -1663,6 +1673,8 @@ class Experiment(EObject):
             options.append('label=%s' % label)
         else:
             options.append('label=%s' % self.label())
+        if primary:
+            options.append('primary=true')
 
         options = '?' + '&'.join(options)
 
