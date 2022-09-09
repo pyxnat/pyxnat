@@ -9,7 +9,7 @@ Installation
 Python version support
 ----------------------
 
-Officially Python 2.7, 3.6, and 3.7.
+Officially Python 3.7 and 3.8.
 
 
 Installing from PyPI
@@ -25,7 +25,7 @@ Installing from PyPI
 Prerequisites
 -------------
 
-- *python* v2.7+
+- *python* v3.7+
 - `requests <https://2.python-requests.org/en/master/>`_ v2.20
 - `python-lxml <https://lxml.de/>`_ v4.3.2+ recommended, earlier versions may work.
 
