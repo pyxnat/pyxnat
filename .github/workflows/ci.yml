@@ -4,9 +4,11 @@ on:
   push:
     branches:
       - 'master'
+      - 'bbrc'
   pull_request:
     branches:
       - 'master'
+      - 'bbrc'
 
 jobs:
   build:
