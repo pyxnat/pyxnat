@@ -2,6 +2,7 @@ import sys
 import os.path as op
 import pyxnat
 from . import skip_if_no_network
+import uuid
 
 _modulepath = op.dirname(op.abspath(pyxnat.__file__))
 dd = op.join(op.split(_modulepath)[0], 'bin')
@@ -11,13 +12,14 @@ cfg = op.join(op.dirname(op.abspath(__file__)), 'central.cfg')
 central = pyxnat.Interface(config=cfg)
 
 src_project = 'nosetests5'
-dest_project = 'testing_new'
+dest_project = str(uuid.uuid4())[-22:]
 
 
 @skip_if_no_network
 def test_001_sessionmirror():
     from sessionmirror import create_parser, main, subj_compare
     e = 'CENTRAL02_E01892'
+    central.select.project(dest_project).create()
     parser = create_parser()
     args = ['--h1', cfg, '--h2', cfg, '-e', e, '-p', dest_project]
     args = parser.parse_args(args)
@@ -45,6 +47,6 @@ def test_002_delete_experiment():
     p = central.select.project(dest_project)
     e2 = p.subject(e1['subject_ID']).experiment(e1['ID'])
     assert(e2.exists())
-    e2.delete()
+    p.delete(delete_files=True)
     assert(not e2.exists())
 
