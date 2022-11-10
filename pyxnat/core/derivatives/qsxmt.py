@@ -6,7 +6,6 @@ def stats(self):
     in the Harvard-Oxford cortical and subcortical atlases"""
     import csv
     import pandas as pd
-    import os.path as op
 
     region_stats = []
     cols = []
