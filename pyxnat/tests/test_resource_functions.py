@@ -191,3 +191,15 @@ def test_basil_stats():
     q = 'region_analysis=="WM" & name=="Left Hippocampus"'
     nvoxels_wm = stats.query(q)['Nvoxels'].item()
     assert(nvoxels_gm > nvoxels_wm)
+
+
+def test_qsmxt_stats():
+    r = e1.resource('QSMXT')
+    stats = r.stats()
+
+    q = 'roi == "Left-Pallidum"'
+    lh_pallidum = stats.query(q)['mean'].item()
+    assert (lh_pallidum > 0)
+    q = 'roi == "Right-Pallidum"'
+    rh_pallidum = stats.query(q)['mean'].item()
+    assert (rh_pallidum > 0)
