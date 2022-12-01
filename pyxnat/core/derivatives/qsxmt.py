@@ -2,8 +2,8 @@ XNAT_RESOURCE_NAMES = ['QSMXT']
 
 
 def stats(self):
-    """Summary statistics for the regional QSM values within each region
-    in the Harvard-Oxford cortical and subcortical atlases"""
+    """Summary statistics for the regional QSM values within each structure
+    in the FreeSurfer aseg atlas"""
     import csv
     import pandas as pd
 
