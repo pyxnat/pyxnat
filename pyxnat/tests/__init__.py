@@ -1,6 +1,5 @@
 from functools import wraps
-from nose import SkipTest
-from nose.plugins.attrib import attr
+import pytest
 import os
 
 
@@ -11,11 +10,10 @@ def skip_if_no_network(func=None):
 
     def check_and_raise():
         if os.environ.get('PYXNAT_SKIP_NETWORK_TESTS'):
-            raise SkipTest("Skipping since no network settings")
+            pytest.skip("Skipping since no network settings")
 
     if func:
         @wraps(func)
-        @attr('skip_if_no_network')
         def newfunc(*args, **kwargs):
             check_and_raise()
             return func(*args, **kwargs)

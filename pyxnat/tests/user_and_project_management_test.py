@@ -1,17 +1,16 @@
 from pyxnat import Interface
 from requests.exceptions import ConnectionError
 import os.path as op
-from nose import SkipTest
 from functools import wraps
-from nose.plugins.attrib import attr
+import pytest
 
 
 fp = op.join(op.dirname(op.abspath(__file__)), 'central.cfg')
 
 
 def docker_available(func=None):
-    '''Skip test completely if no Docker-based XNAT instance available
-    '''
+    """Skip test completely if no Docker-based XNAT instance available
+    """
 
     def check_and_raise():
         if 'setup_docker_xnat' in func.__name__:
@@ -28,12 +27,10 @@ def docker_available(func=None):
             print('Docker instance found.')
         except (ConnectionError, KeyError):
             print('Skipping it.')
-            raise SkipTest('Docker-based XNAT instance unavailable')
+            pytest.skip('Docker-based XNAT instance unavailable')
 
     if func:
         @wraps(func)
-        @attr('network')
-        @attr('docker_available')
         def newfunc(*args, **kwargs):
             check_and_raise()
             return func(*args, **kwargs)
@@ -77,7 +74,6 @@ def test_001_setup_docker_xnat():
         print(cmd2)
         os.system(cmd2)
 
-
         p = x.select.project('nosetests')
         p.create()
         for i in range(3, 10):
@@ -90,7 +86,7 @@ def test_001_setup_docker_xnat():
 
     except Exception:
         print('Skipping initialization.')
-        raise SkipTest('Docker-based XNAT initialization failed.')
+        pytest.skip('Docker-based XNAT initialization failed.')
 
 
 @docker_available
