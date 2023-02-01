@@ -1,7 +1,7 @@
 import sys
 import os.path as op
 import pyxnat
-from . import skip_if_no_network
+from pyxnat.tests import skip_if_no_network
 
 _modulepath = op.dirname(op.abspath(pyxnat.__file__))
 dd = op.join(op.split(_modulepath)[0], 'bin')

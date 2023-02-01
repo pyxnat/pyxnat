@@ -1,7 +1,7 @@
 import unittest
 import os.path as op
 from pyxnat import Interface
-from . import skip_if_no_network
+from pyxnat.tests import skip_if_no_network
 import logging as log
 log.basicConfig(level=log.INFO)
 
