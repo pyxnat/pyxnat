@@ -30,13 +30,13 @@ using ``pip`` with the following command::
 Dependencies
 ============
 
-- `requests <https://2.python-requests.org/en/master/>`_ v2.20 or higher
+- `requests <https://requests.readthedocs.io/>`_ v2.20 or higher
 - `python-lxml <https://lxml.de/>`_ v4.3.2 or higher recommended, earlier versions may work.
 
 For development purposes:
 
-- *python-nose* v1.2.1 or higher
-- *coverage* v3.6 or higher
+- `pytest <https://pytest.org/>`_ v7.1 or higher
+- `coverage <https://coverage.readthedocs.io/>`_ v3.6 or higher
 
 See the `full installation instructions <https://pyxnat.github.io/pyxnat/installing.html>`_
 for recommended and optional dependencies.
@@ -68,7 +68,7 @@ write permissions are run on a local XNAT instance in a Docker container.
 
 Consequently, running the test suite now requires the following:
 
-  - *python-nose* v1.2.1+
+  - *pytest* v7.1+
   - *coverage* v3.6+
   - *docker* v18+
 
@@ -88,7 +88,7 @@ instance before running the tests.
 
 Finally run the tests with the following command (from the root of the project)::
 
-    nosetests pyxnat/tests
+    pytest --cov pyxnat
 
 The file ``.github/workflows/ci.yml`` (used for CI) features these described
 steps and may be referred to for further information.
