@@ -45,8 +45,8 @@ jobs:
       - name: Check xnat-docker-compose
         run: docker-compose logs --tail=20 xnat-web
         working-directory: xnat-docker-compose
-      - name: Run tests (nose)
-        run: nosetests pyxnat/tests --nologcapture --with-coverage --cover-inclusive --cover-erase --cover-package .
+      - name: Run tests (pytest)
+        run: pytest
         env:
           PYTHONPATH: $PYTHONPATH:$(pwd)
       - name: Coveralls

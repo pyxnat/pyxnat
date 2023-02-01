@@ -5,7 +5,7 @@ import os.path as op
 import os
 from pyxnat import Interface
 from . import skip_if_no_network
-from nose import SkipTest
+import pytest
 from pyxnat.core import interfaces
 
 _modulepath = op.dirname(op.abspath(__file__))
@@ -244,7 +244,7 @@ def test_16_project_configuration():
         if version['version'] == '1.7.5.2-SNAPSHOT':
             msg = 'Version 1.7.5.2-SNAPSHOT gives trouble on some machines. \
                    Skipping it'
-            raise SkipTest(msg)
+            pytest.skip(msg)
 
     if version['version'] != '1.7.5.2-SNAPSHOT':
         try:

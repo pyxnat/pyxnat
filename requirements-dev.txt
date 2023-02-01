@@ -11,3 +11,5 @@ coveralls
 pandas>=0.24
 networkx>=2.2
 matplotlib>=2.2
+pytest>=7.1
+pytest-cov>=4.0
