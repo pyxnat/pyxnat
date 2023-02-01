@@ -4,7 +4,7 @@ from six import string_types
 import os.path as op
 import os
 from pyxnat import Interface
-from . import skip_if_no_network
+from pyxnat.tests import skip_if_no_network
 import pytest
 from pyxnat.core import interfaces
 

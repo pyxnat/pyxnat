@@ -1,6 +1,6 @@
 from pyxnat.core.help import GraphData, PaintGraph, SchemasInspector
 from pyxnat import Interface
-from . import skip_if_no_network
+from pyxnat.tests import skip_if_no_network
 import os.path as op
 
 fp = op.join(op.dirname(op.abspath(__file__)), 'central.cfg')

@@ -1,5 +1,5 @@
 from uuid import uuid1
-from . import skip_if_no_network
+from pyxnat.tests import skip_if_no_network
 from pyxnat import Interface
 import os.path as op
 

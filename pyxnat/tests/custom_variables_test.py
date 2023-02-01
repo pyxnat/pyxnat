@@ -2,7 +2,7 @@ import os
 from uuid import uuid1
 from pyxnat import Interface
 import os.path as op
-from . import skip_if_no_network
+from pyxnat.tests import skip_if_no_network
 
 
 fp = op.join(op.dirname(op.abspath(__file__)), 'central.cfg')
