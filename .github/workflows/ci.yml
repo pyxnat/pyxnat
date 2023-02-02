@@ -39,6 +39,7 @@ jobs:
         run: docker-compose up -d
         working-directory: xnat-docker-compose
       - run: sleep 120
+        if: ${{ matrix.python-version == '3.7' }}
       - name: Check xnat-docker-compose
         run: docker-compose logs --tail=20 xnat-web
         working-directory: xnat-docker-compose
