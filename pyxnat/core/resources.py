@@ -2144,6 +2144,7 @@ class File(EObject):
                 - file_tags
                 - file_format
                 - file_content
+                - digest
 
             Returns
             -------
@@ -2151,7 +2152,7 @@ class File(EObject):
         """
 
         return self._getcells(['URI', 'Name', 'Size', 'path',
-                               'file_tags', 'file_format', 'file_content'])
+                               'file_tags', 'file_format', 'file_content', 'digest'])
 
     def get(self, dest=None):
         """ Downloads the file.
