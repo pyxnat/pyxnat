@@ -1846,15 +1846,19 @@ class Resource(EObject):
             resources = self._intf._get_json(base_url)
             res_info = [r for r in resources
                         if r['xnat_abstractresource_id'] == resource_id][0]
-            fs = sizeof_fmt(float(res_info['file_size']))
+            # Handle no file case
+            fc = res_info['file_count']
+            if fc == '':
+                str_files = "(Empty)"
+            else:
+                fs = sizeof_fmt(float(res_info['file_size']))
+                str_files = f"({fc} files {fs})"
 
             # Creating the output string
-            output = '<{cl} Object> {id} `{label}` ({fc} files {fs})'
+            output = '<{cl} Object> {id} `{label}` ' + str_files + ' >'
             output = output.format(label=self.label(),
                                    cl=self.__class__.__name__,
-                                   id=resource_id,
-                                   fc=res_info['file_count'],
-                                   fs=fs)
+                                   id=resource_id)
             return output
         else:
             return '<%s Object> %s' % (self.__class__.__name__,
@@ -2312,8 +2316,8 @@ class File(EObject):
         # default error handling.
         if (response is not None and not response.ok) or \
             is_xnat_error(response.content):
-            if DEBUG:
-                print(response.get("status"))
+            print("absuri. ", self._absuri)
+            print("Data: ", query_args)
             msg = '''pyxnat.file.put failure:
                         URI: {response.url}
                         status code: {response.status_code}
