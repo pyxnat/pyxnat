@@ -2313,7 +2313,6 @@ class File(EObject):
         if (response is not None and not response.ok) or \
            is_xnat_error(response.content):
             if DEBUG:
-                print(response.keys())
                 print(response.get("status"))
             msg = '''pyxnat.file.put failure:
                         URI: {response.url}
