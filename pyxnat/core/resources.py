@@ -42,7 +42,7 @@ elif six.PY3:
     from urllib.parse import quote, unquote
     unicode = str
 
-DEBUG = False
+DEBUG = True
 
 # metaclasses
 
