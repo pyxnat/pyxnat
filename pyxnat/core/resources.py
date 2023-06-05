@@ -2311,7 +2311,7 @@ class File(EObject):
 
         # default error handling.
         if (response is not None and not response.ok) or \
-           is_xnat_error(response.content):
+            is_xnat_error(response.content):
             if DEBUG:
                 print(response.get("status"))
             msg = '''pyxnat.file.put failure:
