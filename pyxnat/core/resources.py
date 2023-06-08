@@ -1846,7 +1846,9 @@ class Resource(EObject):
             resources = self._intf._get_json(base_url)
             res_info = [r for r in resources
                         if r['xnat_abstractresource_id'] == resource_id][0]
-            fs = sizeof_fmt(float(res_info['file_size']))
+            fs = '0.0 B'
+            if res_info['file_size'] != '':
+                fs = sizeof_fmt(float(res_info['file_size']))
 
             # Creating the output string
             output = '<{cl} Object> {id} `{label}` ({fc} files {fs})'
@@ -2079,11 +2081,10 @@ class Resource(EObject):
                 )
 
     def attributes(self):
-        """ Files attributes include:
-                - URI
-                - Name
-                - Size in bytes
-                - path (relative to the parent resource)
+        """ Resource attributes include:
+                - label
+                - file_count
+                - file_size in bytes
                 - tags
                 - format
                 - content
@@ -2092,7 +2093,7 @@ class Resource(EObject):
             dict : a dictionary with the resource attributes
         """
 
-        return self._getcells(['URI', 'Name', 'Size', 'path',
+        return self._getcells(['label', 'file_count', 'file_size',
                                'tags', 'format', 'content'])
 
 
@@ -2151,8 +2152,8 @@ class File(EObject):
             dict : a dictionary with the file attributes
         """
 
-        return self._getcells(['URI', 'Name', 'Size', 'path',
-                               'file_tags', 'file_format', 'file_content', 'digest'])
+        return self._getcells(['URI', 'Name', 'Size', 'path', 'digest',
+                               'file_tags', 'file_format', 'file_content'])
 
     def get(self, dest=None):
         """ Downloads the file.
