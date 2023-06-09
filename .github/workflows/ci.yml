@@ -16,7 +16,7 @@ jobs:
     strategy:
       matrix:
         os: ['ubuntu-latest']
-        python-version: ['3.7', '3.8']
+        python-version: ['3.8', '3.9']
 
     steps:
       - name: 'Set up Python ${{ matrix.python-version }}'
@@ -39,7 +39,7 @@ jobs:
         run: docker-compose up -d
         working-directory: xnat-docker-compose
       - run: sleep 120
-        if: ${{ matrix.python-version == '3.7' }}
+        if: ${{ matrix.python-version == '3.8' }}
       - name: Check xnat-docker-compose
         run: docker-compose logs --tail=20 xnat-web
         working-directory: xnat-docker-compose
