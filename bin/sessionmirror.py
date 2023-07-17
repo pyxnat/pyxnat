@@ -471,11 +471,11 @@ def copy_session(src_sess, dst_sess, sess_cache_dir):
     for src_res in src_sess.resources().fetchall('obj'):
         res_label = src_res.label()
 
-        print('INFO:Processing resource:%s...' % (res_label))
+        print('INFO:Processing resource:%s...' % res_label)
 
         dst_res = dst_sess.resource(res_label)
 
-        res_cache_dir = op.join(scan_cache_dir, res_label)
+        res_cache_dir = op.join(sess_cache_dir, res_label)
 
         copy_res(src_res, dst_res, res_cache_dir, use_zip=True)
 
