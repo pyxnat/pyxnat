@@ -74,14 +74,14 @@ def download_snapshot(self, name, fp):
         images = []
         xrefs = []
         for page in range(len(doc)):
-            xrefs.extend([img[0] for img in doc.getPageImageList(page)])
+            xrefs.extend([img[0] for img in doc.get_page_images(page)])
         xrefs = sorted(set(xrefs))
         for k, xref in enumerate(xrefs[1:]):
             pix = fitz.Pixmap(doc, xref)
             fp_snap = op.join(dn, "{}_{}.png".format(bn, k))
             if pix.n >= 5:    # CMYK: convert to RGB first
                 pix = fitz.Pixmap(fitz.csRGB, pix)
-            pix.writePNG(fp_snap)
+            pix.save(fp_snap)
             images.append(fp_snap)
         return images
 
