@@ -2,7 +2,7 @@ XNAT_RESOURCE_NAMES = ['TOPUP_DTIFIT', 'DTIFIT', 'DWI_PREPROCESSING']
 
 
 def download_maps(self, path):
-    '''Downloads a local copy of DWI maps (MD, FA, L1 ~axial, RD)'''
+    """Downloads a local copy of DWI maps (MD, FA, L1 ~axial, RD)"""
     import os.path as op
     rc_files = ['MD', 'FA', 'L1', 'RD']
     for each in rc_files:
