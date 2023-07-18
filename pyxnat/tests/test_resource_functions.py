@@ -211,3 +211,35 @@ def test_mrtrix3_conmat():
     df = r.conmat()
     assert df['Left-Hippocampus']['ctx-lh-parahippocampal'] > 2.0
     assert df['Right-Hippocampus']['ctx-rh-parahippocampal'] > 2.0
+
+
+def test_xcp_d_conmat():
+    r = e1.resource('XCP_D')
+    df = r.conmat(atlas='DK')
+    assert df.shape == (109, 109)
+
+    df2 = df.dropna(axis=0, how='all').dropna(axis=1, how='all')
+    assert df2.shape == (99, 99)
+    assert set(df.columns).difference(df2.columns) == {'Optic-Chiasm',
+                                                       'ctx-lh-frontalpole',
+                                                       'ctx-lh-lateralorbitofrontal',
+                                                       'ctx-lh-medialorbitofrontal',
+                                                       'ctx-lh-temporalpole',
+                                                       'ctx-rh-entorhinal',
+                                                       'ctx-rh-frontalpole',
+                                                       'ctx-rh-lateralorbitofrontal',
+                                                       'ctx-rh-medialorbitofrontal',
+                                                       'ctx-rh-temporalpole'}
+
+
+def test_xcp_d_timeseries():
+    r = e1.resource('XCP_D')
+    df = r.conmat(atlas='DK')
+    ts = r.timeseries(atlas='DK')
+    assert ts.shape == (287, 109)
+    assert df.shape[0] == ts.shape[1]
+
+    df2 = df.dropna(axis=0, how='all').dropna(axis=1, how='all')
+    ts2 = ts.dropna(axis=0, how='all').dropna(axis=1, how='all')
+    assert ts2.shape == (287, 99)
+    assert df2.shape[0] == ts2.shape[1]
