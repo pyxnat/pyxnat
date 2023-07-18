@@ -25,8 +25,8 @@ def volumes(self):
 
 
 def download_rc(self, path):
-    '''Downloads a local copy of DARTEL imports. (Keep in mind that in CAT12
-    images are named rp*, not rc*.'''
+    """Downloads a local copy of DARTEL imports. (Keep in mind that in CAT12
+    images are named rp*, not rc*."""
     import os.path as op
     rc_files = ['mri/rp1', 'mri/rp2']
     for each in rc_files:
