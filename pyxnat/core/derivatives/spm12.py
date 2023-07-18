@@ -25,7 +25,7 @@ def volumes(self):
 
 
 def download_rc(self, path):
-    '''Downloads a local copy of DARTEL imports.'''
+    """Downloads a local copy of DARTEL imports."""
     import os.path as op
     rc_files = ['rc1', 'rc2']
     for each in rc_files:
