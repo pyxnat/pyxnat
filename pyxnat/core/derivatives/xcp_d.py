@@ -9,7 +9,7 @@ def conmat(self, atlas='DK'):
     f = self.files(f'*_atlas-{atlas}_measure-pearsoncorrelation_conmat.tsv')[0]
     content = self._intf.get(f._uri).content.decode('utf-8')
     df = pd.read_table(StringIO(content), sep='\t').drop(columns=['Node'])
-
+    df.index = df.columns
     return df
 
 

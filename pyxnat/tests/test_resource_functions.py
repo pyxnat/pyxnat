@@ -215,6 +215,7 @@ def test_mrtrix3_conmat():
 def test_xcp_d_conmat():
     r = e1.resource('XCP_D')
     df = r.conmat(atlas='DK')
+    assert df['Left-Hippocampus']['Right-Hippocampus'] > 0.7
     assert df.shape == (109, 109)
 
     df2 = df.dropna(axis=0, how='all').dropna(axis=1, how='all')
