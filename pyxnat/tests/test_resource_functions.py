@@ -204,3 +204,10 @@ def test_qsmxt_stats():
     q = 'roi == "Right-Pallidum"'
     rh_pallidum = stats.query(q)['mean'].item()
     assert (rh_pallidum > 0)
+
+
+def test_mrtrix3_conmat():
+    r = e1.resource('MRTRIX3')
+    df = r.conmat()
+    assert df['Left-Hippocampus']['ctx-lh-parahippocampal'] > 2.0
+    assert df['Right-Hippocampus']['ctx-rh-parahippocampal'] > 2.0
