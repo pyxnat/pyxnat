@@ -1,4 +1,4 @@
-python setup.py build_sphinx
+sphinx-build -b html doc build/sphinx7/html
 rm -rf /tmp/html
 mv build/sphinx/html /tmp
 
