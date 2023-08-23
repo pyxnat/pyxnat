@@ -1,5 +1,3 @@
-:orphan:
-
 External Resources
 ==================
 

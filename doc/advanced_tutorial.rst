@@ -1,10 +1,5 @@
-:orphan:
-
-.. module:: pyxnat
-
-==============================
 Advanced Tutorial
-==============================
+=================
 
 .. currentmodule:: pyxnat
 
