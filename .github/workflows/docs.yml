@@ -22,7 +22,7 @@ jobs:
       - run: python --version
       - run: python -m pip install --upgrade pip
       - name: Install sphinx
-        run: pip install sphinx~=6.2 sphinx-theme
+        run: pip install sphinx~=6.2 sphinx-rtd-theme
       - name: Build and deploy to GitHub Pages
         run: ./build-docs.sh
         env:
