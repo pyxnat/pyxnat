@@ -17,7 +17,6 @@
 
 import sys
 import os
-import sphinx_theme
 
 
 def get_version():
@@ -47,7 +46,8 @@ sys.path.append(os.path.abspath('..'))
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom ones.
 extensions = ['sphinx.ext.autodoc',
               'sphinx.ext.napoleon',
-              'sphinx.ext.autosummary']
+              'sphinx.ext.autosummary',
+              'sphinx_rtd_theme']
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
@@ -63,7 +63,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = 'pyxnat'
-copyright = '2010, Yannick Schwartz'
+copyright = '2010-2023, Yannick Schwartz'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -119,8 +119,7 @@ pygments_style = 'sphinx'
 
 # The theme to use for HTML and HTML Help pages.  Major themes that come with
 # Sphinx are currently 'default' and 'sphinxdoc'.
-html_theme = 'stanford_theme'
-html_theme_path = [sphinx_theme.get_html_theme_path('stanford-theme')]
+html_theme = 'sphinx_rtd_theme'
 
 # The name for this set of Sphinx documents.  If None, it defaults to
 # "<project> v<release> documentation".
