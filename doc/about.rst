@@ -1,7 +1,3 @@
-:orphan:
-
-.. module:: pyxnat
-
 About
 =====
 

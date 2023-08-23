@@ -26,15 +26,19 @@ simple and consistent API using the `Python <https://www.python.org/>`_
 programming language.
 
 
-* :doc:`installing`
-* :doc:`tutorial`
-* :doc:`starters_tutorial`
-* :doc:`advanced_tutorial`
-* :doc:`features/index`
-* :doc:`reference_documentation`
-* :doc:`external_resources`
-* :doc:`about`
-* :doc:`CHANGES`
+.. toctree::
+   :titlesonly:
+
+   self
+   installing
+   tutorial
+   starters_tutorial
+   advanced_tutorial
+   features/index
+   reference_documentation
+   external_resources
+   about
+   CHANGES
 
 
 Short examples
