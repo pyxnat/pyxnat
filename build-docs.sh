@@ -1,4 +1,4 @@
-sphinx-build -b html doc build/sphinx7/html
+sphinx-build -b html doc build/sphinx/html
 rm -rf /tmp/html
 mv build/sphinx/html /tmp
 
