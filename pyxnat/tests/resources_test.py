@@ -1,6 +1,5 @@
 import tempfile
 from uuid import uuid1
-from six import string_types
 import os.path as op
 import os
 from pyxnat import Interface
@@ -182,7 +181,7 @@ def test_11_get_copy_file():
 @skip_if_no_network
 def test_12_file_last_modified():
     f = subj_1.resource('test').file('hello.txt')
-    assert isinstance(f.last_modified(), string_types)
+    assert isinstance(f.last_modified(), str)
     assert len(f.last_modified()) > 0
     f.delete()
     assert(not f.exists())

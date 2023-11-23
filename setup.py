@@ -51,9 +51,7 @@ setuptools.setup(name='pyxnat',
                  scripts=['bin/sessionmirror.py'],
                  install_requires=['lxml>=4.3',
                                    'requests>=2.20',
-                                   'pathlib>=1.0',
-                                   'six>=1.15',
-                                   'future>=0.16'],
+                                   'pathlib>=1.0'],
                  package_data={'pyxnat': ['README.rst'], },
 
                  )

@@ -9,12 +9,7 @@ try:
 except ImportError:
     socks = None
 
-import six
-if six.PY2:
-    from urlparse import urlparse
-    input = raw_input
-elif six.PY3:
-    from urllib.parse import urlparse
+from urllib.parse import urlparse
 
 from .select import Select
 from .help import Inspector, GraphData, PaintGraph, _DRAW_GRAPHS

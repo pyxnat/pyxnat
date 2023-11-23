@@ -1,10 +1,6 @@
 import os.path as op
 
-# import six
-# if six.PY2:
-#     from urllib2 import urlopen
-# elif six.PY3:
-#     from urllib.request import urlopen
+# from urllib.request import urlopen
 
 # import smtplib
 # from copy import deepcopy
