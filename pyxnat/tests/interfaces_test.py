@@ -65,10 +65,10 @@ def test_save_config_home_dir():
 
 
 def test_save_config_current_dir():
-    temp_dir_name = os.path.join(os.getcwd())
     filename = "test_config.txt"
-    with tempfile.TemporaryDirectory(dir=temp_dir_name) as tempdir:
-        central.save_config(os.path.join(tempdir, filename))
+    with tempfile.TemporaryDirectory(dir=os.getcwd()) as tempdir:
+        relpath = os.path.join(os.path.basename(tempdir), filename)
+        central.save_config(relpath)
         assert os.path.exists(os.path.join(tempdir, filename))
 
 @skip_if_no_network
