@@ -2,9 +2,10 @@ import os.path as op
 from pyxnat import Interface
 from pyxnat.tests import skip_if_no_network
 
-fp = op.join(op.dirname(op.abspath(__file__)), 'central.cfg')
+#fp = op.join(op.dirname(op.abspath(__file__)), 'central.cfg')
+fp = op.abspath('.central.cfg')
 central = Interface(config=fp)
-central_anon = Interface('https://central.xnat.org', anonymous=True)
+central_anon = Interface('https://www.nitrc.org/ir', anonymous=True)
 
 
 def test_simple_object_listing():
@@ -16,21 +17,21 @@ def test_simple_path_listing():
 
 
 def test_nested_object_listing():
-    assert isinstance(central.select.projects('*OASIS*').subjects().get(),
+    assert isinstance(central.select.projects('*00*').subjects().get(),
                       list)
 
 
 def test_nested_path_listing():
-    assert isinstance(central.select('/projects/*OASIS*/subjects').get(), list)
+    assert isinstance(central.select('/projects/*00*/subjects').get(), list)
 
 
 @skip_if_no_network
 def test_search_access():
-    constraints = [('xnat:subjectData/PROJECT', '=', 'CENTRAL_OASIS_CS'),
+    constraints = [('xnat:subjectData/PROJECT', '=', 'ixi'),
                    'AND']
 
     for subject in central.select('//subjects').where(constraints):
-        assert '/projects/CENTRAL_OASIS_CS' in subject._uri
+        assert '/projects/ixi' in subject._uri
 
 
 def test_connection_with_explicit_parameters():
@@ -48,9 +49,8 @@ def test_anonymous_access():
 
 @skip_if_no_network
 def test_close_jsession():
-    config_file = op.join(op.dirname(op.abspath(__file__)), 'central.cfg')
-    with Interface(config=config_file) as central:
-        assert central.select.project('nosetests').exists()
+    with Interface(config=fp) as central_intf:
+        assert central_intf.select.project('OASIS3').exists()
 
 
 def test_save_config():
@@ -60,7 +60,7 @@ def test_save_config():
 @skip_if_no_network
 def test_version():
     v = central.version()
-    assert(v['version'] == '1.7.5.2-SNAPSHOT')
+    assert v['version'] == '1.7.6'
 
 
 def test_login_using_explicit_credentials():

@@ -2,20 +2,21 @@ import os.path as op
 from pyxnat import Interface
 from pyxnat.tests import skip_if_no_network
 
-fp = op.join(op.dirname(op.abspath(__file__)), 'central.cfg')
-central = Interface(config=fp)
+#fp = op.join(op.dirname(op.abspath(__file__)), 'central.cfg')
+#central = Interface(config=fp)
+central = Interface('https://www.nitrc.org/ir', anonymous=True)
 
 
 @skip_if_no_network
 def test_001_xpath_checkout():
-    central.xpath.checkout(subjects=['OAS1_0001', 'OAS1_0002'])
-    assert 'OAS1_0001' in central.xpath.subjects() and \
-        'OAS1_0002' in central.xpath.subjects()
+    central.xpath.checkout(subjects=['xnat_S02582', 'xnat_S02583'])
+    assert 'xnat_S02582' in central.xpath.subjects() and \
+        'xnat_S02583' in central.xpath.subjects()
 
 
 @skip_if_no_network
 def test_elements():
-    assert 'fs:region' in central.xpath.elements()
+    assert 'xnat:voxelRes' in central.xpath.elements()
 
 
 @skip_if_no_network
@@ -25,15 +26,11 @@ def test_keys():
 
 @skip_if_no_network
 def test_values():
-    assert 'OAS1_0002' in central.xpath.values('ID')
+    assert 'xnat_S02582' in central.xpath.values('ID')
 
 
 @skip_if_no_network
 def test_element_attrs():
-    assert isinstance(central.xpath.element_attrs('fs:region'), list)
-
-    assert set(['SegId', 'hemisphere', 'name']).issubset(
-        central.xpath.element_keys('fs:region'))
-
-    assert 'Left-Putamen' in \
-        central.xpath.element_values('fs:region', 'name')
+    assert isinstance(central.xpath.element_attrs('xnat:voxelRes'), list)
+    assert {'x', 'y', 'z'}.issubset(central.xpath.element_keys('xnat:voxelRes'))
+    assert '0.9375' in central.xpath.element_values('xnat:voxelRes', 'x')

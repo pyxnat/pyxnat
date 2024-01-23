@@ -2,9 +2,11 @@ import os.path as op
 from pyxnat import Interface
 from pyxnat.core.pipelines import PipelineNotFoundError
 
-fp = op.join(op.dirname(op.abspath(__file__)), 'central.cfg')
+#fp = op.join(op.dirname(op.abspath(__file__)), 'central.cfg')
+#central = Interface(config=fp)
+fp = op.abspath('.devxnat.cfg')
 central = Interface(config=fp)
-p = central.select.project('nosetests5')
+p = central.select.project('pyxnat_tests')
 
 
 def test_pipelines_info():
@@ -18,19 +20,19 @@ def test_pipelines_aliases():
 
 
 def test_pipeline_info():
-    info_keys = ['appliesTo', 'authors', 'description',
-                 'inputParameters', 'path', 'steps', 'version']
+    info_keys = {'appliesTo', 'authors', 'description', 'inputParameters',
+                 'path', 'resourceRequirements', 'steps', 'version'}
 
     pipe = p.pipelines.pipeline('DicomToNifti')
     assert (pipe.exists())
 
     pipe_info = pipe.info()
-    assert (int(pipe_info['version']) >= 20150114)
-    assert (sorted(pipe_info.keys()) == info_keys)
+    assert (int(pipe_info['version']) >= 20190308)
+    assert (set(pipe_info.keys()) == info_keys)
 
 
 def test_pipeline_run():
-    exp_id = 'CENTRAL02_E01603'
+    exp_id = 'BBRCDEV_E03094'
 
     try:
         wrong_pipe = p.pipelines.pipeline('INVALID_PIPELINE')
@@ -49,7 +51,7 @@ def test_pipeline_run():
 
 
 def test_pipeline_status():
-    exp_id = 'CENTRAL02_E01603'
+    exp_id = 'BBRCDEV_E03094'
 
     try:
         wrong_pipe = p.pipelines.pipeline('INVALID_PIPELINE')

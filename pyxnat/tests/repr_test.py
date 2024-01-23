@@ -1,16 +1,15 @@
+import pyxnat.core.resources
 from pyxnat import Interface
 import os.path as op
 from pyxnat.tests import skip_if_no_network
 
-_modulepath = op.dirname(op.abspath(__file__))
-
-fp = op.join(op.dirname(op.abspath(__file__)), 'central.cfg')
-print(fp)
+#fp = op.join(op.dirname(op.abspath(__file__)), 'central.cfg')
+fp = op.abspath('.devxnat.cfg')
 central = Interface(config=fp)
 
-proj_1 = central.select.project('surfmask_smpl2')
-subj_1 = proj_1.subject('CENTRAL05_S01120')
-exp_1 = subj_1.experiment('CENTRAL05_E02681')
+proj_1 = central.select.project('pyxnat_tests')
+subj_1 = proj_1.subject('BBRCDEV_S02627')
+exp_1 = subj_1.experiment('BBRCDEV_E03106')
 scan_1 = exp_1.scan('11')
 resource_1 = exp_1.resource('obscure_algorithm_output')
 
@@ -23,130 +22,143 @@ resource_2 = scan_2.resource('IOP')
 
 @skip_if_no_network
 def test_project_exists():
-    if proj_1.exists():
-        assert isinstance(proj_1, object)
-        assert str(proj_1) != '<Project Object> NFB'
+    assert proj_1.exists()
+    assert isinstance(proj_1, object)
+    assert isinstance(proj_1, pyxnat.core.resources.Project)
+    assert str(proj_1) != '<Project Object> NFB'
 
 
 @skip_if_no_network
 def test_project_not_exists():
-    if not proj_2.exists():
-        assert isinstance(proj_2, object)
-        assert str(proj_2) == '<Project Object> NFB'
+    assert not proj_2.exists()
+    assert isinstance(proj_2, object)
+    assert isinstance(proj_2, pyxnat.core.resources.Project)
+    assert str(proj_2) == '<Project Object> NFB'
 
 
 @skip_if_no_network
 def test_info_project():
-    assert isinstance(proj_1, object)
-    expected_output = '<Project Object> surfmask_smpl2 `Surface masking '\
-        'samples 2` (private) 1 subject 1 MR experiment (owner: nosetests) '\
-        '(created on 2020-10-22 15:23:39.458) https://central.xnat.org/data/'\
-        'projects/surfmask_smpl2?format=html'
-    assert list(sorted(str(proj_1))) == list(sorted(expected_output))
+    assert proj_1.exists()
+    expected_output = (
+        f'<Project Object> pyxnat_tests `pyxnat tests` (private) 3 subjects '
+        f'5 MR experiments 1 CT experiment 1 PET experiment '
+        f'(owner: {central._user}) (created on 2024-01-22 10:09:22.086) '
+        f'{central._server}/data/projects/pyxnat_tests?format=html')
+    assert str(proj_1) == expected_output
 
 
 @skip_if_no_network
 def test_subject_exists():
-    if subj_1.exists():
-        assert isinstance(subj_1, object)
-        assert str(subj_1) != '<Subject Object> BOA'
+    assert subj_1.exists()
+    assert isinstance(subj_1, object)
+    assert isinstance(subj_1, pyxnat.core.resources.Subject)
+    assert str(subj_1) != '<Subject Object> BOA'
 
 
 @skip_if_no_network
 def test_subject_not_exists():
-    if not subj_2.exists():
-        assert isinstance(subj_2, object)
-        assert str(subj_2) == '<Subject Object> BOA'
+    assert not subj_2.exists()
+    assert isinstance(subj_2, object)
+    assert isinstance(subj_2, pyxnat.core.resources.Subject)
+    assert str(subj_2) == '<Subject Object> BOA'
 
 
 @skip_if_no_network
 def test_info_subject():
-    assert isinstance(subj_1, object)
-    expected_output = '<Subject Object> CENTRAL05_S01120 `001` (project: '\
-        'surfmask_smpl2) (Gender: U) 1 experiment https://central.xnat.org/'\
-        'data/projects/surfmask_smpl2/subjects/CENTRAL05_S01120?format=html'
-    assert list(sorted(str(subj_1))) == list(sorted(expected_output))
+    assert subj_1.exists()
+    expected_output = (
+        f'<Subject Object> BBRCDEV_S02627 `001` (project: pyxnat_tests) '
+        f'(Gender: U) 1 experiment {central._server}/data/projects/'
+        f'pyxnat_tests/subjects/BBRCDEV_S02627?format=html')
+    assert str(subj_1) == expected_output
 
 
 @skip_if_no_network
 def test_experiment_exists():
-    if exp_1.exists():
-        assert isinstance(exp_1, object)
-        assert str(exp_1) != '<Experiment Object> GHJ'
+    assert exp_1.exists()
+    assert isinstance(exp_1, object)
+    assert isinstance(exp_1, pyxnat.core.resources.Experiment)
+    assert str(exp_1) != '<Experiment Object> GHJ'
 
 
 @skip_if_no_network
 def test_experiment_not_exists():
-    if not exp_2.exists():
-        assert isinstance(exp_2, object)
-        assert str(exp_2) == '<Experiment Object> GHJ'
+    assert not exp_2.exists()
+    assert isinstance(exp_2, object)
+    assert isinstance(exp_2, pyxnat.core.resources.Experiment)
+    assert str(exp_2) == '<Experiment Object> GHJ'
 
 
 @skip_if_no_network
 def test_info_experiment():
-    assert isinstance(exp_1, object)
-    expected_output = '<Experiment Object> CENTRAL05_E02681 `001_obscured` (subject: '\
-        'CENTRAL05_S01120 `001`) (project: surfmask_smpl2) 4 scans 1 resource '\
-        '(created on 2020-10-22 15:24:30.139) https://central.xnat.org/'\
-        'data/projects/surfmask_smpl2/subjects/CENTRAL05_S01120/experiments/'\
-        'CENTRAL05_E02681?format=html'
-    assert list(sorted(str(exp_1))) == list(sorted(expected_output))
+    assert exp_1.exists()
+    expected_output = (
+        f'<Experiment Object> BBRCDEV_E03106 `001_obscured` '
+        f'(subject: BBRCDEV_S02627 `001`) (project: pyxnat_tests) '
+        f'4 scans 1 resource (created on 2024-01-22 10:25:48.637) '
+        f'{central._server}/data/projects/pyxnat_tests/subjects/'
+        f'BBRCDEV_S02627/experiments/BBRCDEV_E03106?format=html')
+    assert str(exp_1) == expected_output
 
 
 @skip_if_no_network
 def test_scan_exists():
-    if scan_1.exists():
-        assert isinstance(scan_1, object)
-        assert str(scan_1) != '<Scan Object> JKL'
+    assert scan_1.exists()
+    assert isinstance(scan_1, object)
+    assert isinstance(scan_1, pyxnat.core.resources.Scan)
+    assert str(scan_1) != '<Scan Object> JKL'
 
 
 @skip_if_no_network
 def test_scan_not_exists():
-    if not scan_2.exists():
-        assert isinstance(scan_2, object)
-        assert str(scan_2) == '<Scan Object> JKL'
+    assert not scan_2.exists()
+    assert isinstance(scan_2, object)
+    assert isinstance(scan_2, pyxnat.core.resources.Scan)
+    assert str(scan_2) == '<Scan Object> JKL'
 
 
 @skip_if_no_network
 def test_info_scan():
-    assert isinstance(scan_1, object)
-    expected_output = '<Scan Object> 11 (`SPGR` 175 frames)  '\
-        'https://central.xnat.org/data/projects/surfmask_smpl2/subjects/'\
-        'CENTRAL05_S01120/experiments/CENTRAL05_E02681/scans/11?format=html'
-    assert list(sorted(str(scan_1))) == list(sorted(expected_output))
+    assert scan_1.exists()
+    expected_output = (
+        f'<Scan Object> 11 (`SPGR` 175 frames)  {central._server}/data/'
+        f'projects/pyxnat_tests/subjects/BBRCDEV_S02627/experiments/'
+        f'BBRCDEV_E03106/scans/11?format=html')
+    assert str(scan_1) == expected_output
 
 
 @skip_if_no_network
 def test_resource_exists():
-    if resource_1.exists():
-        assert isinstance(resource_1, object)
-        assert str(resource_1) != '<Resource Object> IOP'
+    assert resource_1.exists()
+    assert isinstance(resource_1, object)
+    assert isinstance(resource_1, pyxnat.core.resources.Resource)
+    assert str(resource_1) != '<Resource Object> IOP'
 
 
 @skip_if_no_network
 def test_resource_not_exists():
-    if not resource_2.exists():
-        assert isinstance(resource_2, object)
-        assert str(resource_2) == '<Resource Object> IOP'
+    assert not resource_2.exists()
+    assert isinstance(resource_2, object)
+    assert isinstance(resource_2, pyxnat.core.resources.Resource)
+    assert str(resource_2) == '<Resource Object> IOP'
 
 
 @skip_if_no_network
 def test_info_resource():
-    assert isinstance(resource_1, object)
-    expected_output = '<Resource Object> 123361501 '\
-        '`obscure_algorithm_output` (66 files 2.06 GB)'
-    assert list(sorted(str(resource_1))) == list(sorted(expected_output))
+    assert resource_1.exists()
+    expected_output = (
+        f'<Resource Object> 19551 `obscure_algorithm_output` (66 files 2.06 GB)')
+    assert str(resource_1) == expected_output
 
 
 @skip_if_no_network
 def test_create_delete_create():
-    p = central.select.project('nosetests5')
     from uuid import uuid1
     sid = uuid1().hex
-    s = p.subject(sid)
+    s = proj_1.subject(sid)
     s.create()
-    assert(s.exists())
+    assert s.exists()
     s.delete()
     s.create()
     s.delete()
-    assert(not s.exists())
+    assert not s.exists()

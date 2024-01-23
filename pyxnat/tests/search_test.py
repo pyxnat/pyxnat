@@ -3,7 +3,8 @@ from pyxnat import Interface
 from pyxnat import jsonutil
 import os.path as op
 
-fp = op.join(op.dirname(op.abspath(__file__)), 'central.cfg')
+#fp = op.join(op.dirname(op.abspath(__file__)), 'central.cfg')
+fp = op.abspath('.central.cfg')
 central = Interface(config=fp)
 search_name = uuid1().hex
 search_template_name = uuid1().hex
@@ -26,17 +27,17 @@ def test_fieldvalues():
 
 
 def test_inspect_resources():
-    assert 'OAS1_0440_MR1' in \
+    assert 'xnat_E02579' in \
         central.inspect.experiment_values('xnat:mrSessionData',
-                                          'CENTRAL_OASIS_CS')
+                                          'cs_schizbull08')
 
-    assert 'OAS1_0286_MR1_FSEG' in \
+    assert 'xnat_E02580' in \
         central.inspect.assessor_values('xnat:mrSessionData',
-                                        'CENTRAL_OASIS_CS')
+                                        'cs_schizbull08')
 
-    assert 'mpr-1' in \
+    assert 'anat' in \
         central.inspect.scan_values('xnat:mrSessionData',
-                                    'CENTRAL_OASIS_CS')
+                                    'cs_schizbull08')
 
     # just coverage
     assert isinstance(central.inspect.experiment_types(), list)
@@ -51,7 +52,8 @@ def test_search():
     results = central.select(
         'xnat:mrSessionData',
         central.inspect.datatypes('xnat:mrSessionData')
-        ).where([('xnat:mrSessionData/SCANNER', 'LIKE', '*GE*'), 'AND'])
+        ).where([('xnat:mrSessionData/XNAT_COL_MRSESSIONDATAFIELDSTRENGTH',
+                  'LIKE', '*1.5*'), 'AND'])
 
     assert isinstance(results, jsonutil.JsonTable)
 
@@ -60,7 +62,8 @@ def test_save_search():
     central.manage.search.save(
         search_name, 'xnat:mrSessionData',
         central.inspect.datatypes('xnat:mrSessionData'),
-        [('xnat:mrSessionData/SCANNER', 'LIKE', '*GE*'), 'AND'])
+        [('xnat:mrSessionData/XNAT_COL_MRSESSIONDATAFIELDSTRENGTH',
+          'LIKE', '*1.5*'), 'AND'])
 
     assert search_name in central.manage.search.saved()
 
@@ -79,7 +82,8 @@ def test_save_search_template():
     central.manage.search.save_template(
         search_template_name, 'xnat:mrSessionData',
         central.inspect.datatypes('xnat:mrSessionData'),
-        [('xnat:mrSessionData/SCANNER', 'LIKE', '*GE*'), 'AND']
+        [('xnat:mrSessionData/XNAT_COL_MRSESSIONDATAFIELDSTRENGTH',
+          'LIKE', '*1.5*'), 'AND']
         )
 
     assert search_template_name in central.manage.search.saved_templates()

@@ -10,8 +10,11 @@ from pyxnat.core import interfaces
 
 _modulepath = op.dirname(op.abspath(__file__))
 
-central = Interface(config=op.join(op.dirname(op.abspath(__file__)),
-                                   'central.cfg'))
+#central = Interface(config=op.join(op.dirname(op.abspath(__file__)),
+#                                   'central.cfg'))
+fp = op.abspath('.devxnat.cfg')
+central = Interface(config=fp)
+
 interfaces.STUBBORN = True
 
 _id_set1 = {
@@ -30,7 +33,7 @@ _id_set2 = {
     'rid': uuid1().hex,
 }
 
-subj_1 = central.select.project('nosetests5').subject(_id_set1['sid'])
+subj_1 = central.select.project('pyxnat_tests').subject(_id_set1['sid'])
 expe_1 = subj_1.experiment(_id_set1['eid'])
 asse_1 = expe_1.assessor(_id_set1['aid'])
 scan_1 = expe_1.scan(_id_set1['cid'])
@@ -55,7 +58,7 @@ def test_02_experiment_create():
 @skip_if_no_network
 def test_03_assessor_create():
     assert not asse_1.exists()
-    asse_1.create()
+    asse_1.create(assessors='xnat:qcAssessmentData')
     assert asse_1.exists()
 
 
@@ -79,22 +82,22 @@ def test_05_reconstruction_create():
 
 @skip_if_no_network
 def test_06_multi_create():
-    asse_2 = central.select('/projects/nosetests5/subjects/%(sid)s'
+    asse_2 = central.select('/projects/pyxnat_tests/subjects/%(sid)s'
                             '/experiments/%(eid)s'
                             '/assessors/%(aid)s' % _id_set2)
 
-    expe_2 = central.select('/projects/nosetests5/subjects/%(sid)s'
+    expe_2 = central.select('/projects/pyxnat_tests/subjects/%(sid)s'
                             '/experiments/%(eid)s' % _id_set2)
 
     assert not asse_2.exists()
     asse_2.create(experiments='xnat:petSessionData',
-                  assessors='xnat:petAssessorData')
+                  assessors='xnat:qcAssessmentData')
     assert asse_2.exists()
 
-    assert asse_2.datatype() == 'xnat:petAssessorData'
+    assert asse_2.datatype() == 'xnat:qcAssessmentData'
     assert expe_2.datatype() == 'xnat:petSessionData'
 
-    scan_2 = central.select('/projects/nosetests5/subjects/%(sid)s'
+    scan_2 = central.select('/projects/pyxnat_tests/subjects/%(sid)s'
                             '/experiments/%(eid)s/scans/%(cid)s' % _id_set2
                             ).create()
 
@@ -119,7 +122,7 @@ def test_08_get_file():
     assert op.exists(fpath)
     print(['toto3', open(fpath, 'rb').read()])
     try:
-        assert open(fpath, 'rb').read() == bytes('Hello XNAT!%s' % os.linesep,
+        assert open(fpath, 'rb').read() == bytes('Hello XNAT!\n',
                                                  encoding='utf8')
     except TypeError:
         pass
@@ -148,7 +151,7 @@ def test_10_get_dir_file():
     fpath = fh.get()
     assert op.exists(fpath)
     try:
-        assert open(fpath, 'rb').read() == bytes('Hello again!%s' % os.linesep,
+        assert open(fpath, 'rb').read() == bytes('Hello again!\n',
                                                  encoding='utf8')
     except TypeError:
         pass
@@ -168,7 +171,7 @@ def test_11_get_copy_file():
     assert op.exists(fpath)
     fd = open(fpath, 'rb')
     try:
-        assert fd.read() == bytes('Hello XNAT!%s' % os.linesep,
+        assert fd.read() == bytes('Hello XNAT!\n',
                                   encoding='utf8')
     except TypeError:
         pass
@@ -192,10 +195,10 @@ def test_12_file_last_modified():
 def test_13_last_modified():
     sid = subj_1.id()
 
-    t1 = central.select('/project/nosetests5').last_modified()[sid]
+    t1 = central.select('/project/pyxnat_tests').last_modified()[sid]
     subj_1.attrs.set('age', '26')
     assert subj_1.attrs.get('age') == '26'
-    t2 = central.select('/project/nosetests5').last_modified()[sid]
+    t2 = central.select('/project/pyxnat_tests').last_modified()[sid]
 
     assert t1 != t2
 
@@ -222,18 +225,18 @@ def test_15_getitem_slice():
 
 
 def test_subject1_parent():
-    project = central.select.project('nosetests5')
+    project = central.select.project('pyxnat_tests')
     assert subj_1.parent()._uri == project._uri
 
 
 def test_project_parent():
-    project = central.select.project('nosetests5')
+    project = central.select.project('pyxnat_tests')
     assert not project.parent()
 
 
 @skip_if_no_network
 def test_16_project_configuration():
-    project = central.select('/project/nosetests5')
+    project = central.select('/project/pyxnat_tests')
     version = central.version()
     from pyxnat.core.errors import DatabaseError
 
@@ -254,9 +257,9 @@ def test_16_project_configuration():
                   % version['version']
             print(msg)
 
-    assert 'nosetests' in project.users()
-    assert 'nosetests' in project.owners()
-    assert project.user_role('nosetests') == 'owner'
+    assert central._user in project.users()
+    assert central._user in project.owners()
+    assert project.user_role(central._user) == 'owner'
 
 
 @skip_if_no_network
@@ -300,13 +303,13 @@ def test_18_get_zip():
 
 @skip_if_no_network
 def test_19_project_aliases():
-    project = central.select('/project/nosetests5')
-    assert project.aliases() == ['nosetests52']
+    project = central.select('/project/pyxnat_tests')
+    assert project.aliases() == ['pyxnat']
 
 
 @skip_if_no_network
 def test_20_project():
-    project = central.select.project('nosetests5')
+    project = central.select.project('pyxnat_tests')
     project.datatype()
     project.experiments()
     project.experiment('nose')
@@ -314,77 +317,15 @@ def test_20_project():
 
 @skip_if_no_network
 def test_21_project_description():
-    project = central.select.project('nosetests5')
+    project = central.select.project('pyxnat_tests')
     desc = project.description()
-    assert(desc == 'nosetests')
+    assert desc == 'pyxnat CI tests'
 
 
 @skip_if_no_network
-def test_22_share_subject():
-    target_project = central.select.project('metabase_nosetests')
-
-    shared_subj_1 = target_project.subject(_id_set1['sid'])
-    assert(not shared_subj_1.exists())
-    assert(subj_1.shares().get() == ['nosetests5'])
-
-    subj_1.share('metabase_nosetests')
-    shared_subj_1 = target_project.subject(_id_set1['sid'])
-    assert(shared_subj_1.exists())
-    assert(subj_1.shares().get() == ['nosetests5', 'metabase_nosetests'])
-
-
-@skip_if_no_network
-def test_23_unshare_subject():
-    target_project = central.select.project('metabase_nosetests')
-
-    shared_subj_1 = target_project.subject(_id_set1['sid'])
-    assert(shared_subj_1.exists())
-    assert(subj_1.shares().get() == ['nosetests5', 'metabase_nosetests'])
-
-    subj_1.unshare('metabase_nosetests')
-    shared_subj_1 = target_project.subject(_id_set1['sid'])
-    assert(not shared_subj_1.exists())
-    assert(subj_1.shares().get() == ['nosetests5'])
-
-
-@skip_if_no_network
-def test_24_share_experiment():
-    target_project = central.select.project('metabase_nosetests')
-
-    shared_expe_1 = target_project.experiment(_id_set1['eid'])
-    assert(not shared_expe_1.exists())
-    assert(expe_1.shares().get() == ['nosetests5'])
-
-    expe_1.share('metabase_nosetests')
-    shared_expe_1 = target_project.experiment(_id_set1['eid'])
-    assert(shared_expe_1.exists())
-    assert(expe_1.shares().get() == ['nosetests5', 'metabase_nosetests'])
-
-
-@skip_if_no_network
-def test_25_unshare_experiment():
-    target_project = central.select.project('metabase_nosetests')
-
-    shared_expe_1 = target_project.experiment(_id_set1['eid'])
-    assert(shared_expe_1.exists())
-    assert(expe_1.shares().get() == ['nosetests5', 'metabase_nosetests'])
-
-    expe_1.unshare('metabase_nosetests')
-    shared_expe_1 = target_project.experiment(_id_set1['eid'])
-    assert(not shared_expe_1.exists())
-    assert(expe_1.shares().get() == ['nosetests5'])
-
-
-@skip_if_no_network
-def test_26_subject1_delete():
-    assert subj_1.exists()
-    subj_1.delete()
-    assert not subj_1.exists()
-
-
-@skip_if_no_network
-def test_27_subject2_delete():
-    subj_2 = central.select('/projects/nosetests5/subjects/%(sid)s' % _id_set2)
-    assert subj_2.exists()
-    subj_2.delete()
-    assert not subj_2.exists()
+def test_22_delete_data():
+    for sid in [_id_set1['sid'], _id_set2['sid']]:
+        subj = central.select.project('pyxnat_tests').subject(sid)
+        if subj.exists():
+            subj.delete(delete_files=True)
+        assert not subj.exists()
