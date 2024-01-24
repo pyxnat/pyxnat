@@ -43,6 +43,18 @@ jobs:
       - name: Check xnat-docker-compose
         run: docker-compose logs --tail=20 xnat-web
         working-directory: xnat-docker-compose
+      - name: create config json (Central/NITRC)
+        id: create-json-central
+        uses: jsdaniell/create-json@v1.2.2
+        with:
+          name: ".central.cfg"
+          json: ${{ secrets.CENTRAL_CFG }}
+      - name: create config json (devxnat)
+        id: create-json-devxnat
+        uses: jsdaniell/create-json@v1.2.2
+        with:
+          name: ".devxnat.cfg"
+          json: ${{ secrets.XNAT_CFG }}
       - name: Run tests (pytest)
         run: pytest
         env:

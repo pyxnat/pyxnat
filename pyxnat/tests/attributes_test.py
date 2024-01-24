@@ -6,16 +6,14 @@ from pyxnat import Interface
 from pyxnat.core import interfaces
 
 
-_modulepath = op.dirname(op.abspath(__file__))
-
-fp = op.join(op.dirname(op.abspath(__file__)), 'central.cfg')
+fp = op.abspath('.devxnat.cfg')
 central = Interface(config=fp)
 interfaces.STUBBORN = True
 
 sid = uuid1().hex
 eid = uuid1().hex
 
-subject = central.select.project('nosetests5').subject(sid)
+subject = central.select.project('pyxnat_tests').subject(sid)
 experiment = subject.experiment(eid)
 
 
@@ -102,9 +100,9 @@ def test_06_list_project_attrs():
                           'xnat:projectData/fields/field',
                           'xnat:projectData/fields/field/None']
 
-    p = central.select.project('nosetests')
-    assert(p.attrs() == [])
+    p = central.select.project('pyxnat_tests')
+    assert p.attrs() == []
 
     central.manage.schemas.add('xapi/schemas/xnat')
-    p = central.select.project('nosetests')
-    assert (p.attrs() == project_attributes)
+    p = central.select.project('pyxnat_tests')
+    assert p.attrs() == project_attributes

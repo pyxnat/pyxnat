@@ -5,7 +5,7 @@ from functools import wraps
 import pytest
 
 
-fp = op.join(op.dirname(op.abspath(__file__)), 'central.cfg')
+fp = op.abspath('.devxnat.cfg')
 
 
 def docker_available(func=None):
@@ -159,25 +159,24 @@ def test_create_xml():
 
 def test_project_users():
     x = Interface(config=fp)
-    assert isinstance(x.select.project('nosetests5').users(), list)
+    assert isinstance(x.select.project('pyxnat_tests').users(), list)
 
 
 def test_project_owners():
     x = Interface(config=fp)
-    assert isinstance(x.select.project('nosetests5').owners(), list)
+    assert isinstance(x.select.project('pyxnat_tests').owners(), list)
 
 
 def test_project_members():
     x = Interface(config=fp)
-    assert isinstance(x.select.project('nosetests5').members(), list)
+    assert isinstance(x.select.project('pyxnat_tests').members(), list)
 
 
 def test_project_collaborators():
     x = Interface(config=fp)
-    assert isinstance(x.select.project('nosetests5').collaborators(),
-                      list)
+    assert isinstance(x.select.project('pyxnat_tests').collaborators(), list)
 
 
 def test_project_user_role():
     x = Interface(config=fp)
-    assert x.select.project('nosetests5').user_role('nosetests') == 'owner'
+    assert x.select.project('pyxnat_tests').user_role(x._user) == 'owner'

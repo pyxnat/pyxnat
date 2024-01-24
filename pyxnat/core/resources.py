@@ -1772,9 +1772,7 @@ class Reconstruction(EObject):
         self.provenance = Provenance(self)
 
     def datatype(self):
-        return (super(Reconstruction, self).datatype()
-                or 'xnat:reconstructedImageData'
-                )
+        return 'xnat:reconstructedImageData'
 
 
 @add_metaclass(ElementType)

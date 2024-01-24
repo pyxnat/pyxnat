@@ -2,7 +2,7 @@ from pyxnat import Interface
 import os.path as op
 from pyxnat.tests import skip_if_no_network
 
-fp = op.join(op.dirname(op.abspath(__file__)), 'central.cfg')
+fp = op.abspath('.devxnat.cfg')
 central = Interface(config=fp)
 
 
@@ -15,7 +15,7 @@ def test_prearchive_get():
 
 @skip_if_no_network
 def test_prearchive_status():
-    triple = ['SAFMD', '20170602_161757472', '_4']
+    triple = ['pyxnat_tests', '20240122_173812916', 'sub-001_ses-01']
     from pyxnat.core import manage
     pa = manage.PreArchive(central)
     assert(pa.status(triple) == 'READY')
