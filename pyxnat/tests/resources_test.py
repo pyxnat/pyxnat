@@ -323,7 +323,63 @@ def test_21_project_description():
 
 
 @skip_if_no_network
-def test_22_delete_data():
+def test_22_share_subject():
+    target_project = central.select.project('pyxnat_tests2')
+
+    shared_subj_1 = target_project.subject(_id_set1['sid'])
+    assert (not shared_subj_1.exists())
+    assert (subj_1.shares().get() == ['pyxnat_tests'])
+
+    subj_1.share('pyxnat_tests2')
+    shared_subj_1 = target_project.subject(_id_set1['sid'])
+    assert (shared_subj_1.exists())
+    assert (subj_1.shares().get() == ['pyxnat_tests', 'pyxnat_tests2'])
+
+
+@skip_if_no_network
+def test_23_unshare_subject():
+    target_project = central.select.project('pyxnat_tests2')
+
+    shared_subj_1 = target_project.subject(_id_set1['sid'])
+    assert (shared_subj_1.exists())
+    assert (subj_1.shares().get() == ['pyxnat_tests', 'pyxnat_tests2'])
+
+    subj_1.unshare('pyxnat_tests2')
+    shared_subj_1 = target_project.subject(_id_set1['sid'])
+    assert (not shared_subj_1.exists())
+    assert (subj_1.shares().get() == ['pyxnat_tests'])
+
+
+@skip_if_no_network
+def test_24_share_experiment():
+    target_project = central.select.project('pyxnat_tests2')
+
+    shared_expe_1 = target_project.experiment(_id_set1['eid'])
+    assert (not shared_expe_1.exists())
+    assert (expe_1.shares().get() == ['pyxnat_tests'])
+
+    expe_1.share('pyxnat_tests2')
+    shared_expe_1 = target_project.experiment(_id_set1['eid'])
+    assert (shared_expe_1.exists())
+    assert (expe_1.shares().get() == ['pyxnat_tests', 'pyxnat_tests2'])
+
+
+@skip_if_no_network
+def test_25_unshare_experiment():
+    target_project = central.select.project('pyxnat_tests2')
+
+    shared_expe_1 = target_project.experiment(_id_set1['eid'])
+    assert (shared_expe_1.exists())
+    assert (expe_1.shares().get() == ['pyxnat_tests', 'pyxnat_tests2'])
+
+    expe_1.unshare('pyxnat_tests2')
+    shared_expe_1 = target_project.experiment(_id_set1['eid'])
+    assert (not shared_expe_1.exists())
+    assert (expe_1.shares().get() == ['pyxnat_tests'])
+
+
+@skip_if_no_network
+def test_26_subjects_delete():
     for sid in [_id_set1['sid'], _id_set2['sid']]:
         subj = central.select.project('pyxnat_tests').subject(sid)
         if subj.exists():
