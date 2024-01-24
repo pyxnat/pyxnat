@@ -10,8 +10,6 @@ from pyxnat.core import interfaces
 
 _modulepath = op.dirname(op.abspath(__file__))
 
-#central = Interface(config=op.join(op.dirname(op.abspath(__file__)),
-#                                   'central.cfg'))
 fp = op.abspath('.devxnat.cfg')
 central = Interface(config=fp)
 

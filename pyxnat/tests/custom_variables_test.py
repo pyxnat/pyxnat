@@ -5,7 +5,6 @@ import os.path as op
 from pyxnat.tests import skip_if_no_network
 
 
-#fp = op.join(op.dirname(op.abspath(__file__)), 'central.cfg')
 fp = op.abspath('.devxnat.cfg')
 central = Interface(config=fp)
 project = central.select.project('pyxnat_tests')

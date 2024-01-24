@@ -2,7 +2,6 @@ from pyxnat import manage
 from pyxnat import Interface
 import os.path as op
 
-#x = Interface(config=op.join(op.dirname(op.abspath(__file__)), 'central.cfg'))
 central = Interface('https://www.nitrc.org/ir', anonymous=True)
 
 

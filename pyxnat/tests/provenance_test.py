@@ -4,7 +4,6 @@ from pyxnat import Interface
 import os.path as op
 
 
-#fp = op.join(op.dirname(op.abspath(__file__)), 'central.cfg')
 fp = op.abspath('.devxnat.cfg')
 central = Interface(config=fp)
 project = central.select.project('pyxnat_tests')

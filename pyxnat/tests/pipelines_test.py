@@ -2,8 +2,6 @@ import os.path as op
 from pyxnat import Interface
 from pyxnat.core.pipelines import PipelineNotFoundError
 
-#fp = op.join(op.dirname(op.abspath(__file__)), 'central.cfg')
-#central = Interface(config=fp)
 fp = op.abspath('.devxnat.cfg')
 central = Interface(config=fp)
 p = central.select.project('pyxnat_tests')

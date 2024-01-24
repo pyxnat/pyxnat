@@ -3,7 +3,6 @@ from pyxnat import Interface
 from pyxnat import jsonutil
 import os.path as op
 
-#fp = op.join(op.dirname(op.abspath(__file__)), 'central.cfg')
 fp = op.abspath('.central.cfg')
 central = Interface(config=fp)
 search_name = uuid1().hex

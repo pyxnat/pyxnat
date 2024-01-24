@@ -3,7 +3,6 @@ from pyxnat.core import downloadutils as du
 from pyxnat.tests import skip_if_no_network
 import tempfile
 
-#fp = op.join(op.dirname(op.abspath(__file__)), 'central.cfg')
 central = Interface('https://www.nitrc.org/ir', anonymous=True)
 
 
