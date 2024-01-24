@@ -74,9 +74,11 @@ def test_05_reconstruction_create():
     assert reco_1.exists()
 
 
-# def test_provenance():
-#     reco_1.provenance.set({'program':'nosetests'})
-#     assert reco_1.provenance.get()[0]['program'] == 'nosetests'
+@skip_if_no_network
+def test_provenance():
+    reco_1.provenance.set({'program': 'nosetests'})
+    assert reco_1.provenance.get()[0]['program'] == 'nosetests'
+
 
 @skip_if_no_network
 def test_06_multi_create():
