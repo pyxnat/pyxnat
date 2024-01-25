@@ -55,18 +55,32 @@ def test_close_jsession():
 
 
 def test_save_config():
-    central.save_config('/tmp/.xnat.cfg')
+    with tempfile.TemporaryDirectory(dir=tempfile.gettempdir()) as tempdir:
+        cfg = op.join(tempdir, '.xnat.cfg')
+        central.save_config(cfg)
+        assert op.isfile(cfg)
+    assert not op.isfile(cfg)
+
 
 def test_save_config_home_dir():
-    filename = "test_config.txt"
-    with tempfile.TemporaryDirectory(dir=os.path.expanduser("~")) as tempdir:
-        central.save_config(os.path.join("~", os.path.basename(tempdir), filename))
-        assert os.path.exists(os.path.join(tempdir, filename))
+    with tempfile.TemporaryDirectory(dir=op.expanduser("~")) as tempdir:
+        cfg = op.join("~", op.basename(tempdir), '.xnat.cfg')
+        central.save_config(cfg)
+        assert op.isfile(op.expanduser(cfg))
+    assert not op.isfile(op.expanduser(cfg))
 
 
 def test_save_config_current_dir():
-    with tempfile.NamedTemporaryFile(dir=os.getcwd()) as f:
-        central.save_config(os.path.basename(f.name))
+    f = tempfile.NamedTemporaryFile(dir=os.getcwd(), delete=False)
+    cfg = op.basename(f.name)
+    try:
+        f.close()
+        central.save_config(cfg)
+        assert op.isfile(cfg)
+    finally:
+        os.remove(cfg)
+    assert not op.isfile(cfg)
+
 
 @skip_if_no_network
 def test_version():
