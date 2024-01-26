@@ -1,9 +1,5 @@
 import difflib
-import six
-if six.PY3:
-    from urllib.parse import quote
-elif six.PY2:
-    from urllib import quote
+from urllib.parse import quote
 
 from .jsonutil import JsonTable
 from .uriutil import uri_parent

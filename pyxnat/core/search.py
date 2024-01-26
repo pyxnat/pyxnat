@@ -1,17 +1,6 @@
 import csv
 import difflib
-try:
-    from StringIO import StringIO
-except ImportError:
-    from io import StringIO
-try:
-    unicode
-    import sys
-    reload(sys)  # Reload does the trick!
-    sys.setdefaultencoding('UTF8')
-except NameError:
-    unicode = str
-from six import string_types
+from io import StringIO
 
 from lxml import etree
 
@@ -130,7 +119,7 @@ def build_search_document(root_element_name, columns, criteria_set,
 def build_criteria_set(container_node, criteria_set):
 
     for criteria in criteria_set:
-        if isinstance(criteria, string_types):
+        if isinstance(criteria, str):
             container_node.set('method', criteria)
 
         if isinstance(criteria, (list)):
@@ -500,7 +489,7 @@ class SearchManager(object):
                                            constraint[1],
                                            '%%(%s)s' % constraint[2])
                                           )
-                elif isinstance(constraint, (unicode, str)):
+                elif isinstance(constraint, str):
                     query_template.append(constraint)
                 elif isinstance(constraint, list):
                     query_template.append(_make_template(constraint))
@@ -689,7 +678,7 @@ class Search(object):
         """
         self._intf._get_entry_point()
 
-        if isinstance(constraints, (str, unicode)):
+        if isinstance(constraints, str):
             constraints = rpn_contraints(constraints)
         elif isinstance(template, (tuple)):
             tmp_bundle = self._intf.manage.search.get_template(
@@ -697,7 +686,7 @@ class Search(object):
 
             tmp_bundle = tmp_bundle % template[1]
             constraints = query_from_xml(tmp_bundle)['constraints']
-        elif isinstance(query, (str, unicode)):
+        elif isinstance(query, str):
             tmp_bundle = self._intf.manage.search.get(query, 'xml')
             constraints = query_from_xml(tmp_bundle)['constraints']
         elif isinstance(constraints, list):

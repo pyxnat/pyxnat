@@ -34,13 +34,7 @@ from . import derivatives
 import types
 import pkgutil
 import inspect
-import six
-from six import string_types, add_metaclass
-if six.PY2:
-    from urllib import quote, unquote  # Python 2.X
-elif six.PY3:
-    from urllib.parse import quote, unquote
-    unicode = str
+from urllib.parse import quote, unquote
 
 DEBUG = False
 
@@ -225,7 +219,7 @@ class EObject(object):
         if filters:
             get_id += '&' + \
                 '&'.join('%s=%s' % (item[0], item[1])
-                         if isinstance(item[1], string_types)
+                         if isinstance(item[1], str)
                          else '%s=%s' % (item[0],
                                          ','.join([val for val in item[1]]))
                          for item in filters.items())
@@ -593,12 +587,12 @@ class CObject(object):
         self._filters = filters
         self._nested = nested
 
-        if isinstance(cbase, string_types):
+        if isinstance(cbase, str):
             self._ctype = 'cobjectcuri'
         elif isinstance(cbase, CObject):
             self._ctype = 'cobjectcobject'
         elif isinstance(cbase, list) and cbase:
-            if isinstance(cbase[0], string_types):
+            if isinstance(cbase[0], str):
                 self._ctype = 'cobjecteuris'
             if isinstance(cbase[0], EObject):
                 self._ctype = 'cobjecteobjects'
@@ -634,7 +628,7 @@ class CObject(object):
             if self._filters:
                 query_string += '&' + '&'.join(
                     '%s=%s' % (item[0], item[1])
-                    if isinstance(item[1], (str, unicode))
+                    if isinstance(item[1], str)
                     else '%s=%s' % (
                         item[0], ','.join([val for val in item[1]]))
                     for item in self._filters.items()
@@ -940,14 +934,14 @@ class CObject(object):
             :func:`search.Search`
         """
 
-        if isinstance(constraints, (str, unicode)):
+        if isinstance(constraints, str):
             constraints = rpn_contraints(constraints)
         elif isinstance(template, (tuple)):
             tmp_bundle = self._intf.manage.search.get_template(
                 template[0], True)
             tmp_bundle = tmp_bundle % template[1]
             constraints = query_from_xml(tmp_bundle)['constraints']
-        elif isinstance(query, (str, unicode)):
+        elif isinstance(query, str):
             tmp_bundle = self._intf.manage.search.get(query, 'xml')
             constraints = query_from_xml(tmp_bundle)['constraints']
         elif isinstance(constraints, list):
@@ -1020,8 +1014,7 @@ class CObject(object):
 # specialized classes
 
 
-@add_metaclass(ElementType)
-class Project(EObject):
+class Project(EObject, metaclass=ElementType):
 
     def __init__(self, uri, interface):
         """
@@ -1437,8 +1430,7 @@ class Project(EObject):
         return self.attrs.get('description')
 
 
-@add_metaclass(ElementType)
-class Subject(EObject):
+class Subject(EObject, metaclass=ElementType):
 
     def datatype(self):
         return 'xnat:subjectData'
@@ -1564,8 +1556,7 @@ class Subject(EObject):
         self._intf._exec(join_uri(self._uri, 'projects', project), 'DELETE')
 
 
-@add_metaclass(ElementType)
-class Experiment(EObject):
+class Experiment(EObject, metaclass=ElementType):
 
     def __init__(self, cbase, interface):
         items = cbase.split('/')
@@ -1738,8 +1729,7 @@ class Experiment(EObject):
             self._intf._exec(self._uri + options, 'PUT', body=[])
 
 
-@add_metaclass(ElementType)
-class Assessor(EObject):
+class Assessor(EObject, metaclass=ElementType):
 
     def __init__(self, uri, interface):
         EObject.__init__(self, uri, interface)
@@ -1763,8 +1753,7 @@ class Assessor(EObject):
         return self.xpath('//xnat:addParam/attribute::*')
 
 
-@add_metaclass(ElementType)
-class Reconstruction(EObject):
+class Reconstruction(EObject, metaclass=ElementType):
 
     def __init__(self, uri, interface):
         EObject.__init__(self, uri, interface)
@@ -1775,8 +1764,7 @@ class Reconstruction(EObject):
         return 'xnat:reconstructedImageData'
 
 
-@add_metaclass(ElementType)
-class Scan(EObject):
+class Scan(EObject, metaclass=ElementType):
 
     def __repr__(self):
         interface = self._intf
@@ -1825,8 +1813,7 @@ class Scan(EObject):
         return self.xpath('//xnat:addParam/attribute::*')
 
 
-@add_metaclass(ElementType)
-class Resource(EObject):
+class Resource(EObject, metaclass=ElementType):
 
     def __repr__(self):
 
@@ -2103,8 +2090,7 @@ class In_Resource(Resource):
         return Klass(uri_parent(uri), self._intf)
 
 
-@add_metaclass(ElementType)
-class Out_Resource(Resource):
+class Out_Resource(Resource, metaclass=ElementType):
 
     def parent(self):
         uri = uri_grandparent(self._uri)
@@ -2112,8 +2098,7 @@ class Out_Resource(Resource):
         return Klass(uri_parent(uri), self._intf)
 
 
-@add_metaclass(ElementType)
-class File(EObject):
+class File(EObject, metaclass=ElementType):
     """ EObject for files stored in XNAT.
     """
 
@@ -2370,23 +2355,19 @@ class File(EObject):
         return info['last-modified']
 
 
-@add_metaclass(ElementType)
-class In_File(File):
+class In_File(File, metaclass=ElementType):
     pass
 
 
-@add_metaclass(ElementType)
-class Out_File(File):
+class Out_File(File, metaclass=ElementType):
     pass
 
 
-@add_metaclass(CollectionType)
-class Projects(CObject):
+class Projects(CObject, metaclass=CollectionType):
     pass
 
 
-@add_metaclass(CollectionType)
-class Subjects(CObject):
+class Subjects(CObject, metaclass=CollectionType):
 
     def sharing(self, projects=[]):
         return Subjects([eobj for eobj in self
@@ -2402,8 +2383,7 @@ class Subjects(CObject):
             eobj.unshare(project)
 
 
-@add_metaclass(CollectionType)
-class Experiments(CObject):
+class Experiments(CObject, metaclass=CollectionType):
 
     def sharing(self, projects=[]):
         return Experiments([eobj for eobj in self
@@ -2419,8 +2399,7 @@ class Experiments(CObject):
             eobj.unshare(project)
 
 
-@add_metaclass(CollectionType)
-class Assessors(CObject):
+class Assessors(CObject, metaclass=CollectionType):
 
     def download(self, dest_dir, type="ALL",
                  name=None, extract=False, safe=False, removeZip=False):
@@ -2431,8 +2410,7 @@ class Assessors(CObject):
                                       extract, safe, removeZip)
 
 
-@add_metaclass(CollectionType)
-class Reconstructions(CObject):
+class Reconstructions(CObject, metaclass=CollectionType):
 
     def download(self, dest_dir, type="ALL",
                  name=None, extract=False, safe=False, removeZip=False):
@@ -2443,8 +2421,7 @@ class Reconstructions(CObject):
                                       extract, safe, removeZip)
 
 
-@add_metaclass(CollectionType)
-class Scans(CObject):
+class Scans(CObject, metaclass=CollectionType):
 
     def download(self, dest_dir, type="ALL",
                  name=None, extract=False, safe=False, removeZip=False):
@@ -2456,33 +2433,27 @@ class Scans(CObject):
                                       extract, safe, removeZip)
 
 
-@add_metaclass(CollectionType)
-class Resources(CObject):
+class Resources(CObject, metaclass=CollectionType):
     pass
 
 
-@add_metaclass(CollectionType)
-class In_Resources(Resources):
+class In_Resources(Resources, metaclass=CollectionType):
     pass
 
 
-@add_metaclass(CollectionType)
-class Out_Resources(Resources):
+class Out_Resources(Resources, metaclass=CollectionType):
     pass
 
 
-@add_metaclass(CollectionType)
-class Files(CObject):
+class Files(CObject, metaclass=CollectionType):
     pass
 
 
-@add_metaclass(CollectionType)
-class In_Files(Files):
+class In_Files(Files, metaclass=CollectionType):
     pass
 
 
-@add_metaclass(CollectionType)
-class Out_Files(Files):
+class Out_Files(Files, metaclass=CollectionType):
     pass
 
 # Utility functions for downloading and extracting zip archives
@@ -2533,7 +2504,7 @@ def rewrite_query(interface, join_field,
             _new_f.append('OR')
             _new_filter.append(_new_f)
 
-        elif isinstance(_f, (str, unicode)):
+        elif isinstance(_f, str):
             _new_filter.append(_f)
 
         else:

@@ -1,9 +1,6 @@
 import re
 
 from lxml import etree
-import six
-if six.PY3:
-    unicode = str
 
 # parsing functions
 
@@ -69,7 +66,7 @@ def catch_error(msg_or_exception, full_response=None):
         msg_or_exception = msg_or_exception.decode()
 
     # handle errors returned by the xnat server
-    if isinstance(msg_or_exception, (str, unicode)):
+    if isinstance(msg_or_exception, str):
         # parse the message
         msg = msg_or_exception
         error = parse_error_message(msg)

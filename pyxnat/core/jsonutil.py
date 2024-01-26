@@ -3,12 +3,7 @@ import copy
 from fnmatch import fnmatch
 import json
 
-import six
-if six.PY2:
-    from StringIO import StringIO
-elif six.PY3:
-    unicode = str
-    from io import StringIO
+from io import StringIO
 
 # jdata is a list of dicts
 
@@ -111,16 +106,11 @@ def get_selection(jdata, columns):
 def csv_to_json(csv_str):
 
     import csv
-    import six
-    if six.PY2:
+    try:
         csv_reader = csv.reader(StringIO(csv_str), delimiter=',',
                                 quotechar='"')
-    elif six.PY3:
-        try:
-            csv_reader = csv.reader(StringIO(csv_str), delimiter=',',
-                                    quotechar='"')
-        except TypeError:
-            csv_reader = csv.reader(StringIO(csv_str.decode('utf-8')),
+    except TypeError:
+        csv_reader = csv.reader(StringIO(csv_str.decode('utf-8')),
                                     delimiter=',', quotechar='"')
     headers = next(csv_reader)
     ans = [dict(zip(headers, entry)) for entry in csv_reader]
@@ -172,7 +162,7 @@ class JsonTable(object):
         return iter(self.data)
 
     def __getitem__(self, name):
-        if isinstance(name, (str, unicode)):
+        if isinstance(name, str):
             return self.get(name)
         elif isinstance(name, int):
             return self.__class__([self.data[name]], self.order_by)
@@ -296,7 +286,7 @@ class JsonTable(object):
                                 quotechar='"', quoting=csv.QUOTE_MINIMAL)
 
         for entry in self.as_list():
-            csv_writer.writerow(unicode(entry))
+            csv_writer.writerow(str(entry))
 
         return str_buffer.getvalue()
 
