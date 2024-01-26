@@ -4,11 +4,6 @@ import getpass
 import json
 import requests
 
-try:
-    import socks
-except ImportError:
-    socks = None
-
 from urllib.parse import urlparse
 
 from .select import Select
@@ -21,9 +16,36 @@ from .errors import catch_error
 from .array import ArrayData
 from .xpath_store import XpathStore
 from . import xpass
+from . import derivatives
+
 
 DEBUG = False
 STUBBORN = False
+
+
+# generic classes
+def __get_modules__(m):
+    import pkgutil
+    modules = []
+    prefix = m.__name__ + '.'
+    for importer, modname, ispkg in pkgutil.iter_modules(m.__path__, prefix):
+        module = __import__(modname, fromlist='dummy')
+        if not ispkg:
+            modules.append(module)
+        else:
+            modules.extend(__get_modules__(module))
+    return modules
+
+
+def __find_all_functions__(m):
+    import inspect
+    functions = {}
+    modules = __get_modules__(m)
+    for m in modules:
+        for name, obj in inspect.getmembers(m):
+            if inspect.isfunction(obj):
+                functions.setdefault(m, []).append(obj)
+    return functions
 
 
 # main entry point
@@ -173,6 +195,16 @@ class Interface(object):
         self.array = ArrayData(self)
         self.manage = GlobalManager(self)
         self.xpath = XpathStore(self)
+
+        functions = __find_all_functions__(derivatives)
+        d = {}
+        for m, mod_functions in functions.items():
+            if hasattr(m, 'XNAT_RESOURCE_NAME'):
+                d[m.XNAT_RESOURCE_NAME] = mod_functions
+            elif hasattr(m, 'XNAT_RESOURCE_NAMES'):
+                for each in m.XNAT_RESOURCE_NAMES:
+                    d[each] = mod_functions
+        self._mod_functions = d
 
         if _DRAW_GRAPHS:
             self._get_graph = GraphData(self)
