@@ -1,0 +1,68 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - 'master'
+      - 'bbrc'
+  pull_request:
+    branches:
+      - 'master'
+      - 'bbrc'
+
+jobs:
+  build:
+    runs-on: '${{ matrix.os }}'
+    strategy:
+      matrix:
+        os: ['ubuntu-latest']
+        python-version: ['3.8', '3.9']
+
+    steps:
+      - name: 'Set up Python ${{ matrix.python-version }}'
+        uses: actions/setup-python@v3
+        with:
+          python-version: '${{ matrix.python-version }}'
+      - uses: actions/checkout@v3
+      - name: Checkout xnat-docker-compose
+        uses: actions/checkout@v3
+        with:
+          repository: NrgXnat/xnat-docker-compose
+          ref: 1.8.1
+          path: xnat-docker-compose
+      - run: docker-compose --version
+      - run: python --version
+      - run: python -m pip install --upgrade pip
+      - name: Install dependencies
+        run: pip install -r requirements-dev.txt
+      - name: Start xnat-docker-compose
+        run: docker-compose up -d
+        working-directory: xnat-docker-compose
+      - run: sleep 120
+        if: ${{ matrix.python-version == '3.8' }}
+      - name: Check xnat-docker-compose
+        run: docker-compose logs --tail=20 xnat-web
+        working-directory: xnat-docker-compose
+      - name: create config json (Central/NITRC)
+        id: create-json-central
+        uses: jsdaniell/create-json@v1.2.2
+        with:
+          name: ".central.cfg"
+          json: ${{ secrets.CENTRAL_CFG }}
+      - name: create config json (devxnat)
+        id: create-json-devxnat
+        uses: jsdaniell/create-json@v1.2.2
+        with:
+          name: ".devxnat.cfg"
+          json: ${{ secrets.XNAT_CFG }}
+      - name: Run tests (pytest)
+        run: pytest
+        env:
+          PYTHONPATH: $PYTHONPATH:$(pwd)
+      - name: Coveralls
+        #uses: coverallsapp/github-action@master
+        #with:
+        #  github-token: ${{ secrets.GITHUB_TOKEN }}
+        run: coveralls --service=github
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
