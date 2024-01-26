@@ -1,4 +1,6 @@
+import os
 import os.path as op
+import tempfile 
 from pyxnat import Interface
 from pyxnat.tests import skip_if_no_network
 
@@ -53,7 +55,31 @@ def test_close_jsession():
 
 
 def test_save_config():
-    central.save_config('/tmp/.xnat.cfg')
+    with tempfile.TemporaryDirectory(dir=tempfile.gettempdir()) as tempdir:
+        cfg = op.join(tempdir, '.xnat.cfg')
+        central.save_config(cfg)
+        assert op.isfile(cfg)
+    assert not op.isfile(cfg)
+
+
+def test_save_config_home_dir():
+    with tempfile.TemporaryDirectory(dir=op.expanduser("~")) as tempdir:
+        cfg = op.join("~", op.basename(tempdir), '.xnat.cfg')
+        central.save_config(cfg)
+        assert op.isfile(op.expanduser(cfg))
+    assert not op.isfile(op.expanduser(cfg))
+
+
+def test_save_config_current_dir():
+    f = tempfile.NamedTemporaryFile(dir=os.getcwd(), delete=False)
+    cfg = op.basename(f.name)
+    try:
+        f.close()
+        central.save_config(cfg)
+        assert op.isfile(cfg)
+    finally:
+        os.remove(cfg)
+    assert not op.isfile(cfg)
 
 
 @skip_if_no_network

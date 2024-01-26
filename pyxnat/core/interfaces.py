@@ -433,8 +433,9 @@ class Interface(object):
             raise NotImplementedError(
                 'no save_config() for anonymous interfaces')
 
-        if not os.path.exists(os.path.dirname(location)):
-            os.makedirs(os.path.dirname(location))
+        expanded_path = os.path.abspath(os.path.expanduser(location))
+        if not os.path.exists(os.path.dirname(expanded_path)):
+            os.makedirs(os.path.dirname(expanded_path))
 
         config = {'server': self._server,
                   'user': self._user,
@@ -446,7 +447,7 @@ class Interface(object):
         if self._proxy_url:
             config['proxy'] = self._proxy_url.geturl()
 
-        with open(location, 'w') as fp:
+        with open(expanded_path, 'w') as fp:
             json.dump(config, fp)
 
     def load_config(self, location):
