@@ -40,7 +40,7 @@ class ArrayTests(unittest.TestCase):
         Get a list of scans from a given experiment which has multiple types
         of scans (i.e. PETScans and CTScans) and assert it gathers them all.
         '''
-        s = self._intf.array.scans(experiment_id='XNAT_E16718').data
+        s = self._intf.array.scans(experiment_id='xnat_E02685').data
         self.assertEqual(len(s), 1)
 
     @skip_if_no_network

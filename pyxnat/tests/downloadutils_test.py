@@ -8,8 +8,8 @@ central = Interface('https://www.nitrc.org/ir', anonymous=True)
 
 @skip_if_no_network
 def test_download():
-    s = central.select.project('dlbs').subject('XNAT_S04207')
-    e = s.experiment('XNAT_E16269')
+    s = central.select.project('cs_schizbull08').subject('xnat_S02636')
+    e = s.experiment('xnat_E02685')
     du.download(dest_dir=tempfile.gettempdir(),
                 instance=e.scans(),
                 extract=True,
