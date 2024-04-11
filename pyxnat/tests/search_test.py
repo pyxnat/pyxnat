@@ -51,8 +51,8 @@ def test_search():
     results = central.select(
         'xnat:mrSessionData',
         central.inspect.datatypes('xnat:mrSessionData')
-        ).where([('xnat:mrSessionData/XNAT_COL_MRSESSIONDATAFIELDSTRENGTH',
-                  'LIKE', '*1.5*'), 'AND'])
+        ).where([('xnat:mrSessionData/tag',
+                  'LIKE', '*anonymized*'), 'AND'])
 
     assert isinstance(results, jsonutil.JsonTable)
 
@@ -61,8 +61,8 @@ def test_save_search():
     central.manage.search.save(
         search_name, 'xnat:mrSessionData',
         central.inspect.datatypes('xnat:mrSessionData'),
-        [('xnat:mrSessionData/XNAT_COL_MRSESSIONDATAFIELDSTRENGTH',
-          'LIKE', '*1.5*'), 'AND'])
+        [('xnat:mrSessionData/tag',
+          'LIKE', '*anonymized*'), 'AND'])
 
     assert search_name in central.manage.search.saved()
 
@@ -81,8 +81,8 @@ def test_save_search_template():
     central.manage.search.save_template(
         search_template_name, 'xnat:mrSessionData',
         central.inspect.datatypes('xnat:mrSessionData'),
-        [('xnat:mrSessionData/XNAT_COL_MRSESSIONDATAFIELDSTRENGTH',
-          'LIKE', '*1.5*'), 'AND']
+        [('xnat:mrSessionData/tag',
+          'LIKE', '*anonymized*'), 'AND']
         )
 
     assert search_template_name in central.manage.search.saved_templates()
