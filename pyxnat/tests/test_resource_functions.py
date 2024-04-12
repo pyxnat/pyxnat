@@ -243,3 +243,21 @@ def test_xcp_d_timeseries():
     ts2 = ts.dropna(axis=0, how='all').dropna(axis=1, how='all')
     assert ts2.shape == (287, 99)
     assert df2.shape[0] == ts2.shape[1]
+
+
+def test_3dasl_volumes():
+    r = e1.resource('3DASL_QUANTIFICATION')
+    v = r.volumes()
+    # assert GM > WM > CSF
+    assert(v['T1_fast_pve_1'] > v['T1_fast_pve_2'] > v['T1_fast_pve_0'])
+
+
+def test_3dasl_perfusion():
+    r = e1.resource('3DASL_QUANTIFICATION')
+    perf = r.perfusion()
+    assert(perf.shape == (124, 6))
+    q = 'atlas=="global" & region=="GM"'
+    gm_perf = perf.query(q)['mean'].item()
+    q = 'atlas=="global" & region=="WM"'
+    wm_perf = perf.query(q)['mean'].item()
+    assert(gm_perf > wm_perf)
