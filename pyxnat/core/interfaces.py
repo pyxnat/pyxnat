@@ -468,7 +468,7 @@ class Interface(object):
                   'user': self._user,
                   'password': self._pwd,
                   }
-        if self._verify:
+        if self._verify is not None:
             config['verify'] = self._verify
 
         if self._proxy_url:
