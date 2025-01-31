@@ -1,4 +1,4 @@
-XNAT_RESOURCE_NAME = 'FDG_QUANTIFICATION'
+XNAT_RESOURCE_NAME = 'FDG_QUANTIFICATION2'
 
 
 def quantification_results(self):
@@ -17,7 +17,7 @@ def quantification_results(self):
     return df
 
 
-def landau_signature(self, optimized=True, reference_region='vermis'):
+def landau_signature(self, optimized=False, reference_region='vermis'):
     """Returns the AD signature obtained from FDG as described in
     Landau et al., Ann Neurol., 2012."""
 
@@ -28,10 +28,28 @@ def landau_signature(self, optimized=True, reference_region='vermis'):
 
     q += ' & %soptimized_pet' % {True: '', False: '~'}[optimized]
     df = df.query(q)
-    df = df.query('region.str.contains("landau")', engine='python')
+    df = df.query('region == "landau_Composite"', engine='python')
     
     assert(len(set(df['atlas'])) == 1)
     del df['atlas']
+    del df['nvoxels']
+    assert(len(set(df['optimized_pet'])) == 1)
+
+    return df
+
+
+def regional_quantification(self, optimized=True, reference_region='vermis', 
+                            atlas='hammers'):
+    df = self.quantification_results()
+
+    q = 'reference_region == "{reference_region}" &'\
+        ' measurement == "suvr"'.format(reference_region=reference_region)
+
+    q += ' & %soptimized_pet' % {True: '', False: '~'}[optimized]
+    df = df.query(q)
+    df = df.query(f'atlas == "{atlas}"', engine='python')
+    
+    assert(len(set(df['atlas'])) == 1)
     assert(len(set(df['optimized_pet'])) == 1)
 
     return df
