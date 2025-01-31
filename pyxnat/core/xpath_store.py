@@ -9,7 +9,7 @@ def get_subject_id(location):
     content = f.read()
     f.close()
 
-    subject = re.findall('<xnat:Subject\sID="(.*?)"\s', content)
+    subject = re.findall(r'<xnat:Subject\sID="(.*?)"\s', content)
 
     if subject != []:
         return subject[0]
