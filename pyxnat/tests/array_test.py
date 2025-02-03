@@ -18,8 +18,8 @@ class ArrayTests(unittest.TestCase):
         of experiments (i.e. MRSessions and PETSessions) and assert it gathers
         them all.
         '''
-        e = self._intf.array.experiments(subject_id='XNAT_S04207').data
-        self.assertEqual(len(e), 2)
+        e = self._intf.array.experiments(subject_id='xnat_S02636').data
+        self.assertEqual(len(e), 1)
 
     @skip_if_no_network
     def test_array_mrsessions(self):
@@ -28,8 +28,8 @@ class ArrayTests(unittest.TestCase):
         list of MRI sessions and assert its length matches the list of
         experiments of type 'xnat:mrSessionData'
         '''
-        mris = self._intf.array.mrsessions(subject_id='XNAT_S04207').data
-        e = self._intf.array.experiments(subject_id='XNAT_S04207',
+        mris = self._intf.array.mrsessions(subject_id='xnat_S02636').data
+        e = self._intf.array.experiments(subject_id='xnat_S02636',
                                          experiment_type='xnat:mrSessionData')
         exps = e.data
         self.assertListEqual(mris, exps)
