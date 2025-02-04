@@ -42,20 +42,50 @@ def test_scandate():
 
 def test_ftm_quantification():
     r = e1.resource('FTM_QUANTIFICATION')
-    c1 = r.centiloids()
-    c2 = r.centiloids(False)
-    assert(c1 == -6.731959667125082)
-    assert(c2 == -7.958670071142706)
+    c1 = r.centiloids(optimized=True)
+    c2 = r.centiloids()
+    assert c1 == -6.731959667125082
+    assert c2 == -7.958670071142706
+
+
+def test_ftm_regional_quantification():
+    r = e1.resource('FTM_QUANTIFICATION2')
+    rq1 = r.regional_quantification().\
+        query('region == "Hippocampus_l"')
+    rq2 = r.regional_quantification(atlas='aal', reference_region='pons').\
+        query('region == "Hippocampus_L"')
+    assert rq1.shape == rq2.shape == (1, 8)
+    assert rq1.optimized_pet.iloc[0]
+    assert rq1.atlas.iloc[0] == "hammers"
+    assert rq1.reference_region.iloc[0] == "whole_cerebellum"
+    assert rq1.value.iloc[0] == 1.049737
+    assert rq2.atlas.iloc[0] == "aal"
+    assert rq2.reference_region.iloc[0] == "pons"
+    assert rq2.value.iloc[0] == 0.628097
 
 
 def test_fdg_quantification():
     r = e1.resource('FDG_QUANTIFICATION')
-    c1 = r.landau_signature()
-    v1 = float(c1.query('region == "landau_Composite"')['value'])
-    c2 = r.landau_signature(optimized=False)
-    v2 = float(c2.query('region == "landau_Composite"')['value'])
-    assert(v1 == 1.2596989870071411)
-    assert(v2 == 1.2491936683654783)
+    c1 = r.landau_signature(optimized=True)
+    c2 = r.landau_signature()
+    assert c1 == 1.2596989870071411
+    assert c2 == 1.2491936683654783
+
+
+def test_fdg_regional_quantification():
+    r = e1.resource('FDG_QUANTIFICATION2')
+    rq1 = r.regional_quantification(). \
+        query('region == "Hippocampus_l"')
+    rq2 = r.regional_quantification(atlas='aal', reference_region='pons'). \
+        query('region == "Hippocampus_L"')
+    assert rq1.shape == rq2.shape == (1, 8)
+    assert rq1.optimized_pet.iloc[0]
+    assert rq1.atlas.iloc[0] == "hammers"
+    assert rq1.reference_region.iloc[0] == "vermis"
+    assert rq1.value.iloc[0] == 1.058447
+    assert rq2.atlas.iloc[0] == "aal"
+    assert rq2.reference_region.iloc[0] == "pons"
+    assert rq2.value.iloc[0] == 1.093239
 
 
 def test_bamos_volume():
