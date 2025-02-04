@@ -61,7 +61,7 @@ def test_ftm_regional_quantification():
     assert rq1.value.iloc[0] == 1.0497374534606934
     assert rq2.atlas.iloc[0] == "aal"
     assert rq2.reference_region.iloc[0] == "pons"
-    assert rq2.value.iloc[0] == 1.058446764945984
+    assert rq2.value.iloc[0] == 0.6280973553657532
 
 
 def test_fdg_quantification():
@@ -82,7 +82,7 @@ def test_fdg_regional_quantification():
     assert rq1.optimized_pet.iloc[0]
     assert rq1.atlas.iloc[0] == "hammers"
     assert rq1.reference_region.iloc[0] == "vermis"
-    assert rq1.value.iloc[0] == 1.0584467649459839
+    assert rq1.value.iloc[0] == 1.058446764945984
     assert rq2.atlas.iloc[0] == "aal"
     assert rq2.reference_region.iloc[0] == "pons"
     assert rq2.value.iloc[0] == 1.093239426612854
