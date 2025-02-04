@@ -1,10 +1,11 @@
-from .pet_fdg import quantification_results as qr
+from .pet_fdg import quantification_results as _qr
+from .pet_fdg import regional_quantification as _rq
 
 XNAT_RESOURCE_NAMES = ['FTM_QUANTIFICATION', 'FTM_QUANTIFICATION2']
 
 
 def quantification_results(self):
-    return qr(self)
+    return _qr(self)
 
 
 def centiloids(self, optimized=False):
@@ -14,21 +15,9 @@ def centiloids(self, optimized=False):
         ' measurement == "centiloid"'
 
     q += ' & %soptimized_pet' % {True: '', False: '~'}[optimized]
-    return float(df.query(q)['value'])
+    return float(df.query(q)['value'].iloc[0])
 
 
-def regional_quantification(self, optimized=True, 
-                            reference_region='whole_cerebellum', atlas='hammers'):
-    df = self.quantification_results()
-
-    q = 'reference_region == "{reference_region}" &'\
-        ' measurement == "suvr"'.format(reference_region=reference_region)
-
-    q += ' & %soptimized_pet' % {True: '', False: '~'}[optimized]
-    df = df.query(q)
-    df = df.query(f'atlas == "{atlas}"', engine='python')
-    
-    assert(len(set(df['atlas'])) == 1)
-    assert(len(set(df['optimized_pet'])) == 1)
-
-    return df
+def regional_quantification(self, optimized=True, reference_region='whole_cerebellum',
+                            atlas='hammers'):
+    return _rq(self, optimized, reference_region, atlas)

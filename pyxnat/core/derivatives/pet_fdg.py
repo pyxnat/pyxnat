@@ -22,20 +22,12 @@ def landau_signature(self, optimized=False, reference_region='vermis'):
     Landau et al., Ann Neurol., 2012."""
 
     df = self.quantification_results()
-
-    q = 'reference_region == "{reference_region}" &'\
+    q = 'region == "landau_Composite" &'\
+        ' reference_region == "{reference_region}" &'\
         ' measurement == "suvr"'.format(reference_region=reference_region)
 
     q += ' & %soptimized_pet' % {True: '', False: '~'}[optimized]
-    df = df.query(q)
-    df = df.query('region == "landau_Composite"', engine='python')
-    
-    assert(len(set(df['atlas'])) == 1)
-    del df['atlas']
-    del df['nvoxels']
-    assert(len(set(df['optimized_pet'])) == 1)
-
-    return df
+    return float(df.query(q)['value'].iloc[0])
 
 
 def regional_quantification(self, optimized=True, reference_region='vermis', 
@@ -43,13 +35,15 @@ def regional_quantification(self, optimized=True, reference_region='vermis',
     df = self.quantification_results()
 
     q = 'reference_region == "{reference_region}" &'\
-        ' measurement == "suvr"'.format(reference_region=reference_region)
+        ' atlas.str.lower().str.contains("{atlas}") &'\
+        ' measurement == "suvr"'.format(reference_region=reference_region,
+                                        atlas=atlas)
 
     q += ' & %soptimized_pet' % {True: '', False: '~'}[optimized]
     df = df.query(q)
     df = df.query(f'atlas == "{atlas}"', engine='python')
     
-    assert(len(set(df['atlas'])) == 1)
-    assert(len(set(df['optimized_pet'])) == 1)
+    assert len(set(df['atlas'])) == 1
+    assert len(set(df['optimized_pet'])) == 1
 
     return df
