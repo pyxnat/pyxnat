@@ -1,6 +1,6 @@
 from .pet_fdg import quantification_results as qr
 
-XNAT_RESOURCE_NAME = 'FTM_QUANTIFICATION2'
+XNAT_RESOURCE_NAMES = ['FTM_QUANTIFICATION', 'FTM_QUANTIFICATION2']
 
 
 def quantification_results(self):
