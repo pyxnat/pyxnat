@@ -41,8 +41,7 @@ def regional_quantification(self, optimized=True, reference_region='vermis',
 
     q += ' & %soptimized_pet' % {True: '', False: '~'}[optimized]
     df = df.query(q)
-    df = df.query(f'atlas == "{atlas}"', engine='python')
-    
+
     assert len(set(df['atlas'])) == 1
     assert len(set(df['optimized_pet'])) == 1
 
