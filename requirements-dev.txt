@@ -1,0 +1,12 @@
+lxml>=4.3.2
+requests>=2.20
+pathlib>=1.0.1
+# testing
+pytest>=7.1
+pytest-cov>=4.0
+coverage>=3.6
+coveralls
+# extras
+pandas>=0.24
+networkx>=2.2
+matplotlib>=2.2
