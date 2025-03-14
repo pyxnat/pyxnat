@@ -13,7 +13,7 @@ e2 = s.experiment('BBRCDEV_E03106')
 
 
 def test_ashs_volumes():
-    r = central.select.experiment('BBRCDEV_E03094').resource('ASHS')
+    r = e1.resource('ASHS')
     hv = r.volumes()
     v = hv.query('region=="CA1" & side=="left"')['volume'].tolist()[0]
     assert (v == 1287.675)
@@ -291,3 +291,25 @@ def test_3dasl_perfusion():
     q = 'atlas=="global" & region=="WM"'
     wm_perf = perf.query(q)['mean'].item()
     assert(gm_perf > wm_perf)
+
+
+def test_alps_alps():
+    r = e1.resource('ALPS')
+    alps = r.alps()
+    assert alps.shape == (1, 11)
+
+    from math import isclose
+    assert isclose(alps.alps.iloc[0],
+                   (alps.alps_L.iloc[0] + alps.alps_R.iloc[0]) / 2)
+
+
+def test_alps_fa_md_alps():
+    r = e1.resource('ALPS')
+    fa_md = r.fa_md_alps()
+    fa_md.sort_values(by='diffusion_metric', ascending=True, inplace=True)
+    assert fa_md.shape == (2, 7)
+
+    fa_proj, md_proj = fa_md.mean_proj
+    fa_assoc, md_assoc = fa_md.mean_assoc
+    assert fa_proj > md_proj
+    assert fa_assoc > md_assoc
