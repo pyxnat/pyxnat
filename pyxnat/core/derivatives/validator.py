@@ -65,6 +65,7 @@ def download_snapshot(self, name, fp):
     import os
     import os.path as op
     import tempfile
+    from shutil import move
 
     def extract_snapshots(fp):
         import fitz
@@ -104,8 +105,7 @@ def download_snapshot(self, name, fp):
         if len(snaps) > 1:  # if multiple snapshots then add # in filename
             interm = '_%s' % i
         fp2 = '%s%s%s' % (bn, interm, ext)  # create destination filepath
-        cmd = 'mv %s %s' % (each, fp2)
-        os.system(cmd)
+        move(each, fp2)
         files.append(fp2)
 
     os.remove(fp1)
