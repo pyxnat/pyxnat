@@ -35,12 +35,12 @@ def regional_quantification(self, optimized=True, reference_region='vermis',
     df = self.quantification_results()
 
     q = 'reference_region == "{reference_region}" &'\
-        ' atlas.str.lower().str.contains("{atlas}") &'\
+        ' atlas.str.lower().str.contains("{atlas}", regex=False) &'\
         ' measurement == "suvr"'.format(reference_region=reference_region,
                                         atlas=atlas)
 
     q += ' & %soptimized_pet' % {True: '', False: '~'}[optimized]
-    df = df.query(q)
+    df = df.query(q, engine='python')
 
     assert len(set(df['atlas'])) == 1
     assert len(set(df['optimized_pet'])) == 1
