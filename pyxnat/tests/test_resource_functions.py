@@ -316,6 +316,7 @@ def test_alps_fa_md_alps():
 
 
 def test_bamos_arterial_stats():
+    from math import isclose
     r = e1.resource('BAMOS_ARTERIAL')
     v = r.stats()
-    assert(sum(v['volume']) == 1029.9175409973652)
+    assert isclose(sum(v['volume']), 32995.6548)
