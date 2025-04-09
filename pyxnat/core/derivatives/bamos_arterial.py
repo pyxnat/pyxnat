@@ -1,4 +1,4 @@
-XNAT_RESOURCE_NAME = 'BAMOS_ARTERIAL2'
+XNAT_RESOURCE_NAME = 'BAMOS_ARTERIAL'
 
 def stats(self):
     import pandas as pd
