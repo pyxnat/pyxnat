@@ -1,12 +1,13 @@
 XNAT_RESOURCE_NAME = 'BAMOS_ARTERIAL'
 
+
 def stats(self):
+    """ Collects descriptive statistics based on the segmented lesions of the
+        white matter, including volumes and number of lesions per arterial
+        territory. A voxel is considered as a part of a lesion if it has a
+        value higher than 0.5."""
     import pandas as pd
-    import sys
-    if sys.version_info[0] < 3:
-        from StringIO import StringIO
-    else:
-        from io import StringIO
+    from io import StringIO
 
     f = self.file('bamos_arterial_stats.csv')
     uri = f._uri
