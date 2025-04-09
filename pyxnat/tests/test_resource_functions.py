@@ -313,3 +313,10 @@ def test_alps_fa_md_alps():
     fa_assoc, md_assoc = fa_md.mean_assoc
     assert fa_proj > md_proj
     assert fa_assoc > md_assoc
+
+
+def test_bamos_arterial_stats():
+    from math import isclose
+    r = e1.resource('BAMOS_ARTERIAL')
+    v = r.stats()
+    assert isclose(sum(v['volume']), 32995.6548)
