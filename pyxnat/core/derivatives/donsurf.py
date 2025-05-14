@@ -2,7 +2,20 @@ XNAT_RESOURCE_NAME = 'DONSURF'
 
 
 def aparc(self, metric='GM-MD'):
-    """Returns cortical features as estimated by `DONSURF`."""
+    """
+    Retrieves cortical features as estimated by `DONSURF`.
+
+    Parameters
+    ----------
+    metric : str, optional
+        DONSURF metric to retrieve aparc statistics for. Available metrics
+        are 'GM-MD', 'GM-MD-koo', and 'SWM-MD'. Defaults to 'GM-MD'.
+
+    Returns
+    -------
+    pandas.DataFrame
+        Cortical DONSURF features for the selected `metric`.
+    """
 
     import pandas as pd
 
