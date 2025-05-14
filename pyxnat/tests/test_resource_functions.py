@@ -159,12 +159,15 @@ def test_cat12_volumes():
 
 def test_donsurf():
     r = e1.resource('DONSURF')
-    st = r.aparc()
-    left = float(st.query('measurement == "CurvInd" &'\
-                          'region == "insula" & side == "left"')['value'])
-    right = float(st.query('measurement == "CurvInd" &'\
-                           'region == "insula" & side == "right"')['value'])
-    assert(left == 15.7 and right == 15.8)
+    gm_md = r.aparc()
+    gm_md_pvc = r.aparc(metric='GM-MD-koo')
+    q = 'measurement == "ThickAvg" & region == "entorhinal" & side == "{side}"'
+    left = float(gm_md.query(q.format(side='left')).value.iloc[0])
+    right = float(gm_md.query(q.format(side='right')).value.iloc[0])
+    left_pvc = float(gm_md_pvc.query(q.format(side='left')).value.iloc[0])
+    right_pvc = float(gm_md_pvc.query(q.format(side='right')).value.iloc[0])
+    assert left == 7.25 and right == 7.534
+    assert left > left_pvc and right > right_pvc
 
 
 def test_freesurfer7_extras_brainstem_volumes():
