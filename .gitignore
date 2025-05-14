@@ -1,6 +1,7 @@
 *.pyc
 MANIFEST
 pyxnat.egg-info/
+bbrc_pyxnat.egg-info/
 build/
 dist/
 *.DS_Store*
