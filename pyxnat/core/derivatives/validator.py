@@ -77,7 +77,7 @@ def download_snapshot(self, name, fp):
         for page in range(len(doc)):
             xrefs.extend([img[0] for img in doc.get_page_images(page)])
         xrefs = sorted(set(xrefs))
-        for k, xref in enumerate(xrefs[1:]):
+        for k, xref in enumerate(xrefs):
             pix = fitz.Pixmap(doc, xref)
             fp_snap = op.join(dn, "{}_{}.png".format(bn, k))
             if pix.n >= 5:    # CMYK: convert to RGB first
