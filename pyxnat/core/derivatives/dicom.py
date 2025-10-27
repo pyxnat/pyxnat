@@ -13,7 +13,7 @@ def scandate(self):
     fd, fp = tempfile.mkstemp(suffix='.dcm')
     os.close(fd)
     f.get(dest=fp)
-    d = pydicom.read_file(fp)
+    d = pydicom.dcmread(fp)
 
     if hasattr(d, 'AcquisitionDate'):
         acquisition_date = d.AcquisitionDate
