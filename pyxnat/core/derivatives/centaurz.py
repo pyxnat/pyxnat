@@ -1,12 +1,9 @@
 XNAT_RESOURCE_NAMES = ['CENTAURZ']
 
+
 def quantification_results(self):
     import pandas as pd
-    import sys
-    if sys.version_info[0] < 3:
-        from StringIO import StringIO
-    else:
-        from io import StringIO
+    from io import StringIO
 
     f = self.file('centaurz_quantification_results.csv')
     uri = f._uri
@@ -16,8 +13,10 @@ def quantification_results(self):
     return df
 
 
-def centaurz(self):
+def centaurz(self, optimization='optimal'):
+    """Return the CenTauRz metric for the "Universal" region
+    and given optimization type."""
     df = self.quantification_results()
-    q = ' measurement == "centaurz"'
-
+    q = 'region == "Universal" and measurement == "centaurz"'
+    q += f' and smoothing_type == "{optimization}"'
     return float(df.query(q)['value'].iloc[0])
