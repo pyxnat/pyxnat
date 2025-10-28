@@ -13,9 +13,10 @@ def quantification_results(self):
     return df
 
 
-def centaurz(self, optimization='optimal'):
-    """Return the CenTauRz metric for the "Universal" region
-    and given optimization type."""
+def centaurz(self, optimization='harmonized'):
+    """Return the CenTauRz metric for the "Universal" region and given
+    optimization type. The default optimization ("harmonized") ensures
+    generalizability and robustness across tracers, scanners and projects."""
     df = self.quantification_results()
     q = 'region == "Universal" and measurement == "centaurz"'
     q += f' and smoothing_type == "{optimization}"'
