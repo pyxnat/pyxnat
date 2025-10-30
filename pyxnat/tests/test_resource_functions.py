@@ -323,3 +323,21 @@ def test_bamos_arterial_stats():
     r = e1.resource('BAMOS_ARTERIAL')
     v = r.stats()
     assert isclose(sum(v['volume']), 32995.6548)
+
+
+def test_centaurz_stats():
+    r = e1.resource('CENTAURZ')
+    c1 = r.centaurz()
+    c2 = r.centaurz(optimization='original')
+    rq1 = r.quantification_results().query('region == "MesialTemporal"').\
+        query('smoothing_type == "original"')
+    rq2 = r.quantification_results().query('region == "MesialTemporal"').\
+        query('smoothing_type == "harmonized"')
+    assert c1 == -4.687582912931642
+    assert c2 == -4.739112116607224
+    assert rq1.value.iloc[0] == 0.8046185374259949
+    assert rq1.value.iloc[1] == 0.7871324041031014
+    assert rq1.value.iloc[2] == -3.823322927747528
+    assert rq2.value.iloc[0] == 0.8142008185386658
+    assert rq2.value.iloc[1] == 0.7964389995847392
+    assert rq2.value.iloc[2] == -3.713877364883468
