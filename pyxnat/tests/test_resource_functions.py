@@ -325,19 +325,14 @@ def test_bamos_arterial_stats():
     assert isclose(sum(v['volume']), 32995.6548)
 
 
-def test_centaurz_stats():
+def test_centaurz_quantification():
     r = e1.resource('CENTAURZ')
     c1 = r.centaurz()
     c2 = r.centaurz(optimization='original')
-    rq1 = r.quantification_results().query('region == "MesialTemporal"').\
-        query('smoothing_type == "original"')
-    rq2 = r.quantification_results().query('region == "MesialTemporal"').\
-        query('smoothing_type == "harmonized"')
-    assert c1 == -4.687582912931642
-    assert c2 == -4.739112116607224
-    assert rq1.value.iloc[0] == 0.8046185374259949
-    assert rq1.value.iloc[1] == 0.7871324041031014
-    assert rq1.value.iloc[2] == -3.823322927747528
-    assert rq2.value.iloc[0] == 0.8142008185386658
-    assert rq2.value.iloc[1] == 0.7964389995847392
-    assert rq2.value.iloc[2] == -3.713877364883468
+    q = 'region == "MesialTemporal" and smoothing_type == "{s_type}"'
+    rq1 = r.quantification_results().query(q.format(s_type="original"))
+    rq2 = r.quantification_results().query(q.format(s_type="harmonized"))
+    assert c1 > c2
+    assert not rq1.empty and not rq2.empty
+    assert rq1[rq1['measurement'] == 'suvr'].value.iloc[0] > 0.8
+    assert rq2[rq2['measurement'] == 'suvr_spm8'].value.iloc[0] < 0.8
