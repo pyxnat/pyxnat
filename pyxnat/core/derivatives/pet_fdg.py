@@ -3,11 +3,7 @@ XNAT_RESOURCE_NAMES = ['FDG_QUANTIFICATION', 'FDG_QUANTIFICATION2']
 
 def quantification_results(self):
     import pandas as pd
-    import sys
-    if sys.version_info[0] < 3:
-        from StringIO import StringIO
-    else:
-        from io import StringIO
+    from io import StringIO
 
     f = self.file('quantification_results.csv')
     uri = f._uri
