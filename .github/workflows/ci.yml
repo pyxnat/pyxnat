@@ -27,8 +27,8 @@ jobs:
       - name: Checkout xnat-docker-compose
         uses: actions/checkout@v3
         with:
-          repository: NrgXnat/xnat-docker-compose
-          ref: 1.8.1
+          repository: jhuguetn/xnat-docker-compose
+          ref: 1.8.10.5
           path: xnat-docker-compose
       - run: docker compose version
       - run: python --version
