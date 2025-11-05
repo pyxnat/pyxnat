@@ -5,7 +5,7 @@ Installation
 Python version support
 ----------------------
 
-Officially Python 3.8 and 3.9.
+Officially Python 3.9 and 3.10.
 
 
 Installing from PyPI
