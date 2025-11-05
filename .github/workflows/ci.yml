@@ -36,7 +36,7 @@ jobs:
       - name: Install dependencies
         run: pip install -r requirements-dev.txt
       - name: Start xnat-docker-compose
-        run: docker compose up -d
+        run: docker compose --env-file default.env up -d
         working-directory: xnat-docker-compose
       - run: sleep 120
         if: ${{ matrix.python-version == '3.8' }}
