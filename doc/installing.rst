@@ -21,7 +21,7 @@ Installing from PyPI
 Prerequisites
 -------------
 
-- *python* v3.8+
+- *python* v3.9+
 - `requests <https://2.python-requests.org/en/master/>`_ v2.20
 - `python-lxml <https://lxml.de/>`_ v4.3.2+ recommended, earlier versions may work.
 
