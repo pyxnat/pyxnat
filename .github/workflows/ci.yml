@@ -20,15 +20,15 @@ jobs:
 
     steps:
       - name: 'Set up Python ${{ matrix.python-version }}'
-        uses: actions/setup-python@v3
+        uses: actions/setup-python@v4
         with:
           python-version: '${{ matrix.python-version }}'
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Checkout xnat-docker-compose
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
-          repository: NrgXnat/xnat-docker-compose
-          ref: 1.8.1
+          repository: jhuguetn/xnat-docker-compose
+          ref: 1.8.10.5
           path: xnat-docker-compose
       - run: docker compose version
       - run: python --version
@@ -36,7 +36,7 @@ jobs:
       - name: Install dependencies
         run: pip install -r requirements-dev.txt
       - name: Start xnat-docker-compose
-        run: docker compose up -d
+        run: docker compose --env-file default.env up -d
         working-directory: xnat-docker-compose
       - run: sleep 120
         if: ${{ matrix.python-version == '3.8' }}
