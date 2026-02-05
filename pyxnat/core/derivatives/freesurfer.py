@@ -67,6 +67,9 @@ def aparc(self, atlas='desikan-killiany'):
 
     thickness = ['MeanThickness']
 
+    # hemisphere-specific measurements in ?h.aparc.stats
+    hemi_measures = unitless + surfaces + thickness
+
     columns = ['StructName', 'NumVert', 'SurfArea', 'GrayVol', 'ThickAvg',
                'ThickStd', 'MeanCurv', 'GausCurv', 'FoldInd', 'CurvInd']
 
@@ -99,7 +102,12 @@ def aparc(self, atlas='desikan-killiany'):
                 m = [e for e in res2 if each == e.split(', ')[1]]
                 if len(m) == 1:
                     m = float(m[0].split(', ')[-2])
-                    table.append([None, unit, each, m])        
+                    # add side only for the hemisphere-specific measures
+                    s = side if each in hemi_measures else None
+                    if s is None and side == 'right':
+                        # avoid registering global measures twice
+                        continue
+                    table.append([s, unit, each, m])
 
         res2 = [e for e in res if not e.startswith('#')]
         d2 = [[each for each in e.split(' ') if each != ''] for e in res2]
