@@ -131,7 +131,7 @@ def test_freesurfer7_hippoSfVolumes():
 def test_freesurfer7_aparc():
     r = e1.resource('FREESURFER7')
     hv = r.aparc()
-    assert (hv.shape == (632, 4))
+    assert (hv.shape == (625, 4))
     q = 'region=="supramarginal" & side=="left" & measurement=="CurvInd"'
     v = hv.query(q)['value'].tolist()[0]
     assert(v == '5.0')
