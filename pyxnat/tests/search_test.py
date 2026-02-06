@@ -2,6 +2,8 @@ from uuid import uuid1
 from pyxnat import Interface
 from pyxnat import jsonutil
 import os.path as op
+import pytest
+from pyxnat.tests import REASON_NITRC_WAF
 
 fp = op.abspath('.central.cfg')
 central = Interface(config=fp)
@@ -21,6 +23,9 @@ def test_datafields():
 
 
 def test_fieldvalues():
+    if "nitrc.org" in central._server:
+        pytest.xfail(REASON_NITRC_WAF)
+
     assert len(central.inspect.field_values('xnat:subjectData/SUBJECT_ID')
                ) != 0
 
@@ -48,6 +53,9 @@ def test_inspect_resources():
 
 
 def test_search():
+    if "nitrc.org" in central._server:
+        pytest.xfail(REASON_NITRC_WAF)
+
     results = central.select(
         'xnat:mrSessionData',
         central.inspect.datatypes('xnat:mrSessionData')
@@ -58,6 +66,9 @@ def test_search():
 
 
 def test_save_search():
+    if "nitrc.org" in central._server:
+        pytest.xfail(REASON_NITRC_WAF)
+
     central.manage.search.save(
         search_name, 'xnat:mrSessionData',
         central.inspect.datatypes('xnat:mrSessionData'),
@@ -68,16 +79,25 @@ def test_save_search():
 
 
 def test_get_search():
+    if "nitrc.org" in central._server:
+        pytest.xfail(REASON_NITRC_WAF)
+
     results = central.manage.search.get(search_name)
     assert isinstance(results, jsonutil.JsonTable)
 
 
 def test_delete_search():
+    if "nitrc.org" in central._server:
+        pytest.xfail(REASON_NITRC_WAF)
+
     central.manage.search.delete(search_name)
     assert search_name not in central.manage.search.saved()
 
 
 def test_save_search_template():
+    if "nitrc.org" in central._server:
+        pytest.xfail(REASON_NITRC_WAF)
+
     central.manage.search.save_template(
         search_template_name, 'xnat:mrSessionData',
         central.inspect.datatypes('xnat:mrSessionData'),
@@ -89,6 +109,9 @@ def test_save_search_template():
 
 
 def test_delete_search_template():
+    if "nitrc.org" in central._server:
+        pytest.xfail(REASON_NITRC_WAF)
+
     central.manage.search.delete_template(search_template_name)
     assert search_template_name not in \
         central.manage.search.saved_templates()

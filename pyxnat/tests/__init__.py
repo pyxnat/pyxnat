@@ -2,6 +2,8 @@ from functools import wraps
 import pytest
 import os
 
+REASON_NITRC_WAF = "NITRC blocks POST /data/search via AWS WAF (firewall)"
+
 
 def skip_if_no_network(func=None):
     """Skip test completely in NONETWORK settings

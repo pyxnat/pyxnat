@@ -2,7 +2,8 @@ import os
 import os.path as op
 import tempfile 
 from pyxnat import Interface
-from pyxnat.tests import skip_if_no_network
+from pyxnat.tests import skip_if_no_network, REASON_NITRC_WAF
+import pytest
 
 fp = op.abspath('.central.cfg')
 central = Interface(config=fp)
@@ -28,6 +29,9 @@ def test_nested_path_listing():
 
 @skip_if_no_network
 def test_search_access():
+    if "nitrc.org" in central._server:
+        pytest.xfail(REASON_NITRC_WAF)
+
     constraints = [('xnat:subjectData/PROJECT', '=', 'ixi'),
                    'AND']
 
