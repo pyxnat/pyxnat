@@ -1,0 +1,3 @@
+lxml>=4.3.2
+requests>=2.20
+pathlib>=1.0.1
