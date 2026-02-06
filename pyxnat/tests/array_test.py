@@ -1,6 +1,7 @@
 import unittest
+import pytest
 from pyxnat import Interface
-from pyxnat.tests import skip_if_no_network
+from pyxnat.tests import skip_if_no_network, REASON_NITRC_WAF
 import logging as log
 log.basicConfig(level=log.INFO)
 
@@ -59,6 +60,9 @@ class ArrayTests(unittest.TestCase):
 
     @skip_if_no_network
     def test_search_experiments(self):
+        if "nitrc.org" in self._intf._server:
+            pytest.xfail(REASON_NITRC_WAF)
+
         et = 'xnat:subjectData'
         e = self._intf.array.search_experiments(project_id='ixi',
                                                 experiment_type=et)
