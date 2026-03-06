@@ -336,3 +336,22 @@ def test_centaurz_quantification():
     assert not rq1.empty and not rq2.empty
     assert rq1[rq1['measurement'] == 'suvr'].value.iloc[0] > 0.8
     assert rq2[rq2['measurement'] == 'suvr_spm8'].value.iloc[0] < 0.8
+
+
+def test_fsl_anat_volumes():
+    r = e1.resource('FSL_ANAT')
+    v = r.volumes()
+    # assert GM > WM > CSF
+    assert(v['T1_fast_pve_1'] > v['T1_fast_pve_2'] > v['T1_fast_pve_0'])
+
+
+def test_fsl_anat_subvolumes():
+    r = e1.resource('FSL_ANAT')
+    vols = r.subcortical_volumes()
+    q = 'region == "{reg}"'
+    vq1 = vols.query(q.format(reg="BrStem"))
+    vq2 = vols.query(q.format(reg="R_Accu"))
+    assert(len(vols) == 15)
+    assert vq1['volume'].values[0] > 20000
+    assert vq2['volume'].values[0] < 500
+
