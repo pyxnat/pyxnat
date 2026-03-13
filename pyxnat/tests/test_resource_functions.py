@@ -338,13 +338,6 @@ def test_centaurz_quantification():
     assert rq2[rq2['measurement'] == 'suvr_spm8'].value.iloc[0] < 0.8
 
 
-def test_fsl_anat_volumes():
-    r = e1.resource('FSL_ANAT')
-    v = r.volumes()
-    # assert GM > WM > CSF
-    assert v['T1_fast_pve_1'] > v['T1_fast_pve_2'] > v['T1_fast_pve_0']
-
-
 def test_fsl_anat_subvolumes():
     r = e1.resource('FSL_ANAT')
     vols = r.subcortical_volumes()
@@ -355,3 +348,38 @@ def test_fsl_anat_subvolumes():
     assert vq1['volume'].values[0] > 20000
     assert vq2['volume'].values[0] < 500
 
+
+def test_fsl_anat_volumes():
+    r = e1.resource('FSL_ANAT')
+    v = r.volumes()
+    # assert GM > WM > CSF
+    assert v['T1_fast_pve_1'] > v['T1_fast_pve_2'] > v['T1_fast_pve_0']
+
+
+def test_te_asl_perfusion():
+    r = e1.resource('TE_ASL')
+    perf = r.perfusion()
+    assert(perf.shape == (24, 4))
+    q = 'pvcorr==True & measurement=="{measurement}"'
+    gm_perf = perf.query(q.format(measurement="perfusion_calib_gm_mean"))['value'].item()
+    wm_perf = perf.query(q.format(measurement="perfusion_calib_wm_mean"))['value'].item()
+    assert(gm_perf > wm_perf)
+    gm_att = perf.query(q.format(measurement="arrival_gm_mean"))['value'].item()
+    wm_att = perf.query(q.format(measurement="arrival_wm_mean"))['value'].item()
+    assert(wm_att > gm_att)
+
+
+def test_te_asl_stats():
+    r = e1.resource('TE_ASL')
+    stats = r.stats()
+    assert(stats.shape == (468, 9))
+    q = 'region_analysis=="{measurement}" & name=="Left Hippocampus"'
+    nvoxels_gm = stats.query(q.format(measurement="GM_perfusion"))['Nvoxels'].item()
+    nvoxels_wm = stats.query(q.format(measurement="WM_perfusion"))['Nvoxels'].item()
+    assert(nvoxels_gm > nvoxels_wm)
+    gm_att = stats.query(q.format(measurement="GM_arrival"))['Mean'].item()
+    wm_att = stats.query(q.format(measurement="WM_arrival"))['Mean'].item()
+    assert(wm_att > gm_att)
+    gm_perf = stats.query(q.format(measurement="GM_perfusion"))['Mean'].item()
+    wm_perf = stats.query(q.format(measurement="WM_perfusion"))['Mean'].item()
+    assert(gm_perf > wm_perf)
