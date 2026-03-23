@@ -59,39 +59,35 @@ Running the test suite
 =========================
 
 Until v1.1 tests were exclusively performed on `XNAT Central <http://central.xnat.org>`_
-using a dedicated user account (``nosetests``). Yet some tests were not allowed to
-run due to restricted permissions.
-In v1.1, tests were restructured and were directed to two independent XNAT
-instances based on permission level. Hence `XNAT Central <http://central.xnat.org>`_
-is still used for most tests with read access whereas other tests requiring
-write permissions are run on a local XNAT instance in a Docker container.
+using a dedicated user account (``nosetests``). However, some tests could not run
+due to restricted permissions. In v1.1, tests were restructured to use two
+independent XNAT instances based on permission level.
 
-Consequently, running the test suite now requires the following:
+A public XNAT instance (NITRC/IR) is used for most tests with read access, while
+tests requiring write permissions run against a local XNAT instance in a Docker
+container.
+
+Running the test suite requires the following:
 
   - *pytest* v7.1+
   - *coverage* v3.6+
   - *docker* v18+
 
-Setting up a local Docker-powered XNAT instance may be achieved easily using
-``docker-compose`` and any available recipe. We recommend the one from the
-`following repository <https://github.com/NrgXnat/xnat-docker-compose>`_
-(maintained by the XNAT team). Once the repository cloned, run the following
-command (possibly as ``sudo``) ::
+A local Docker-powered XNAT instance can be set up using ``docker-compose`` and
+any available recipe. We recommend the one maintained by the XNAT
+team (`xnat-docker-compose <https://github.com/NrgXnat/xnat-docker-compose>`_).
+Once the repository is cloned, run::
 
   docker-compose up -d
 
-After a couple of minutes, the XNAT instance should be up and running locally.
-You may check it out visiting http://localhost.
+After a couple of minutes, the XNAT instance should be up and running locally at
+http://localhost.
 
-The script ``tests/setup_xnat.py`` may then be executed to populate the local
-instance before running the tests.
-
-Finally run the tests with the following command (from the root of the project)::
+Finally run the tests from the root of the project::
 
     pytest --cov pyxnat
 
-The file ``.github/workflows/ci.yml`` (used for CI) features these described
-steps and may be referred to for further information.
+See .github/workflows/ci.yml (used for CI) for the full test setup.
 
 
 Building the documentation
