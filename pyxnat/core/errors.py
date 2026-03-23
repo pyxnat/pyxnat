@@ -16,6 +16,7 @@ def is_xnat_error(message):
 
 
 def parse_error_message(message):
+    error = message
     try:
         if message.startswith('<html>'):
             message_tree = etree.XML(message)
@@ -31,13 +32,10 @@ def parse_error_message(message):
                 error_tag = message_tree.find('.//h1')
                 if error_tag:
                     error = error_tag.xpath("string()")
-        else:
-            error = message
-
     except Exception:
-        error = message
-    finally:
-        return error
+        pass
+
+    return error
 
 
 def parse_put_error_message(message):
