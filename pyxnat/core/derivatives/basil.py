@@ -17,7 +17,7 @@ def volumes(self):
         f = self.files('*{}*'.format(kls))[0]
         f.get(fp)
         d = nib.load(fp)
-        size = np.prod(d.header['pixdim'].tolist()[:4])
+        size = np.prod(d.header['pixdim'].tolist()[1:4])
         v = np.sum(d.dataobj) * size
         vols.append((kls, v))
 
