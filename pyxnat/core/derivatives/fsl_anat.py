@@ -32,22 +32,22 @@ def subcortical_volumes(self):
               'R_Amyg': 54,
               'R_Accu': 58}
 
-    vols = []
+    rows = []
     fd, fp = tempfile.mkstemp(suffix='.nii.gz')
     os.close(fd)
 
     f = self.files('*T1_subcort_seg.nii.gz')[0]
-    f.get(fp)
+    try:
+        f.get(fp)
+        img = nib.load(fp)
+        data = np.asarray(img.dataobj)
+        voxel_size = np.prod(img.header['pixdim'].tolist()[:4])
 
-    nii_img = nib.load(fp)
-    data = np.array(nii_img.dataobj)
-    size = np.prod(nii_img.header['pixdim'].tolist()[:4])
+        for roi, label in labels.items():
+            volume = np.count_nonzero(data == label) * voxel_size
+            rows.append({'region': roi, 'volume': volume})
+    finally:
+        if os.path.exists(fp):
+            os.remove(fp)
 
-    for roi in labels.keys():
-        label = labels[roi]
-        v = np.count_nonzero(data == label) * size
-        vols.append({'region': roi,
-                     'volume': v})
-
-    os.remove(fp)
-    return pd.DataFrame(vols)
+    return pd.DataFrame(rows)
