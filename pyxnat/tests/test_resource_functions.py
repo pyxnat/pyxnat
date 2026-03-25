@@ -342,7 +342,7 @@ def test_fsl_anat_volumes():
     r = e1.resource('FSL_ANAT')
     v = r.volumes()
     # assert GM > WM > CSF
-    assert(v['T1_fast_pve_1'] > v['T1_fast_pve_2'] > v['T1_fast_pve_0'])
+    assert v['T1_fast_pve_1'] > v['T1_fast_pve_2'] > v['T1_fast_pve_0']
 
 
 def test_fsl_anat_subvolumes():
@@ -351,7 +351,7 @@ def test_fsl_anat_subvolumes():
     q = 'region == "{reg}"'
     vq1 = vols.query(q.format(reg="BrStem"))
     vq2 = vols.query(q.format(reg="R_Accu"))
-    assert(len(vols) == 15)
+    assert len(vols) == 15
     assert vq1['volume'].values[0] > 20000
     assert vq2['volume'].values[0] < 500
 
