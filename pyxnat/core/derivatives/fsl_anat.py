@@ -41,7 +41,7 @@ def subcortical_volumes(self):
         f.get(fp)
         img = nib.load(fp)
         data = np.asarray(img.dataobj)
-        voxel_size = np.prod(img.header['pixdim'].tolist()[:4])
+        voxel_size = np.prod(img.header['pixdim'].tolist()[1:4])
 
         for roi, label in labels.items():
             volume = np.count_nonzero(data == label) * voxel_size

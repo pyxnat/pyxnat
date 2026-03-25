@@ -29,7 +29,7 @@ def volume(self):
     f = list(self.files('CorrectLesion_*nii.gz'))[0]
     f.get(fp)
     d = nib.load(fp)
-    size = np.prod(d.header['pixdim'].tolist()[:4])
+    size = np.prod(d.header['pixdim'].tolist()[1:4])
     n = np.array(d.dataobj)
     v = np.sum(n[n >= 0.5]) * size
     os.remove(fp)
@@ -66,7 +66,7 @@ def stats(self):
         f = list(self.files('CorrectLesion_*nii.gz'))[0]
         f.get(fp)
         d = nib.load(fp)
-        size = np.prod(d.header['pixdim'].tolist()[:4])
+        size = np.prod(d.header['pixdim'].tolist()[1:4])
         les = np.array(d.dataobj)
 
         f = list(self.files('Layers_*.nii.gz'))[0]
