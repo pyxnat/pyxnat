@@ -388,3 +388,17 @@ def test_te_asl_stats():
     gm_perf = stats.query(q.format(measurement="GM_perfusion"))['Mean'].item()
     wm_perf = stats.query(q.format(measurement="WM_perfusion"))['Mean'].item()
     assert gm_perf > wm_perf
+
+
+def test_tau_regional_quantification():
+    r = e1.resource('TAU_QUANTIFICATION')
+    q = 'region=="{region}"'
+    rq1 = r.regional_quantification().query(q.format(region="Left-Amygdala"))
+    rq2 = r.regional_quantification(measurement="suv").query(q.format(region="Left-Amygdala"))
+    assert rq1.shape == rq2.shape == (1, 8)
+    assert rq1.value.iloc[0] > rq2.value.iloc[0]
+
+    rq1 = r.regional_quantification(atlas='aal').query(q.format(region="Hippocampus_L"))
+    rq2 = r.regional_quantification(atlas='aal', measurement="suv").query(q.format(region="Hippocampus_L"))
+    assert rq1.shape == rq2.shape == (1, 8)
+    assert rq1.value.iloc[0] > rq2.value.iloc[0]
