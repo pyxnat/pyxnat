@@ -393,12 +393,27 @@ def test_te_asl_stats():
 def test_tau_regional_quantification():
     r = e1.resource('TAU_QUANTIFICATION')
     q = 'region=="{region}"'
-    rq1 = r.regional_quantification().query(q.format(region="Left-Amygdala"))
-    rq2 = r.regional_quantification(measurement="suv").query(q.format(region="Left-Amygdala"))
+
+    rq1 = r.regional_quantification().\
+        query(q.format(region="Amygdala_l"))
+    rq2 = r.regional_quantification(optimization='original').\
+        query(q.format(region="Amygdala_l"))
+
     assert rq1.shape == rq2.shape == (1, 8)
+    assert rq1['measurement'].item() == rq2['measurement'].item() == 'suvr'
+    assert rq1['atlas'].item() == rq2['atlas'].item() == 'hammers'
+    assert rq1['kernel'].item() == 3
+    assert rq2['kernel'].item() == 0
     assert rq1.value.iloc[0] > rq2.value.iloc[0]
 
-    rq1 = r.regional_quantification(atlas='aal').query(q.format(region="Hippocampus_L"))
-    rq2 = r.regional_quantification(atlas='aal', measurement="suv").query(q.format(region="Hippocampus_L"))
+    rq1 = r.regional_quantification(atlas='aparc+aseg').\
+        query(q.format(region="Left-Hippocampus"))
+    rq2 = r.regional_quantification(atlas='aparc+aseg', measurement="suv").\
+        query(q.format(region="Left-Hippocampus"))
+
     assert rq1.shape == rq2.shape == (1, 8)
+    assert rq1['measurement'].item() == 'suvr'
+    assert rq2['measurement'].item() == 'suv'
+    assert rq1['atlas'].item() == rq2['atlas'].item() == 'aparc+aseg'
+    assert rq1['kernel'].item() == rq2['kernel'].item() == 3
     assert rq1.value.iloc[0] > rq2.value.iloc[0]
