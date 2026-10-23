@@ -477,10 +477,13 @@ class Interface(object):
             config['proxy'] = self._proxy_url.geturl()
 
         fd = os.open(expanded_path, os.O_WRONLY | os.O_CREAT | os.O_TRUNC, 0o600)
-        with os.fdopen(fd, 'w') as fp:
+        try:
             if os.name == 'posix':
-                os.fchmod(fp.fileno(), 0o600)
-            json.dump(config, fp)
+                os.fchmod(fd, 0o600)
+            with os.fdopen(fd, 'w', closefd=False) as fp:
+                json.dump(config, fp)
+        finally:
+            os.close(fd)
 
     def load_config(self, location):
         """ Loads a configuration file and replaces current connection
