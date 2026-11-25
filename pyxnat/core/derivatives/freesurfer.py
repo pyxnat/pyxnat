@@ -78,9 +78,10 @@ def aparc(self, atlas='desikan-killiany'):
         ft = 'aparc'
     elif atlas == 'destrieux':
         ft = 'aparc.a2009s'
+    elif atlas == 'desikan-killiany-tourville':
+        ft = 'aparc.DKTatlas'
     else:
-        raise Exception('Invalid atlas "%s". Should be either '
-                        'desikan-killiany or destrieux.' % atlas)
+        raise Exception(f'Invalid atlas "{atlas}"')
 
     files = list(self.files('*h.%s.stats' % ft))
     for f in files:
