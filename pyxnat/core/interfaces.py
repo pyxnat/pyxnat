@@ -443,6 +443,8 @@ class Interface(object):
     def save_config(self, location):
         """ Saves current configuration - including password - in a file.
 
+            On POSIX, the file is restricted to owner read/write permissions.
+
             .. warning::
                 Since the password is saved as well, make sure the file
                 is saved at a safe location with appropriate permissions.
@@ -474,8 +476,14 @@ class Interface(object):
         if self._proxy_url:
             config['proxy'] = self._proxy_url.geturl()
 
-        with open(expanded_path, 'w') as fp:
-            json.dump(config, fp)
+        fd = os.open(expanded_path, os.O_WRONLY | os.O_CREAT | os.O_TRUNC, 0o600)
+        try:
+            if os.name == 'posix':
+                os.fchmod(fd, 0o600)
+            with os.fdopen(fd, 'w', closefd=False) as fp:
+                json.dump(config, fp)
+        finally:
+            os.close(fd)
 
     def load_config(self, location):
         """ Loads a configuration file and replaces current connection
