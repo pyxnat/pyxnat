@@ -1,0 +1,36 @@
+Source: pyxnat
+Section: python
+Priority: extra
+Maintainer: Yannick Schwartz <yannick.schwartz@cea.fr>
+Uploaders: Yaroslav Halchenko <debian@onerussian.com>, Michael Hanke <michael.hanke@gmail.com>
+Build-Depends: debhelper (>= 7.2.18),
+	       python-all,
+	       python-lxml,
+	       python-httplib2 (>= 0.7.0),
+	       python-simplejson,
+	       python-nose
+Standards-Version: 3.9.2
+Homepage: http://packages.python.org/pyxnat/
+Vcs-Git: git://github.com/pyxnat/pyxnat.git
+Vcs-Browser: https://github.com/pyxnat/pyxnat.git
+
+Package: python-pyxnat
+Architecture: all
+Depends: ${python:Depends}, ${misc:Depends},
+		python-lxml,
+		python-simplejson,
+		python-httplib2 (>= 0.7.0),
+Recommends: python-networkx,
+            python-matplotlib
+Provides: ${python:Provides}
+Description: Interface to access neuroimaging data on XNAT servers
+ pyxnat is a simple Python library that relies on the REST API provided
+ by the XNAT platform since its 1.4 version. XNAT is an extensible
+ database for neuroimaging data. The main objective is to ease
+ communications with an XNAT server to plug-in external tools or Python
+ scripts to process the data. It features:
+ .
+  - resources browsing capabilities
+  - read and write access to resources
+  - complex searches
+  - disk-caching of requested files and resources

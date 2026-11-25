@@ -1,0 +1,4 @@
+version=3
+
+opts="filenamemangle=s/.*\/(.*)/pyxnat-$1\.tar\.gz/" \
+  http://github.com/pyxnat/pyxnat/downloads .*tarball/release/([\d\.a-z]+)
