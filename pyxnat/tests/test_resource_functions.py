@@ -130,11 +130,14 @@ def test_freesurfer7_hippoSfVolumes():
 
 def test_freesurfer7_aparc():
     r = e1.resource('FREESURFER7')
-    hv = r.aparc()
-    assert (hv.shape == (625, 4))
+    dk = r.aparc(atlas='desikan-killiany')
+
+    assert dk.shape == (625, 4)
+    assert r.aparc(atlas='destrieux').shape == (1345, 4)
+    assert r.aparc(atlas='desikan-killiany-tourville').shape == (571, 4)
+
     q = 'region=="supramarginal" & side=="left" & measurement=="CurvInd"'
-    v = hv.query(q)['value'].tolist()[0]
-    assert(v == '5.0')
+    assert dk.query(q)['value'].tolist() == ['5.0']
 
 
 def test_freesurfer7_aseg():
