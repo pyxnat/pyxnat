@@ -420,3 +420,25 @@ def test_tau_regional_quantification():
     assert rq1['atlas'].item() == rq2['atlas'].item() == 'aparc+aseg'
     assert rq1['kernel'].item() == rq2['kernel'].item() == 3
     assert rq1.value.iloc[0] > rq2.value.iloc[0]
+
+
+def test_samseg_stats():
+    import pytest
+    from pandas.testing import assert_frame_equal
+
+    r = e1.resource('SAMSEG_T1')
+    stats = r.stats()
+    sbtiv = r.sbtiv()
+
+    assert stats.shape == (45, 4)
+    assert sbtiv.shape == (1, 4)
+
+    q = 'region=="Left-Hippocampus" & source=="samseg.stats"'
+    assert stats.query(q)['value'].item() == pytest.approx(3763.267, abs=0.001)
+
+    assert sbtiv['region'].item() == 'Intra-Cranial'
+    assert sbtiv['units'].item() == 'mm^3'
+    assert sbtiv['value'].item() == pytest.approx(1445669, abs=0.5)
+
+    q = 'source=="sbtiv.stats"'
+    assert_frame_equal(stats.query(q).reset_index(drop=True), sbtiv, check_exact=True)
