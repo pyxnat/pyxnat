@@ -281,6 +281,39 @@ def test_xcp_d_timeseries():
     assert df2.shape[0] == ts2.shape[1]
 
 
+def test_xcp_d_coverage():
+    from math import isclose
+
+    r = e1.resource('XCP_D')
+    coverage = r.coverage(atlas='DK')
+
+    assert coverage['coverage'].between(0, 1).all()
+    assert isclose(coverage.loc['ctx-rh-frontalpole', 'coverage'],
+                   0.053333, abs_tol=1e-6)
+
+
+def test_xcp_d_qc():
+    from math import isclose
+
+    r = e1.resource('XCP_D')
+    qc = r.qc()
+
+    assert len(qc) == 1
+    assert qc['num_censored_volumes'].item() == 9
+    assert isclose(qc['meanFD'].item(), 0.234717, abs_tol=1e-6)
+
+
+def test_xcp_d_motion():
+    from math import isclose
+
+    r = e1.resource('XCP_D')
+    motion = r.motion()
+
+    assert len(motion) == 296
+    assert isclose(motion['framewise_displacement'].iloc[0],
+                   0.230658, abs_tol=1e-6)
+
+
 def test_3dasl_volumes():
     r = e1.resource('3DASL_QUANTIFICATION')
     v = r.volumes()

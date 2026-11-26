@@ -23,3 +23,52 @@ def timeseries(self, atlas='DK'):
     df = pd.read_table(StringIO(content), sep='\t')
 
     return df
+
+
+def coverage(self, atlas='DK'):
+    """Return parcel coverage fractions for the atlas, indexed by parcel name."""
+
+    import pandas as pd
+    from io import StringIO
+
+    files = list(self.files(f'*_atlas-{atlas}_coverage.tsv'))
+    if not files:
+        raise FileNotFoundError(f"No XCP-D coverage TSV file found for atlas '{atlas}'.")
+    if len(files) > 1:
+        raise ValueError(f"Multiple XCP-D coverage TSV files found for atlas '{atlas}'.")
+
+    content = self._intf.get(files[0]._uri).content.decode('utf-8')
+    return pd.read_table(StringIO(content), index_col='Node')
+
+
+def qc(self):
+    """Return the XCP-D run-level QC summary."""
+
+    import pandas as pd
+    from io import StringIO
+
+    files = list(self.files('*_desc-linc_qc.csv'))
+    if not files:
+        raise FileNotFoundError('No XCP-D LINC QC CSV file found.')
+    if len(files) > 1:
+        raise ValueError('Multiple XCP-D LINC QC CSV files found.')
+
+    content = self._intf.get(files[0]._uri).content.decode('utf-8')
+    return pd.read_csv(StringIO(content))
+
+
+def motion(self):
+    """Return per-volume motion parameters and framewise displacement."""
+
+    import pandas as pd
+    from io import StringIO
+
+    files = list(self.files('*_motion.tsv'))
+    if not files:
+        raise FileNotFoundError('No XCP-D motion TSV file found.')
+    if len(files) > 1:
+        raise ValueError('Multiple XCP-D motion TSV files found.')
+
+    content = self._intf.get(files[0]._uri).content.decode('utf-8')
+    return pd.read_table(StringIO(content))
+
