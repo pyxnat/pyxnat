@@ -510,7 +510,8 @@ class Interface(object):
             self._user = str(config['user'])
             self._pwd = str(config['password'])
 
-            self._verify = bool(config.get('verify', True))
+            # Preserve CA bundle paths as well as boolean verification settings.
+            self._verify = config.get('verify', True)
             if 'proxy' in config:
                 self.__set_proxy(str(config['proxy']))
             else:
